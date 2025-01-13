@@ -141,4 +141,5 @@ dist
 # custom
 package-lock.json
 .vscode/
+.vs/
 .todo
