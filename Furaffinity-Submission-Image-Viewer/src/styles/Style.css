@@ -1,0 +1,23 @@
+.siv-image-main {
+    object-fit: cover;
+}
+
+.siv-image-preview {
+    object-fit: cover;
+    image-rendering: pixelated;
+}
+
+.siv-image-container {
+    width: 0px;
+    height: 0px;
+    overflow: hidden;
+}
+
+.siv-parent-container {
+    overflow: hidden;
+}
+
+.zoomable-image {
+    transition: transform 0.3s;
+    transform-origin: center;
+}
