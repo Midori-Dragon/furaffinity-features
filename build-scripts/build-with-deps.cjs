@@ -24,9 +24,19 @@ async function buildModule(webpackConfigPath) {
     });
 }
 
+// ANSI color codes
+const colors = {
+    reset: '\x1b[0m',
+    green: '\x1b[32m',
+    yellow: '\x1b[33m',
+    red: '\x1b[31m',
+    cyan: '\x1b[36m',
+    blue: '\x1b[34m'
+};
+
 // Extract dependencies from the banner of a build file
 async function extractDependencies(buildFilePath, moduleName = 'bundle.user.js') {
-    console.log(`Extracting dependencies from: ${moduleName}`);
+    console.log(`   ${colors.cyan}Extracting dependencies from: ${colors.blue}${moduleName}${colors.reset}`);
     const content = await readFile(buildFilePath, 'utf-8');
     const bannerStart = content.indexOf('// ==UserScript==');
     const bannerEnd = content.indexOf('// ==/UserScript==');
@@ -42,7 +52,7 @@ async function extractDependencies(buildFilePath, moduleName = 'bundle.user.js')
     let match;
     while ((match = requireRegex.exec(banner)) !== null) {
         const dep = match[1];
-        console.log(`   Found dependency: ${dep}`);
+        console.log(`   ${colors.blue}Found dependency: ${dep}${colors.reset}`);
         dependencies.push(dep);
     }
 
@@ -54,24 +64,39 @@ async function resolveDependencies(dependencies, resolved = new Set(), order = [
     for (const dep of dependencies) {
         const moduleName = path.basename(dep, '.js');
         const modulePath = `./${moduleName}/dist/bundle.user.js`;
+        const webpackConfigPath = `./${moduleName}/webpack.config.cjs`;
 
         if (resolved.has(modulePath)) {
-            console.log(`Skipping already resolved dependency: ${moduleName}\n`);
+            console.log(`${colors.cyan}Skipping already resolved dependency: ${colors.blue}${moduleName}${colors.reset}\n`);
             continue;
         }
 
-        if (fs.existsSync(modulePath)) {
-            resolved.add(modulePath);
-            const { dependencies: subDeps } = await extractDependencies(modulePath, moduleName);
-            if (subDeps.length > 0) {
-                console.log(`  Found nested dependencies for ${moduleName}:`);
-                subDeps.forEach(subDep => console.log(`    - ${subDep}`));
+        if (fs.existsSync(webpackConfigPath)) {
+            console.log(`${colors.cyan}Resolving dependency: ${colors.blue}${moduleName}${colors.reset}`);
+            try {
+                console.log(`   ${colors.cyan}Building ${colors.blue}${moduleName}${colors.reset}`);
+                await buildModule(webpackConfigPath);
+                console.log(`   ${colors.green}Successfully built ${moduleName}${colors.reset}`);
+            } catch (error) {
+                console.error(`${colors.red}Error building ${moduleName}:${colors.reset}`, error);
+                continue;
             }
-            await resolveDependencies(subDeps, resolved, order);
-            order.push(modulePath);
-            console.log(`   Added ${moduleName} to build order`);
+
+            if (fs.existsSync(modulePath)) {
+                resolved.add(modulePath);
+                const { dependencies: subDeps } = await extractDependencies(modulePath, moduleName);
+                if (subDeps.length > 0) {
+                    console.log(`  ${colors.cyan}Found nested dependencies for ${colors.blue}${moduleName}:${colors.reset}`);
+                    subDeps.forEach(subDep => console.log(`    ${colors.blue}- ${subDep}${colors.reset}`));
+                }
+                await resolveDependencies(subDeps, resolved, order);
+                order.push(modulePath);
+                console.log(`   ${colors.green}Added ${moduleName} to build order${colors.reset}`);
+            } else {
+                console.warn(`  ${colors.yellow}Warning: Build file not found after building: ${modulePath}${colors.reset}`);
+            }
         } else {
-            console.warn(`  Warning: Dependency not found: ${dep}`);
+            console.warn(`  ${colors.yellow}Warning: Webpack config not found for dependency: ${webpackConfigPath}${colors.reset}`);
         }
     }
 
@@ -85,12 +110,12 @@ const bannerRegex = /\/\/ ==UserScript==[\s\S]*?\/\/ ==\/UserScript==/;
 
 // Process a single file to extract name, version, and content without banner
 async function processFile(filePath) {
-    console.log(`Processing file: ${path.basename(path.dirname(path.dirname(filePath)))}`);
+    console.log(`${colors.cyan}Processing file: ${colors.blue}${path.basename(path.dirname(path.dirname(filePath)))}${colors.reset}`);
     const content = await readFile(filePath, 'utf-8');
     const bannerMatch = content.match(bannerRegex);
 
     if (!bannerMatch) {
-        console.warn(`  No banner found in ${filePath}`);
+        console.warn(`  ${colors.yellow}No banner found in ${filePath}${colors.reset}`);
         return { name: 'Unknown', version: '0.0.0', content };
     }
 
@@ -100,7 +125,7 @@ async function processFile(filePath) {
 
     const name = nameMatch ? nameMatch[1].trim() : 'Unknown';
     const version = versionMatch ? versionMatch[1].trim() : '0.0.0';
-    console.log(`   Extracted metadata: ${name} v${version}`);
+    console.log(`   ${colors.green}Extracted metadata: ${colors.blue}${name} v${version}${colors.reset}`);
 
     // Remove the banner from the content
     const cleanedContent = content.replace(bannerRegex, '').trim();
@@ -114,23 +139,23 @@ async function combineFiles(filePaths, outputPath) {
     const mainFileContent = await readFile(filePaths[filePaths.length - 1], 'utf-8');
     const bannerMatch = mainFileContent.match(bannerRegex);
     let originalBanner = '';
-    
+
     if (bannerMatch) {
-        console.log('Processing main script banner');
+        console.log(`${colors.cyan}Processing main script banner${colors.reset}`);
         const bannerLines = bannerMatch[0].split('\n').filter(line => !line.trim().startsWith('// @require'));
         originalBanner = bannerLines.join('\n') + '\n\n';
     }
 
-    console.log('Processing all files in order:');
+    console.log(`${colors.cyan}Processing all files in order:${colors.reset}`);
     const processedFiles = await Promise.all(filePaths.map(processFile));
-    
-    console.log('Combining files:');
+
+    console.log(`\n${colors.cyan}Writing files:${colors.reset}`);
     processedFiles.forEach(({ name, version }) => {
-        console.log(`   Adding: ${name} v${version}`);
+        console.log(`   ${colors.blue}Adding: ${name} v${version}${colors.reset}`);
     });
-    
+
     const combinedContent = originalBanner + processedFiles.map(({ name, version, content }) => `// ${name} v${version}\n${content}`).join('\n\n');
-    
+
     await writeFile(outputPath, combinedContent);
 }
 
@@ -138,7 +163,7 @@ async function combineFiles(filePaths, outputPath) {
 async function main() {
     const args = process.argv.slice(2);
     if (args.length < 1) {
-        console.error('Usage: node build-with-deps.cjs <path_to_webpack_config>');
+        console.error(`${colors.red}Usage: node build-with-deps.cjs <path_to_webpack_config>${colors.reset}`);
         process.exit(1);
     }
 
@@ -147,24 +172,25 @@ async function main() {
     const outputPath = path.join(distFolder, 'bundle.user.js');
 
     try {
-        console.log('Building main module...');
+        console.log(`${colors.cyan}Building main module...${colors.reset}`);
         const stats = await buildModule(webpackConfigPath);
 
         const mainBuildFilePath = stats.outputPath + '\\bundle.user.js';
-        console.log(`Main build file created at: ${mainBuildFilePath}\n`);
+        const moduleName = path.basename(path.dirname(path.dirname(mainBuildFilePath)));
+        console.log(`   ${colors.green}Main build file created at: ${colors.blue}${mainBuildFilePath}${colors.reset}\n`);
 
-        console.log('Extracting dependencies...\n');
-        const { banner, dependencies } = await extractDependencies(mainBuildFilePath, path.basename(path.dirname(path.dirname(mainBuildFilePath))));
+        console.log(`${colors.cyan}Extracting dependencies from ${moduleName}...${colors.reset}`);
+        const { banner, dependencies } = await extractDependencies(mainBuildFilePath, moduleName);
 
-        console.log('\nResolving dependencies...');
+        console.log(`\n${colors.cyan}Resolving dependencies...${colors.reset}`);
         const orderedDependencies = await resolveDependencies(dependencies);
 
-        console.log('\nCombining files...');
+        console.log(`\n${colors.cyan}Combining files...${colors.reset}`);
         await combineFiles([...orderedDependencies, mainBuildFilePath], outputPath);
 
-        console.log(`\nFinal combined file created at: ${outputPath}\n`);
+        console.log(`\n${colors.green}Final combined file created at: ${outputPath}${colors.reset}\n`);
     } catch (error) {
-        console.error('Build failed:', error);
+        console.error(`${colors.red}Build failed:${colors.reset}`, error);
         process.exit(1);
     }
 }
