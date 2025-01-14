@@ -12,10 +12,9 @@
     "build:Furaffinity-Custom-Pages": "webpack --config ./Furaffinity-Custom-Pages/webpack.config.cjs",
     "build:Furaffinity-Custom-Settings": "webpack --config ./Furaffinity-Custom-Settings/webpack.config.cjs",
     "build:FA-Infini-Gallery": "webpack --config ./FA-Infini-Gallery/webpack.config.cjs",
+    "build:FA-Infini-Gallery-Deps": "node build-scripts/build-with-deps.cjs ./FA-Infini-Gallery/webpack.config.cjs",
     "build:FA-Embedded-Image-Viewer": "webpack --config ./FA-Embedded-Image-Viewer/webpack.config.cjs",
-    "build:all-lib": "npm run build:Furaffinity-Request-Helper && npm run build:Furaffinity-Submission-Image-Viewer && npm run build:Furaffinity-Match-List && npm run build:Furaffinity-Loading-Animations && npm run build:Furaffinity-Custom-Pages && npm run build:Furaffinity-Custom-Settings",
-    "build:all-scripts": "npm run build:FA-Infini-Gallery && npm run build:FA-Embedded-Image-Viewer",
-    "build:all": "npm run build:all-lib && npm run build:all-scripts && node build-scripts/combine.cjs"
+    "build:FA-Embedded-Image-Viewer-Deps": "node build-scripts/build-with-deps.cjs ./FA-Embedded-Image-Viewer/webpack.config.cjs"
   },
   "keywords": [],
   "author": "",
