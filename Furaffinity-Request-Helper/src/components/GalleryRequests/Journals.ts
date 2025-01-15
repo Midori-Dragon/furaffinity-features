@@ -1,11 +1,11 @@
 import { WaitAndCallAction } from '../../utils/WaitAndCallAction';
 import { Semaphore } from '../../utils/Semaphore';
-import { Logger } from '../../utils/Logging';
 import { IdArray } from '../../utils/ArrayHelper';
 import { PercentHelper } from '../../utils/PercentHelper';
 import { Page } from './Page';
 import { FuraffinityRequests } from '../../modules/FuraffinityRequests';
 import { convertToNumber } from '../../utils/GeneralUtils';
+import { Logger } from '../../../../GlobalUtils/src/utils/Logger';
 
 export class Journals {
     private readonly _semaphore: Semaphore;

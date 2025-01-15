@@ -1,4 +1,3 @@
-import { Logger } from '../utils/Logging';
 import { PercentHelper } from '../utils/PercentHelper';
 import { IdArray } from '../utils/ArrayHelper';
 import { Semaphore } from '../utils/Semaphore';
@@ -7,6 +6,7 @@ import { Scraps } from '../components/GalleryRequests/Scraps';
 import { Favorites } from '../components/GalleryRequests/Favorites';
 import { Journals } from '../components/GalleryRequests/Journals';
 import { Page } from '../components/GalleryRequests/Page';
+import { Logger } from '../../../GlobalUtils/src/utils/Logger';
 
 export class GalleryRequests {
     public readonly Gallery: Gallery;
@@ -262,13 +262,13 @@ export class GalleryRequests {
         }
         const galleryDoc = await Page.getGalleryPage(username, folderId, pageNumber, galleryType, semaphore);
         if (!galleryDoc || !(galleryDoc instanceof Document) || galleryDoc.getElementById('no-images')) {
-            Logger.logMessage(`No images found at ${galleryType} of "${username}" on page "${pageNumber}".`);
+            Logger.logInfo(`No images found at ${galleryType} of "${username}" on page "${pageNumber}".`);
             return [];
         }
 
         const figures = galleryDoc.getElementsByTagName('figure');
         if (figures == null || figures.length === 0) {
-            Logger.logMessage(`No figures found at ${galleryType} of "${username}" on page "${pageNumber}".`);
+            Logger.logInfo(`No figures found at ${galleryType} of "${username}" on page "${pageNumber}".`);
             return [];
         }
 

@@ -2,6 +2,7 @@ import { SettingType, SettingTypeMapping } from '../utils/SettingType';
 import { SyncedStorage } from '../../../GlobalUtils/src/utils/SyncedStorage';
 import { makeIdCompatible } from '../utils/Utils';
 import { ISetting } from './ISetting';
+import { Logger } from '../../../GlobalUtils/src/utils/Logger';
 
 export class SettingText implements ISetting<SettingType.Text> {
     public id: string;
@@ -22,12 +23,16 @@ export class SettingText implements ISetting<SettingType.Text> {
         }
         this._errorMessage.style.display = 'none';
 
-        if (newValue === this.defaultValue) {
-            localStorage.removeItem(this.id);
-            void SyncedStorage.removeItem(this.id);
-        } else {
-            localStorage.setItem(this.id, newValue);
-            void SyncedStorage.setItem(this.id, newValue);
+        try {
+            if (newValue === this.defaultValue) {
+                localStorage.removeItem(this.id);
+                void SyncedStorage.removeItem(this.id);
+            } else {
+                localStorage.setItem(this.id, newValue);
+                void SyncedStorage.setItem(this.id, newValue);
+            }
+        } catch (error) {
+            Logger.logError(error);
         }
         this._settingInputElem.value = newValue;
         this.action?.(this._settingInputElem);

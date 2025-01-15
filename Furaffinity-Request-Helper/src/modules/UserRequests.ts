@@ -1,9 +1,9 @@
 import { WaitAndCallAction } from '../utils/WaitAndCallAction';
-import { Logger } from '../utils/Logging';
 import { Semaphore } from '../utils/Semaphore';
 import { FuraffinityRequests } from './FuraffinityRequests';
 import { GalleryRequests } from './GalleryRequests';
 import { SearchRequests } from './SearchRequests';
+import { Logger } from '../../../GlobalUtils/src/utils/Logger';
 
 export class UserRequests {
     public readonly GalleryRequests: GalleryRequests;

@@ -1,10 +1,10 @@
 import { Semaphore } from '../utils/Semaphore';
-import { Logger } from '../utils/Logging';
 import { PercentHelper } from '../utils/PercentHelper';
 import { IdArray } from '../utils/ArrayHelper';
 import { Page } from '../components/GalleryRequests/Page';
 import { Browse, BrowseOptions } from '../components/SearchRequests/Browse';
 import { Search, SearchOptions } from '../components/SearchRequests/Search';
+import { Logger } from '../../../GlobalUtils/src/utils/Logger';
 
 export class SearchRequests {
     public readonly Browse: Browse;
@@ -256,13 +256,13 @@ export class SearchRequests {
         }
         const galleryDoc = await Page.getBrowsePage(pageNumber, browseOptions, semaphore);
         if (!galleryDoc || !(galleryDoc instanceof Document) || galleryDoc.getElementById('no-images')) {
-            Logger.logMessage(`No images found at browse on page "${pageNumber}".`);
+            Logger.logInfo(`No images found at browse on page "${pageNumber}".`);
             return [];
         }
 
         const figures = galleryDoc.getElementsByTagName('figure');
         if (figures == null || figures.length === 0) {
-            Logger.logMessage(`No figures found at browse on page "${pageNumber}".`);
+            Logger.logInfo(`No figures found at browse on page "${pageNumber}".`);
             return [];
         }
 
@@ -509,13 +509,13 @@ export class SearchRequests {
         }
         const galleryDoc = await Page.getSearchPage(pageNumber, searchOptions, semaphore);
         if (!galleryDoc || !(galleryDoc instanceof Document) || galleryDoc.getElementById('no-images')) {
-            Logger.logMessage(`No images found at search on page "${pageNumber}".`);
+            Logger.logInfo(`No images found at search on page "${pageNumber}".`);
             return [];
         }
 
         const figures = galleryDoc.getElementsByTagName('figure');
         if (figures == null || figures.length === 0) {
-            Logger.logMessage(`No figures found at search on page "${pageNumber}".`);
+            Logger.logInfo(`No figures found at search on page "${pageNumber}".`);
             return [];
         }
 

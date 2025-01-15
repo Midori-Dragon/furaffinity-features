@@ -1,10 +1,10 @@
 import { WaitAndCallAction } from '../../utils/WaitAndCallAction';
-import { Logger } from '../../utils/Logging';
 import { IdArray } from '../../utils/ArrayHelper';
 import { Page } from './Page';
 import { FuraffinityRequests } from '../../modules/FuraffinityRequests';
 import { Semaphore } from '../../utils/Semaphore';
 import { convertToNumber } from '../../utils/GeneralUtils';
+import { Logger } from '../../../../GlobalUtils/src/utils/Logger';
 
 export class Favorites {
     private readonly semaphore: Semaphore;
@@ -403,13 +403,13 @@ async function getFavoritesFiguresBetweenPages(username: string, fromDataFavId: 
 async function getFavoritesFigures(username: string, dataFavId: number | undefined, direction: number | undefined, semaphore: Semaphore): Promise<HTMLElement[]> {
     const galleryDoc = await Page.getFavoritesPage(username, dataFavId, direction, semaphore);
     if (!galleryDoc || !(galleryDoc instanceof Document) || galleryDoc.getElementById('no-images')) {
-        Logger.logMessage(`No images found at favorites of "${username}" on page "${dataFavId}".`);
+        Logger.logInfo(`No images found at favorites of "${username}" on page "${dataFavId}".`);
         return [];
     }
 
     const figures = galleryDoc.getElementsByTagName('figure');
     if (figures == null || figures.length === 0) {
-        Logger.logMessage(`No figures found at favorites of "${username}" on page "${dataFavId}".`);
+        Logger.logInfo(`No figures found at favorites of "${username}" on page "${dataFavId}".`);
         return [];
     }
 

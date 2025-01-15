@@ -1,6 +1,6 @@
+import { Logger } from '../../../GlobalUtils/src/utils/Logger';
 import { Semaphore } from '../utils/Semaphore';
 import { WaitAndCallAction } from '../utils/WaitAndCallAction';
-import { Logger } from '../utils/Logging';
 import { FuraffinityRequests } from './FuraffinityRequests';
 
 export class SubmissionRequests {

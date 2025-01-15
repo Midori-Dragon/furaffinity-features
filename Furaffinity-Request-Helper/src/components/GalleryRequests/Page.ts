@@ -1,4 +1,3 @@
-import { Logger } from '../../utils/Logging';
 import { Semaphore } from '../../utils/Semaphore';
 import { Gallery } from './Gallery';
 import { Scraps } from './Scraps';
@@ -9,6 +8,7 @@ import { Search, SearchOptions } from '../SearchRequests/Search';
 import { FuraffinityRequests } from '../../modules/FuraffinityRequests';
 import { GalleryType } from '../../modules/GalleryRequests';
 import checkTagsAll from '../../../../GlobalUtils/src/utils/CheckTagsAll';
+import { Logger } from '../../../../GlobalUtils/src/utils/Logger';
 
 export class Page {
     static async getGalleryPage(username: string | undefined, folderId: number | undefined, pageNumber: number | undefined, galleryType: GalleryType, semaphore: Semaphore): Promise<Document | undefined> {

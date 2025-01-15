@@ -1,9 +1,9 @@
 import { Semaphore } from '../../../utils/Semaphore';
-import { Logger } from '../../../utils/Logging';
 import { WaitAndCallAction } from '../../../utils/WaitAndCallAction';
 import { FuraffinityRequests } from '../../../modules/FuraffinityRequests';
 import { Message } from '../Message';
 import { convertToNumber } from '../../../utils/GeneralUtils';
+import { Logger } from '../../../../../GlobalUtils/src/utils/Logger';
 
 export class NewSubmissions {
     private readonly _semaphore: Semaphore;

@@ -1,8 +1,8 @@
 import { Semaphore } from '../../utils/Semaphore';
 import { WaitAndCallAction } from '../../utils/WaitAndCallAction';
-import { Logger } from '../../utils/Logging';
 import { FuraffinityRequests } from '../../modules/FuraffinityRequests';
 import { convertToNumber } from '../../utils/GeneralUtils';
+import { Logger } from '../../../../GlobalUtils/src/utils/Logger';
 
 export class ManageContent {
     private readonly _semaphore: Semaphore;

@@ -1,11 +1,11 @@
 import { Semaphore } from '../utils/Semaphore';
 import { WaitAndCallAction } from '../utils/WaitAndCallAction';
-import { Logger } from '../utils/Logging';
 import { UserRequests } from './UserRequests';
 import { PersonalUserRequests } from './PersonalUserRequests';
 import { SubmissionRequests } from './SubmissionRequests';
 import { BrowseOptions } from '../components/SearchRequests/Browse';
 import { SearchOptions } from '../components/SearchRequests/Search';
+import { Logger } from '../../../GlobalUtils/src/utils/Logger';
 
 export class FuraffinityRequests {
     public UserRequests: UserRequests;
@@ -76,7 +76,7 @@ export class FuraffinityRequests {
 }
 
 async function getHTMLLocal(url: string, semaphore: Semaphore): Promise<Document | undefined> {
-    Logger.logMessage(`Requesting '${url}'`);
+    Logger.logInfo(`Requesting '${url}'`);
     const semaphoreActive = semaphore != null && semaphore.maxConcurrency > 0;
     if (semaphoreActive) {
         // Acquire a slot in the semaphore to ensure that the maximum concurrency is not exceeded.
