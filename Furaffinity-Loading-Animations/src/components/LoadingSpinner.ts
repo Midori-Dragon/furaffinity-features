@@ -93,10 +93,7 @@ export class LoadingSpinner implements ILoadingSpinner {
         }
         this._size = value;
 
-        this._spinnerContainer.style.width = this._size + 'px';
-        this._spinnerContainer.style.height = this._size + 'px';
-        this._spinner.style.width = (this.size - this.spinnerThickness * 2) + 'px';
-        this._spinner.style.height = (this.size - this.spinnerThickness * 2) + 'px';
+        this.updateSize();
     }
 
     get spinnerThickness(): number {
@@ -108,6 +105,7 @@ export class LoadingSpinner implements ILoadingSpinner {
         }
         this._spinnerThickness = value;
         this.updateSpinnerBorders();
+        this.updateSize();
     }
     
     get spinnerLength(): number {
@@ -164,6 +162,13 @@ export class LoadingSpinner implements ILoadingSpinner {
         this._baseElem.removeChild(this._spinnerContainer);
     }
 
+    private updateSize(): void {
+        this._spinnerContainer.style.width = this.size + 'px';
+        this._spinnerContainer.style.height = this.size + 'px';
+        this._spinner.style.width = (this.size - this.spinnerThickness * 2) + 'px';
+        this._spinner.style.height = (this.size - this.spinnerThickness * 2) + 'px';
+    }
+
     private updateSpinnerBorders(): void {
         this._spinner.style.border = this.spinnerThickness + 'px solid ' + this.backcolorHex;
         if (this.spinnerLength >= 4) {
@@ -193,5 +198,7 @@ export class LoadingSpinner implements ILoadingSpinner {
         this._spinner.style.width = (this.size - this.spinnerThickness * 2) + 'px';
         this._spinner.style.height = (this.size - this.spinnerThickness * 2) + 'px';
         this._spinner.style.animation = `spin ${this.delay / 1000}s ${this.animationCurve} infinite`;
+
+        this.updateSize();
     }
 }
