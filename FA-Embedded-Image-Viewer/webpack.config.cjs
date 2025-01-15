@@ -23,9 +23,6 @@ module.exports = merge(common, {
 // @require     https://update.greasyfork.org/scripts/485827/1326313/Furaffinity-Match-List.js
 // @require     https://update.greasyfork.org/scripts/492931/1363921/Furaffinity-Submission-Image-Viewer.js
 // @grant       GM_info
-// @grant       GM_getValue
-// @grant       GM_setValue
-// @grant       GM_deleteValue
 // @version     2.4.0
 // @author      Midori Dragon
 // @description Embeds the clicked Image on the Current Site, so you can view it without loading the submission Page

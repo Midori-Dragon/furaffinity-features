@@ -7,6 +7,7 @@ import { MatchList } from '../../Furaffinity-Match-List/src/modules/MatchList';
 import { FuraffinityRequests } from '../../Furaffinity-Request-Helper/src/modules/FuraffinityRequests';
 import { CustomImageViewer } from '../../Furaffinity-Submission-Image-Viewer/src/modules/CustomImageViewer';
 import { GMInfo } from '../../GlobalUtils/src/utils/GMInfo';
+import { Logger, LogLevel } from '../../GlobalUtils/src/utils/Logger';
 import { EmbeddedImage } from './modules/EmbeddedImage';
 import { downloadImage } from './utils/Utils';
 
@@ -20,6 +21,7 @@ declare global {
         FAImageViewer: typeof CustomImageViewer;
         FALoadingSpinner: typeof LoadingSpinner;
         FALoadingTextSpinner: typeof LoadingTextSpinner;
+        __FF_GLOBAL_LOG_LEVEL__: LogLevel;
     }
 }
 
@@ -27,6 +29,12 @@ const customSettings = new window.FACustomSettings();
 customSettings.extensionName = 'Extension Settings';
 customSettings.provider = 'Midori\'s Script Settings';
 customSettings.headerName = `${GMInfo.scriptName} Settings`;
+
+export const loggingSetting = customSettings.newSetting(window.FASettingType.Number, 'Logging');
+loggingSetting.description = 'The logging level. 0 = none, 1 = errors, 2 = warnings, 3 = infos.';
+loggingSetting.defaultValue = window.__FF_GLOBAL_LOG_LEVEL__ ?? LogLevel.Error;
+loggingSetting.action = (): void => Logger.setLogLevel(loggingSetting.value);
+Logger.setLogLevel(loggingSetting.value);
 
 export const openInNewTabSetting = customSettings.newSetting(window.FASettingType.Boolean, 'Open in new Tab');
 openInNewTabSetting.description = 'Wether to open links in a new Tab or the current one.';

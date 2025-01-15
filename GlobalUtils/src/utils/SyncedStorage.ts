@@ -1,10 +1,12 @@
 import { GMInfo } from './GMInfo';
+import { Logger } from './Logger';
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 export class SyncedStorage {
     static async setItem(key: any, value: any): Promise<void> {
         if (!GMInfo.isBrowserEnvironment()) {
-            throw new Error('SyncedStorage is only available in browser extensions.');
+            Logger.logWarning('SyncedStorage is only available in browser extensions.');
+            return;
         }
 
         const api = GMInfo.getBrowserAPI();
@@ -18,13 +20,14 @@ export class SyncedStorage {
                 });
             });
         } else {
-            throw new Error('Unsupported storage API.');
+            Logger.logError('Unsupported storage API.');
         }
     }
 
-    static async getItem(key: any): Promise<any> {
+    static async getItem(key: any): Promise<any | null> {
         if (!GMInfo.isBrowserEnvironment()) {
-            throw new Error('SyncedStorage is only available in browser extensions.');
+            Logger.logWarning('SyncedStorage is only available in browser extensions.');
+            return;
         }
 
         const api = GMInfo.getBrowserAPI();
@@ -38,13 +41,14 @@ export class SyncedStorage {
                 });
             });
         } else {
-            throw new Error('Unsupported storage API.');
+            Logger.logError('Unsupported storage API.');
         }
     }
 
     static async removeItem(key: any): Promise<void> {
         if (!GMInfo.isBrowserEnvironment()) {
-            throw new Error('SyncedStorage is only available in browser extensions.');
+            Logger.logWarning('SyncedStorage is only available in browser extensions.');
+            return;
         }
 
         const api = GMInfo.getBrowserAPI();
@@ -58,7 +62,7 @@ export class SyncedStorage {
                 });
             });
         } else {
-            throw new Error('Unsupported storage API.');
+            Logger.logError('Unsupported storage API.');
         }
     }
 }

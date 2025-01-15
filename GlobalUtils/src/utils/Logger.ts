@@ -5,28 +5,30 @@ export enum LogLevel {
 }
 
 export class Logger {
-    private static logLevel = LogLevel.Error;
+    static {
+        window.__FF_GLOBAL_LOG_LEVEL__ = LogLevel.Error;
+    }
 
     private static log(logLevel = 3, ...args: any[]): void {
-        if (logLevel > Logger.logLevel) {
+        if (logLevel > window.__FF_GLOBAL_LOG_LEVEL__) {
             return;
         }
 
         switch (logLevel) {
-        case 1:
+        case LogLevel.Error:
             console.error(...args);
             break;
-        case 2:
+        case LogLevel.Warning:
             console.warn(...args);
             break;
-        case 3:
+        case LogLevel.Info:
             console.log(...args);
             break;
         }
     }
 
     static setLogLevel(logLevel: LogLevel | number): void {
-        Logger.logLevel = logLevel;
+        window.__FF_GLOBAL_LOG_LEVEL__ = logLevel;
     }
 
     static logError(...args: any[]): void {
