@@ -1,4 +1,4 @@
-#embeddedElem {
+#ei-main {
     position: fixed;
     width: 100vw;
     height: 100vh;
@@ -7,7 +7,7 @@
     background: rgba(30, 33, 38, .65);
 }
 
-#embeddedBackgroundElem {
+#ei-background {
     position: fixed;
     display: flex;
     flex-direction: column;
@@ -19,38 +19,38 @@
     border-radius: 10px;
 }
 
-#embeddedSubmissionContainer {
+#ei-submission-container {
     -webkit-user-drag: none;
 }
 
-.embeddedSubmissionImg {
+.ei-submission-img {
     max-width: inherit;
     max-height: inherit;
     border-radius: 10px;
     user-select: none;
 }
 
-#embeddedButtonsContainer {
+#ei-button-container {
     position: relative;
     margin-top: 20px;
     margin-bottom: 20px;
     margin-left: 20px;
 }
 
-#embeddedButtonsWrapper {
+#ei-button-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-#previewLoadingSpinnerContainer {
+#ei-preview-spinner-container {
     position: absolute;
     top: 50%;
     right: 0;
     transform: translateY(-50%);
 }
 
-.embeddedButton {
+.ei-button {
     margin-left: 4px;
     margin-right: 4px;
     user-select: none;

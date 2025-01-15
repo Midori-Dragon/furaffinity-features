@@ -64,7 +64,7 @@ const matchList = new window.FAMatchList(customSettings);
 matchList.matches = ['net/browse', 'net/user', 'net/gallery', 'net/search', 'net/favorites', 'net/scraps', 'net/controls/favorites', 'net/controls/submissions', 'net/msg/submissions', 'd.furaffinity.net'];
 matchList.runInIFrame = true;
 if (matchList.hasMatch) {
-    const page = new window.FACustomPage('d.furaffinity.net', 'eidownload');
+    const page = new window.FACustomPage('d.furaffinity.net', 'ei-download');
     let pageDownload = false;
     page.onopen = (): void => {
         downloadImage();

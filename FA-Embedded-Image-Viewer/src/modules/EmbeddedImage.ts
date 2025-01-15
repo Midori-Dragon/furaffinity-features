@@ -22,8 +22,8 @@ export class EmbeddedImage {
         this.embeddedElem = document.createElement('div');
 
         this.createElements(figure);
-        const submissionContainer = document.getElementById('embeddedSubmissionContainer')!;
-        const previewLoadingSpinnerContainer = document.getElementById('previewLoadingSpinnerContainer')!;
+        const submissionContainer = document.getElementById('ei-submission-container')!;
+        const previewLoadingSpinnerContainer = document.getElementById('ei-preview-spinner-container')!;
 
         this.loadingSpinner = new window.FALoadingSpinner(submissionContainer);
         this.loadingSpinner.delay = loadingSpinSpeedSetting.value;
@@ -42,7 +42,7 @@ export class EmbeddedImage {
     }
 
     static get embeddedExists(): boolean {
-        return document.getElementById('embeddedElem') != null;
+        return document.getElementById('ei-main') != null;
     }
 
     private _onDocumentClick(event: Event): void {
@@ -69,7 +69,7 @@ export class EmbeddedImage {
 
     createElements(figure: HTMLElement): void {
         // Create the main container for the embedded element
-        this.embeddedElem.id = 'embeddedElem';
+        this.embeddedElem.id = 'ei-main';
         this.embeddedElem.innerHTML = EmbeddedHTML.html;
         const ddmenu = document.getElementById('ddmenu')!;
         ddmenu.appendChild(this.embeddedElem);
@@ -82,7 +82,7 @@ export class EmbeddedImage {
         });
 
         // Get the submission container element
-        const submissionContainer = document.getElementById('embeddedSubmissionContainer')!;
+        const submissionContainer = document.getElementById('ei-submission-container')!;
 
         // Set target attribute for opening in new tab based on settings
         if (openInNewTabSetting.value) {
@@ -97,7 +97,7 @@ export class EmbeddedImage {
             const galleryLink = trimEnd(userLink, '/').replace('user', 'gallery');
             const scrapsLink = trimEnd(userLink, '/').replace('user', 'scraps');
             if (!window.location.toString().includes(userLink) && !window.location.toString().includes(galleryLink) && !window.location.toString().includes(scrapsLink)) {
-                const openGalleryButton = document.getElementById('embeddedOpenGalleryButton')!;
+                const openGalleryButton = document.getElementById('ei-open-gallery-button')!;
                 openGalleryButton.style.display = 'block';
                 openGalleryButton.setAttribute('href', galleryLink);
                 if (openInNewTabSetting.value) {
@@ -108,7 +108,7 @@ export class EmbeddedImage {
         }
 
         const link = figure.querySelector('a[href]')?.getAttribute('href');
-        const openButton = document.getElementById('embeddedOpenButton')!;
+        const openButton = document.getElementById('ei-open-button')!;
         openButton.setAttribute('href', link ?? '');
         if (openInNewTabSetting.value) {
             openButton.setAttribute('target', '_blank');
@@ -119,10 +119,10 @@ export class EmbeddedImage {
             }
         };
 
-        const closeButton = document.getElementById('embeddedCloseButton')!;
+        const closeButton = document.getElementById('ei-close-button')!;
         closeButton.addEventListener('click', this.remove.bind(this));
 
-        const previewLoadingSpinnerContainer = document.getElementById('previewLoadingSpinnerContainer')!;
+        const previewLoadingSpinnerContainer = document.getElementById('ei-preview-spinner-container')!;
         previewLoadingSpinnerContainer.onclick = (): void => {
             this.previewLoadingSpinner.visible = false;
         };
@@ -146,12 +146,12 @@ export class EmbeddedImage {
                 }
             }
 
-            const submissionContainer = document.getElementById('embeddedSubmissionContainer')!;
+            const submissionContainer = document.getElementById('ei-submission-container')!;
             const faImageViewer = new window.FAImageViewer(submissionContainer, imgSrc, prevSrc);
-            faImageViewer.faImage.id = 'embeddedSubmissionImg';
-            faImageViewer.faImagePreview.id = 'previewSubmissionImg';
-            faImageViewer.faImage.classList.add('embeddedSubmissionImg');
-            faImageViewer.faImagePreview.classList.add('embeddedSubmissionImg');
+            faImageViewer.faImage.id = 'ei-submission-img';
+            faImageViewer.faImagePreview.id = 'ei-preview-submission-img';
+            faImageViewer.faImage.classList.add('ei-submission-img');
+            faImageViewer.faImagePreview.classList.add('ei-submission-img');
             faImageViewer.faImage.style.maxWidth = faImageViewer.faImagePreview.style.maxWidth = window.innerWidth - 20 * 2 + 'px';
             faImageViewer.faImage.style.maxHeight = faImageViewer.faImagePreview.style.maxHeight = window.innerHeight - ddmenu.clientHeight - 38 * 2 - 20 * 2 - 100 + 'px';
             faImageViewer.onImageLoadStart = (): void => {
@@ -175,7 +175,7 @@ export class EmbeddedImage {
 
             const result = getFavKey(doc);
             if (result != null) {
-                const favButton = document.getElementById('embeddedFavButton')!;
+                const favButton = document.getElementById('ei-fav-button')!;
                 favButton.textContent = result.isFav ? '+Fav' : '-Fav';
                 favButton.setAttribute('isFav', result.isFav.toString());
                 favButton.setAttribute('key', result.favKey ?? '');
@@ -186,7 +186,7 @@ export class EmbeddedImage {
                 });
             }
 
-            const downloadButton = document.getElementById('embeddedDownloadButton')!;
+            const downloadButton = document.getElementById('ei-download-button')!;
             downloadButton.addEventListener('click', () => {
                 if (this.downloadRequestRunning) {
                     return;
@@ -197,7 +197,7 @@ export class EmbeddedImage {
                 loadingTextSpinner.visible = true;
                 const iframe = document.createElement('iframe');
                 iframe.style.display = 'none';
-                iframe.src = this.submissionImg!.src + '?eidownload';
+                iframe.src = this.submissionImg!.src + '?ei-download';
                 iframe.addEventListener('load', () => {
                     this.downloadRequestRunning = false;
                     loadingTextSpinner.visible = false;
@@ -209,7 +209,7 @@ export class EmbeddedImage {
     }
 
     async doFavRequest(sid: string): Promise<void> {
-        const favButton = document.getElementById('embeddedFavButton')!;
+        const favButton = document.getElementById('ei-fav-button')!;
 
         // Set the favorite request running flag to true
         this.favRequestRunning = true;
