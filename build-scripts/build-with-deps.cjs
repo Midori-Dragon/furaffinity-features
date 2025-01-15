@@ -172,8 +172,8 @@ async function main() {
     const outputPath = path.join(distFolder, 'bundle.user.js');
 
     try {
-        const moduleName = path.basename(path.dirname(path.dirname(mainBuildFilePath)));
-        console.log(`${colors.cyan}Building moduleName...${colors.reset}`);
+        const moduleName = path.basename(path.dirname(webpackConfigPath));
+        console.log(`${colors.cyan}Building ${moduleName}...${colors.reset}`);
         const stats = await buildModule(webpackConfigPath);
 
         const mainBuildFilePath = stats.outputPath + '\\bundle.user.js';
