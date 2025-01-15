@@ -172,12 +172,12 @@ async function main() {
     const outputPath = path.join(distFolder, 'bundle.user.js');
 
     try {
-        console.log(`${colors.cyan}Building main module...${colors.reset}`);
+        const moduleName = path.basename(path.dirname(path.dirname(mainBuildFilePath)));
+        console.log(`${colors.cyan}Building moduleName...${colors.reset}`);
         const stats = await buildModule(webpackConfigPath);
 
         const mainBuildFilePath = stats.outputPath + '\\bundle.user.js';
-        const moduleName = path.basename(path.dirname(path.dirname(mainBuildFilePath)));
-        console.log(`   ${colors.green}Main build file created at: ${colors.blue}${mainBuildFilePath}${colors.reset}\n`);
+        console.log(`   ${colors.green}${moduleName} build successfully${colors.reset}\n`);
 
         console.log(`${colors.cyan}Extracting dependencies from ${moduleName}...${colors.reset}`);
         const { banner, dependencies } = await extractDependencies(mainBuildFilePath, moduleName);
