@@ -12,11 +12,11 @@ export class Gallery {
         this._semaphore = semaphore;
     }
 
-    public static get hardLink(): string {
+    static get hardLink(): string {
         return FuraffinityRequests.fullUrl + '/gallery/';
     }
 
-    public async getFiguresBetweenIds(username: string, fromId?: string | number, toId?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
+    async getFiguresBetweenIds(username: string, fromId?: string | number, toId?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
         fromId = convertToNumber(fromId);
         toId = convertToNumber(toId);
         
@@ -29,7 +29,7 @@ export class Gallery {
         }
     }
 
-    public async getFiguresInFolderBetweenIds(username: string, folderId?: string | number, fromId?: string | number, toId?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
+    async getFiguresInFolderBetweenIds(username: string, folderId?: string | number, fromId?: string | number, toId?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
         folderId = convertToNumber(folderId);
         fromId = convertToNumber(fromId);
         toId = convertToNumber(toId);
@@ -43,7 +43,7 @@ export class Gallery {
         }
     }
 
-    public async getFiguresBetweenIdsBetweenPages(username: string, fromId?: string | number, toId?: string | number, fromPageNumber?: string | number, toPageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
+    async getFiguresBetweenIdsBetweenPages(username: string, fromId?: string | number, toId?: string | number, fromPageNumber?: string | number, toPageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
         fromId = convertToNumber(fromId);
         toId = convertToNumber(toId);
         fromPageNumber = convertToNumber(fromPageNumber);
@@ -58,7 +58,7 @@ export class Gallery {
         }
     }
 
-    public async getFiguresInFolderBetweenIdsBetweenPages(username: string, folderId?: string | number, fromId?: string | number, toId?: string | number, fromPageNumber?: string | number, toPageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
+    async getFiguresInFolderBetweenIdsBetweenPages(username: string, folderId?: string | number, fromId?: string | number, toId?: string | number, fromPageNumber?: string | number, toPageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
         folderId = convertToNumber(folderId);
         fromId = convertToNumber(fromId);
         toId = convertToNumber(toId);
@@ -74,7 +74,7 @@ export class Gallery {
         }
     }
 
-    public async getFiguresBetweenPages(username: string, fromPageNumber?: string | number, toPageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
+    async getFiguresBetweenPages(username: string, fromPageNumber?: string | number, toPageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
         fromPageNumber = convertToNumber(fromPageNumber);
         toPageNumber = convertToNumber(toPageNumber);
         
@@ -87,7 +87,7 @@ export class Gallery {
         }
     }
 
-    public async getFiguresInFolderBetweenPages(username: string, folderId?: string | number, fromPageNumber?: string | number, toPageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
+    async getFiguresInFolderBetweenPages(username: string, folderId?: string | number, fromPageNumber?: string | number, toPageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
         folderId = convertToNumber(folderId);
         fromPageNumber = convertToNumber(fromPageNumber);
         toPageNumber = convertToNumber(toPageNumber);
@@ -101,26 +101,26 @@ export class Gallery {
         }
     }
 
-    public async getFigures(username: string, pageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[]> {
+    async getFigures(username: string, pageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[]> {
         pageNumber = convertToNumber(pageNumber);
         
         return await WaitAndCallAction.callFunctionAsync(GalleryRequests.getGalleryFigures, [username, undefined, pageNumber, GalleryType.GALLERY, this._semaphore], action, delay);
     }
 
-    public async getFiguresInFolder(username: string, folderId?: string | number, pageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[]> {
+    async getFiguresInFolder(username: string, folderId?: string | number, pageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[]> {
         folderId = convertToNumber(folderId);
         pageNumber = convertToNumber(pageNumber);
         
         return await WaitAndCallAction.callFunctionAsync(GalleryRequests.getGalleryFigures, [username, folderId, pageNumber, GalleryType.GALLERY, this._semaphore], action, delay);
     }
 
-    public async getPage(username: string, pageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
+    async getPage(username: string, pageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
         pageNumber = convertToNumber(pageNumber);
         
         return await WaitAndCallAction.callFunctionAsync(Page.getGalleryPage, [username, undefined, pageNumber, GalleryType.GALLERY, this._semaphore], action, delay);
     }
 
-    public async getPageInFolder(username: string, folderId?: string | number, pageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
+    async getPageInFolder(username: string, folderId?: string | number, pageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
         folderId = convertToNumber(folderId);
         pageNumber = convertToNumber(pageNumber);
 

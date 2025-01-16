@@ -12,7 +12,7 @@ export class NewSubmissions {
         this._semaphore = semaphore;
     }
 
-    public static get hardLink(): string {
+    static get hardLink(): string {
         return FuraffinityRequests.fullUrl + '/msg/submissions/';
     }
 

@@ -9,10 +9,10 @@ import { Page } from '../components/GalleryRequests/Page';
 import { Logger } from '../../../GlobalUtils/src/utils/Logger';
 
 export class GalleryRequests {
-    public readonly Gallery: Gallery;
-    public readonly Scraps: Scraps;
-    public readonly Favorites: Favorites;
-    public readonly Journals: Journals;
+    readonly Gallery: Gallery;
+    readonly Scraps: Scraps;
+    readonly Favorites: Favorites;
+    readonly Journals: Journals;
 
     private readonly _semaphore: Semaphore;
 
@@ -24,7 +24,7 @@ export class GalleryRequests {
         this.Journals = new Journals(this._semaphore);
     }
 
-    public static async getGalleryFiguresTillId(username: string, folderId: number | undefined, toId: number | undefined, fromPage: number | undefined, galleryType: GalleryType, semaphore: Semaphore): Promise<HTMLElement[][]> {
+    static async getGalleryFiguresTillId(username: string, folderId: number | undefined, toId: number | undefined, fromPage: number | undefined, galleryType: GalleryType, semaphore: Semaphore): Promise<HTMLElement[][]> {
         if (toId == null || toId <= 0) {
             Logger.logError('No toId given');
             return [];
@@ -59,7 +59,7 @@ export class GalleryRequests {
         return allFigures;
     }
 
-    public static async getGalleryFiguresSinceId(username: string, folderId: number | undefined, fromId: number | undefined, toPage: number | undefined, galleryType: GalleryType, semaphore: Semaphore): Promise<HTMLElement[][]> {
+    static async getGalleryFiguresSinceId(username: string, folderId: number | undefined, fromId: number | undefined, toPage: number | undefined, galleryType: GalleryType, semaphore: Semaphore): Promise<HTMLElement[][]> {
         if (fromId == null || fromId <= 0) {
             Logger.logError('No fromId given');
             return [];
@@ -124,7 +124,7 @@ export class GalleryRequests {
         return allFigures;
     }
 
-    public static async getGalleryFiguresBetweenIds(username: string, folderId: number | undefined, fromId: number | undefined, toId: number | undefined, fromPage: number | undefined, toPage: number | undefined, galleryType: GalleryType, semaphore: Semaphore, percentId?: string | number): Promise<HTMLElement[][]> {
+    static async getGalleryFiguresBetweenIds(username: string, folderId: number | undefined, fromId: number | undefined, toId: number | undefined, fromPage: number | undefined, toPage: number | undefined, galleryType: GalleryType, semaphore: Semaphore, percentId?: string | number): Promise<HTMLElement[][]> {
         if (fromId == null || fromId <= 0) {
             Logger.logError('No fromId given');
             return [];
@@ -180,7 +180,7 @@ export class GalleryRequests {
         return allFigures;
     }
 
-    public static async getGalleryFiguresTillPage(username: string, folderId: number | undefined, toPageNumber: number | undefined, galleryType: GalleryType, semaphore: Semaphore, percentId?: string | number): Promise<HTMLElement[][]> {
+    static async getGalleryFiguresTillPage(username: string, folderId: number | undefined, toPageNumber: number | undefined, galleryType: GalleryType, semaphore: Semaphore, percentId?: string | number): Promise<HTMLElement[][]> {
         if (toPageNumber == null || toPageNumber <= 0) {
             Logger.logWarning('toPageNumber must be greater than 0. Using default 1 instead.');
             toPageNumber = 1;
@@ -201,7 +201,7 @@ export class GalleryRequests {
         return allFigures;
     }
 
-    public static async getGalleryFiguresSincePage(username: string, folderId: number | undefined, fromPageNumber: number | undefined, galleryType: GalleryType, semaphore: Semaphore): Promise<HTMLElement[][]> {
+    static async getGalleryFiguresSincePage(username: string, folderId: number | undefined, fromPageNumber: number | undefined, galleryType: GalleryType, semaphore: Semaphore): Promise<HTMLElement[][]> {
         if (fromPageNumber == null ||  fromPageNumber <= 0) {
             Logger.logWarning('fromPageNumber must be greater than 0. Using default 1 instead.');
             fromPageNumber = 1;
@@ -228,7 +228,7 @@ export class GalleryRequests {
         return allFigures;
     }
 
-    public static async getGalleryFiguresBetweenPages(username: string, folderId: number | undefined, fromPageNumber: number | undefined, toPageNumber: number | undefined, galleryType: GalleryType, semaphore: Semaphore, percentId?: string | number): Promise<HTMLElement[][]> {
+    static async getGalleryFiguresBetweenPages(username: string, folderId: number | undefined, fromPageNumber: number | undefined, toPageNumber: number | undefined, galleryType: GalleryType, semaphore: Semaphore, percentId?: string | number): Promise<HTMLElement[][]> {
         if (fromPageNumber == null || fromPageNumber <= 0) {
             Logger.logWarning('fromPageNumber must be greater than 0. Using default 1 instead.');
             fromPageNumber = 1;
@@ -255,7 +255,7 @@ export class GalleryRequests {
         return allFigures;
     }
 
-    public static async getGalleryFigures(username: string, folderId: number | undefined, pageNumber: number | undefined, galleryType: GalleryType, semaphore: Semaphore): Promise<HTMLElement[]> {
+    static async getGalleryFigures(username: string, folderId: number | undefined, pageNumber: number | undefined, galleryType: GalleryType, semaphore: Semaphore): Promise<HTMLElement[]> {
         if (pageNumber == null || pageNumber <= 0) {
             Logger.logWarning('No pageNumber given. Using default value of 1.');
             pageNumber = 1;

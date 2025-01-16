@@ -1,7 +1,7 @@
 import { PercentHelper } from '../utils/PercentHelper';
 
 export class WaitAndCallAction {
-    public delay = 10;
+    delay = 10;
 
     private readonly _action: (percentId?: number) => void;
     private _intervalId: number | undefined;
@@ -14,7 +14,7 @@ export class WaitAndCallAction {
         }
     }
 
-    public start(): number | undefined {
+    start(): number | undefined {
         if (this._action != null && this._running === false) {
             this._running = true;
             // Start the interval
@@ -29,7 +29,7 @@ export class WaitAndCallAction {
         }
     }
 
-    public stop(): void {
+    stop(): void {
         if (this._running) {
             this._running = false;
             // Stop the interval
@@ -42,7 +42,7 @@ export class WaitAndCallAction {
         }
     }
 
-    public static async callFunctionAsync<T extends (...args: any[]) => any>(functionToCall: T, params: Parameters<T>, action?: (percentId?: string | number) => void, delay?: number, usePercent = false): Promise<ReturnType<T>> {
+    static async callFunctionAsync<T extends (...args: any[]) => any>(functionToCall: T, params: Parameters<T>, action?: (percentId?: string | number) => void, delay?: number, usePercent = false): Promise<ReturnType<T>> {
         if (action == null) {
             return await functionToCall(...params);
         }
@@ -61,7 +61,7 @@ export class WaitAndCallAction {
         return result;
     }
 
-    public static callFunction<T extends (...args: any[]) => any>(functionToCall: T, params: Parameters<T>, action?: (percentId?: string | number) => void, delay?: number, usePercent = false): ReturnType<T> {
+    static callFunction<T extends (...args: any[]) => any>(functionToCall: T, params: Parameters<T>, action?: (percentId?: string | number) => void, delay?: number, usePercent = false): ReturnType<T> {
         if (action == null) {
             return functionToCall(...params);
         }

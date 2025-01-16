@@ -1,7 +1,7 @@
 export class Semaphore {
-    public maxConcurrency: number;
-    public currentConcurrency: number;
-    public waitingQueue: (() => void)[];
+    maxConcurrency: number;
+    currentConcurrency: number;
+    waitingQueue: (() => void)[];
     
     constructor(maxConcurrency: number) {
         this.maxConcurrency = maxConcurrency;
@@ -9,7 +9,7 @@ export class Semaphore {
         this.waitingQueue = [];
     }
 
-    public acquire(): Promise<void> {
+    acquire(): Promise<void> {
         return new Promise((resolve) => {
             if (this.currentConcurrency < this.maxConcurrency) {
                 // There is room, increment the current concurrency and resolve the promise
@@ -22,7 +22,7 @@ export class Semaphore {
         });
     }
 
-    public release(): void {
+    release(): void {
         if (this.waitingQueue.length > 0) {
             // There are waiting tasks, let the next one run
             const nextResolve = this.waitingQueue.shift();

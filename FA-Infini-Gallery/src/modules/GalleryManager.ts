@@ -6,18 +6,15 @@ import { SearchPage } from '../components/SearchPage';
 import { IGalleryPage } from './IGalleryPage';
 
 export class GalleryManager {
-    public pageNo: number;
-    public currDataFavId: string;
-    public isGallery: boolean;
-    public isFavorites: boolean;
-    public isScraps: boolean;
-    public isBrowse: boolean;
-    public isSearch: boolean;
+    pageNo = 1;
+    currDataFavId = '';
+    isGallery: boolean;
+    isFavorites: boolean;
+    isScraps: boolean;
+    isBrowse: boolean;
+    isSearch: boolean;
 
     constructor() {
-        this.pageNo = 1; // Initial page number
-        this.currDataFavId = '';
-
         this.isGallery = window.location.toString().includes('net/gallery');
         
         this.isFavorites = window.location.toString().includes('net/favorites');
@@ -35,7 +32,7 @@ export class GalleryManager {
         this.isSearch = window.location.toString().includes('net/search');
     }
 
-    public async loadNextPage(): Promise<void> {
+    async loadNextPage(): Promise<void> {
         this.pageNo++;
         
         if (this.isFavorites) {

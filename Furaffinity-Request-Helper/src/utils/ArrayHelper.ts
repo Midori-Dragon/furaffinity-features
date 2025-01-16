@@ -3,7 +3,7 @@ export class IdArray {
         throw new Error('The IdArray class is static and cannot be instantiated.');
     }
 
-    public static getTillId(collection: HTMLElement[], toId: string | number, attributeName = 'id'): HTMLElement[] {
+    static getTillId(collection: HTMLElement[], toId: string | number, attributeName = 'id'): HTMLElement[] {
         const result = [];
         toId = toId.toString();
         // Iterate over the collection and break when the toId is found.
@@ -19,7 +19,7 @@ export class IdArray {
         return result;
     }
 
-    public static getSinceId(collection: HTMLElement[], fromId: string | number, attributeName = 'id'): HTMLElement[] {
+    static getSinceId(collection: HTMLElement[], fromId: string | number, attributeName = 'id'): HTMLElement[] {
         // Convert the collection to an array and reverse it for processing from the end
         const array = collection;
         array.reverse();
@@ -44,7 +44,7 @@ export class IdArray {
         return result;
     }
 
-    public static getBetweenIds(collection: HTMLElement[], fromId: string | number, toId: string | number, attributeName = 'id'): HTMLElement[] {
+    static getBetweenIds(collection: HTMLElement[], fromId: string | number, toId: string | number, attributeName = 'id'): HTMLElement[] {
         const array = collection;
         let startIndex = -1; // Index of the first element with ID equal to or greater than fromId
         let endIndex = -1; // Index of the last element with ID equal to or less than toId
@@ -90,7 +90,7 @@ export class IdArray {
         return result;
     }
 
-    public static containsId(collection: HTMLElement[], id: string | number, attributeName = 'id'): boolean {
+    static containsId(collection: HTMLElement[], id: string | number, attributeName = 'id'): boolean {
         id = id.toString();
         for (const elem of collection) {
             // The id attribute is a string, so we need to remove the "sid-" prefix to compare it to the given id

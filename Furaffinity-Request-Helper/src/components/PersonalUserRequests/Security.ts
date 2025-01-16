@@ -9,7 +9,7 @@ export class Security {
         this._semaphore = semaphore;
     }
 
-    public static get hardLinks(): Record<string, string> {
+    static get hardLinks(): Record<string, string> {
         return {
             sessions: FuraffinityRequests.fullUrl + '/controls/sessions/logins/',
             logs: FuraffinityRequests.fullUrl + '/controls/logs/',

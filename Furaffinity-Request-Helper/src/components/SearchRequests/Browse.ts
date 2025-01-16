@@ -12,25 +12,25 @@ export class Browse {
         this._semaphore = semaphore;
     }
 
-    public static get hardLink(): string {
+    static get hardLink(): string {
         return FuraffinityRequests.fullUrl + '/browse/';
     }
 
-    public get newBrowseOptions(): BrowseOptions {
+    get newBrowseOptions(): BrowseOptions {
         return new BrowseOptions();
     }
-    public static get newBrowseOptions(): BrowseOptions {
+    static get newBrowseOptions(): BrowseOptions {
         return new BrowseOptions();
     }
 
-    public get BrowseOptions(): typeof BrowseOptions {
+    get BrowseOptions(): typeof BrowseOptions {
         return BrowseOptions;
     }
-    public static get BrowseOptions(): typeof BrowseOptions {
+    static get BrowseOptions(): typeof BrowseOptions {
         return BrowseOptions;
     }
 
-    public async getFiguresBetweenIds(fromId?: string | number, toId?: string | number, browseOptions?: BrowseOptions, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
+    async getFiguresBetweenIds(fromId?: string | number, toId?: string | number, browseOptions?: BrowseOptions, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
         fromId = convertToNumber(fromId);
         toId = convertToNumber(toId);
         
@@ -43,7 +43,7 @@ export class Browse {
         }
     }
 
-    public async getFiguresBetweenIdsBetweenPages(fromId?: string | number, toId?: string | number, fromPageNumber?: string | number, toPageNumber?: string | number, browseOptions?: BrowseOptions, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
+    async getFiguresBetweenIdsBetweenPages(fromId?: string | number, toId?: string | number, fromPageNumber?: string | number, toPageNumber?: string | number, browseOptions?: BrowseOptions, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
         fromId = convertToNumber(fromId);
         toId = convertToNumber(toId);
         fromPageNumber = convertToNumber(fromPageNumber);
@@ -58,7 +58,7 @@ export class Browse {
         }
     }
 
-    public async getFiguresBetweenPages(fromPageNumber?: string | number, toPageNumber?: string | number, browseOptions?: BrowseOptions, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
+    async getFiguresBetweenPages(fromPageNumber?: string | number, toPageNumber?: string | number, browseOptions?: BrowseOptions, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
         fromPageNumber = convertToNumber(fromPageNumber);
         toPageNumber = convertToNumber(toPageNumber);
         
@@ -71,13 +71,13 @@ export class Browse {
         }
     }
 
-    public async getFigures(pageNumber?: string | number, browseOptions?: BrowseOptions, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[]> {
+    async getFigures(pageNumber?: string | number, browseOptions?: BrowseOptions, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[]> {
         pageNumber = convertToNumber(pageNumber);
         
         return await WaitAndCallAction.callFunctionAsync(SearchRequests.getBrowseFigures, [pageNumber, browseOptions, this._semaphore], action, delay);
     }
 
-    public async getPage(pageNumber?: string | number, browseOptions?: BrowseOptions, action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
+    async getPage(pageNumber?: string | number, browseOptions?: BrowseOptions, action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
         pageNumber = convertToNumber(pageNumber);
         
         return await WaitAndCallAction.callFunctionAsync(Page.getBrowsePage, [pageNumber, browseOptions, this._semaphore], action, delay);
@@ -85,14 +85,14 @@ export class Browse {
 }
 
 export class BrowseOptions {
-    public category: number | undefined;
-    public type: number | undefined;
-    public species: number | undefined;
-    public gender: number | undefined;
-    public results: number | undefined;
-    public ratingGeneral: boolean;
-    public ratingMature: boolean;
-    public ratingAdult: boolean;
+    category: number | undefined;
+    type: number | undefined;
+    species: number | undefined;
+    gender: number | undefined;
+    results: number | undefined;
+    ratingGeneral = true;
+    ratingMature = true;
+    ratingAdult = true;
 
     constructor() {
         this.category = BrowseOptions.category['all'];
@@ -100,12 +100,9 @@ export class BrowseOptions {
         this.species = BrowseOptions.species['any'];
         this.gender = BrowseOptions.gender['any'];
         this.results = BrowseOptions.results['72'];
-        this.ratingGeneral = true;
-        this.ratingMature = true;
-        this.ratingAdult = true;
     }
 
-    public static get category(): Record<string, number> {
+    static get category(): Record<string, number> {
         return {
             'all': 1,
             'artwork-digital': 2,
@@ -141,7 +138,7 @@ export class BrowseOptions {
             'other': 31
         };
     }
-    public static get type(): Record<string, number> {
+    static get type(): Record<string, number> {
         return {
             'all': 1,
             'abstract': 2,
@@ -196,7 +193,7 @@ export class BrowseOptions {
             'other-music': 200
         };
     }
-    public static get species(): Record<string, number> {
+    static get species(): Record<string, number> {
         return {
             'any': 1,
             'airborne-vehicle': 10001,
@@ -598,7 +595,7 @@ export class BrowseOptions {
             'zebra': 6071
         };
     }
-    public static get gender(): Record<string, number> {
+    static get gender(): Record<string, number> {
         return {
             'any': 0,
             'male': 2,
@@ -613,7 +610,7 @@ export class BrowseOptions {
             'not-specified': 7
         };
     }
-    public static get results(): Record<string, number> {
+    static get results(): Record<string, number> {
         return {
             '24': 24,
             '48': 48,

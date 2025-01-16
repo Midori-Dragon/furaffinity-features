@@ -1,27 +1,19 @@
 import { ILoadingSpinner } from '../modules/ILoadingSpinner';
 
 export class LoadingSpinner implements ILoadingSpinner {
-    private _delay: number;
-    private _size: number;
-    private _spinnerThickness: number;
-    private _spinnerLength: number;
-    private _linearSpin: boolean;
-    private _animationCurve: string;
-    private _forecolorHex: string;
-    private _backcolorHex: string;
+    private _delay = 1000;
+    private _size = 60;
+    private _spinnerThickness = 4;
+    private _spinnerLength = 1;
+    private _linearSpin = false;
+    private _animationCurve = 'cubic-bezier(.53,.24,.46,.83)';
+    private _forecolorHex = '#8941de';
+    private _backcolorHex = '#f3f3f3';
     private _baseElem: HTMLElement;    
     private _spinner: HTMLDivElement;
     private _spinnerContainer: HTMLDivElement;
 
     constructor(baseElem: HTMLElement) {
-        this._delay = 1000;
-        this._size = 60;
-        this._spinnerThickness = 4;
-        this._spinnerLength = 1;
-        this._linearSpin = false;
-        this._animationCurve = 'cubic-bezier(.53,.24,.46,.83)';
-        this._forecolorHex = '#8941de';
-        this._backcolorHex = '#f3f3f3';
         this._spinner = document.createElement('div');
         this._spinnerContainer = document.createElement('div');
 

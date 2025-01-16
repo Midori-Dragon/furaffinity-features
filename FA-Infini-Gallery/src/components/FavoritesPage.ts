@@ -3,9 +3,9 @@ import { IGalleryPage } from '../modules/IGalleryPage';
 import { createSeparatorElem, getFiguresFromPage, getUserNameFromUrl } from '../utils/Utils';
 
 export class FavoritesPage implements IGalleryPage {
-    public dataFavId: string;
-    public pageNo: number;
-    public gallery: HTMLElement;
+    dataFavId: string;
+    pageNo: number;
+    gallery: HTMLElement;
 
     constructor(dataFavId: string, pageNo: number) {
         this.dataFavId = dataFavId;
@@ -13,13 +13,13 @@ export class FavoritesPage implements IGalleryPage {
         this.gallery = document.querySelector('section[id*="gallery"]')!;
     }
 
-    public async getPage(): Promise<Document | undefined> {
+    async getPage(): Promise<Document | undefined> {
         const username = getUserNameFromUrl(window.location.toString());
         const page = await requestHelper.UserRequests.GalleryRequests.Favorites.getPage(username, this.dataFavId);
         return page;
     }
 
-    public async loadPage(): Promise<void> {
+    async loadPage(): Promise<void> {
         const page = await this.getPage();
         if (page == null) {
             throw new Error('No page found');

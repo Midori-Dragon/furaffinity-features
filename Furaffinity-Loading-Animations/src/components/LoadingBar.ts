@@ -1,13 +1,12 @@
 import { ILoadingSpinner } from '../modules/ILoadingSpinner';
-import { trimEnd } from '../utils/Utils';
+import trimEnd from '../../../GlobalUtils/src/utils/String-Functions/TrimEnd';
 
 export class LoadingBar implements ILoadingSpinner {
-    private _delay: number;
+    private _delay = 2000;
     private _baseElem: HTMLElement;
     private _loadingBar: HTMLDivElement;
 
     constructor(baseElem: HTMLElement) {
-        this._delay = 2000;
         this._loadingBar = document.createElement('div');
 
         if (!document.getElementById('flaloadingbarstyle')) {

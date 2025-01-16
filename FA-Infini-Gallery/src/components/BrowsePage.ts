@@ -1,17 +1,18 @@
+import trimEnd from '../../../GlobalUtils/src/utils/String-Functions/TrimEnd';
 import { requestHelper, showPageSeparatorSetting } from '../index';
 import { IGalleryPage } from '../modules/IGalleryPage';
-import { createSeparatorElem, getFiguresFromPage, trimEnd } from '../utils/Utils';
+import { createSeparatorElem, getFiguresFromPage } from '../utils/Utils';
 
 export class BrowsePage implements IGalleryPage {
-    public pageNo: number;
-    public gallery: HTMLElement;
+    pageNo: number;
+    gallery: HTMLElement;
 
     constructor(pageNo: number) {
         this.pageNo = pageNo;
         this.gallery = document.querySelector('section[id*="gallery"]')!;
     }
 
-    public async getPage(): Promise<Document | undefined> {
+    async getPage(): Promise<Document | undefined> {
         const page = await requestHelper.UserRequests.SearchRequests.Browse.getPage(this.pageNo, this.getBrowseOptions());
         return page;
     }
@@ -79,7 +80,7 @@ export class BrowsePage implements IGalleryPage {
         return currBrowseOptions;
     }
 
-    public async loadPage(): Promise<void> {
+    async loadPage(): Promise<void> {
         const page = await this.getPage();
         if (page == null) {
             throw new Error('No page found');

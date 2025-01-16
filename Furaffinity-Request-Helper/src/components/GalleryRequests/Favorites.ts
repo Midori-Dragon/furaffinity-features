@@ -13,11 +13,11 @@ export class Favorites {
         this.semaphore = semaphore;
     }
 
-    public static get hardLink(): string {
+    static get hardLink(): string {
         return FuraffinityRequests.fullUrl + '/favorites/';
     }
 
-    public async getFiguresBetweenIds(username: string, fromId?: string | number, toId?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
+    async getFiguresBetweenIds(username: string, fromId?: string | number, toId?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
         fromId = convertToNumber(fromId);
         toId = convertToNumber(toId);
         
@@ -30,7 +30,7 @@ export class Favorites {
         }
     }
 
-    public async getFiguresBetweenIdsBetweenPages(username: string, fromId?: string | number, toId?: string | number, fromDataFavId?: string | number, toDataFavId?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
+    async getFiguresBetweenIdsBetweenPages(username: string, fromId?: string | number, toId?: string | number, fromDataFavId?: string | number, toDataFavId?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
         fromId = convertToNumber(fromId);
         toId = convertToNumber(toId);
         fromDataFavId = convertToNumber(fromDataFavId);
@@ -45,7 +45,7 @@ export class Favorites {
         }
     }
 
-    public async getFiguresBetweenPages(username: string, fromDataFavId?: string | number, toDataFavId?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
+    async getFiguresBetweenPages(username: string, fromDataFavId?: string | number, toDataFavId?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
         fromDataFavId = convertToNumber(fromDataFavId);
         toDataFavId = convertToNumber(toDataFavId);
         
@@ -58,14 +58,14 @@ export class Favorites {
         }
     }
 
-    public async getFigures(username: string, fromDataFavId?: string | number, direction?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[]> {
+    async getFigures(username: string, fromDataFavId?: string | number, direction?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[]> {
         fromDataFavId = convertToNumber(fromDataFavId);
         direction = convertToNumber(direction);
         
         return await WaitAndCallAction.callFunctionAsync(getFavoritesFigures, [username, fromDataFavId, direction, this.semaphore], action, delay);
     }
 
-    public async getPage(username: string, fromDataFavId?: string | number, direction?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
+    async getPage(username: string, fromDataFavId?: string | number, direction?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
         fromDataFavId = convertToNumber(fromDataFavId);
         direction = convertToNumber(direction);
         

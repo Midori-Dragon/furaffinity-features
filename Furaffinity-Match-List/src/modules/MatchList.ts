@@ -2,12 +2,12 @@ import { Settings } from '../../../Furaffinity-Custom-Settings/src/modules/Setti
 import { GMInfo } from '../../../GlobalUtils/src/utils/Browser-API/GMInfo';
 
 export class MatchList {
-    public matches: string[];
-    public runInIFrame: boolean;
-    public logRunning: boolean;
-    public customSettings: Settings;
+    matches: string[];
+    runInIFrame: boolean;
+    logRunning: boolean;
+    customSettings: Settings;
 
-    public get hasMatch(): boolean {
+    get hasMatch(): boolean {
         if (!this.runInIFrame && this.isWindowIFrame) {
             return false;
         }
@@ -38,7 +38,7 @@ export class MatchList {
         return run;
     }
 
-    public get match(): string | undefined {
+    get match(): string | undefined {
         if (!this.runInIFrame && window.parent !== window) {
             return;
         }
@@ -46,7 +46,7 @@ export class MatchList {
         return this.matches.find(x => window.location.toString().includes(x));
     }
 
-    public get isWindowIFrame(): boolean {
+    get isWindowIFrame(): boolean {
         return window !== window.parent;
     }
 
@@ -57,11 +57,11 @@ export class MatchList {
         this.customSettings = customSettings;
     }
 
-    public addMatch(match: string): void {
+    addMatch(match: string): void {
         this.matches.push(match);
     }
 
-    public removeMatch(match: string): void {
+    removeMatch(match: string): void {
         this.matches = this.matches.filter(m => m !== match);
     }
 }

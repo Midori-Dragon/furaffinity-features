@@ -1,37 +1,25 @@
 import { ILoadingSpinner } from '../modules/ILoadingSpinner';
-import { trimEnd } from '../utils/Utils';
+import trimEnd from '../../../GlobalUtils/src/utils/String-Functions/TrimEnd';
 
 export class LoadingImage implements ILoadingSpinner {
-    public delay: number;
-    public doScaleImage: boolean;
-    public scaleChange: number;
-    public scaleChangeMax: number;
-    public scaleChangeMin: number;
-    public doRotateImage: boolean;
-    public rotateDegrees: number;
+    delay = 100;
+    doScaleImage = true;
+    scaleChange = 0.05;
+    scaleChangeMax = 1.2;
+    scaleChangeMin = 0.8;
+    doRotateImage = true;
+    rotateDegrees = 5;
 
     private _image: HTMLImageElement;
     private _imageContainer: HTMLDivElement;
-    private _isGrowing: boolean;
-    private _scale: number;
-    private _rotation: number;
-    private _size: number;
+    private _isGrowing = true;
+    private _scale = 1;
+    private _rotation = 0;
+    private _size = 60;
     private _intervalId: number | undefined;
     private _baseElem: HTMLElement;
 
     constructor(baseElem: HTMLElement) {
-        this.delay = 100;
-        this.doScaleImage = true;
-        this.scaleChange = 0.05;
-        this.scaleChangeMax = 1.2;
-        this.scaleChangeMin = 0.8;
-        this.doRotateImage = true;
-        this.rotateDegrees = 5;
-        
-        this._isGrowing = true;
-        this._scale = 1;
-        this._rotation = 0;
-        this._size = 60;
         this._image = document.createElement('img');
         this._image.src = 'https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png';
         this._imageContainer = document.createElement('div');

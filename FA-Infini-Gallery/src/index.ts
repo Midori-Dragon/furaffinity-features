@@ -4,6 +4,7 @@ import { FuraffinityRequests } from '../../Furaffinity-Request-Helper/src/module
 import { SettingType } from '../../Furaffinity-Custom-Settings/src/utils/SettingType';
 import { MatchList } from '../../Furaffinity-Match-List/src/modules/MatchList';
 import { LoadingSpinner } from '../../Furaffinity-Loading-Animations/src/components/LoadingSpinner';
+import { GMInfo } from '../../GlobalUtils/src/utils/Browser-API/GMInfo';
 
 declare global {
     interface Window {
@@ -16,13 +17,11 @@ declare global {
         FALoadingSpinner: typeof LoadingSpinner;
     }
 }
-// eslint-disable-next-line @typescript-eslint/naming-convention
-declare const GM_info: { script: { name: string } };
 
 const customSettings = new window.FACustomSettings();
 customSettings.extensionName = 'Extension Settings';
 customSettings.provider = 'Midori\'s Script Settings';
-customSettings.headerName = `${GM_info.script.name} Settings`;
+customSettings.headerName = `${GMInfo.scriptName} Settings`;
 
 export const showPageSeparatorSetting = customSettings.newSetting(window.FASettingType.Boolean, 'Page Separator');
 showPageSeparatorSetting.description = 'Set wether a Page Separator is shown for each new Page loaded. Default: Show Page Separators';

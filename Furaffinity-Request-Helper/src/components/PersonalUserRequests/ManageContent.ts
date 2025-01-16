@@ -11,7 +11,7 @@ export class ManageContent {
         this._semaphore = semaphore;
     }
 
-    public static get hardLinks(): Record<string, string> {
+    static get hardLinks(): Record<string, string> {
         return {
             submissions: FuraffinityRequests.fullUrl + '/controls/submissions/',
             folders: FuraffinityRequests.fullUrl + '/controls/folders/submissions/',

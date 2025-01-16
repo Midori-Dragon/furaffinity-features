@@ -8,35 +8,13 @@ import { SettingType, SettingClassMapping, SettingClassTypeMapping } from '../ut
 import { makeIdCompatible } from '../utils/Utils';
 
 export class Settings {
-    public headerName = 'Extension Settings';
-    public settings: Record<string, ISetting<SettingType>> = {};
+    headerName = 'Extension Settings';
+    settings: Record<string, ISetting<SettingType>> = {};
 
     private _extensionName = 'Extension Settings';
     private _extensionNameId = makeIdCompatible(this._extensionName);
     private _provider = 'Custom Furaffinity Settings';
     private _providerId = makeIdCompatible(this._provider);
-
-    public set extensionName(value: string) {
-        this._extensionName = value;
-        this._extensionNameId = makeIdCompatible(value);
-    }
-    public get extensionName(): string {
-        return this._extensionName;
-    }
-    public get extensionNameId(): string {
-        return this._extensionNameId;
-    }
-
-    public set provider(value: string) {
-        this._provider = value;
-        this._providerId = makeIdCompatible(value);
-    }
-    public get provider(): string {
-        return this._provider;
-    }
-    public get providerId(): string {
-        return this._providerId;
-    }
 
     private _settingClassMapping: SettingClassTypeMapping = {
         [SettingType.Number]: SettingNumber,
@@ -45,14 +23,38 @@ export class Settings {
         [SettingType.Text]: SettingText,
     };
 
-    public newSetting<T extends SettingType>(type: T, name: string): SettingClassMapping[T] {
+    get extensionName(): string {
+        return this._extensionName;
+    }
+    set extensionName(value: string) {
+        this._extensionName = value;
+        this._extensionNameId = makeIdCompatible(value);
+    }
+    
+    get extensionNameId(): string {
+        return this._extensionNameId;
+    }
+
+    get provider(): string {
+        return this._provider;
+    }
+    set provider(value: string) {
+        this._provider = value;
+        this._providerId = makeIdCompatible(value);
+    }
+    
+    get providerId(): string {
+        return this._providerId;
+    }
+
+    newSetting<T extends SettingType>(type: T, name: string): SettingClassMapping[T] {
         const classConstructor = this._settingClassMapping[type];
         const newSetting = new classConstructor(this.providerId, name) as SettingClassMapping[T];
         this.settings[name] = newSetting;
         return newSetting;
     }
 
-    public loadSettingsMenu(): void {
+    loadSettingsMenu(): void {
         try {
             this.addExSettingsMenu(this.extensionName, this.provider, this.extensionNameId, this.providerId);
             if (window.location.toString().includes('controls/settings')) {
@@ -66,7 +68,7 @@ export class Settings {
         }
     }
 
-    public loadSettings(headerName: string, settings: ISetting<SettingType>[]): void {
+    loadSettings(headerName: string, settings: ISetting<SettingType>[]): void {
         if (settings.length === 0) {
             return;
         }
@@ -107,7 +109,7 @@ export class Settings {
         content.appendChild(section);
     }
 
-    public toString(): string {
+    toString(): string {
         if (Object.keys(this.settings).length === 0) {
             return `${this.extensionName} has no settings.`;
         }

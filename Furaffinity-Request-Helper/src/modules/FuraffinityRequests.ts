@@ -8,11 +8,11 @@ import { SearchOptions } from '../components/SearchRequests/Search';
 import { Logger } from '../../../GlobalUtils/src/utils/Logger';
 
 export class FuraffinityRequests {
-    public UserRequests: UserRequests;
-    public PersonalUserRequests: PersonalUserRequests;
-    public SubmissionRequests: SubmissionRequests;
-    public static logLevel = 1;
-    public static Types = {
+    UserRequests: UserRequests;
+    PersonalUserRequests: PersonalUserRequests;
+    SubmissionRequests: SubmissionRequests;
+    static logLevel = 1;
+    static Types = {
         BrowseOptions: BrowseOptions,
         SearchOptions: SearchOptions
     };
@@ -29,17 +29,17 @@ export class FuraffinityRequests {
         this.SubmissionRequests = new SubmissionRequests(this._semaphore);
     }
 
-    public set maxAmountRequests(value: number) {
+    set maxAmountRequests(value: number) {
         if (this._semaphore.maxConcurrency === value) {
             return;
         }
         this._semaphore.maxConcurrency = value;
     }
-    public get maxAmountRequests(): number {
+    get maxAmountRequests(): number {
         return this._semaphore.maxConcurrency;
     }
 
-    public static set useHttps(value: boolean) {
+    static set useHttps(value: boolean) {
         if (FuraffinityRequests._useHttps === value) {
             return;
         }
@@ -50,15 +50,15 @@ export class FuraffinityRequests {
             FuraffinityRequests._httpsString = 'http://';
         }
     }
-    public static get useHttps(): boolean {
+    static get useHttps(): boolean {
         return FuraffinityRequests._useHttps;
     }
 
-    public static get fullUrl(): string {
+    static get fullUrl(): string {
         return FuraffinityRequests._httpsString + FuraffinityRequests._domain;
     }
 
-    public static async getHTML(url: string, semaphore: Semaphore, action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
+    static async getHTML(url: string, semaphore: Semaphore, action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
         if (url == null || url === '') {
             Logger.logError('No url given');
             return;
@@ -66,7 +66,7 @@ export class FuraffinityRequests {
         return await WaitAndCallAction.callFunctionAsync(getHTMLLocal, [url, semaphore], action, delay);
     }
 
-    public static async postHTML(url: string, payload: string[][] | Record<string, string> | string | URLSearchParams, semaphore: Semaphore, action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
+    static async postHTML(url: string, payload: string[][] | Record<string, string> | string | URLSearchParams, semaphore: Semaphore, action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
         if (url == null || url === '') {
             Logger.logError('No url given');
             return;

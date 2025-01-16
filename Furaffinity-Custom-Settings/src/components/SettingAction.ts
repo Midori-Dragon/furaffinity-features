@@ -3,35 +3,34 @@ import { makeIdCompatible } from '../utils/Utils';
 import { ISetting } from './ISetting';
 
 export class SettingAction implements ISetting<SettingType.Action> {
-    public id: string;
-    public type: SettingType.Action;
-    public name: string;
-    public description: string;
-    public defaultValue: SettingTypeMapping[SettingType.Action];
-    public settingElem: HTMLElement;
-    public action?: (source: HTMLElement) => void;
-
-    public get value(): SettingTypeMapping[SettingType.Action] {
-        return this._settingInputElem.textContent ?? '';
-    }
-    public set value(newValue: SettingTypeMapping[SettingType.Action]) {
-        this._settingInputElem.textContent = newValue;
-    }
+    id: string;
+    type: SettingType.Action;
+    name: string;
+    description = '';
+    defaultValue: SettingTypeMapping[SettingType.Action];
+    settingElem: HTMLElement;
+    action?: (source: HTMLElement) => void;
 
     private _settingInputElem: HTMLButtonElement;
 
     constructor(providerId: string, name: string) {
         this.name = name;
-        this.id = providerId + '_' + makeIdCompatible(this.name);
+        this.id = providerId + '-' + makeIdCompatible(this.name);
         this.type = SettingType.Action;
-        this.description = '';
         this.defaultValue = '';
 
         this.loadFromSyncedStorage();
         this.settingElem = this._settingInputElem = this.create();
     }
 
-    public create(): HTMLButtonElement {
+    get value(): SettingTypeMapping[SettingType.Action] {
+        return this._settingInputElem.textContent ?? '';
+    }
+    set value(newValue: SettingTypeMapping[SettingType.Action]) {
+        this._settingInputElem.textContent = newValue;
+    }
+
+    create(): HTMLButtonElement {
         const settingElem = document.createElement('button');
         settingElem.id = this.id;
         settingElem.type = 'button';
@@ -42,9 +41,9 @@ export class SettingAction implements ISetting<SettingType.Action> {
     }
 
     // eslint-disable-next-line @typescript-eslint/no-empty-function -- Actions don't have any saved data
-    public loadFromSyncedStorage(): void { }
+    loadFromSyncedStorage(): void { }
 
-    public toString(): string {
+    toString(): string {
         return `${this.name} = ${this.value}`;
     }
 }

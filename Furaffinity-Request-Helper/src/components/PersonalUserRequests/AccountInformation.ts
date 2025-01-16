@@ -9,7 +9,7 @@ export class AccountInformation {
         this._semaphore = semaphore;
     }
 
-    public static get hardLinks(): Record<string, string> {
+    static get hardLinks(): Record<string, string> {
         return {
             settings: FuraffinityRequests.fullUrl + '/controls/settings/',
             siteSettings: FuraffinityRequests.fullUrl + '/controls/site-settings/',

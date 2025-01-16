@@ -3,15 +3,15 @@ import { IGalleryPage } from '../modules/IGalleryPage';
 import { createSeparatorElem, getFiguresFromPage } from '../utils/Utils';
 
 export class SearchPage implements IGalleryPage {
-    public pageNo: number;
-    public gallery: HTMLElement;
+    pageNo: number;
+    gallery: HTMLElement;
 
     constructor(pageNo: number) {
         this.pageNo = pageNo;
         this.gallery = document.querySelector('section[id*="gallery"]')!;
     }
 
-    public async getPage(): Promise<Document | undefined> {
+    async getPage(): Promise<Document | undefined> {
         const page = await requestHelper.UserRequests.SearchRequests.Search.getPage(this.pageNo, this.getSearchOptions());
         return page;
     }
@@ -98,7 +98,7 @@ export class SearchPage implements IGalleryPage {
         return searchOptions;
     }
 
-    public async loadPage(): Promise<void> {
+    async loadPage(): Promise<void> {
         const page = await this.getPage();
         if (page == null) {
             throw new Error('No page found');

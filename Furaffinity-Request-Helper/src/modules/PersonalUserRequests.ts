@@ -6,11 +6,11 @@ import { ManageContent } from '../components/PersonalUserRequests/ManageContent'
 import { Security } from '../components/PersonalUserRequests/Security';
 
 export class PersonalUserRequests {
-    public readonly MessageRequests: Message;
-    public readonly AccountInformation: AccountInformation;
-    public readonly UserProfile: UserProfile;
-    public readonly ManageContent: ManageContent;
-    public readonly Security: Security;
+    readonly MessageRequests: Message;
+    readonly AccountInformation: AccountInformation;
+    readonly UserProfile: UserProfile;
+    readonly ManageContent: ManageContent;
+    readonly Security: Security;
 
     private readonly _semaphore: Semaphore;
 

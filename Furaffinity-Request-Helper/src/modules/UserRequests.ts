@@ -6,8 +6,8 @@ import { SearchRequests } from './SearchRequests';
 import { Logger } from '../../../GlobalUtils/src/utils/Logger';
 
 export class UserRequests {
-    public readonly GalleryRequests: GalleryRequests;
-    public readonly SearchRequests: SearchRequests;
+    readonly GalleryRequests: GalleryRequests;
+    readonly SearchRequests: SearchRequests;
 
     private readonly _semaphore: Semaphore;
 
@@ -17,7 +17,7 @@ export class UserRequests {
         this.SearchRequests = new SearchRequests(this._semaphore);
     }
 
-    public static get hardLinks(): Record<string, string> {
+    static get hardLinks(): Record<string, string> {
         return {
             user: FuraffinityRequests.fullUrl + '/user/',
             watch: FuraffinityRequests.fullUrl + '/watch/',
@@ -27,23 +27,23 @@ export class UserRequests {
         };
     }
 
-    public async getUserPage(username?: string, action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
+    async getUserPage(username?: string, action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
         return await WaitAndCallAction.callFunctionAsync(getUserPageLocal, [username, this._semaphore], action, delay);
     }
 
-    public async watchUser(username?: string, watchKey?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<boolean> {
+    async watchUser(username?: string, watchKey?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<boolean> {
         return await WaitAndCallAction.callFunctionAsync(watchUserLocal, [username, watchKey, this._semaphore], action, delay);
     }
 
-    public async unwatchUser(username?: string, unwatchKey?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<boolean> {
+    async unwatchUser(username?: string, unwatchKey?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<boolean> {
         return await WaitAndCallAction.callFunctionAsync(unwatchUserLocal, [username, unwatchKey, this._semaphore], action, delay);
     }
 
-    public async blockUser(username?: string, blockKey?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<boolean> {
+    async blockUser(username?: string, blockKey?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<boolean> {
         return await WaitAndCallAction.callFunctionAsync(blockUserLocal, [username, blockKey, this._semaphore], action, delay);
     }
 
-    public async unblockUser(username?: string, unblockKey?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<boolean> {
+    async unblockUser(username?: string, unblockKey?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<boolean> {
         return await WaitAndCallAction.callFunctionAsync(unblockUserLocal, [username, unblockKey, this._semaphore], action, delay);
     }
 }

@@ -10,7 +10,7 @@ export class SubmissionRequests {
         this._semaphore = semaphore;
     }
 
-    public static get hardLinks(): Record<string, string> {
+    static get hardLinks(): Record<string, string> {
         return {
             view: FuraffinityRequests.fullUrl + '/view/',
             fav: FuraffinityRequests.fullUrl + '/fav/',
@@ -19,19 +19,19 @@ export class SubmissionRequests {
         };
     }
 
-    public async getSubmissionPage(submissionId?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
+    async getSubmissionPage(submissionId?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
         return await WaitAndCallAction.callFunctionAsync(getSubmissionPageLocal, [submissionId, this._semaphore], action, delay);
     }
 
-    public async favSubmission(submissionId?: string | number, favKey?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<string | undefined> {
+    async favSubmission(submissionId?: string | number, favKey?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<string | undefined> {
         return await WaitAndCallAction.callFunctionAsync(favSubmissionLocal, [submissionId, favKey, this._semaphore], action, delay);
     }
 
-    public async unfavSubmission(submissionId?: string | number, unfavKey?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<string | undefined> {
+    async unfavSubmission(submissionId?: string | number, unfavKey?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<string | undefined> {
         return await WaitAndCallAction.callFunctionAsync(unfavSubmissionLocal, [submissionId, unfavKey, this._semaphore], action, delay);
     }
 
-    public async getJournalPage(journalId?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
+    async getJournalPage(journalId?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
         return await WaitAndCallAction.callFunctionAsync(getJournalPageLocal, [journalId, this._semaphore], action, delay);
     }
 }

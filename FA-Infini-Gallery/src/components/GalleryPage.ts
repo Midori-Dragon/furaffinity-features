@@ -3,9 +3,9 @@ import { IGalleryPage } from '../modules/IGalleryPage';
 import { createSeparatorElem, getFiguresFromPage, getUserNameFromUrl } from '../utils/Utils';
 
 export class GalleryPage implements IGalleryPage {
-    public pageNo: number;
-    public gallery: HTMLElement;
-    public isInFolder: boolean;
+    pageNo: number;
+    gallery: HTMLElement;
+    isInFolder: boolean;
 
     constructor(pageNo: number) {
         this.pageNo = pageNo;
@@ -13,7 +13,7 @@ export class GalleryPage implements IGalleryPage {
         this.isInFolder = window.location.toString().includes('/folder/');
     }
 
-    public async getPage(): Promise<Document | undefined> {
+    async getPage(): Promise<Document | undefined> {
         const username = getUserNameFromUrl(window.location.toString());
         let page;
         if (this.isInFolder === true) {
@@ -25,7 +25,7 @@ export class GalleryPage implements IGalleryPage {
         return page;
     }
 
-    public async loadPage(): Promise<void> {
+    async loadPage(): Promise<void> {
         const page = await this.getPage();
         if (page == null) {
             throw new Error('No page found');

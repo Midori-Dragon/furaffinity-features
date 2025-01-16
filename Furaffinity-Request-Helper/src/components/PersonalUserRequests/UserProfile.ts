@@ -9,7 +9,7 @@ export class UserProfile {
         this._semaphore = semaphore;
     }
 
-    public static get hardLinks(): Record<string, string> {
+    static get hardLinks(): Record<string, string> {
         return {
             profile: FuraffinityRequests.fullUrl + '/controls/profile/',
             profilebanner: FuraffinityRequests.fullUrl + '/controls/profilebanner/',

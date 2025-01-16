@@ -7,8 +7,8 @@ import { Search, SearchOptions } from '../components/SearchRequests/Search';
 import { Logger } from '../../../GlobalUtils/src/utils/Logger';
 
 export class SearchRequests {
-    public readonly Browse: Browse;
-    public readonly Search: Search;
+    readonly Browse: Browse;
+    readonly Search: Search;
 
     private readonly _semaphore: Semaphore;
 
@@ -19,7 +19,7 @@ export class SearchRequests {
     }
 
     //#region Browse
-    public static async getBrowseFiguresTillId(toId: number | undefined, fromPage: number | undefined, browseOptions: BrowseOptions | undefined, semaphore: Semaphore): Promise<HTMLElement[][]> {
+    static async getBrowseFiguresTillId(toId: number | undefined, fromPage: number | undefined, browseOptions: BrowseOptions | undefined, semaphore: Semaphore): Promise<HTMLElement[][]> {
         if (toId == null || toId <= 0) {
             Logger.logError('No toId given');
             return [];
@@ -54,7 +54,7 @@ export class SearchRequests {
         return allFigures;
     }
 
-    public static async getBrowseFiguresSinceId(fromId: number | undefined, toPage: number | undefined, browseOptions: BrowseOptions | undefined, semaphore: Semaphore): Promise<HTMLElement[][]> {
+    static async getBrowseFiguresSinceId(fromId: number | undefined, toPage: number | undefined, browseOptions: BrowseOptions | undefined, semaphore: Semaphore): Promise<HTMLElement[][]> {
         if (fromId == null || fromId <= 0) {
             Logger.logError('No fromId given');
             return [];
@@ -119,7 +119,7 @@ export class SearchRequests {
         return allFigures;
     }
 
-    public static async getBrowseFiguresBetweenIds(fromId: number | undefined, toId: number | undefined, fromPage: number | undefined, toPage: number | undefined, browseOptions: BrowseOptions | undefined, semaphore: Semaphore, percentId?: string | number): Promise<HTMLElement[][]> {
+    static async getBrowseFiguresBetweenIds(fromId: number | undefined, toId: number | undefined, fromPage: number | undefined, toPage: number | undefined, browseOptions: BrowseOptions | undefined, semaphore: Semaphore, percentId?: string | number): Promise<HTMLElement[][]> {
         if (fromId == null || fromId <= 0) {
             Logger.logError('No fromId given');
             return [];
@@ -175,7 +175,7 @@ export class SearchRequests {
         return allFigures;
     }
 
-    public static async getBrowseFiguresTillPage(toPageNumber: number | undefined, browseOptions: BrowseOptions | undefined, semaphore: Semaphore, percentId?: string | number): Promise<HTMLElement[][]> {
+    static async getBrowseFiguresTillPage(toPageNumber: number | undefined, browseOptions: BrowseOptions | undefined, semaphore: Semaphore, percentId?: string | number): Promise<HTMLElement[][]> {
         if (toPageNumber == null || toPageNumber <= 0) {
             Logger.logWarning('toPageNumber must be greater than 0. Using default 1 instead.');
             toPageNumber = 1;
@@ -196,7 +196,7 @@ export class SearchRequests {
         return allFigures;
     }
 
-    public static async getBrowseFiguresSincePage(fromPageNumber: number | undefined, browseOptions: BrowseOptions | undefined, semaphore: Semaphore): Promise<HTMLElement[][]> {
+    static async getBrowseFiguresSincePage(fromPageNumber: number | undefined, browseOptions: BrowseOptions | undefined, semaphore: Semaphore): Promise<HTMLElement[][]> {
         if (fromPageNumber == null || fromPageNumber <= 0) {
             Logger.logWarning('fromPageNumber must be greater than 0. Using default 1 instead.');
             fromPageNumber = 1;
@@ -223,7 +223,7 @@ export class SearchRequests {
         return allFigures;
     }
 
-    public static async getBrowseFiguresBetweenPages(fromPageNumber: number | undefined, toPageNumber: number | undefined, browseOptions: BrowseOptions | undefined, semaphore: Semaphore, percentId?: string | number): Promise<HTMLElement[][]> {
+    static async getBrowseFiguresBetweenPages(fromPageNumber: number | undefined, toPageNumber: number | undefined, browseOptions: BrowseOptions | undefined, semaphore: Semaphore, percentId?: string | number): Promise<HTMLElement[][]> {
         if (fromPageNumber == null || fromPageNumber <= 0) {
             Logger.logWarning('fromPageNumber must be greater than 0. Using default 1 instead.');
             fromPageNumber = 1;
@@ -249,7 +249,7 @@ export class SearchRequests {
         return allFigures;
     }
 
-    public static async getBrowseFigures(pageNumber: number | undefined, browseOptions: BrowseOptions | undefined, semaphore: Semaphore): Promise<HTMLElement[]> {
+    static async getBrowseFigures(pageNumber: number | undefined, browseOptions: BrowseOptions | undefined, semaphore: Semaphore): Promise<HTMLElement[]> {
         if (pageNumber == null || pageNumber <= 0) {
             Logger.logWarning('No pageNumber given. Using default value of 1.');
             pageNumber = 1;
@@ -271,7 +271,7 @@ export class SearchRequests {
     //#endregion
 
     //#region Search
-    public static async getSearchFiguresTillId(toId: number | undefined, fromPage: number | undefined, searchOptions: SearchOptions | undefined, semaphore: Semaphore): Promise<HTMLElement[][]> {
+    static async getSearchFiguresTillId(toId: number | undefined, fromPage: number | undefined, searchOptions: SearchOptions | undefined, semaphore: Semaphore): Promise<HTMLElement[][]> {
         if (toId == null || toId <= 0) {
             Logger.logError('No toId given');
             return [];
@@ -306,7 +306,7 @@ export class SearchRequests {
         return allFigures;
     }
 
-    public static async getSearchFiguresSinceId(fromId: number | undefined, toPage: number | undefined, searchOptions: SearchOptions | undefined, semaphore: Semaphore): Promise<HTMLElement[][]> {
+    static async getSearchFiguresSinceId(fromId: number | undefined, toPage: number | undefined, searchOptions: SearchOptions | undefined, semaphore: Semaphore): Promise<HTMLElement[][]> {
         if (fromId == null || fromId <= 0) {
             Logger.logError('No fromId given');
             return [];
@@ -371,7 +371,7 @@ export class SearchRequests {
         return allFigures;
     }
 
-    public static async getSearchFiguresBetweenIds(fromId: number | undefined, toId: number | undefined, fromPage: number | undefined, toPage: number | undefined, searchOptions: SearchOptions | undefined, semaphore: Semaphore, percentId?: string | number): Promise<HTMLElement[][]> {
+    static async getSearchFiguresBetweenIds(fromId: number | undefined, toId: number | undefined, fromPage: number | undefined, toPage: number | undefined, searchOptions: SearchOptions | undefined, semaphore: Semaphore, percentId?: string | number): Promise<HTMLElement[][]> {
         if (fromId == null || fromId <= 0) {
             Logger.logError('No fromId given');
             return [];
@@ -427,7 +427,7 @@ export class SearchRequests {
         return allFigures;
     }
 
-    public static async getSearchFiguresTillPage(toPageNumber: number | undefined, searchOptions: SearchOptions | undefined, semaphore: Semaphore, percentId?: string | number): Promise<HTMLElement[][]> {
+    static async getSearchFiguresTillPage(toPageNumber: number | undefined, searchOptions: SearchOptions | undefined, semaphore: Semaphore, percentId?: string | number): Promise<HTMLElement[][]> {
         if (toPageNumber == null || toPageNumber <= 0) {
             Logger.logWarning('toPageNumber must be greater than 0. Using default 1 instead.');
             toPageNumber = 1;
@@ -448,7 +448,7 @@ export class SearchRequests {
         return allFigures;
     }
 
-    public static async getSearchFiguresSincePage(fromPageNumber: number | undefined, searchOptions: SearchOptions | undefined, semaphore: Semaphore): Promise<HTMLElement[][]> {
+    static async getSearchFiguresSincePage(fromPageNumber: number | undefined, searchOptions: SearchOptions | undefined, semaphore: Semaphore): Promise<HTMLElement[][]> {
         if (fromPageNumber == null || fromPageNumber <= 0) {
             Logger.logWarning('fromPageNumber must be greater than 0. Using default 1 instead.');
             fromPageNumber = 1;
@@ -475,7 +475,7 @@ export class SearchRequests {
         return allFigures;
     }
 
-    public static async getSearchFiguresBetweenPages(fromPageNumber: number | undefined, toPageNumber: number | undefined, searchOptions: SearchOptions | undefined, semaphore: Semaphore, percentId?: string | number): Promise<HTMLElement[][]> {
+    static async getSearchFiguresBetweenPages(fromPageNumber: number | undefined, toPageNumber: number | undefined, searchOptions: SearchOptions | undefined, semaphore: Semaphore, percentId?: string | number): Promise<HTMLElement[][]> {
         if (fromPageNumber == null || fromPageNumber <= 0) {
             Logger.logWarning('fromPageNumber must be greater than 0. Using default 1 instead.');
             fromPageNumber = 1;
@@ -502,7 +502,7 @@ export class SearchRequests {
         return allFigures;
     }
 
-    public static async getSearchFigures(pageNumber: number | undefined, searchOptions: SearchOptions | undefined, semaphore: Semaphore): Promise<HTMLElement[]> {
+    static async getSearchFigures(pageNumber: number | undefined, searchOptions: SearchOptions | undefined, semaphore: Semaphore): Promise<HTMLElement[]> {
         if (pageNumber == null || pageNumber <= 0) {
             Logger.logWarning('No pageNumber given. Using default value of 1.');
             pageNumber = 1;
