@@ -16,12 +16,12 @@ module.exports = merge(common, {
 // @name        FA Embedded Image Viewer
 // @namespace   Violentmonkey Scripts
 // @match       *://*.furaffinity.net/*
-// @require     https://update.greasyfork.org/scripts/475041/1267274/Furaffinity-Custom-Settings.js
 // @require     https://update.greasyfork.org/scripts/483952/1486330/Furaffinity-Request-Helper.js
+// @require     https://update.greasyfork.org/scripts/492931/1363921/Furaffinity-Submission-Image-Viewer.js
+// @require     https://update.greasyfork.org/scripts/485827/1326313/Furaffinity-Match-List.js
 // @require     https://update.greasyfork.org/scripts/485153/1316289/Furaffinity-Loading-Animations.js
 // @require     https://update.greasyfork.org/scripts/476762/1318215/Furaffinity-Custom-Pages.js
-// @require     https://update.greasyfork.org/scripts/485827/1326313/Furaffinity-Match-List.js
-// @require     https://update.greasyfork.org/scripts/492931/1363921/Furaffinity-Submission-Image-Viewer.js
+// @require     https://update.greasyfork.org/scripts/475041/1267274/Furaffinity-Custom-Settings.js
 // @grant       GM_info
 // @version     2.4.0
 // @author      Midori Dragon

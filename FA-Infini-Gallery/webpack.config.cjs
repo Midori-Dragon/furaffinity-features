@@ -21,9 +21,6 @@ module.exports = merge(common, {
 // @require     https://update.greasyfork.org/scripts/485153/1316289/Furaffinity-Loading-Animations.js
 // @require     https://update.greasyfork.org/scripts/475041/1267274/Furaffinity-Custom-Settings.js
 // @grant       GM_info
-// @grant       GM_getValue
-// @grant       GM_setValue
-// @grant       GM_deleteValue
 // @version     2.1.0
 // @author      Midori Dragon
 // @description Automatically loads the next page of the gallery as you reach the bottom
