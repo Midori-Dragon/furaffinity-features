@@ -1,6 +1,6 @@
 import { SettingType, SettingTypeMapping } from '../utils/SettingType';
 
-export interface ISetting<T extends SettingType> {
+export interface ISetting<T extends SettingType> extends EventTarget {
     id: string | number;
     type: T;
     name: string;
@@ -8,7 +8,7 @@ export interface ISetting<T extends SettingType> {
     value: SettingTypeMapping[T];
     defaultValue: SettingTypeMapping[T];
     settingElem: HTMLElement;
-    action?: (source: HTMLElement) => void;
+    onInput?: (source: HTMLElement) => void;
 
     create(): HTMLElement;
     loadFromSyncedStorage(): void;

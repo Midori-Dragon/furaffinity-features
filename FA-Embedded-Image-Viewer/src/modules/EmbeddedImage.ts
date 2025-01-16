@@ -6,19 +6,20 @@ import { EmbeddedHTML } from '../components/EmbeddedHTML';
 import { getByLinkFromFigcaption, getFavKey } from '../utils/Utils';
 import '../Styles/Style.css';
 
-export class EmbeddedImage {
+export class EmbeddedImage extends EventTarget {
     embeddedElem: HTMLElement;
     submissionImg: HTMLImageElement | undefined;
     favRequestRunning = false;
     downloadRequestRunning = false;
 
     private _imageLoaded = false;
-    private _onRemoveAction: (() => void) | undefined;
+    private _onRemove?: () => void;
 
     private loadingSpinner: LoadingSpinner;
     private previewLoadingSpinner: LoadingSpinner;
 
     constructor(figure: HTMLElement) {
+        super();
         this.embeddedElem = document.createElement('div');
 
         this.createElements(figure);
@@ -36,7 +37,7 @@ export class EmbeddedImage {
         this.previewLoadingSpinner.size = 40;
 
         // Add click event to remove the embedded element when clicked outside
-        document.addEventListener('click', this._onDocumentClick.bind(this));
+        document.addEventListener('click', this.onDocumentClick.bind(this));
 
         void this.fillSubDocInfos(figure);
     }
@@ -45,26 +46,34 @@ export class EmbeddedImage {
         return document.getElementById('ei-main') != null;
     }
 
-    private _onDocumentClick(event: Event): void {
+    get onRemove(): (() => void) | undefined {
+        return this._onRemove;
+    }
+    set onRemove(handler: (() => void) | undefined) {
+        this._onRemove = handler;
+    }
+
+    private onDocumentClick(event: Event): void {
         if (event.target === document.documentElement) {
             this.remove();
         }
     }
 
-    private _closeOnOpen(): void {
+    private onOpenClick(): void {
         if (closeEmbedAfterOpenSetting.value) {
             this.remove();
         }
     }
 
-    onRemove(action: () => void): void {
-        this._onRemoveAction = action;
+    private invokeRemove(): void {
+        this._onRemove?.();
+        this.dispatchEvent(new Event('remove'));
     }
 
     remove(): void {
         this.embeddedElem.parentNode?.removeChild(this.embeddedElem);
-        document.removeEventListener('click', this._onDocumentClick);
-        this._onRemoveAction?.();
+        document.removeEventListener('click', this.onDocumentClick);
+        this.invokeRemove();
     }
 
     createElements(figure: HTMLElement): void {
@@ -90,7 +99,7 @@ export class EmbeddedImage {
         }
 
         // Add click event to close the embed after opening, if setting is enabled
-        submissionContainer.addEventListener('click', this._closeOnOpen.bind(this));
+        submissionContainer.addEventListener('click', this.onOpenClick.bind(this));
         // Extract user gallery and scraps links from the figure caption
         const userLink = getByLinkFromFigcaption(figure.querySelector('figcaption'));
         if (userLink != null) {
@@ -103,7 +112,7 @@ export class EmbeddedImage {
                 if (openInNewTabSetting.value) {
                     openGalleryButton.setAttribute('target', '_blank');
                 }
-                openGalleryButton.addEventListener('click', this._closeOnOpen.bind(this));
+                openGalleryButton.addEventListener('click', this.onOpenClick.bind(this));
             }
         }
 
@@ -113,19 +122,15 @@ export class EmbeddedImage {
         if (openInNewTabSetting.value) {
             openButton.setAttribute('target', '_blank');
         }
-        openButton.onclick = (): void => {
-            if (closeEmbedAfterOpenSetting.value) {
-                this.remove();
-            }
-        };
+        openButton.addEventListener('click', this.onOpenClick.bind(this));
 
         const closeButton = document.getElementById('ei-close-button')!;
         closeButton.addEventListener('click', this.remove.bind(this));
 
         const previewLoadingSpinnerContainer = document.getElementById('ei-preview-spinner-container')!;
-        previewLoadingSpinnerContainer.onclick = (): void => {
+        previewLoadingSpinnerContainer.addEventListener('click', (): void => {
             this.previewLoadingSpinner.visible = false;
-        };
+        });
     }
 
     async fillSubDocInfos(figure: HTMLElement): Promise<void> {
@@ -154,20 +159,20 @@ export class EmbeddedImage {
             faImageViewer.faImagePreview.classList.add('ei-submission-img');
             faImageViewer.faImage.style.maxWidth = faImageViewer.faImagePreview.style.maxWidth = window.innerWidth - 20 * 2 + 'px';
             faImageViewer.faImage.style.maxHeight = faImageViewer.faImagePreview.style.maxHeight = window.innerHeight - ddmenu.clientHeight - 38 * 2 - 20 * 2 - 100 + 'px';
-            faImageViewer.onImageLoadStart = (): void => {
+            faImageViewer.addEventListener('image-load-start', (): void => {
                 this._imageLoaded = false;
-            };
-            faImageViewer.onImageLoad = (): void => {
+            });
+            faImageViewer.addEventListener('image-load', (): void => {
                 this._imageLoaded = true;
                 this.loadingSpinner.visible = false;
                 this.previewLoadingSpinner.visible = false;
-            };
-            faImageViewer.onPreviewImageLoad = (): void => {
+            });
+            faImageViewer.addEventListener('preview-image-load', (): void => {
                 this.loadingSpinner.visible = false;
                 if (!this._imageLoaded) {
                     this.previewLoadingSpinner.visible = true;
                 }
-            };
+            });
             void faImageViewer.load();
 
             const url = doc.querySelector('meta[property="og:url"]')?.getAttribute('content');

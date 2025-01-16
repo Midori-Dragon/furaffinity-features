@@ -5,6 +5,9 @@ export class CustomPage extends EventTarget {
     parameterName: string;
     pageUrl: string;
 
+    private _onOpen?: (customData: CustomData) => void;
+    private static customPages: CustomPage[] = [];
+
     constructor(pageUrl: string, parameterName: string) {
         super();
         this.pageUrl = pageUrl;
@@ -27,18 +30,12 @@ export class CustomPage extends EventTarget {
         return parameter?.value;
     }
 
-    get onopen(): (listener: EventListenerOrEventListenerObject | null, options?: boolean | AddEventListenerOptions) => void {
-        return this.addEventListener.bind(this, 'onOpen');
+    get onOpen(): ((customData: CustomData) => void) | undefined {
+        return this._onOpen;
     }
-    set onopen(listener: EventListenerOrEventListenerObject | null) {
-        if (listener != null) {
-            this.addEventListener('onOpen', listener);
-        } else {
-            this.removeEventListener('onOpen', listener!);
-        }
+    set onOpen(handler: ((customData: CustomData) => void) | undefined) {
+        this._onOpen = handler;
     }
-
-    private static customPages: CustomPage[] = [];
 
     static checkAllPages(): void {
         CustomPage.customPages.forEach((page) => page.checkPageOpened());
@@ -55,5 +52,13 @@ export class CustomPage extends EventTarget {
         customData.parameterValue = parameterValue;
         const event = new CustomEvent('onOpen', { detail: customData });
         this.dispatchEvent(event);
+    }
+
+    private invokeOpen(doc: Document, parameterValue: string | undefined): void {
+        const customData = new CustomData(doc);
+        customData.parameterValue = parameterValue;
+
+        this._onOpen?.(customData);
+        this.dispatchEvent(new CustomEvent('open', { detail: customData }));
     }
 }

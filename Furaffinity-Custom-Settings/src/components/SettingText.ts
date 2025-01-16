@@ -4,20 +4,21 @@ import { makeIdCompatible } from '../utils/Utils';
 import { ISetting } from './ISetting';
 import { Logger } from '../../../GlobalUtils/src/utils/Logger';
 
-export class SettingText implements ISetting<SettingType.Text> {
+export class SettingText extends EventTarget implements ISetting<SettingType.Text> {
     id: string;
     type: SettingType.Text;
     name: string;
     description = '';
     settingElem: HTMLElement;
     verifyRegex: RegExp | undefined;
-    action?: (source: HTMLElement) => void;
 
+    private _onInput?: (source: HTMLElement) => void;
     private _defaultValue: SettingTypeMapping[SettingType.Text];
     private _settingInputElem: HTMLInputElement;
     private _errorMessage: HTMLDivElement;
 
     constructor(providerId: string, name: string) {
+        super();
         this.name = name;
         this.id = providerId + '-' + makeIdCompatible(this.name);
         this.type = SettingType.Text;
@@ -51,7 +52,7 @@ export class SettingText implements ISetting<SettingType.Text> {
             Logger.logError(error);
         }
         this._settingInputElem.value = newValue;
-        this.action?.(this._settingInputElem);
+        this.invokeInput(this._settingInputElem);
     }
 
     get defaultValue(): SettingTypeMapping[SettingType.Text] {
@@ -60,6 +61,13 @@ export class SettingText implements ISetting<SettingType.Text> {
     set defaultValue(value: SettingTypeMapping[SettingType.Text]) {
         this._defaultValue = value;
         this.value = this.value;
+    }
+
+    get onInput(): ((source: HTMLElement) => void) | undefined {
+        return this._onInput;
+    }
+    set onInput(handler: ((source: HTMLElement) => void) | undefined) {
+        this._onInput = handler;
     }
 
     create(): HTMLElement {
@@ -103,5 +111,10 @@ export class SettingText implements ISetting<SettingType.Text> {
 
     toString(): string {
         return `${this.name} = ${this.value}`;
+    }
+
+    private invokeInput(elem: HTMLElement): void {
+        this.onInput?.(elem);
+        this.dispatchEvent(new CustomEvent('input', { detail: elem }));
     }
 }

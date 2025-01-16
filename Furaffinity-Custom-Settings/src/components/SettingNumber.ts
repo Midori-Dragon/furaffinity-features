@@ -3,7 +3,7 @@ import { SettingType, SettingTypeMapping } from '../utils/SettingType';
 import { makeIdCompatible } from '../utils/Utils';
 import { ISetting } from './ISetting';
 
-export class SettingNumber implements ISetting<SettingType.Number> {
+export class SettingNumber extends EventTarget implements ISetting<SettingType.Number> {
     id: string;
     type: SettingType.Number;
     name: string;
@@ -12,12 +12,13 @@ export class SettingNumber implements ISetting<SettingType.Number> {
     max: number;
     step: number;
     settingElem: HTMLElement;
-    action?: (source: HTMLElement) => void;
 
+    private _onInput?: (source: HTMLElement) => void;
     private _defaultValue: SettingTypeMapping[SettingType.Number];
     private _settingInputElem: HTMLInputElement;
 
     constructor(providerId: string, name: string) {
+        super();
         this.name = name;
         this.id = providerId + '-' + makeIdCompatible(this.name);
         this.type = SettingType.Number;
@@ -43,7 +44,7 @@ export class SettingNumber implements ISetting<SettingType.Number> {
             void SyncedStorage.setItem(this.id, newValue);
         }
         this._settingInputElem.value = newValue.toString();
-        this.action?.(this._settingInputElem);
+        this.invokeInput(this._settingInputElem);
     }
 
     get defaultValue(): SettingTypeMapping[SettingType.Number] {
@@ -52,6 +53,13 @@ export class SettingNumber implements ISetting<SettingType.Number> {
     set defaultValue(value: SettingTypeMapping[SettingType.Number]) {
         this._defaultValue = value;
         this.value = this.value;
+    }
+
+    get onInput(): ((source: HTMLElement) => void) | undefined {
+        return this._onInput;
+    }
+    set onInput(handler: ((source: HTMLElement) => void) | undefined) {
+        this._onInput = handler;
     }
 
     create(): HTMLInputElement {
@@ -85,5 +93,10 @@ export class SettingNumber implements ISetting<SettingType.Number> {
 
     toString(): string {
         return `${this.name} = ${this.value}`;
+    }
+
+    private invokeInput(elem: HTMLElement): void {
+        this.onInput?.(elem);
+        this.dispatchEvent(new CustomEvent('input', { detail: elem }));
     }
 }

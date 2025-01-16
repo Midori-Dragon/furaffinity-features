@@ -33,7 +33,7 @@ customSettings.headerName = `${GMInfo.scriptName} Settings`;
 export const loggingSetting = customSettings.newSetting(window.FASettingType.Number, 'Logging');
 loggingSetting.description = 'The logging level. 0 = none, 1 = errors, 2 = warnings, 3 = infos.';
 loggingSetting.defaultValue = window.__FF_GLOBAL_LOG_LEVEL__ ?? LogLevel.Error;
-loggingSetting.action = (): void => Logger.setLogLevel(loggingSetting.value);
+loggingSetting.addEventListener('input', (): void => Logger.setLogLevel(loggingSetting.value));
 Logger.setLogLevel(loggingSetting.value);
 
 export const openInNewTabSetting = customSettings.newSetting(window.FASettingType.Boolean, 'Open in new Tab');
@@ -66,10 +66,10 @@ matchList.runInIFrame = true;
 if (matchList.hasMatch) {
     const page = new window.FACustomPage('d.furaffinity.net', 'ei-download');
     let pageDownload = false;
-    page.onopen = (): void => {
+    page.addEventListener('onOpen', (): void => {
         downloadImage();
         pageDownload = true;
-    };
+    });
     page.checkPageOpened();
 
     if (!pageDownload && !matchList.isWindowIFrame) {

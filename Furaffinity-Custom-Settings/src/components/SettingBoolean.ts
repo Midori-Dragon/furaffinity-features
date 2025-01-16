@@ -3,18 +3,19 @@ import { SyncedStorage } from '../../../GlobalUtils/src/utils/Browser-API/Synced
 import { makeIdCompatible } from '../utils/Utils';
 import { ISetting } from './ISetting';
 
-export class SettingBoolean implements ISetting<SettingType.Boolean> {
+export class SettingBoolean extends EventTarget implements ISetting<SettingType.Boolean> {
     id: string;
     type: SettingType.Boolean;
     name: string;
     description = '';
     settingElem: HTMLElement;
-    action?: (source: HTMLElement) => void;
 
+    private _onInput?: (source: HTMLElement) => void;
     private _defaultValue: SettingTypeMapping[SettingType.Boolean];
     private _settingInputElem: HTMLInputElement;
 
     constructor(providerId: string, name: string) {
+        super();
         this.name = name;
         this.id = providerId + '-' + makeIdCompatible(this.name);
         this.type = SettingType.Boolean;
@@ -41,7 +42,7 @@ export class SettingBoolean implements ISetting<SettingType.Boolean> {
             void SyncedStorage.setItem(this.id, newValue);
         }
         this._settingInputElem.checked = newValue;
-        this.action?.(this._settingInputElem);
+        this.invokeInput(this._settingInputElem);
     }
 
     get defaultValue(): SettingTypeMapping[SettingType.Boolean] {
@@ -50,6 +51,13 @@ export class SettingBoolean implements ISetting<SettingType.Boolean> {
     set defaultValue(value: SettingTypeMapping[SettingType.Boolean]) {
         this._defaultValue = value;
         this.value = this.value;
+    }
+
+    get onInput(): ((source: HTMLElement) => void) | undefined {
+        return this._onInput;
+    }
+    set onInput(handler: ((source: HTMLElement) => void) | undefined) {
+        this._onInput = handler;
     }
 
     create(): HTMLElement {
@@ -81,5 +89,10 @@ export class SettingBoolean implements ISetting<SettingType.Boolean> {
 
     toString(): string {
         return `${this.name} = ${this.value}`;
+    }
+
+    private invokeInput(elem: HTMLElement): void {
+        this.onInput?.(elem);
+        this.dispatchEvent(new CustomEvent('input', { detail: elem }));
     }
 }

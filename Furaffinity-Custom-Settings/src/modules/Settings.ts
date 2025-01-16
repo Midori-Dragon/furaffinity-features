@@ -164,9 +164,9 @@ export class Settings {
         settingDescReset.style.textDecoration = 'underline';
         settingDescReset.style.fontStyle = 'italic';
         settingDescReset.style.fontSize = '14px';
-        settingDescReset.onclick = (): void => {
+        settingDescReset.addEventListener('click', (): void => {
             setting.value = setting.defaultValue;
-        };
+        });
         return settingDescReset;
     }
 
