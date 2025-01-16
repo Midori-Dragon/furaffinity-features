@@ -32,7 +32,7 @@ pageSeparatorTextSetting.description = 'The Text that is displayed when a new In
 pageSeparatorTextSetting.defaultValue = 'Infini-Gallery Page: %page%';
 pageSeparatorTextSetting.verifyRegex = /%page%/;
 
-customSettings.loadSettingsMenu();
+customSettings.loadSettings();
 
 const matchList = new window.FAMatchList(customSettings);
 matchList.matches = ['net/gallery', 'net/favorites', 'net/scraps', 'net/browse', 'net/search'];

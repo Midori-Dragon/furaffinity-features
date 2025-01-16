@@ -56,7 +56,7 @@ export const previewQualitySetting = customSettings.newSetting(window.FASettingT
 previewQualitySetting.description = 'The quality of the preview image. Value range is 2-6. (Higher values can be slower)';
 previewQualitySetting.defaultValue = 3;
 
-customSettings.loadSettingsMenu();
+customSettings.loadSettings();
 
 export const requestHelper = new window.FARequestHelper(2);
 

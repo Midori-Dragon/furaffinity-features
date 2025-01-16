@@ -55,13 +55,13 @@ export class Settings {
         return newSetting;
     }
 
-    loadSettingsMenu(): void {
+    loadSettings(): void {
         try {
             this.addExSettingsMenu(this.extensionName, this.provider, this.extensionNameId, this.providerId);
             if (window.location.toString().includes('controls/settings')) {
                 this.addExSettingsMenuSidebar(this.extensionName, this.provider, this.extensionNameId, this.providerId);
                 if (window.location.toString().includes('?extension=' + this.providerId)) {
-                    this.loadSettings(this.headerName, Object.values(this.settings));
+                    this.loadSettingValues(this.headerName, Object.values(this.settings));
                 }
             }
         } catch (error) {
@@ -69,7 +69,7 @@ export class Settings {
         }
     }
 
-    loadSettings(headerName: string, settings: ISetting<SettingType>[]): void {
+    private loadSettingValues(headerName: string, settings: ISetting<SettingType>[]): void {
         if (settings.length === 0) {
             return;
         }
@@ -171,59 +171,67 @@ export class Settings {
     }
 
     private addExSettingsMenu(name: string, provider: string, nameId: string, providerId: string): void {
-        const navBar = document.querySelector('ul[class="navhideonmobile"]');
-        const settings = navBar?.querySelector('a[href="/controls/settings/"]')?.parentNode;
-        if (settings == null) {
-            Logger.logError(`Failed to add extension ${name} to settings menu`);
-            return;
-        }
+        try {
+            const navBar = document.querySelector('ul[class="navhideonmobile"]');
+            const settings = navBar?.querySelector('a[href="/controls/settings/"]')?.parentNode;
+            if (settings == null) {
+                Logger.logError(`Failed to add extension ${name} to settings menu`);
+                return;
+            }
 
-        const exSettingNamePresent = document.getElementById(nameId) != null;
-        const exSettingProviderPresent = document.getElementById(providerId) != null;
+            const exSettingNamePresent = document.getElementById(nameId) != null;
+            const exSettingProviderPresent = document.getElementById(providerId) != null;
 
-        if (!exSettingNamePresent) {
-            const exSettingsHeader = document.createElement('h3');
-            exSettingsHeader.id = nameId;
-            exSettingsHeader.textContent = name;
-            settings.appendChild(exSettingsHeader);
-        }
+            if (!exSettingNamePresent) {
+                const exSettingsHeader = document.createElement('h3');
+                exSettingsHeader.id = nameId;
+                exSettingsHeader.textContent = name;
+                settings.appendChild(exSettingsHeader);
+            }
 
-        if (!exSettingProviderPresent) {
-            const currExSettings = document.createElement('a');
-            currExSettings.id = providerId;
-            currExSettings.textContent = provider;
-            currExSettings.href = '/controls/settings?extension=' + providerId;
-            currExSettings.style.cursor = 'pointer';
-            settings.appendChild(currExSettings);
+            if (!exSettingProviderPresent) {
+                const currExSettings = document.createElement('a');
+                currExSettings.id = providerId;
+                currExSettings.textContent = provider;
+                currExSettings.href = '/controls/settings?extension=' + providerId;
+                currExSettings.style.cursor = 'pointer';
+                settings.appendChild(currExSettings);
+            }
+        } catch (error) {
+            Logger.logError(error);
         }
     }
 
     private addExSettingsMenuSidebar(name: string, provider: string, nameId: string, providerId: string): void {
-        const settings = document.getElementById('controlpanelnav');
+        try {
+            const settings = document.getElementById('controlpanelnav');
 
-        if (settings == null) {
-            Logger.logError(`Failed to add extension ${name} to settings sidebar`);
-            return;
-        }
+            if (settings == null) {
+                Logger.logError(`Failed to add extension ${name} to settings sidebar`);
+                return;
+            }
 
-        const exSettingNamePresent = document.getElementById(nameId + '_side') != null;
-        const exSettingProviderPresent = document.getElementById(providerId + '_side') != null;
+            const exSettingNamePresent = document.getElementById(nameId + '_side') != null;
+            const exSettingProviderPresent = document.getElementById(providerId + '_side') != null;
 
-        if (!exSettingNamePresent) {
-            const exSettingsHeader = document.createElement('h3');
-            exSettingsHeader.id = nameId + '_side';
-            exSettingsHeader.textContent = name;
-            settings.appendChild(exSettingsHeader);
-        }
+            if (!exSettingNamePresent) {
+                const exSettingsHeader = document.createElement('h3');
+                exSettingsHeader.id = nameId + '_side';
+                exSettingsHeader.textContent = name;
+                settings.appendChild(exSettingsHeader);
+            }
 
-        if (!exSettingProviderPresent) {
-            const currExSettings = document.createElement('a');
-            currExSettings.id = providerId + '_side';
-            currExSettings.textContent = provider;
-            currExSettings.href = '/controls/settings?extension=' + providerId;
-            currExSettings.style.cursor = 'pointer';
-            settings.appendChild(currExSettings);
-            settings.appendChild(document.createElement('br'));
+            if (!exSettingProviderPresent) {
+                const currExSettings = document.createElement('a');
+                currExSettings.id = providerId + '_side';
+                currExSettings.textContent = provider;
+                currExSettings.href = '/controls/settings?extension=' + providerId;
+                currExSettings.style.cursor = 'pointer';
+                settings.appendChild(currExSettings);
+                settings.appendChild(document.createElement('br'));
+            }
+        } catch (error) {
+            Logger.logError(error);
         }
     }
 };

@@ -14,4 +14,4 @@ customSettings.headerName = 'Global Custom-Furaffinity-Settings';
 export const showResetButtonSetting = customSettings.newSetting(SettingType.Boolean, 'Show Reset Button');
 showResetButtonSetting.description = 'Set wether the "Reset this Setting" button is shown in other Settings.';
 showResetButtonSetting.defaultValue = true;
-customSettings.loadSettingsMenu();
+customSettings.loadSettings();
