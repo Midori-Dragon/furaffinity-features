@@ -1,5 +1,5 @@
 import { SettingType, SettingTypeMapping } from '../utils/SettingType';
-import { SyncedStorage } from '../../../GlobalUtils/src/utils/SyncedStorage';
+import { SyncedStorage } from '../../../GlobalUtils/src/utils/Browser-API/SyncedStorage';
 import { makeIdCompatible } from '../utils/Utils';
 import { ISetting } from './ISetting';
 

@@ -1,11 +1,18 @@
-import { extractParameterFromURL } from '../utils/Utils';
+import extractParameterFromURL from '../../../GlobalUtils/src/utils/URL-Functions/ExtractParameter';
 import { CustomData } from './CustomData';
 
 export class CustomPage extends EventTarget {
-    public parameterName: string;
-    public pageUrl: string;
+    parameterName: string;
+    pageUrl: string;
 
-    public get isOpen(): boolean {
+    constructor(pageUrl: string, parameterName: string) {
+        super();
+        this.pageUrl = pageUrl;
+        this.parameterName = parameterName;
+        CustomPage.customPages.push(this);
+    }
+
+    get isOpen(): boolean {
         const url = window.location.toString();
         if (!url.includes(this.pageUrl)) {
             return false;
@@ -14,16 +21,16 @@ export class CustomPage extends EventTarget {
         return parameter?.key === this.parameterName;
     }
 
-    public get parameterValue(): string | undefined {
+    get parameterValue(): string | undefined {
         const url = window.location.toString();
         const parameter = extractParameterFromURL(url, this.parameterName);
         return parameter?.value;
     }
 
-    public get onopen(): (listener: EventListenerOrEventListenerObject | null, options?: boolean | AddEventListenerOptions) => void {
+    get onopen(): (listener: EventListenerOrEventListenerObject | null, options?: boolean | AddEventListenerOptions) => void {
         return this.addEventListener.bind(this, 'onOpen');
     }
-    public set onopen(listener: EventListenerOrEventListenerObject | null) {
+    set onopen(listener: EventListenerOrEventListenerObject | null) {
         if (listener != null) {
             this.addEventListener('onOpen', listener);
         } else {
@@ -33,18 +40,11 @@ export class CustomPage extends EventTarget {
 
     private static customPages: CustomPage[] = [];
 
-    constructor(pageUrl: string, parameterName: string) {
-        super();
-        this.pageUrl = pageUrl;
-        this.parameterName = parameterName;
-        CustomPage.customPages.push(this);
-    }
-
-    public static checkAllPages(): void {
+    static checkAllPages(): void {
         CustomPage.customPages.forEach((page) => page.checkPageOpened());
     }
 
-    public checkPageOpened(): void {
+    checkPageOpened(): void {
         if (this.isOpen) {
             this.pageOpened(this.parameterValue, document);
         }

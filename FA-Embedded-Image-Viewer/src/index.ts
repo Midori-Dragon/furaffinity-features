@@ -6,7 +6,7 @@ import { LoadingTextSpinner } from '../../Furaffinity-Loading-Animations/src/com
 import { MatchList } from '../../Furaffinity-Match-List/src/modules/MatchList';
 import { FuraffinityRequests } from '../../Furaffinity-Request-Helper/src/modules/FuraffinityRequests';
 import { CustomImageViewer } from '../../Furaffinity-Submission-Image-Viewer/src/modules/CustomImageViewer';
-import { GMInfo } from '../../GlobalUtils/src/utils/GMInfo';
+import { GMInfo } from '../../GlobalUtils/src/utils/Browser-API/GMInfo';
 import { Logger, LogLevel } from '../../GlobalUtils/src/utils/Logger';
 import { EmbeddedImage } from './modules/EmbeddedImage';
 import { downloadImage } from './utils/Utils';
@@ -70,10 +70,11 @@ if (matchList.hasMatch) {
         downloadImage();
         pageDownload = true;
     };
+    page.checkPageOpened();
 
     if (!pageDownload && !matchList.isWindowIFrame) {
         void EmbeddedImage.addEmbeddedEventForAllFigures();
-        window.addEventListener('updateEmbeddedEvent', () => {
+        window.addEventListener('ei-update-embedded', () => {
             void EmbeddedImage.addEmbeddedEventForAllFigures();
         });
     }

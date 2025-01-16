@@ -1,5 +1,5 @@
 import { GMInfo } from './GMInfo';
-import { Logger } from './Logger';
+import { Logger } from '../Logger';
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 export class SyncedStorage {

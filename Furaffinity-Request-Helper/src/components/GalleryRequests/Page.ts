@@ -7,7 +7,7 @@ import { Browse, BrowseOptions } from '../SearchRequests/Browse';
 import { Search, SearchOptions } from '../SearchRequests/Search';
 import { FuraffinityRequests } from '../../modules/FuraffinityRequests';
 import { GalleryType } from '../../modules/GalleryRequests';
-import checkTagsAll from '../../../../GlobalUtils/src/utils/CheckTagsAll';
+import checkTagsAll from '../../../../GlobalUtils/src/utils/FA-Functions/CheckTagsAll';
 import { Logger } from '../../../../GlobalUtils/src/utils/Logger';
 
 export class Page {

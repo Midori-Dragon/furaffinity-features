@@ -1,4 +1,4 @@
-export function extractParameterFromURL(url: string, parameterName: string): { key: string; value: string } | undefined {
+export default function (url: string, parameterName: string): { key: string; value: string } | undefined {
     const parts = url.split('?');
     if (parts.length > 1) {
         const params = parts[parts.length - 1].split('&');

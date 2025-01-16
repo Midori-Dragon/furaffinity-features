@@ -39,6 +39,6 @@ export class ScrapsPage implements IGalleryPage {
             throw new Error('No figures found');
         }
 
-        window.dispatchEvent(new CustomEvent('updateEmbeddedEvent'));  //Embedded Image Viewer Integration
+        window.dispatchEvent(new CustomEvent('ei-update-embedded'));  //Embedded Image Viewer Integration
     }
 }

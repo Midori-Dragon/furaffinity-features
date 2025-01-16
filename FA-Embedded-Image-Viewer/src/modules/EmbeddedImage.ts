@@ -1,7 +1,7 @@
 import { closeEmbedAfterOpenSetting, loadingSpinSpeedFavSetting, loadingSpinSpeedSetting, openInNewTabSetting, previewQualitySetting, requestHelper } from '..';
 import { LoadingSpinner } from '../../../Furaffinity-Loading-Animations/src/components/LoadingSpinner';
-import stringIsEmptyOrWhitespace from '../../../GlobalUtils/src/utils/StringIsEmptyOrWhitespace';
-import trimEnd from '../../../GlobalUtils/src/utils/TrimEnd';
+import stringIsEmptyOrWhitespace from '../../../GlobalUtils/src/utils/String-Functions/StringIsEmptyOrWhitespace';
+import trimEnd from '../../../GlobalUtils/src/utils/String-Functions/TrimEnd';
 import { EmbeddedHTML } from '../components/EmbeddedHTML';
 import { getByLinkFromFigcaption, getFavKey } from '../utils/Utils';
 import '../Styles/Style.css';

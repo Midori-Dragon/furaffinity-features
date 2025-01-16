@@ -1,5 +1,5 @@
 import { Settings } from '../../../Furaffinity-Custom-Settings/src/modules/Settings';
-import { GMInfo } from '../../../GlobalUtils/src/utils/GMInfo';
+import { GMInfo } from '../../../GlobalUtils/src/utils/Browser-API/GMInfo';
 
 export class MatchList {
     public matches: string[];
