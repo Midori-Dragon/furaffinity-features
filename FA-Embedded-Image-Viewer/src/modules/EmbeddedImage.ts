@@ -23,8 +23,8 @@ export class EmbeddedImage extends EventTarget {
         this.embeddedElem = document.createElement('div');
 
         this.createElements(figure);
-        const submissionContainer = document.getElementById('ei-submission-container')!;
-        const previewLoadingSpinnerContainer = document.getElementById('ei-preview-spinner-container')!;
+        const submissionContainer = document.getElementById('eiv-submission-container')!;
+        const previewLoadingSpinnerContainer = document.getElementById('eiv-preview-spinner-container')!;
 
         this.loadingSpinner = new window.FALoadingSpinner(submissionContainer);
         this.loadingSpinner.delay = loadingSpinSpeedSetting.value;
@@ -43,7 +43,7 @@ export class EmbeddedImage extends EventTarget {
     }
 
     static get embeddedExists(): boolean {
-        return document.getElementById('ei-main') != null;
+        return document.getElementById('eiv-main') != null;
     }
 
     get onRemove(): (() => void) | undefined {
@@ -78,7 +78,7 @@ export class EmbeddedImage extends EventTarget {
 
     createElements(figure: HTMLElement): void {
         // Create the main container for the embedded element
-        this.embeddedElem.id = 'ei-main';
+        this.embeddedElem.id = 'eiv-main';
         this.embeddedElem.innerHTML = EmbeddedHTML.html;
         const ddmenu = document.getElementById('ddmenu')!;
         ddmenu.appendChild(this.embeddedElem);
@@ -91,7 +91,7 @@ export class EmbeddedImage extends EventTarget {
         });
 
         // Get the submission container element
-        const submissionContainer = document.getElementById('ei-submission-container')!;
+        const submissionContainer = document.getElementById('eiv-submission-container')!;
 
         // Set target attribute for opening in new tab based on settings
         if (openInNewTabSetting.value) {
@@ -106,7 +106,7 @@ export class EmbeddedImage extends EventTarget {
             const galleryLink = trimEnd(userLink, '/').replace('user', 'gallery');
             const scrapsLink = trimEnd(userLink, '/').replace('user', 'scraps');
             if (!window.location.toString().includes(userLink) && !window.location.toString().includes(galleryLink) && !window.location.toString().includes(scrapsLink)) {
-                const openGalleryButton = document.getElementById('ei-open-gallery-button')!;
+                const openGalleryButton = document.getElementById('eiv-open-gallery-button')!;
                 openGalleryButton.style.display = 'block';
                 openGalleryButton.setAttribute('href', galleryLink);
                 if (openInNewTabSetting.value) {
@@ -117,17 +117,17 @@ export class EmbeddedImage extends EventTarget {
         }
 
         const link = figure.querySelector('a[href]')?.getAttribute('href');
-        const openButton = document.getElementById('ei-open-button')!;
+        const openButton = document.getElementById('eiv-open-button')!;
         openButton.setAttribute('href', link ?? '');
         if (openInNewTabSetting.value) {
             openButton.setAttribute('target', '_blank');
         }
         openButton.addEventListener('click', this.onOpenClick.bind(this));
 
-        const closeButton = document.getElementById('ei-close-button')!;
+        const closeButton = document.getElementById('eiv-close-button')!;
         closeButton.addEventListener('click', this.remove.bind(this));
 
-        const previewLoadingSpinnerContainer = document.getElementById('ei-preview-spinner-container')!;
+        const previewLoadingSpinnerContainer = document.getElementById('eiv-preview-spinner-container')!;
         previewLoadingSpinnerContainer.addEventListener('click', (): void => {
             this.previewLoadingSpinner.visible = false;
         });
@@ -151,12 +151,12 @@ export class EmbeddedImage extends EventTarget {
                 }
             }
 
-            const submissionContainer = document.getElementById('ei-submission-container')!;
+            const submissionContainer = document.getElementById('eiv-submission-container')!;
             const faImageViewer = new window.FAImageViewer(submissionContainer, imgSrc, prevSrc);
-            faImageViewer.faImage.id = 'ei-submission-img';
-            faImageViewer.faImagePreview.id = 'ei-preview-submission-img';
-            faImageViewer.faImage.classList.add('ei-submission-img');
-            faImageViewer.faImagePreview.classList.add('ei-submission-img');
+            faImageViewer.faImage.id = 'eiv-submission-img';
+            faImageViewer.faImagePreview.id = 'eiv-preview-submission-img';
+            faImageViewer.faImage.classList.add('eiv-submission-img');
+            faImageViewer.faImagePreview.classList.add('eiv-submission-img');
             faImageViewer.faImage.style.maxWidth = faImageViewer.faImagePreview.style.maxWidth = window.innerWidth - 20 * 2 + 'px';
             faImageViewer.faImage.style.maxHeight = faImageViewer.faImagePreview.style.maxHeight = window.innerHeight - ddmenu.clientHeight - 38 * 2 - 20 * 2 - 100 + 'px';
             faImageViewer.addEventListener('image-load-start', (): void => {
@@ -180,7 +180,7 @@ export class EmbeddedImage extends EventTarget {
 
             const result = getFavKey(doc);
             if (result != null) {
-                const favButton = document.getElementById('ei-fav-button')!;
+                const favButton = document.getElementById('eiv-fav-button')!;
                 favButton.textContent = result.isFav ? '+Fav' : '-Fav';
                 favButton.setAttribute('isFav', result.isFav.toString());
                 favButton.setAttribute('key', result.favKey ?? '');
@@ -191,7 +191,7 @@ export class EmbeddedImage extends EventTarget {
                 });
             }
 
-            const downloadButton = document.getElementById('ei-download-button')!;
+            const downloadButton = document.getElementById('eiv-download-button')!;
             downloadButton.addEventListener('click', () => {
                 if (this.downloadRequestRunning) {
                     return;
@@ -202,7 +202,7 @@ export class EmbeddedImage extends EventTarget {
                 loadingTextSpinner.visible = true;
                 const iframe = document.createElement('iframe');
                 iframe.style.display = 'none';
-                iframe.src = this.submissionImg!.src + '?ei-download';
+                iframe.src = this.submissionImg!.src + '?eiv-download';
                 iframe.addEventListener('load', () => {
                     this.downloadRequestRunning = false;
                     loadingTextSpinner.visible = false;
@@ -214,7 +214,7 @@ export class EmbeddedImage extends EventTarget {
     }
 
     async doFavRequest(sid: string): Promise<void> {
-        const favButton = document.getElementById('ei-fav-button')!;
+        const favButton = document.getElementById('eiv-fav-button')!;
 
         // Set the favorite request running flag to true
         this.favRequestRunning = true;

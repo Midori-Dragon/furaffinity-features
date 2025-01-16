@@ -1,4 +1,4 @@
-#ei-main {
+#eiv-main {
     position: fixed;
     width: 100vw;
     height: 100vh;
@@ -7,7 +7,7 @@
     background: rgba(30, 33, 38, .65);
 }
 
-#ei-background {
+#eiv-background {
     position: fixed;
     display: flex;
     flex-direction: column;
@@ -19,38 +19,38 @@
     border-radius: 10px;
 }
 
-#ei-submission-container {
+#eiv-submission-container {
     -webkit-user-drag: none;
 }
 
-.ei-submission-img {
+.eiv-submission-img {
     max-width: inherit;
     max-height: inherit;
     border-radius: 10px;
     user-select: none;
 }
 
-#ei-button-container {
+#eiv-button-container {
     position: relative;
     margin-top: 20px;
     margin-bottom: 20px;
     margin-left: 20px;
 }
 
-#ei-button-wrapper {
+#eiv-button-wrapper {
     display: flex;
     justify-content: center;
     align-items: center;
 }
 
-#ei-preview-spinner-container {
+#eiv-preview-spinner-container {
     position: absolute;
     top: 50%;
     right: 0;
     transform: translateY(-50%);
 }
 
-.ei-button {
+.eiv-button {
     margin-left: 4px;
     margin-right: 4px;
     user-select: none;
