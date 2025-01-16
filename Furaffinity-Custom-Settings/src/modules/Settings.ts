@@ -1,4 +1,5 @@
 import { showResetButtonSetting } from '..';
+import { Logger } from '../../../GlobalUtils/src/utils/Logger';
 import { ISetting } from '../components/ISetting';
 import { SettingAction } from '../components/SettingAction';
 import { SettingBoolean } from '../components/SettingBoolean';
@@ -63,8 +64,8 @@ export class Settings {
                     this.loadSettings(this.headerName, Object.values(this.settings));
                 }
             }
-        } catch (e: any) {
-            console.error(e as string);
+        } catch (error) {
+            Logger.logError(error);
         }
     }
 
@@ -80,7 +81,7 @@ export class Settings {
         const columnPage = document.getElementById('columnpage');
         const content = columnPage?.querySelector('div[class="content"]');
         if (content == null) {
-            console.error('Failed to load settings. No content found.');
+            Logger.logError('Failed to load settings. No content found.');
             return;
         }
         const nonExSettings = content.querySelectorAll('section:not([class="exsettings"])');
@@ -173,7 +174,7 @@ export class Settings {
         const navBar = document.querySelector('ul[class="navhideonmobile"]');
         const settings = navBar?.querySelector('a[href="/controls/settings/"]')?.parentNode;
         if (settings == null) {
-            console.error(`Failed to add extension ${name} to settings menu`);
+            Logger.logError(`Failed to add extension ${name} to settings menu`);
             return;
         }
 
@@ -201,7 +202,7 @@ export class Settings {
         const settings = document.getElementById('controlpanelnav');
 
         if (settings == null) {
-            console.error(`Failed to add extension ${name} to settings sidebar`);
+            Logger.logError(`Failed to add extension ${name} to settings sidebar`);
             return;
         }
 
