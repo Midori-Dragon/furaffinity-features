@@ -1,10 +1,9 @@
 import { closeEmbedAfterOpenSetting, loadingSpinSpeedFavSetting, loadingSpinSpeedSetting, openInNewTabSetting, previewQualitySetting, requestHelper } from '..';
 import { LoadingSpinner } from '../../../Furaffinity-Loading-Animations/src/components/LoadingSpinner';
-import stringIsEmptyOrWhitespace from '../../../GlobalUtils/src/utils/String-Functions/StringIsEmptyOrWhitespace';
-import trimEnd from '../../../GlobalUtils/src/utils/String-Functions/TrimEnd';
 import { EmbeddedHTML } from '../components/EmbeddedHTML';
 import { getByLinkFromFigcaption, getFavKey } from '../utils/Utils';
 import '../Styles/Style.css';
+import string from '../../../GlobalUtils/src/string';
 
 export class EmbeddedImage extends EventTarget {
     embeddedElem: HTMLElement;
@@ -103,8 +102,8 @@ export class EmbeddedImage extends EventTarget {
         // Extract user gallery and scraps links from the figure caption
         const userLink = getByLinkFromFigcaption(figure.querySelector('figcaption'));
         if (userLink != null) {
-            const galleryLink = trimEnd(userLink, '/').replace('user', 'gallery');
-            const scrapsLink = trimEnd(userLink, '/').replace('user', 'scraps');
+            const galleryLink = userLink.trimEnd('/').replace('user', 'gallery');
+            const scrapsLink = userLink.trimEnd('/').replace('user', 'scraps');
             if (!window.location.toString().includes(userLink) && !window.location.toString().includes(galleryLink) && !window.location.toString().includes(scrapsLink)) {
                 const openGalleryButton = document.getElementById('eiv-open-gallery-button')!;
                 openGalleryButton.style.display = 'block';
@@ -141,7 +140,7 @@ export class EmbeddedImage extends EventTarget {
             this.submissionImg = doc.getElementById('submissionImg') as HTMLImageElement;
             const imgSrc = this.submissionImg.src;
             let prevSrc = this.submissionImg.getAttribute('data-preview-src') ?? undefined;
-            if (!stringIsEmptyOrWhitespace(prevSrc)) {
+            if (!string.isNullOrWhitespace(prevSrc)) {
                 if (previewQualitySetting.value <= 2) {
                     prevSrc = prevSrc?.replace('@600', '@200');
                 } else if (previewQualitySetting.value === 3) {
@@ -228,7 +227,7 @@ export class EmbeddedImage extends EventTarget {
         let favKey = favButton.getAttribute('key') ?? '';
         let isFav = favButton.getAttribute('isFav') === 'true';
 
-        if (stringIsEmptyOrWhitespace(favKey)) {
+        if (string.isNullOrWhitespace(favKey)) {
             favButton.textContent = 'x';
             return;
         }
@@ -239,7 +238,7 @@ export class EmbeddedImage extends EventTarget {
             loadingTextSpinner.visible = false;
 
             // If the request was successful, set the favorite status to false and update the button text
-            if (!stringIsEmptyOrWhitespace(favKey)) {
+            if (!string.isNullOrWhitespace(favKey)) {
                 favButton.setAttribute('key', favKey);
                 isFav = false;
                 favButton.setAttribute('isFav', isFav.toString());
@@ -255,7 +254,7 @@ export class EmbeddedImage extends EventTarget {
             loadingTextSpinner.visible = false;
 
             // If the request was successful, set the favorite status to true and update the button text
-            if (!stringIsEmptyOrWhitespace(favKey)) {
+            if (!string.isNullOrWhitespace(favKey)) {
                 favButton.setAttribute('key', favKey);
                 isFav = true;
                 favButton.setAttribute('isFav', isFav.toString());
@@ -285,7 +284,7 @@ export class EmbeddedImage extends EventTarget {
                     // and the target is not a checkbox
                     if (!event.ctrlKey && !event.target.id.includes('favbutton') && event.target.getAttribute('type') !== 'checkbox') {
                         // If the target has a href attribute, return
-                        if (!stringIsEmptyOrWhitespace(event.target.getAttribute('href'))) {
+                        if (!string.isNullOrWhitespace(event.target.getAttribute('href'))) {
                             return;
                         }
 

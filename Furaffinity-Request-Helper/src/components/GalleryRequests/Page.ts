@@ -7,8 +7,8 @@ import { Browse, BrowseOptions } from '../SearchRequests/Browse';
 import { Search, SearchOptions } from '../SearchRequests/Search';
 import { FuraffinityRequests } from '../../modules/FuraffinityRequests';
 import { GalleryType } from '../../modules/GalleryRequests';
-import checkTagsAll from '../../../../GlobalUtils/src/utils/FA-Functions/CheckTagsAll';
-import { Logger } from '../../../../GlobalUtils/src/utils/Logger';
+import checkTagsAll from '../../../../GlobalUtils/src/FA-Functions/checkTagsAll';
+import { Logger } from '../../../../GlobalUtils/src/Logger';
 
 export class Page {
     static async getGalleryPage(username: string | undefined, folderId: number | undefined, pageNumber: number | undefined, galleryType: GalleryType, semaphore: Semaphore): Promise<Document | undefined> {

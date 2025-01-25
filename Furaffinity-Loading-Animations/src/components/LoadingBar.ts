@@ -1,5 +1,4 @@
 import { ILoadingSpinner } from '../modules/ILoadingSpinner';
-import trimEnd from '../../../GlobalUtils/src/utils/String-Functions/TrimEnd';
 
 export class LoadingBar implements ILoadingSpinner {
     private _delay = 2000;
@@ -54,20 +53,20 @@ export class LoadingBar implements ILoadingSpinner {
     }
 
     get cornerRadius(): number {
-        return parseFloat(trimEnd(this._loadingBar.style.borderRadius, 'px'));
+        return parseFloat(this._loadingBar.style.borderRadius.trimEnd('px'));
     }
     set cornerRadius(value: number) {
-        if (parseFloat(trimEnd(this._loadingBar.style.borderRadius, 'px')) === value) {
+        if (parseFloat(this._loadingBar.style.borderRadius.trimEnd('px')) === value) {
             return;
         }
         this._loadingBar.style.borderRadius = value + 'px';
     }
 
     get height(): number {
-        return parseFloat(trimEnd(this._loadingBar.style.height, 'px'));
+        return parseFloat(this._loadingBar.style.height.trimEnd('px'));
     }
     set height(value: number) {
-        if (parseFloat(trimEnd(this._loadingBar.style.height, 'px')) === value) {
+        if (parseFloat(this._loadingBar.style.height.trimEnd('px')) === value) {
             return;
         }
         this._loadingBar.style.height = value + 'px';
@@ -75,10 +74,10 @@ export class LoadingBar implements ILoadingSpinner {
     }
 
     get fontSize(): number {
-        return parseFloat(trimEnd(this._loadingBar.style.fontSize, 'px'));
+        return parseFloat(this._loadingBar.style.fontSize.trimEnd('px'));
     }
     set fontSize(value: number) {
-        if (parseFloat(trimEnd(this._loadingBar.style.fontSize, 'px')) === value) {
+        if (parseFloat(this._loadingBar.style.fontSize.trimEnd('px')) === value) {
             return;
         }
 

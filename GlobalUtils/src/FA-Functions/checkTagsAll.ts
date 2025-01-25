@@ -1,4 +1,4 @@
-import checkTags from './CheckTags';
+import checkTags from './checkTags';
 
 export default function (doc: Document | undefined | null): void {
     if (doc == null) {

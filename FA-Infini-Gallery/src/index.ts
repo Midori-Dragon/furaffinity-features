@@ -4,7 +4,7 @@ import { FuraffinityRequests } from '../../Furaffinity-Request-Helper/src/module
 import { SettingType } from '../../Furaffinity-Custom-Settings/src/utils/SettingType';
 import { MatchList } from '../../Furaffinity-Match-List/src/modules/MatchList';
 import { LoadingSpinner } from '../../Furaffinity-Loading-Animations/src/components/LoadingSpinner';
-import { GMInfo } from '../../GlobalUtils/src/utils/Browser-API/GMInfo';
+import { GMInfo } from '../../GlobalUtils/src/Browser-API/GMInfo';
 
 declare global {
     interface Window {

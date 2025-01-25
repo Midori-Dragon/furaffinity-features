@@ -5,11 +5,7 @@ export enum LogLevel {
 }
 
 export class Logger {
-    static {
-        window.__FF_GLOBAL_LOG_LEVEL__ = LogLevel.Error;
-    }
-
-    private static log(logLevel = 3, ...args: any[]): void {
+    private static log(logLevel = LogLevel.Warning, ...args: any[]): void {
         if (logLevel > window.__FF_GLOBAL_LOG_LEVEL__) {
             return;
         }

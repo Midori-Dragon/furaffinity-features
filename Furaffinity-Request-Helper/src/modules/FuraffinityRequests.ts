@@ -5,7 +5,7 @@ import { PersonalUserRequests } from './PersonalUserRequests';
 import { SubmissionRequests } from './SubmissionRequests';
 import { BrowseOptions } from '../components/SearchRequests/Browse';
 import { SearchOptions } from '../components/SearchRequests/Search';
-import { Logger } from '../../../GlobalUtils/src/utils/Logger';
+import { Logger } from '../../../GlobalUtils/src/Logger';
 
 export class FuraffinityRequests {
     UserRequests: UserRequests;

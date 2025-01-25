@@ -1,4 +1,4 @@
-import extractParameterFromURL from '../../../GlobalUtils/src/utils/URL-Functions/ExtractParameter';
+import extractParameterFromURL from '../../../GlobalUtils/src/URL-Functions/extractParameter';
 import { CustomData } from './CustomData';
 
 export class CustomPage extends EventTarget {

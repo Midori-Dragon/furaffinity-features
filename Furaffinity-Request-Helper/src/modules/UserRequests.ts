@@ -3,7 +3,7 @@ import { Semaphore } from '../utils/Semaphore';
 import { FuraffinityRequests } from './FuraffinityRequests';
 import { GalleryRequests } from './GalleryRequests';
 import { SearchRequests } from './SearchRequests';
-import { Logger } from '../../../GlobalUtils/src/utils/Logger';
+import { Logger } from '../../../GlobalUtils/src/Logger';
 
 export class UserRequests {
     readonly GalleryRequests: GalleryRequests;

@@ -1,7 +1,7 @@
 import { FAImage } from '../components/FAImage';
 import { waitForCondition } from '../utils/Utils';
 import '../styles/Style.css';
-import checkTags from '../../../GlobalUtils/src/utils/FA-Functions/CheckTags';
+import checkTags from '../../../GlobalUtils/src/FA-Functions/checkTags';
 
 export class CustomImageViewer extends EventTarget {
     imageUrl: string;

@@ -4,7 +4,7 @@ import { Page } from './Page';
 import { FuraffinityRequests } from '../../modules/FuraffinityRequests';
 import { Semaphore } from '../../utils/Semaphore';
 import { convertToNumber } from '../../utils/GeneralUtils';
-import { Logger } from '../../../../GlobalUtils/src/utils/Logger';
+import { Logger } from '../../../../GlobalUtils/src/Logger';
 
 export class Favorites {
     private readonly semaphore: Semaphore;
@@ -15,6 +15,14 @@ export class Favorites {
 
     static get hardLink(): string {
         return FuraffinityRequests.fullUrl + '/favorites/';
+    }
+
+    async getSubmissionDataFavId(username : string, submissionId?: string | number, fromDataFavId?: string | number, toDataFavId?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<number> {
+        submissionId = convertToNumber(submissionId);
+        fromDataFavId = convertToNumber(fromDataFavId);
+        toDataFavId = convertToNumber(toDataFavId);
+        
+        return await WaitAndCallAction.callFunctionAsync(getSubmissionDataFavId, [username, submissionId, fromDataFavId, toDataFavId, this.semaphore], action, delay);
     }
 
     async getFiguresBetweenIds(username: string, fromId?: string | number, toId?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
@@ -71,6 +79,47 @@ export class Favorites {
         
         return await WaitAndCallAction.callFunctionAsync(Page.getFavoritesPage, [username, fromDataFavId, direction, this.semaphore], action, delay);
     }
+}
+
+async function getSubmissionDataFavId(username: string, submissionId: number | undefined, fromDataFavId: number | undefined, toDataFavId: number | undefined, semaphore: Semaphore): Promise<number> {
+    if (submissionId == null || submissionId <= 0) {
+        Logger.logError('No submissionId given');
+        return -1;
+    }
+    if (fromDataFavId == null || fromDataFavId <= 0) {
+        Logger.logWarning('fromDataFavId must be greater than 0. Using default 1 instead.');
+        fromDataFavId = -1;
+    }
+    if (toDataFavId == null || toDataFavId <= 0) {
+        Logger.logWarning('toDataFavId must be greater than 0. Using default 1 instead.');
+        toDataFavId = -1;
+    }
+
+    let dataFavId = fromDataFavId;
+    let lastFigureId: string | undefined;
+    let running = true;
+    while (running) {
+        const figures = await getFavoritesFigures(username, dataFavId, 1, semaphore);
+        let currFigureId = lastFigureId;
+        if (figures.length !== 0) {
+            currFigureId = figures[0].id;
+            const dataFavIdString = figures[figures.length - 1].getAttribute('data-fav-id');
+            if (dataFavIdString == null) {
+                running = false;
+                break;
+            }
+            dataFavId = parseInt(dataFavIdString);
+            const resultFigure = figures.find(figure => figure.id.trimStart('sid-') === submissionId.toString());
+            if (resultFigure != null) {
+                return parseInt(resultFigure.getAttribute('data-fav-id')!);
+            }
+        }
+        if (currFigureId === lastFigureId) {
+            running = false;
+        }
+    }
+
+    return -1;
 }
 
 async function getFavoritesFiguresTillId(username: string, toId: number | undefined, fromDataFavId: number | undefined, semaphore: Semaphore): Promise<HTMLElement[][]> {
@@ -363,7 +412,7 @@ async function getFavoritesFiguresBetweenPages(username: string, fromDataFavId: 
         fromDataFavId = -1;
     }
     if (toDataFavId == null || toDataFavId <= 0) {
-        Logger.logError('toDataFavId must be greater than 0. Using default 1 instead.');
+        Logger.logWarning('toDataFavId must be greater than 0. Using default 1 instead.');
         toDataFavId = -1;
     }
 
@@ -401,6 +450,7 @@ async function getFavoritesFiguresBetweenPages(username: string, fromDataFavId: 
 }
 
 async function getFavoritesFigures(username: string, dataFavId: number | undefined, direction: number | undefined, semaphore: Semaphore): Promise<HTMLElement[]> {
+    Logger.logInfo(`Getting Favorites of "${username}" since id "${dataFavId}" and direction "${direction}".`);
     const galleryDoc = await Page.getFavoritesPage(username, dataFavId, direction, semaphore);
     if (!galleryDoc || !(galleryDoc instanceof Document) || galleryDoc.getElementById('no-images')) {
         Logger.logInfo(`No images found at favorites of "${username}" on page "${dataFavId}".`);

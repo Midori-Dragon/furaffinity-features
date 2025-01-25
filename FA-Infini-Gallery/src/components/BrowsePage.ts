@@ -1,4 +1,3 @@
-import trimEnd from '../../../GlobalUtils/src/utils/String-Functions/TrimEnd';
 import { requestHelper, showPageSeparatorSetting } from '../index';
 import { IGalleryPage } from '../modules/IGalleryPage';
 import { createSeparatorElem, getFiguresFromPage } from '../utils/Utils';
@@ -25,7 +24,8 @@ export class BrowsePage implements IGalleryPage {
         for (const optionContainer of Array.from(optionContainers ?? [])) {
             try {
                 // Get the name of the option from the strong element
-                const optionName = trimEnd(optionContainer?.querySelector('strong')?.textContent?.toLowerCase() ?? '', ':');
+                let optionName = optionContainer?.querySelector('strong')?.textContent?.toLowerCase() ?? '';
+                optionName = optionName.trimEnd(':');
                 // Get the value of the option from the selected option element
                 const optionValue = optionContainer?.querySelector('option[selected]')?.getAttribute('value');
                 // Set the option in the browse options object

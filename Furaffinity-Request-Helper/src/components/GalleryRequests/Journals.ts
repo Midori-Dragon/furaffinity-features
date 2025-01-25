@@ -5,7 +5,7 @@ import { PercentHelper } from '../../utils/PercentHelper';
 import { Page } from './Page';
 import { FuraffinityRequests } from '../../modules/FuraffinityRequests';
 import { convertToNumber } from '../../utils/GeneralUtils';
-import { Logger } from '../../../../GlobalUtils/src/utils/Logger';
+import { Logger } from '../../../../GlobalUtils/src/Logger';
 
 export class Journals {
     private readonly _semaphore: Semaphore;
@@ -16,6 +16,14 @@ export class Journals {
 
     static get hardLink(): string {
         return FuraffinityRequests.fullUrl + '/journals/';
+    }
+
+    async getJournalPageNo(username: string, journalId?: string | number, fromPageNumber?: string | number, toPageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<number> {
+        journalId = convertToNumber(journalId);
+        fromPageNumber = convertToNumber(fromPageNumber);
+        toPageNumber = convertToNumber(toPageNumber);
+        
+        return await WaitAndCallAction.callFunctionAsync(getJournalPageNo, [username, journalId, fromPageNumber, toPageNumber, this._semaphore], action, delay);
     }
 
     async getFiguresBetweenIds(username: string, fromId?: string | number, toId?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
@@ -70,6 +78,43 @@ export class Journals {
         
         return await WaitAndCallAction.callFunctionAsync(Page.getJournalsPage, [username, pageNumber, this._semaphore], action, delay);
     }
+}
+
+async function getJournalPageNo(username: string, journalId: number | undefined, fromPageNumber: number | undefined, toPageNumber: number | undefined, semaphore: Semaphore, percentId?: string | number): Promise<number> {
+    if (journalId == null || journalId <= 0) {
+        Logger.logError('No journalId given');
+        return -1;
+    }
+    if (fromPageNumber == null || fromPageNumber <= 0) {
+        Logger.logWarning('fromPageNumber must be greater than 0. Using default 1 instead.');
+        fromPageNumber = 1;
+    }
+    if (toPageNumber == null || toPageNumber === 0) {
+        Logger.logWarning('toPageNumber must be greater than 0. Using default 1 instead.');
+        toPageNumber = 1;
+    } else if (toPageNumber < 0) {
+        toPageNumber = Number.MAX_SAFE_INTEGER;
+    }
+
+    const direction = fromPageNumber <= toPageNumber ? 1 : -1;
+    const totalPages = Math.abs(toPageNumber - fromPageNumber) + 1;
+    let completedPages = 0;
+    for (let i = fromPageNumber; i <= toPageNumber; i += direction) {
+        const figures = await getJournalsSections(username, i, semaphore);
+        if (figures.length === 0) {
+            i = toPageNumber;
+        } else {
+            const resultFigure = figures.find(figure => figure.id.trimStart('jid-') === journalId.toString());
+            if (resultFigure != null) {
+                return i;
+            }
+        }
+            
+        completedPages++;
+        PercentHelper.updatePercentValue(percentId, completedPages, totalPages);
+    }
+
+    return -1;
 }
 
 async function getJournalsSectionsTillId(username: string, toId: number | undefined, fromPage: number | undefined, semaphore: Semaphore): Promise<HTMLElement[][]> {
@@ -229,16 +274,20 @@ async function getJournalsSectionsBetweenIds(username: string, fromId: number | 
 }
 
 async function getJournalsSectionsTillPage(username: string, toPageNumber: number | undefined, semaphore: Semaphore, percentId?: string | number): Promise<HTMLElement[][]> {
-    if (toPageNumber == null || toPageNumber <= 0) {
+    if (toPageNumber == null || toPageNumber === 0) {
         Logger.logWarning('toPageNumber must be greater than 0. Using default 1 instead.');
         toPageNumber = 1;
+    } else if (toPageNumber < 0) {
+        toPageNumber = Number.MAX_SAFE_INTEGER;
     }
 
     const allSections = [];
     let completedPages = 0;
     for (let i = 1; i <= toPageNumber; i++) {
         const sections = await getJournalsSections(username, i, semaphore);
-        if (sections.length !== 0) {
+        if (sections.length === 0) {
+            i = toPageNumber;
+        } else {
             allSections.push(sections);
         }
 
@@ -286,9 +335,11 @@ async function getJournalsSectionsBetweenPages(username: string, fromPageNumber:
         Logger.logWarning('fromPageNumber must be greater than 0. Using default 1 instead.');
         fromPageNumber = 1;
     }
-    if (toPageNumber == null || toPageNumber <= 0) {
-        Logger.logError('toPageNumber must be greater than 0. Using default 1 instead.');
+    if (toPageNumber == null || toPageNumber === 0) {
+        Logger.logWarning('toPageNumber must be greater than 0. Using default 1 instead.');
         toPageNumber = 1;
+    } else if (toPageNumber < 0) {
+        toPageNumber = Number.MAX_SAFE_INTEGER;
     }
 
     const allSections = [];
@@ -297,7 +348,9 @@ async function getJournalsSectionsBetweenPages(username: string, fromPageNumber:
     let completedPages = 0;
     for (let i = fromPageNumber; i <= toPageNumber; i += direction) {
         const sections = await getJournalsSections(username, i, semaphore);
-        if (sections.length !== 0) {
+        if (sections.length === 0) {
+            i = toPageNumber;
+        } else {
             allSections.push(sections);
         }
 
@@ -313,6 +366,8 @@ async function getJournalsSections(username: string, pageNumber: number | undefi
         Logger.logWarning('pageNumber must be greater than 0. Using default 1 instead.');
         pageNumber = 1;
     }
+
+    Logger.logInfo(`Getting Journals of "${username}" on page "${pageNumber}".`);
 
     const galleryDoc = await Page.getJournalsPage(username, pageNumber, semaphore);
     if (!galleryDoc) {

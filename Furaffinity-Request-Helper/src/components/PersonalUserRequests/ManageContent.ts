@@ -2,7 +2,7 @@ import { Semaphore } from '../../utils/Semaphore';
 import { WaitAndCallAction } from '../../utils/WaitAndCallAction';
 import { FuraffinityRequests } from '../../modules/FuraffinityRequests';
 import { convertToNumber } from '../../utils/GeneralUtils';
-import { Logger } from '../../../../GlobalUtils/src/utils/Logger';
+import { Logger } from '../../../../GlobalUtils/src/Logger';
 
 export class ManageContent {
     private readonly _semaphore: Semaphore;

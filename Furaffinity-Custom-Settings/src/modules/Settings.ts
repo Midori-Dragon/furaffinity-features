@@ -1,5 +1,5 @@
 import { showResetButtonSetting } from '..';
-import { Logger } from '../../../GlobalUtils/src/utils/Logger';
+import { Logger } from '../../../GlobalUtils/src/Logger';
 import { ISetting } from '../components/ISetting';
 import { SettingAction } from '../components/SettingAction';
 import { SettingBoolean } from '../components/SettingBoolean';

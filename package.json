@@ -11,6 +11,8 @@
     "build:Furaffinity-Loading-Animations": "webpack --config ./Furaffinity-Loading-Animations/webpack.config.cjs",
     "build:Furaffinity-Custom-Pages": "webpack --config ./Furaffinity-Custom-Pages/webpack.config.cjs",
     "build:Furaffinity-Custom-Settings": "webpack --config ./Furaffinity-Custom-Settings/webpack.config.cjs",
+    "build:FA-Webcomic-Auto-Loader": "webpack --config ./FA-Webcomic-Auto-Loader/webpack.config.cjs",
+    "build:FA-Webcomic-Auto-Loader-Deps": "node build-scripts/build-with-deps.cjs ./FA-Webcomic-Auto-Loader/webpack.config.cjs",
     "build:FA-Infini-Gallery": "webpack --config ./FA-Infini-Gallery/webpack.config.cjs",
     "build:FA-Infini-Gallery-Deps": "node build-scripts/build-with-deps.cjs ./FA-Infini-Gallery/webpack.config.cjs",
     "build:FA-Embedded-Image-Viewer": "webpack --config ./FA-Embedded-Image-Viewer/webpack.config.cjs",

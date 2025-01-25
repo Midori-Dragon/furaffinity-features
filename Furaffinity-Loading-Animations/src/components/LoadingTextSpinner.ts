@@ -1,6 +1,5 @@
 import { ILoadingSpinner } from '../modules/ILoadingSpinner';
 import { removeTextNodes } from '../utils/Utils';
-import trimEnd from '../../../GlobalUtils/src/utils/String-Functions/TrimEnd';
 
 export class LoadingTextSpinner implements ILoadingSpinner {
     private _characters = ['\u25DC', '\u25E0', '\u25DD', '\u25DE', '\u25E1', '\u25DF'];
@@ -32,10 +31,10 @@ export class LoadingTextSpinner implements ILoadingSpinner {
     }
 
     get fontSize(): number {
-        return parseFloat(trimEnd(this._spinner.style.fontSize, 'px'));
+        return parseFloat(this._spinner.style.fontSize.trimEnd('px'));
     }
     set fontSize(value: number) {
-        if (parseFloat(trimEnd(this._spinner.style.fontSize, 'px')) === value) {
+        if (parseFloat(this._spinner.style.fontSize.trimEnd('px')) === value) {
             return;
         }
         this._spinner.style.fontSize = value + 'px';

@@ -1,4 +1,3 @@
-import trimEnd from '../../../GlobalUtils/src/utils/String-Functions/TrimEnd';
 import { pageSeparatorTextSetting } from '../index';
 
 export function createSeparatorElem(pageNo: number): HTMLDivElement {
@@ -37,7 +36,7 @@ export function getUserNameFromUrl(url: string): string {
     if (url.includes('?')) {
         url = url.substring(0, url.indexOf('?'));
     }
-    url = trimEnd(url, '/');
+    url = url.trimEnd('/');
     return url.substring(url.lastIndexOf('/') + 1);
 }
 

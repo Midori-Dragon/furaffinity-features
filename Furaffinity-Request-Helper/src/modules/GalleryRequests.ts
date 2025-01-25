@@ -6,7 +6,7 @@ import { Scraps } from '../components/GalleryRequests/Scraps';
 import { Favorites } from '../components/GalleryRequests/Favorites';
 import { Journals } from '../components/GalleryRequests/Journals';
 import { Page } from '../components/GalleryRequests/Page';
-import { Logger } from '../../../GlobalUtils/src/utils/Logger';
+import { Logger } from '../../../GlobalUtils/src/Logger';
 
 export class GalleryRequests {
     readonly Gallery: Gallery;
@@ -22,6 +22,43 @@ export class GalleryRequests {
         this.Scraps = new Scraps(this._semaphore);
         this.Favorites = new Favorites(this._semaphore);
         this.Journals = new Journals(this._semaphore);
+    }
+
+    static async getSubmissionPageNo(username: string, submissionId: number | undefined, folderId: number | undefined, fromPageNumber: number | undefined, toPageNumber: number | undefined, galleryType: GalleryType, semaphore: Semaphore, percentId?: string | number): Promise<number> {
+        if (submissionId == null || submissionId <= 0) {
+            Logger.logError('No submissionId given');
+            return -1;
+        }
+        if (fromPageNumber == null || fromPageNumber <= 0) {
+            Logger.logWarning('fromPageNumber must be greater than 0. Using default 1 instead.');
+            fromPageNumber = 1;
+        }
+        if (toPageNumber == null || toPageNumber === 0) {
+            Logger.logWarning('toPageNumber must be greater than 0. Using default 1 instead.');
+            toPageNumber = 1;
+        } else if (toPageNumber < 0) {
+            toPageNumber = Number.MAX_SAFE_INTEGER;
+        }
+
+        const direction = fromPageNumber <= toPageNumber ? 1 : -1;
+        const totalPages = Math.abs(toPageNumber - fromPageNumber) + 1;
+        let completedPages = 0;
+        for (let i = fromPageNumber; i <= toPageNumber; i += direction) {
+            const figures = await GalleryRequests.getGalleryFigures(username, folderId, i, galleryType, semaphore);
+            if (figures.length === 0) {
+                i = toPageNumber;
+            } else {
+                const resultFigure = figures.find(figure => figure.id.trimStart('sid-') === submissionId.toString());
+                if (resultFigure != null) {
+                    return i;
+                }
+            }
+            
+            completedPages++;
+            PercentHelper.updatePercentValue(percentId, completedPages, totalPages);
+        }
+
+        return -1;
     }
 
     static async getGalleryFiguresTillId(username: string, folderId: number | undefined, toId: number | undefined, fromPage: number | undefined, galleryType: GalleryType, semaphore: Semaphore): Promise<HTMLElement[][]> {
@@ -181,16 +218,20 @@ export class GalleryRequests {
     }
 
     static async getGalleryFiguresTillPage(username: string, folderId: number | undefined, toPageNumber: number | undefined, galleryType: GalleryType, semaphore: Semaphore, percentId?: string | number): Promise<HTMLElement[][]> {
-        if (toPageNumber == null || toPageNumber <= 0) {
+        if (toPageNumber == null || toPageNumber === 0) {
             Logger.logWarning('toPageNumber must be greater than 0. Using default 1 instead.');
             toPageNumber = 1;
+        } else if (toPageNumber < 0) {
+            toPageNumber = Number.MAX_SAFE_INTEGER;
         }
 
         const allFigures = [];
         let completedPages = 0;
         for (let i = 1; i <= toPageNumber; i++) {
             const figures = await GalleryRequests.getGalleryFigures(username, folderId, i, galleryType, semaphore);
-            if (figures.length !== 0) {
+            if (figures.length === 0) {
+                i = toPageNumber;
+            } else {
                 allFigures.push(figures);
             }
 
@@ -233,9 +274,11 @@ export class GalleryRequests {
             Logger.logWarning('fromPageNumber must be greater than 0. Using default 1 instead.');
             fromPageNumber = 1;
         }
-        if (toPageNumber == null || toPageNumber <= 0) {
-            Logger.logError('toPageNumber must be greater than 0. Using default 1 instead.');
+        if (toPageNumber == null || toPageNumber === 0) {
+            Logger.logWarning('toPageNumber must be greater than 0. Using default 1 instead.');
             toPageNumber = 1;
+        } else if (toPageNumber < 0) {
+            toPageNumber = Number.MAX_SAFE_INTEGER;
         }
 
         const allFigures = [];
@@ -244,7 +287,9 @@ export class GalleryRequests {
         let completedPages = 0;
         for (let i = fromPageNumber; i <= toPageNumber; i += direction) {
             const figures = await GalleryRequests.getGalleryFigures(username, folderId, i, galleryType, semaphore);
-            if (figures.length !== 0) {
+            if (figures.length === 0) {
+                i = toPageNumber;
+            } else {
                 allFigures.push(figures);
             }
 
@@ -260,6 +305,13 @@ export class GalleryRequests {
             Logger.logWarning('No pageNumber given. Using default value of 1.');
             pageNumber = 1;
         }
+
+        if (folderId == null || folderId <= 0) {
+            Logger.logInfo(`Getting ${galleryType} of "${username}" on page "${pageNumber}".`);
+        } else {
+            Logger.logInfo(`Getting ${galleryType} of "${username}" in folder "${folderId}" on page "${pageNumber}".`);
+        }
+        
         const galleryDoc = await Page.getGalleryPage(username, folderId, pageNumber, galleryType, semaphore);
         if (!galleryDoc || !(galleryDoc instanceof Document) || galleryDoc.getElementById('no-images')) {
             Logger.logInfo(`No images found at ${galleryType} of "${username}" on page "${pageNumber}".`);

@@ -4,7 +4,7 @@ import { IdArray } from '../utils/ArrayHelper';
 import { Page } from '../components/GalleryRequests/Page';
 import { Browse, BrowseOptions } from '../components/SearchRequests/Browse';
 import { Search, SearchOptions } from '../components/SearchRequests/Search';
-import { Logger } from '../../../GlobalUtils/src/utils/Logger';
+import { Logger } from '../../../GlobalUtils/src/Logger';
 
 export class SearchRequests {
     readonly Browse: Browse;
@@ -229,7 +229,7 @@ export class SearchRequests {
             fromPageNumber = 1;
         }
         if (toPageNumber == null || toPageNumber <= 0) {
-            Logger.logError('toPageNumber must be greater than 0. Using default 1 instead.');
+            Logger.logWarning('toPageNumber must be greater than 0. Using default 1 instead.');
             toPageNumber = 1;
         }
 
@@ -481,7 +481,7 @@ export class SearchRequests {
             fromPageNumber = 1;
         }
         if (toPageNumber == null || toPageNumber <= 0) {
-            Logger.logError('toPageNumber must be greater than 0. Using default 1 instead.');
+            Logger.logWarning('toPageNumber must be greater than 0. Using default 1 instead.');
             toPageNumber = 1;
         }
 

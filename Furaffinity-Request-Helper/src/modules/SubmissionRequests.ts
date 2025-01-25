@@ -1,4 +1,4 @@
-import { Logger } from '../../../GlobalUtils/src/utils/Logger';
+import { Logger } from '../../../GlobalUtils/src/Logger';
 import { Semaphore } from '../utils/Semaphore';
 import { WaitAndCallAction } from '../utils/WaitAndCallAction';
 import { FuraffinityRequests } from './FuraffinityRequests';

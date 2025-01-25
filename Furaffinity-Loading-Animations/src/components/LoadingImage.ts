@@ -1,5 +1,4 @@
 import { ILoadingSpinner } from '../modules/ILoadingSpinner';
-import trimEnd from '../../../GlobalUtils/src/utils/String-Functions/TrimEnd';
 
 export class LoadingImage implements ILoadingSpinner {
     delay = 100;
@@ -74,10 +73,10 @@ export class LoadingImage implements ILoadingSpinner {
     }
 
     get size(): number {
-        return parseFloat(trimEnd(this._imageContainer.style.width, 'px'));
+        return parseFloat(this._imageContainer.style.width.trimEnd('px'));
     }
     set size(value: number) {
-        if (parseFloat(trimEnd(this._imageContainer.style.width, 'px')) === value) {
+        if (parseFloat(this._imageContainer.style.width.trimEnd('px')) === value) {
             return;
         }
         this._imageContainer.style.width = this._size + 'px';
