@@ -1,3 +1,9 @@
+declare global {
+    interface Window {
+        __FF_GLOBAL_LOG_LEVEL__: LogLevel;
+    }
+}
+
 export enum LogLevel {
     Error = 1,
     Warning = 2,
@@ -6,6 +12,10 @@ export enum LogLevel {
 
 export class Logger {
     private static log(logLevel = LogLevel.Warning, ...args: any[]): void {
+        if (window.__FF_GLOBAL_LOG_LEVEL__ == null) {
+            window.__FF_GLOBAL_LOG_LEVEL__ = LogLevel.Error;
+        }
+        
         if (logLevel > window.__FF_GLOBAL_LOG_LEVEL__) {
             return;
         }

@@ -7,12 +7,6 @@ Object.defineProperties(window, {
     FASettingType: { get: () => SettingType },
 });
 
-declare global {
-    interface Window {
-        __FF_GLOBAL_LOG_LEVEL__: LogLevel;
-    }
-}
-
 const customSettings = new Settings();   
 customSettings.extensionName = 'Extension Settings';
 customSettings.provider = 'Custom-Furaffinity-Settings';

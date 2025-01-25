@@ -4,7 +4,6 @@ import { LoadingSpinner } from '../../Furaffinity-Loading-Animations/src/compone
 import { MatchList } from '../../Furaffinity-Match-List/src/modules/MatchList';
 import { FuraffinityRequests } from '../../Furaffinity-Request-Helper/src/modules/FuraffinityRequests';
 import { AutoLoader } from './modules/AutoLoader';
-import '../../GlobalUtils/src/Extensions';
 
 declare global {
     interface Window {
@@ -18,7 +17,7 @@ declare global {
     }
 }
 
-export const scriptName = 'FA-Webcomic-Auto-Loader';
+export const scriptName = 'FA Webcomic Auto Loader';
 
 const customSettings = new window.FACustomSettings();
 customSettings.extensionName = 'Extension Settings';

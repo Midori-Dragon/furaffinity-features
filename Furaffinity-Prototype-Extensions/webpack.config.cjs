@@ -4,7 +4,7 @@ const webpack = require('webpack');
 const path = require('path');
 
 module.exports = merge(common, {
-    entry: './Furaffinity-Request-Helper/src/index.ts',
+    entry: './Furaffinity-Prototype-Extensions/src/index.ts',
     output: {
         path: path.resolve(__dirname, 'dist'),
         filename: 'bundle.user.js',
@@ -13,13 +13,12 @@ module.exports = merge(common, {
         new webpack.BannerPlugin({
             banner: `
 // ==UserScript==
-// @name        Furaffinity-Request-Helper
+// @name        Furaffinity-Prototype-Extensions
 // @namespace   Violentmonkey Scripts
-// @require     https://update.greasyfork.org/scripts/000000/0000000/Furaffinity-Prototype-Extensions.js
-// @grant       none
-// @version     1.2.0
+// @grant       GM_info
+// @version     1.0.0
 // @author      Midori Dragon
-// @description Library to simplify requests to Furaffinity
+// @description Library to hold common prototype extensions for your Furaffinity Script
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
 // @license     MIT
 // ==/UserScript==

@@ -16,6 +16,7 @@ module.exports = merge(common, {
 // @name        FA Webcomic Auto Loader
 // @namespace   Violentmonkey Scripts
 // @match       *://*.furaffinity.net/*
+// @require     https://update.greasyfork.org/scripts/000000/0000000/Furaffinity-Prototype-Extensions.js
 // @require     https://update.greasyfork.org/scripts/483952/1478384/Furaffinity-Request-Helper.js
 // @require     https://update.greasyfork.org/scripts/485827/1318253/Furaffinity-Match-List.js
 // @require     https://update.greasyfork.org/scripts/485153/1316289/Furaffinity-Loading-Animations.js

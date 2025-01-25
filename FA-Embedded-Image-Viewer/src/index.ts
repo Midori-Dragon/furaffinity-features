@@ -6,7 +6,6 @@ import { LoadingTextSpinner } from '../../Furaffinity-Loading-Animations/src/com
 import { MatchList } from '../../Furaffinity-Match-List/src/modules/MatchList';
 import { FuraffinityRequests } from '../../Furaffinity-Request-Helper/src/modules/FuraffinityRequests';
 import { CustomImageViewer } from '../../Furaffinity-Submission-Image-Viewer/src/modules/CustomImageViewer';
-import { GMInfo } from '../../GlobalUtils/src/Browser-API/GMInfo';
 import { EmbeddedImage } from './modules/EmbeddedImage';
 import { downloadImage } from './utils/Utils';
 
@@ -23,10 +22,12 @@ declare global {
     }
 }
 
+export const scriptName = 'FA Embedded Image Viewer';
+
 const customSettings = new window.FACustomSettings();
 customSettings.extensionName = 'Extension Settings';
 customSettings.provider = 'Midori\'s Script Settings';
-customSettings.headerName = `${GMInfo.scriptName} Settings`;
+customSettings.headerName = `${scriptName} Settings`;
 
 export const openInNewTabSetting = customSettings.newSetting(window.FASettingType.Boolean, 'Open in new Tab');
 openInNewTabSetting.description = 'Wether to open links in a new Tab or the current one.';

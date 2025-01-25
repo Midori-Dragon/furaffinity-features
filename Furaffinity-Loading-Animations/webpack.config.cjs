@@ -15,6 +15,7 @@ module.exports = merge(common, {
 // ==UserScript==
 // @name        Furaffinity-Loading-Animations
 // @namespace   Violentmonkey Scripts
+// @require     https://update.greasyfork.org/scripts/000000/0000000/Furaffinity-Prototype-Extensions.js
 // @grant       none
 // @version     1.2.0
 // @author      Midori Dragon
