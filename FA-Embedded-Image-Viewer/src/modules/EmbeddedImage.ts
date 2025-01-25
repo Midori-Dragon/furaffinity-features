@@ -64,6 +64,13 @@ export class EmbeddedImage extends EventTarget {
         }
     }
 
+    private async onRemoveSubClick(figure: HTMLElement): Promise<void> {
+        const sid = figure.id.trimStart('sid-');
+        this.remove();
+        await requestHelper.PersonalUserRequests.MessageRequests.NewSubmissions.removeSubmissions([sid]);
+        window.location.reload();
+    }
+
     private invokeRemove(): void {
         this._onRemove?.();
         this.dispatchEvent(new Event('remove'));
@@ -78,6 +85,7 @@ export class EmbeddedImage extends EventTarget {
     createElements(figure: HTMLElement): void {
         // Create the main container for the embedded element
         this.embeddedElem.id = 'eiv-main';
+        this.embeddedElem.setAttribute('eiv-sid', figure.id.trimStart('sid-'));
         this.embeddedElem.innerHTML = EmbeddedHTML.html;
         const ddmenu = document.getElementById('ddmenu')!;
         ddmenu.appendChild(this.embeddedElem);
@@ -125,6 +133,12 @@ export class EmbeddedImage extends EventTarget {
 
         const closeButton = document.getElementById('eiv-close-button')!;
         closeButton.addEventListener('click', this.remove.bind(this));
+
+        if (window.location.toString().toLowerCase().includes('msg/submissions')) {
+            const removeSubButton = document.getElementById('eiv-remove-sub-button')!;
+            removeSubButton.style.display = 'block';
+            removeSubButton.addEventListener('click', () => void this.onRemoveSubClick(figure));
+        }
 
         const previewLoadingSpinnerContainer = document.getElementById('eiv-preview-spinner-container')!;
         previewLoadingSpinnerContainer.addEventListener('click', (): void => {

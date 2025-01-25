@@ -49,7 +49,7 @@ async function removeSubmissionsLocal(submissionIds: string[] | number[] | undef
         ['messagecenter-action', Message.hardActions['remove']],
     ];
     for (const submissionId of submissionIds) {
-        payload.push(['submissions', submissionId.toString()]);
+        payload.push(['submissions[]', submissionId.toString()]);
     }
 
     return await FuraffinityRequests.postHTML(`${NewSubmissions.hardLink}new@72/`, payload, semaphore);

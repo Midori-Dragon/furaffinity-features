@@ -9,6 +9,7 @@ export class EmbeddedHTML {
             <a id="eiv-download-button" type="button" class="eiv-button button standard mobile-fix">Download</a>
             <a id="eiv-open-button" type="button" class="eiv-button button standard mobile-fix">Open</a>
             <a id="eiv-open-gallery-button" type="button" class="eiv-button button standard mobile-fix" style="display: none;">Open Gallery</a>
+            <a id="eiv-remove-sub-button" type="button" class="eiv-button button standard mobile-fix" style="display: none;">Remove Submission</a>
             <a id="eiv-close-button" type="button" class="eiv-button button standard mobile-fix">Close</a>
         </div>
         <div id="eiv-preview-spinner-container"></div>
