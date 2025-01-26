@@ -2,6 +2,7 @@ import { PanableImage } from './PanableImage';
 
 export class FAImage extends PanableImage {
     constructor(zoomEnabled = true, panEnabled = true) {
+        console.log('FAImage init');
         super();
         this.classList.add('siv-fa-image');
         this.classList.add('blocked-content');

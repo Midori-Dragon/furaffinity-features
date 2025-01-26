@@ -8,6 +8,7 @@ export class SyncedStorage {
             Logger.logWarning('SyncedStorage is only available in browser extensions.');
             return;
         }
+        Logger.logInfo(`Setting item in synced storage: ${key}=${value}`);
 
         const api = GMInfo.getBrowserAPI();
         if (api.storage != null) {
@@ -29,6 +30,7 @@ export class SyncedStorage {
             Logger.logWarning('SyncedStorage is only available in browser extensions.');
             return;
         }
+        Logger.logInfo(`Getting item from synced storage: ${key}`);
 
         const api = GMInfo.getBrowserAPI();
         if (api.storage != null) {
@@ -50,6 +52,7 @@ export class SyncedStorage {
             Logger.logWarning('SyncedStorage is only available in browser extensions.');
             return;
         }
+        Logger.logInfo(`Removing item from synced storage: ${key}`);
 
         const api = GMInfo.getBrowserAPI();
         if (api.storage != null) {

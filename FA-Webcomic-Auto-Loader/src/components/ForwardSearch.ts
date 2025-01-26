@@ -3,6 +3,7 @@ import isSubmissionPageInGallery from '../../../GlobalUtils/src/FA-Functions/isS
 import isSubmissionPageInScraps from '../../../GlobalUtils/src/FA-Functions/isSubmissionPageInScraps';
 import { Logger } from '../../../GlobalUtils/src/Logger';
 import string from '../../../GlobalUtils/src/string';
+import getCurrGalleryFolder from '../../../GlobalUtils/src/URL-Functions/getCurrGalleryFolder';
 import generalizeString from '../utils/generalizeString';
 import getDocUsername from '../utils/getDocUsername';
 import { IAutoLoaderSearchable } from './IAutoLoaderSearchable';
@@ -36,13 +37,14 @@ export class ForwardSearch implements IAutoLoaderSearchable {
         }
 
         const currUsername = getDocUsername(document)!;
+        const folderId = getCurrGalleryFolder();
 
         Logger.logInfo(`${scriptName}: finding submission page...`);
         if (this.currSubmissionPageNo == null || this.currSubmissionPageNo < 1) {
             if (isInGallery) {
-                this.currSubmissionPageNo = await requestHelper.UserRequests.GalleryRequests.Gallery.getSubmissionPageNo(currUsername, this._currSid, undefined, -1, -1);
+                this.currSubmissionPageNo = await requestHelper.UserRequests.GalleryRequests.Gallery.getSubmissionPageNo(currUsername, this._currSid, folderId, -1, -1);
             } else if (isInScraps) {
-                this.currSubmissionPageNo = await requestHelper.UserRequests.GalleryRequests.Scraps.getSubmissionPageNo(currUsername, this._currSid, undefined, -1, -1);
+                this.currSubmissionPageNo = await requestHelper.UserRequests.GalleryRequests.Scraps.getSubmissionPageNo(currUsername, this._currSid, -1, -1);
             }
         }
         Logger.logInfo(`${scriptName}: found submission on page '${this.currSubmissionPageNo}'`);
@@ -50,7 +52,7 @@ export class ForwardSearch implements IAutoLoaderSearchable {
         Logger.logInfo(`${scriptName}: searching figures forward...`);
         let figures: HTMLElement[][] = [];
         if (isInGallery) {
-            figures = await requestHelper.UserRequests.GalleryRequests.Gallery.getFiguresBetweenIds(currUsername, undefined, this._currSid);
+            figures = await requestHelper.UserRequests.GalleryRequests.Gallery.getFiguresInFolderBetweenIds(currUsername, folderId, undefined, this._currSid);
         } else if (isInScraps) {
             figures = await requestHelper.UserRequests.GalleryRequests.Scraps.getFiguresBetweenIds(currUsername, undefined, this._currSid);
         }

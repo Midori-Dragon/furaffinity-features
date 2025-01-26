@@ -9,6 +9,7 @@ export class PanableImage extends ZoomableImage {
     private _prevTransition = '';
 
     constructor() {
+        console.log('PanableImage init');
         super();
         this.draggable = false;
         this.addEventListener('mousedown', this.onMouseDown.bind(this));

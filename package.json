@@ -5,18 +5,11 @@
   "type": "module",
   "scripts": {
     "lint": "eslint .",
-    "build:Furaffinity-Request-Helper": "webpack --config ./Furaffinity-Request-Helper/webpack.config.cjs",
-    "build:Furaffinity-Submission-Image-Viewer": "webpack --config ./Furaffinity-Submission-Image-Viewer/webpack.config.cjs",
-    "build:Furaffinity-Match-List": "webpack --config ./Furaffinity-Match-List/webpack.config.cjs",
-    "build:Furaffinity-Loading-Animations": "webpack --config ./Furaffinity-Loading-Animations/webpack.config.cjs",
-    "build:Furaffinity-Custom-Pages": "webpack --config ./Furaffinity-Custom-Pages/webpack.config.cjs",
-    "build:Furaffinity-Custom-Settings": "webpack --config ./Furaffinity-Custom-Settings/webpack.config.cjs",
-    "build:FA-Webcomic-Auto-Loader": "webpack --config ./FA-Webcomic-Auto-Loader/webpack.config.cjs",
     "build:FA-Webcomic-Auto-Loader-Deps": "node build-scripts/build-with-deps.cjs ./FA-Webcomic-Auto-Loader/webpack.config.cjs",
-    "build:FA-Infini-Gallery": "webpack --config ./FA-Infini-Gallery/webpack.config.cjs",
     "build:FA-Infini-Gallery-Deps": "node build-scripts/build-with-deps.cjs ./FA-Infini-Gallery/webpack.config.cjs",
-    "build:FA-Embedded-Image-Viewer": "webpack --config ./FA-Embedded-Image-Viewer/webpack.config.cjs",
-    "build:FA-Embedded-Image-Viewer-Deps": "node build-scripts/build-with-deps.cjs ./FA-Embedded-Image-Viewer/webpack.config.cjs"
+    "build:FA-Embedded-Image-Viewer-Deps": "node build-scripts/build-with-deps.cjs ./FA-Embedded-Image-Viewer/webpack.config.cjs",
+    "build:Browser-Extension": "webpack --config ./Furaffinity-Features-Browser/webpack.config.cjs",
+    "build:Browser-Extension-Deps": "node build-scripts/build-with-deps.cjs ./Furaffinity-Features-Browser/webpack.config.cjs"
   },
   "keywords": [],
   "author": "",
@@ -25,7 +18,9 @@
   "dependencies": {
     "@types/chrome": "^0.0.287",
     "@types/firefox-webext-browser": "^120.0.4",
-    "@types/webextension-polyfill": "^0.12.1"
+    "@types/webextension-polyfill": "^0.12.1",
+    "@webcomponents/custom-elements": "^1.6.0",
+    "@webcomponents/webcomponentsjs": "^2.8.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",

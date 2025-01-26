@@ -1,3 +1,4 @@
+import { Logger } from '../../../GlobalUtils/src/Logger';
 import extractParameterFromURL from '../../../GlobalUtils/src/URL-Functions/extractParameter';
 import { CustomData } from './CustomData';
 
@@ -13,6 +14,7 @@ export class CustomPage extends EventTarget {
         this.pageUrl = pageUrl;
         this.parameterName = parameterName;
         CustomPage.customPages.push(this);
+        Logger.logInfo(`New CustomPage at '${pageUrl}'='${parameterName}'`);
     }
 
     get isOpen(): boolean {
@@ -21,7 +23,11 @@ export class CustomPage extends EventTarget {
             return false;
         }
         const parameter = extractParameterFromURL(url, this.parameterName);
-        return parameter?.key === this.parameterName;
+        const isOpen = parameter?.key === this.parameterName;
+        if (isOpen) {
+            Logger.logInfo(`CustomPage '${this.pageUrl}'='${this.parameterName}' is open`);
+        }
+        return isOpen;
     }
 
     get parameterValue(): string | undefined {

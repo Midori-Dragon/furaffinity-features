@@ -1,3 +1,4 @@
+import { Logger } from '../../../GlobalUtils/src/Logger';
 import { requestHelper, showPageSeparatorSetting } from '../index';
 import { IGalleryPage } from '../modules/IGalleryPage';
 import { createSeparatorElem, getFiguresFromPage, getUserNameFromUrl } from '../utils/Utils';
@@ -12,6 +13,7 @@ export class ScrapsPage implements IGalleryPage {
     }
 
     async getPage(): Promise<Document | undefined> {
+        Logger.logInfo(`Getting page ScrapsPage '${this.pageNo}'`);
         const username = getUserNameFromUrl(window.location.toString());
         const page = await requestHelper.UserRequests.GalleryRequests.Scraps.getPage(username, this.pageNo);
         return page;

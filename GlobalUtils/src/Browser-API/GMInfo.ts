@@ -26,7 +26,7 @@ export class GMInfo {
     }
 
     static getBrowserAPI(): any {
-        if (GM_info != null) {
+        if (typeof GM_info !== 'undefined' && GM_info != null) {
             // For userscripts
             return GM_info;
         } else if (typeof browser !== 'undefined' && typeof browser.runtime !== 'undefined') {

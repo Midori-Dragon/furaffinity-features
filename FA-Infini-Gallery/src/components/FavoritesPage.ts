@@ -1,3 +1,4 @@
+import { Logger } from '../../../GlobalUtils/src/Logger';
 import { requestHelper, showPageSeparatorSetting } from '../index';
 import { IGalleryPage } from '../modules/IGalleryPage';
 import { createSeparatorElem, getFiguresFromPage, getUserNameFromUrl } from '../utils/Utils';
@@ -14,6 +15,7 @@ export class FavoritesPage implements IGalleryPage {
     }
 
     async getPage(): Promise<Document | undefined> {
+        Logger.logInfo(`Getting page FavoritesPage '${this.pageNo}'`);
         const username = getUserNameFromUrl(window.location.toString());
         const page = await requestHelper.UserRequests.GalleryRequests.Favorites.getPage(username, this.dataFavId);
         return page;

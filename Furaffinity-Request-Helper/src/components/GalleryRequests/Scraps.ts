@@ -16,13 +16,12 @@ export class Scraps {
         return FuraffinityRequests.fullUrl + '/scraps/';
     }
 
-    async getSubmissionPageNo(username : string, submissionId?: string | number, folderId?: string | number, fromPageNumber?: string | number, toPageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<number> {
+    async getSubmissionPageNo(username : string, submissionId?: string | number, fromPageNumber?: string | number, toPageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<number> {
         submissionId = convertToNumber(submissionId);
-        folderId = convertToNumber(folderId);
         fromPageNumber = convertToNumber(fromPageNumber);
         toPageNumber = convertToNumber(toPageNumber);
         
-        return await WaitAndCallAction.callFunctionAsync(GalleryRequests.getSubmissionPageNo, [username, submissionId, folderId, fromPageNumber, toPageNumber, GalleryType.SCRAPS, this._semaphore], action, delay);
+        return await WaitAndCallAction.callFunctionAsync(GalleryRequests.getSubmissionPageNo, [username, submissionId, undefined, fromPageNumber, toPageNumber, GalleryType.SCRAPS, this._semaphore], action, delay);
     }
 
     async getFiguresBetweenIds(username: string, fromId?: string | number, toId?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {

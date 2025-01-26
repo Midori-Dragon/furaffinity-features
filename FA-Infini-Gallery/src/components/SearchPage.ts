@@ -1,3 +1,4 @@
+import { Logger } from '../../../GlobalUtils/src/Logger';
 import { requestHelper, showPageSeparatorSetting } from '../index';
 import { IGalleryPage } from '../modules/IGalleryPage';
 import { createSeparatorElem, getFiguresFromPage } from '../utils/Utils';
@@ -12,6 +13,7 @@ export class SearchPage implements IGalleryPage {
     }
 
     async getPage(): Promise<Document | undefined> {
+        Logger.logInfo(`Getting page SearchPage '${this.pageNo}'`);
         const page = await requestHelper.UserRequests.SearchRequests.Search.getPage(this.pageNo, this.getSearchOptions());
         return page;
     }
