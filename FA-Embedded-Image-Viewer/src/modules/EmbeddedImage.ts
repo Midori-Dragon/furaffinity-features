@@ -166,12 +166,12 @@ export class EmbeddedImage extends EventTarget {
 
             const submissionContainer = document.getElementById('eiv-submission-container')!;
             const faImageViewer = new window.FAImageViewer(submissionContainer, imgSrc, prevSrc);
-            faImageViewer.faImage.id = 'eiv-submission-img';
-            faImageViewer.faImagePreview.id = 'eiv-preview-submission-img';
-            faImageViewer.faImage.classList.add('eiv-submission-img');
-            faImageViewer.faImagePreview.classList.add('eiv-submission-img');
-            faImageViewer.faImage.style.maxWidth = faImageViewer.faImagePreview.style.maxWidth = window.innerWidth - 20 * 2 + 'px';
-            faImageViewer.faImage.style.maxHeight = faImageViewer.faImagePreview.style.maxHeight = window.innerHeight - ddmenu.clientHeight - 38 * 2 - 20 * 2 - 100 + 'px';
+            faImageViewer.faImage.imgElem.id = 'eiv-submission-img';
+            faImageViewer.faImagePreview.imgElem.id = 'eiv-preview-submission-img';
+            faImageViewer.faImage.imgElem.classList.add('eiv-submission-img');
+            faImageViewer.faImagePreview.imgElem.classList.add('eiv-submission-img');
+            faImageViewer.faImage.imgElem.style.maxWidth = faImageViewer.faImagePreview.imgElem.style.maxWidth = window.innerWidth - 20 * 2 + 'px';
+            faImageViewer.faImage.imgElem.style.maxHeight = faImageViewer.faImagePreview.imgElem.style.maxHeight = window.innerHeight - ddmenu.clientHeight - 38 * 2 - 20 * 2 - 100 + 'px';
             faImageViewer.addEventListener('image-load-start', (): void => {
                 this._imageLoaded = false;
             });

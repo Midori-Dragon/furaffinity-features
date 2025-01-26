@@ -1,4 +1,5 @@
-export class ZoomableImage extends HTMLImageElement {
+export class ZoomableImage {
+    imgElem: HTMLImageElement;
     private _container: HTMLElement | undefined;
     private _speed = 0.1;
     private _size = { w: 0, h: 0 };
@@ -8,25 +9,29 @@ export class ZoomableImage extends HTMLImageElement {
     private _scale = 1;
     private _doInitPosition = true;
 
+    constructor(imgElem: HTMLImageElement) {
+        this.imgElem = imgElem;
+    }
+
     get zoomEnabled(): boolean {
-        return this.getAttribute('zoom-enabled') === 'true';
+        return this.imgElem.getAttribute('zoom-enabled') === 'true';
     }
     set zoomEnabled(value: boolean) {
         if (value) {
-            this.classList.add('zoomable-image');
-            this.setAttribute('zoom-enabled', 'true');
-            this.addEventListener('wheel', this.onWheel.bind(this));
+            this.imgElem.classList.add('zoomable-image');
+            this.imgElem.setAttribute('zoom-enabled', 'true');
+            this.imgElem.addEventListener('wheel', this.onWheel.bind(this));
         } else {
-            this.classList.remove('zoomable-image');
-            this.setAttribute('zoom-enabled', 'false');
-            this.removeEventListener('wheel', this.onWheel.bind(this));
+            this.imgElem.classList.remove('zoomable-image');
+            this.imgElem.setAttribute('zoom-enabled', 'false');
+            this.imgElem.removeEventListener('wheel', this.onWheel.bind(this));
         }
     }
 
     private init(): void {
-        this._container = this.parentElement!;
-        this._size.w = this.offsetWidth;
-        this._size.h = this.offsetHeight;
+        this._container = this.imgElem.parentElement!;
+        this._size.w = this.imgElem.offsetWidth;
+        this._size.h = this.imgElem.offsetHeight;
         
         // Initialize position at center
         this._position.x = (this._container!.offsetWidth - this._size.w) / 2;
@@ -52,7 +57,7 @@ export class ZoomableImage extends HTMLImageElement {
         }
 
         // Calculate pointer position relative to image center
-        const rect = this.getBoundingClientRect();
+        const rect = this.imgElem.getBoundingClientRect();
         const imageCenterX = rect.left + rect.width / 2;
         const imageCenterY = rect.top + rect.height / 2;
         this._pointer.x = event.clientX - imageCenterX;
@@ -83,10 +88,10 @@ export class ZoomableImage extends HTMLImageElement {
         this._position.x = Math.min(Math.max(this._position.x, maxX), -maxX);
         this._position.y = Math.min(Math.max(this._position.y, maxY), -maxY);
 
-        this.style.transform = `translate(${this._position.x}px,${this._position.y}px) scale(${this._scale})`;
+        this.imgElem.style.transform = `translate(${this._position.x}px,${this._position.y}px) scale(${this._scale})`;
     }
 
     disconnectedCallback(): void {
-        this.removeEventListener('wheel', this.onWheel.bind(this));
+        this.imgElem.removeEventListener('wheel', this.onWheel.bind(this));
     }
 }

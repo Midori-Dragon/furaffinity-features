@@ -8,7 +8,7 @@ export class CustomImageViewer extends EventTarget {
     previewUrl?: string;
     parentContainer: HTMLElement;
     faImage: FAImage;
-    faImagePreview: HTMLImageElement;
+    faImagePreview: FAImage;
 
     private _imageLoaded: boolean;
     private _invisibleContainer: HTMLDivElement;
@@ -46,14 +46,12 @@ export class CustomImageViewer extends EventTarget {
         this.parentContainer = parentContainer;
         this.parentContainer.classList.add('siv-parent-container');
 
-        this.faImage = document.createElement('img', { is: 'fa-image' }) as FAImage;
-        // this.faImage = new FAImage();
-        this.faImage.classList.add('siv-image-main');
-        this.faImage.addEventListener('load', this.faImageLoaded.bind(this));
+        this.faImage = new FAImage(document.createElement('img'));
+        this.faImage.imgElem.classList.add('siv-image-main');
+        this.faImage.imgElem.addEventListener('load', this.faImageLoaded.bind(this));
 
-        this.faImagePreview = document.createElement('img', { is: 'fa-image' });
-        // this.faImagePreview = new FAImage();
-        this.faImagePreview.classList.add('siv-image-preview');
+        this.faImagePreview = new FAImage(document.createElement('img'));
+        this.faImagePreview.imgElem.classList.add('siv-image-preview');
 
         this._invisibleContainer = document.createElement('div');
         this._invisibleContainer.classList.add('siv-image-container');
@@ -78,8 +76,8 @@ export class CustomImageViewer extends EventTarget {
     reset(): void {
         this.imageLoaded = false;
 
-        this.faImage.parentNode?.removeChild(this.faImage);
-        this.faImagePreview.parentNode?.removeChild(this.faImagePreview);
+        this.faImage.imgElem.parentNode?.removeChild(this.faImage.imgElem);
+        this.faImagePreview.imgElem.parentNode?.removeChild(this.faImagePreview.imgElem);
 
         this.faImage.src = this.imageUrl;
         this.faImage.dataPreviewSrc = this.previewUrl;
@@ -88,39 +86,39 @@ export class CustomImageViewer extends EventTarget {
             this.faImagePreview.src = ''; 
         } else {
             this.faImagePreview.src = this.previewUrl;
-            this.faImagePreview.addEventListener('load', this.invokePreviewImageLoad.bind(this));
+            this.faImagePreview.imgElem.addEventListener('load', this.invokePreviewImageLoad.bind(this));
         }
     }
 
     async load(): Promise<void> {
         this.reset();
 
-        checkTags(this.faImage);
-        this._invisibleContainer.appendChild(this.faImage);
+        checkTags(this.faImage.imgElem);
+        this._invisibleContainer.appendChild(this.faImage.imgElem);
         document.body.appendChild(this._invisibleContainer);
         if (this.previewUrl != null && !this.imageLoaded) {
-            checkTags(this.faImagePreview);
+            checkTags(this.faImagePreview.imgElem);
             await this.checkImageLoadStart();
         }
     }
 
     private async checkImageLoadStart(): Promise<void> {
-        const condition = (): boolean => this.faImage.offsetWidth !== 0;
+        const condition = (): boolean => this.faImage.imgElem.offsetWidth !== 0;
         await waitForCondition(condition);
 
-        this.faImagePreview.style.width = this.faImage.offsetWidth + 'px';
-        this.faImagePreview.style.height = this.faImage.offsetHeight + 'px';
+        this.faImagePreview.imgElem.style.width = this.faImage.imgElem.offsetWidth + 'px';
+        this.faImagePreview.imgElem.style.height = this.faImage.imgElem.offsetHeight + 'px';
         if (!this.imageLoaded) {
-            this.parentContainer.appendChild(this.faImagePreview);
-            const previewCondition = (): boolean => this.faImagePreview.offsetWidth !== 0;
+            this.parentContainer.appendChild(this.faImagePreview.imgElem);
+            const previewCondition = (): boolean => this.faImagePreview.imgElem.offsetWidth !== 0;
             await waitForCondition(previewCondition);
             this.invokeImageLoadStart();
         }
     }
 
     private faImageLoaded(): void {
-        this.faImagePreview.parentNode?.removeChild(this.faImagePreview);
-        this.parentContainer.appendChild(this.faImage);
+        this.faImagePreview.imgElem.parentNode?.removeChild(this.faImagePreview.imgElem);
+        this.parentContainer.appendChild(this.faImage.imgElem);
         this._invisibleContainer.parentNode?.removeChild(this._invisibleContainer);
         this.imageLoaded = true;
     }

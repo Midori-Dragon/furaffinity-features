@@ -2,32 +2,34 @@ import { ZoomableImage } from './ZoomableImage';
 
 export class PanableImage extends ZoomableImage {
     private _isDragging = false;
+    private _hasMoved = false;
     private _startX = 0;
     private _startY = 0;
     private _lastTranslateX = 0;
     private _lastTranslateY = 0;
     private _prevTransition = '';
 
-    constructor() {
-        console.log('PanableImage init');
-        super();
-        this.draggable = false;
-        this.addEventListener('mousedown', this.onMouseDown.bind(this));
-        this.addEventListener('mousemove', this.onMouseMove.bind(this));
-        this.addEventListener('mouseup', this.onMouseUp.bind(this));
-        this.addEventListener('mouseleave', this.onMouseUp.bind(this));
+    constructor(imgElem: HTMLImageElement) {
+        super(imgElem);
+        this.imgElem.draggable = false;
+        this.imgElem.addEventListener('mousedown', this.onMouseDown.bind(this));
+        this.imgElem.addEventListener('mousemove', this.onMouseMove.bind(this));
+        this.imgElem.addEventListener('mouseup', this.onMouseUp.bind(this));
+        this.imgElem.addEventListener('mouseleave', this.onMouseUp.bind(this));
+        this.imgElem.addEventListener('click', this.onClick.bind(this));
+        this.imgElem.addEventListener('contextmenu', this.onClick.bind(this));
     }
 
     get panEnabled(): boolean {
-        return this.getAttribute('pan-enabled') === 'true';
+        return this.imgElem.getAttribute('pan-enabled') === 'true';
     }
     set panEnabled(value: boolean) {
         if (value) {
-            this.classList.add('panable-image');
-            this.setAttribute('pan-enabled', 'true');
+            this.imgElem.classList.add('panable-image');
+            this.imgElem.setAttribute('pan-enabled', 'true');
         } else {
-            this.classList.remove('panable-image');
-            this.setAttribute('pan-enabled', 'false');
+            this.imgElem.classList.remove('panable-image');
+            this.imgElem.setAttribute('pan-enabled', 'false');
         }
     }
 
@@ -40,13 +42,13 @@ export class PanableImage extends ZoomableImage {
         }
         this._isDragging = value;
         if (value) {
-            this._prevTransition = this.style.transition;
-            this.style.transition = 'none';
-            this.style.cursor = 'grabbing';
+            this._prevTransition = this.imgElem.style.transition;
+            this.imgElem.style.transition = 'none';
+            this.imgElem.style.cursor = 'grabbing';
             this.zoomEnabled = false;
         } else {
-            this.style.transition = this._prevTransition;
-            this.style.cursor = 'grab';
+            this.imgElem.style.transition = this._prevTransition;
+            this.imgElem.style.cursor = 'grab';
             this.zoomEnabled = true;
         }
     }
@@ -58,6 +60,7 @@ export class PanableImage extends ZoomableImage {
         }
         
         this.isDragging = true;
+        this._hasMoved = false;
         this._startX = event.clientX - this._lastTranslateX;
         this._startY = event.clientY - this._lastTranslateY;
     }
@@ -70,25 +73,39 @@ export class PanableImage extends ZoomableImage {
         const x = event.clientX - this._startX;
         const y = event.clientY - this._startY;
         
+        // Check if we've moved more than a small threshold to consider it a drag
+        if (Math.abs(x - this._lastTranslateX) > 5 || Math.abs(y - this._lastTranslateY) > 5) {
+            this._hasMoved = true;
+        }
+        
         this._lastTranslateX = x;
         this._lastTranslateY = y;
         
         // Update transform while preserving any existing scale transform
-        const currentTransform = window.getComputedStyle(this).transform;
+        const currentTransform = window.getComputedStyle(this.imgElem).transform;
         const matrix = new DOMMatrix(currentTransform);
         const scale = matrix.a; // Get current scale value
         
-        this.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
+        this.imgElem.style.transform = `translate(${x}px, ${y}px) scale(${scale})`;
     }
 
     private onMouseUp(): void {
         this.isDragging = false;
     }
 
+    private onClick(event: MouseEvent): void {
+        if (this._hasMoved) {
+            event.preventDefault();
+            event.stopPropagation();
+        }
+    }
+
     disconnectedCallback(): void {
-        this.removeEventListener('mousedown', this.onMouseDown.bind(this));
-        this.removeEventListener('mousemove', this.onMouseMove.bind(this));
-        this.removeEventListener('mouseup', this.onMouseUp.bind(this));
-        this.removeEventListener('mouseleave', this.onMouseUp.bind(this));
+        this.imgElem.removeEventListener('mousedown', this.onMouseDown.bind(this));
+        this.imgElem.removeEventListener('mousemove', this.onMouseMove.bind(this));
+        this.imgElem.removeEventListener('mouseup', this.onMouseUp.bind(this));
+        this.imgElem.removeEventListener('mouseleave', this.onMouseUp.bind(this));
+        this.imgElem.removeEventListener('click', this.onClick.bind(this));
+        this.imgElem.removeEventListener('contextmenu', this.onClick.bind(this));
     }
 }
