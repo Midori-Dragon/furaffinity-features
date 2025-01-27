@@ -7,6 +7,7 @@ import { IGalleryPage } from './IGalleryPage';
 
 export class GalleryManager {
     pageNo = 1;
+    prevFigures: HTMLElement[] = [];
     currDataFavId = '';
     isGallery: boolean;
     isFavorites: boolean;
@@ -69,7 +70,7 @@ export class GalleryManager {
             loadingSpinner.visible = true;
                 
             try {
-                await nextPage.loadPage();
+                this.prevFigures = await nextPage.loadPage(this.prevFigures);
             } finally {
                 loadingSpinner.visible = false;
                 loadingSpinner.dispose();

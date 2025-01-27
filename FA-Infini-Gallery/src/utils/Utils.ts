@@ -27,9 +27,9 @@ export function createSeparatorElem(pageNo: number): HTMLDivElement {
     return nextPageDescContainer;
 }
 
-export function getFiguresFromPage(page: Document): Element[] {
+export function getFiguresFromPage(page: Document): HTMLElement[] {
     const figures = page.querySelectorAll('figure[class*="t"]');
-    return figures == null ? [] : Array.from(figures);
+    return figures == null ? [] : Array.from(figures).map(figure => figure as HTMLElement);
 }
 
 export function getUserNameFromUrl(url: string): string {

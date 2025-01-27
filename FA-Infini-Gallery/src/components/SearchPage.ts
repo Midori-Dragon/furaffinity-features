@@ -100,12 +100,17 @@ export class SearchPage implements IGalleryPage {
         return searchOptions;
     }
 
-    async loadPage(): Promise<void> {
+    async loadPage(prevFigures?: HTMLElement[]): Promise<HTMLElement[]> {
         const page = await this.getPage();
         if (page == null) {
             throw new Error('No page found');
         }
-        const figures = getFiguresFromPage(page);
+        
+        prevFigures ??= [];
+        const prevSids = prevFigures.map(figure => figure.id);
+
+        let figures = getFiguresFromPage(page);
+        figures = figures.filter(figure => !prevSids.includes(figure.id));
 
         if (figures.length !== 0) {
             // Check if we should show a page separator
@@ -123,5 +128,6 @@ export class SearchPage implements IGalleryPage {
         }
 
         window.dispatchEvent(new CustomEvent('ei-update-embedded'));  //Embedded Image Viewer Integration
+        return figures;
     }
 }
