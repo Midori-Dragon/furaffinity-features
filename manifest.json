@@ -1,8 +1,8 @@
 {
   "manifest_version": 3,
-  "name": "FurAffinity Features",
+  "name": "Fur Affinity Features",
   "version": "1.0.0",
-  "description": "A collection of features and enhancements for FurAffinity",
+  "description": "A collection of features and enhancements for Fur Affinity",
   "author": "Midori Dragon",
   "permissions": [
     "storage",
