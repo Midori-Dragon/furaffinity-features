@@ -17,7 +17,11 @@ This project provides various quality-of-life improvements and additional featur
 - As individual userscripts (using Violentmonkey, Tampermonkey, etc.)
 - As a browser extension (Chrome and Firefox)
 
-#### Feature Overview
+### Documentation
+
+Documentation for the project can be found [here](https://midori-dragon.github.io/furaffinity-features/).
+
+### Feature Overview
 
 - [x] [FA Embedded Image Viewer](#fa-embedded-image-viewer)
   - Embedds the clicked image on the current page
