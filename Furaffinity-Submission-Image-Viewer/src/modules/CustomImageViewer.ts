@@ -46,11 +46,11 @@ export class CustomImageViewer extends EventTarget {
         this.parentContainer = parentContainer;
         this.parentContainer.classList.add('siv-parent-container');
 
-        this.faImage = new FAImage(document.createElement('img'));
+        this.faImage = new FAImage();
         this.faImage.imgElem.classList.add('siv-image-main');
         this.faImage.imgElem.addEventListener('load', this.faImageLoaded.bind(this));
 
-        this.faImagePreview = new FAImage(document.createElement('img'));
+        this.faImagePreview = new FAImage();
         this.faImagePreview.imgElem.classList.add('siv-image-preview');
 
         this._invisibleContainer = document.createElement('div');

@@ -1,8 +1,8 @@
 import { PanableImage } from './PanableImage';
 
 export class FAImage extends PanableImage {
-    constructor(imgElem: HTMLImageElement, zoomEnabled = true, panEnabled = true) {
-        super(imgElem);
+    constructor(zoomEnabled = true, panEnabled = true) {
+        super(document.createElement('img'));
         this.imgElem.classList.add('siv-fa-image');
         this.imgElem.classList.add('blocked-content');
         this.imgElem.draggable = false;
