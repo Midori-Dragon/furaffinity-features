@@ -68,7 +68,7 @@ export class EmbeddedImage extends EventTarget {
         const sid = figure.id.trimStart('sid-');
         this.remove();
         await requestHelper.PersonalUserRequests.MessageRequests.NewSubmissions.removeSubmissions([sid]);
-        window.location.reload();
+        figure.remove();
     }
 
     private invokeRemove(): void {
