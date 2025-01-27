@@ -4,9 +4,14 @@ Helper Library to create Custom settings on Furaffinitiy. Also see this Script o
 
 #### Table of Contents
 
-- [How to use](#how-to-use)
-- [Feature Roadmap](#feature-roadmap)
-- [Simplified Documentation](#documentation)
+- [Furaffinity Custom Settings](#furaffinity-custom-settings)
+      - [Table of Contents](#table-of-contents)
+  - [How to use](#how-to-use)
+  - [Feature Roadmap](#feature-roadmap)
+  - [Documentation](#documentation)
+    - [Setting](#setting)
+    - [SettingType](#settingtype)
+    - [Action](#action)
 
 ## How to use
 
@@ -25,7 +30,8 @@ Helper Library to create Custom settings on Furaffinitiy. Also see this Script o
   const setting = CustomSettings.newSetting(SettingType, "Setting Name");
   setting.description = "Setting Description";
   setting.defaultValue = DefaultValue;
-  setting.action = (target) => { doSomething(); }; // For Action Settings when clicked otherwise every time the Setting is changed
+  setting.inInput = (target) => { doSomething(); }; // For Action Settings when clicked otherwise every time the Setting is changed
+  setting.addEventListener("input", (target) => { doSomthing(); }); // Alternative to onInput
   setting.verifyRegex = /Regex/; // For Text Settings only
   ```
   See [Setting](#setting) for more info
@@ -75,14 +81,20 @@ SettingType can have the following values:
 - `SettingType.Boolean` - A Checkbox with a description.
 - `SettingType.Action` - A Button with a certain Action. _(Value returns the name)_
 
-### Action
+### Input
 
-The Action Property defines a Function that is executed when the Setting changed. It receives the Settings Element as a Parameter. Example:
+The `onInput` Property defines a Function that is executed when the Setting changed. It receives the Settings Element as a Parameter. It can also be used with `addEventListener`. Example:
 
 ```javascript
-customSetting.action = (target) => {
+customSetting.onInput = (target) => {
   console.log(target.value); // Target is the HTML Element of the Setting
 };
+```
+
+```javascript
+customSetting.addEventListener("input", (target) => {
+  console.log(target.value);
+});
 ```
 
 Here every time the Checkbox is clicked the program prints out wether it is checked or not.

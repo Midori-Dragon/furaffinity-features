@@ -1,29 +1,42 @@
 # Furaffinity Features
 
-A collection of enhanced features for FurAffinity that can be installed either as individual userscripts or as a complete browser extension (Chrome/Firefox).
+A collection of enhanced features for FurAffinity that can be installed either as individual userscripts or as one browser extension (Chrome/Firefox).
+
+#### Table of Contents
+
+- [Overview](#overview)
+- [Feature Modules](#feature-modules)
+- [Library Modules](#library-modules)
+- [Usage](#usage)
+- [Development](#development)
+- [Contributing](#contributing)
 
 ## Overview
 
-This project provides various quality-of-life improvements and additional features for FurAffinity. It's built with TypeScript and can be used in two ways:
+This project provides various quality-of-life improvements and additional features for Fur Affinity. It's built with TypeScript and can be used in two ways:
 - As individual userscripts (using Violentmonkey, Tampermonkey, etc.)
 - As a browser extension (Chrome and Firefox)
 
-## Architecture
+#### Feature Overview
 
-The project follows a modular architecture:
-- Each feature is a standalone module
-- Modules are organized into categories (modules, components, utils)
-- Global utilities are shared across modules
-- Each module can be used independently as a userscript
-- Modules can utilize features from other modules (with proper dependencies declared)
+- [x] [FA Embedded Image Viewer](#fa-embedded-image-viewer)
+  - Embedds the clicked image on the current page
+  - Works on galleries, favorites, scraps, search and browse pages
+  - Supports preview image
+  - Supports opening, faving and downloading images
+- [x] [FA Infini Gallery](#fa-infini-gallery)
+  - Infinite scrolling functionality for gallery pages.
+  - Works on gallery, favorites, scraps, search and browse pages
+- [x] [FA Webcomic Auto Loader](#fa-webcomic-auto-loader)
+  - Automatic loading of sequential comic pages.
+  - Auto-detection of comic navigation
+  - Searching for similar pages if navigation is not present
+  - Navigation button overwrite
+- [ ] [FA Watches Favorite Viewer](#fa-watches-favorite-viewer) (Planned)
+  - Monitoring favorites of watched users
+  - Viewing favorites of watched users  
 
-### Technical Stack
-- TypeScript for type-safe development
-- ESLint for code quality
-- Webpack for building and bundling
-- Support for both userscript and browser extension formats
-
-## Modules and Features
+## Feature Modules
 
 ### FA Embedded Image Viewer
 Quick image preview functionality that embeds images directly in the current page.
@@ -51,9 +64,20 @@ Automatic loading of sequential comic pages.
 
 **Current Features:**
 - [x] Auto-detection of comic navigation
+- [x] Searching for similar pages if navigation is not present
 - [x] Automatic page loading
 - [x] Loading animations
 - [x] Navigation button customization
+
+### FA Watches Favorite Viewer (Planned)
+Advanced system for monitoring and displaying favorites from watched users.
+
+**Planned Features:**
+- [ ] Scan favorites from watched users
+- [ ] New favorites detection
+- [ ] Favorites organization tools
+
+## Library Modules
 
 ### Furaffinity Custom Settings
 Central settings management system for all modules.
@@ -102,14 +126,6 @@ Enhanced image viewing capabilities.
 - [x] Loading state management
 - [x] Zooming and panning functionality
 
-### Watches Favorite Viewer Module (Planned)
-Advanced system for monitoring and displaying favorites from watched users.
-
-**Planned Features:**
-- [ ] Scan favorites from watched users
-- [ ] New favorites detection
-- [ ] Favorites organization tools
-
 ### Global Utils Module
 Shared utility functions and components used across other modules.
 
@@ -123,7 +139,7 @@ Shared utility functions and components used across other modules.
 
 ### As Userscripts
 1. Install a userscript manager (Violentmonkey, Tampermonkey, etc.)
-2. Select and install desired feature modules
+2. Select and install desired feature modules from my [Greasy Fork](https://greasyfork.org/en/users/967324-midori-tsume) profile
 3. Configure module settings as needed
 
 ### As Browser Extension
@@ -131,7 +147,33 @@ Shared utility functions and components used across other modules.
 2. Enable desired features
 3. Configure extension settings
 
+## Usage
+
+By default all features are enabled. Disabling features is currently not supported, but will be added in the future.
+
+Settings can be found on Fur Affinity itself.
+In the Settings dropdown menu there will be a new category `Extension Settings` with an option `FurAffinity Features`.
+
+Here each Module can be configured separately.
+
+*Note: In Browser Extension mode the Settings will be synced if you're logged into the Browser.*
+
 ## Development
+
+### Architecture
+
+The project follows a modular architecture:
+- Each feature is a standalone module
+- Modules are organized into categories (modules, components, utils)
+- Global utilities are shared across modules
+- Each module can be used independently as a userscript
+- Modules can utilize features from other modules (with proper dependencies declared)
+
+#### Technical Stack
+- TypeScript for type-safe development
+- ESLint for code quality
+- Webpack for building and bundling
+- Support for both userscript and browser extension formats
 
 ### Prerequisites
 - Node.js
@@ -139,13 +181,36 @@ Shared utility functions and components used across other modules.
 
 ### Setup
 ```bash
+git clone https://github.com/MidoriDragon/furaffinity-features.git
+```
+```bash
+cd furaffinity-features
+```
+
+```bash
 npm install
 ```
 
+### Developing
+
+Note that each module has its own webpack configuration. In this webpack config the `banner` for the user script is defined.
+
+**Important: The `banner` is used by the build process to determine the modules dependencies!**
+
 ### Building
+
+Building command names can be found in `package.json`
+
 ```bash
 npm run build:<module_name>
 ```
+
+Example:
+```bash
+npm run build:Browser-Extension-Deps
+```
+
+*Note: `-Deps` suffix indicates that the build will also include dependencies*
 
 ## Contributing
 

@@ -4,9 +4,12 @@ Library for creating image elements on Furaffinity. Also see this Script on Gith
 
 #### Table of Contents
 
-- [How to use](#how-to-use)
-- [Feature Roadmap](#feature-roadmap)
-- [Documentation](#documentation)
+- [Furaffinity Custom Image Viewer](#furaffinity-custom-image-viewer)
+      - [Table of Contents](#table-of-contents)
+  - [How to use](#how-to-use)
+  - [Feature Roadmap](#feature-roadmap)
+  - [Documentation](#documentation)
+    - [CustomImageViewer](#customimageviewer)
 
 ## How to use
 
@@ -23,13 +26,16 @@ Library for creating image elements on Furaffinity. Also see this Script on Gith
   faImageViewer.onImageLoad(() => doSomething()); // occurs if the image is fully loaded
   faImageViewer.onImageLoadStart(() => doSomething()); // occurs if the image started loading
   faImageViewer.onPreviewImageLoad(() => doSomething()); // occurs if the preview image fully loaded
+
+  faImageViewer.addEventListener("imageLoad", () => doSomething()); // alternative to onImageLoad
+  faImageViewer.addEventListener("imageLoadStart", () => doSomething()); // alternative to onImageLoadStart
+  faImageViewer.addEventListener("previewImageLoad", () => doSomething()); // alternative to onPreviewImageLoad
   ```
 
 ## Feature Roadmap
 
 - [x] Support preview image
 - [x] Have different events for image loading
-- [ ] More Testing
 
 ## Documentation
 

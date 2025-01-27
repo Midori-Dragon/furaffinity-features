@@ -17,6 +17,10 @@ Library for creating different loading animations on Furaffinity. Also see this 
   const baseElem = document.getElementById('spinner-container');
   const spinner = new FALoadingSpinner(baseElem); //always give the baseElem as parameter
   spinner.visible = true;
+
+  const textSpinner = new FALoadingTextSpinner(baseElem);
+  const imageSpinner = new FALoadingImage(baseElem);
+  const barSpinner = new FALoadingBar(baseElem);
   ```
   See [FALoadingSpinner](#faloadingspinner) for more info
   <br>

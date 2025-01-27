@@ -12,7 +12,7 @@
     "build:Browser-Extension-Deps": "node build-scripts/build-with-deps.cjs ./Furaffinity-Features-Browser/webpack.config.cjs"
   },
   "keywords": [],
-  "author": "",
+  "author": "Midori Dragon",
   "license": "ISC",
   "description": "",
   "dependencies": {

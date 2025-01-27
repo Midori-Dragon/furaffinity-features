@@ -4,9 +4,12 @@ Helper Library to create a Matchlist for your custom Furaffinitiy Script. Also s
 
 #### Table of Contents
 
-- [How to use](#how-to-use)
-- [Feature Roadmap](#feature-roadmap)
-- [Documentation](#documentation)
+- [Furaffinity Match List](#furaffinity-match-list)
+      - [Table of Contents](#table-of-contents)
+  - [How to use](#how-to-use)
+  - [Feature Roadmap](#feature-roadmap)
+  - [Documentation](#documentation)
+    - [MatchList](#matchlist)
 
 ## How to use
 
@@ -18,10 +21,11 @@ Helper Library to create a Matchlist for your custom Furaffinitiy Script. Also s
   ```
   See [CustomSettings](https://github.com/Midori-Dragon/Furaffinity-Custom-Settings) for more info
   <br>
-- Add Matches to the list with either `addMatch` or `matches.push`:
+- Add Matches to the list with either `addMatch`, `matches.push` or set `matches` directly:
   ```javascript
   matchlist.addMatch("part/of-url");
   matchlist.matches.push("part/of-url");
+  matchlist.matches = ["part/of-url"];
   ```
   See [MatchList](#matchlist) for more info
   <br>
