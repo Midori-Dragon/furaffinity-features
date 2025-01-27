@@ -1,0 +1,96 @@
+{
+    "version": "2.0.0",
+    "tasks": [
+        {
+            "label": "TypeScript Watch",
+            "type": "shell",
+            "command": "npx",
+            "args": [
+                "tsc",
+                "--noEmit",
+                "--watch"
+            ],
+            "problemMatcher": [
+                "$tsc-watch"
+            ],
+            "runOptions": {
+                "runOn": "folderOpen"
+            },
+            "presentation": {
+                "reveal": "never",
+                "echo": false,
+                "focus": false,
+                "panel": "dedicated",
+                "showReuseMessage": false,
+                "clear": true
+            },
+            "group": "none"
+        },
+        {
+            "type": "npm",
+            "script": "build:FA-Webcomic-Auto-Loader-Deps",
+            "group": "build",
+            "problemMatcher": [],
+            "label": "Build: FA-Webcomic-Auto-Loader (with deps)",
+            "presentation": {
+                "showReuseMessage": false,
+                "clear": true
+            }
+        },
+        {
+            "type": "npm",
+            "script": "build:FA-Infini-Gallery-Deps",
+            "group": "build",
+            "problemMatcher": [],
+            "label": "Build: Infini Gallery (with deps)",
+            "presentation": {
+                "showReuseMessage": false,
+                "clear": true
+            }
+        },
+        {
+            "type": "npm",
+            "script": "build:FA-Embedded-Image-Viewer-Deps",
+            "group": "build",
+            "problemMatcher": [],
+            "label": "Build: Embedded Image Viewer (with deps)",
+            "presentation": {
+                "showReuseMessage": false,
+                "clear": true
+            }
+        },
+        {
+            "type": "npm",
+            "script": "build:Browser-Extension",
+            "group": "build",
+            "problemMatcher": [],
+            "label": "Build: Browser Extension",
+            "presentation": {
+                "showReuseMessage": false,
+                "clear": true
+            }
+        },
+        {
+            "type": "npm",
+            "script": "build:Browser-Extension-Deps",
+            "group": "build",
+            "problemMatcher": [],
+            "label": "Build: Browser Extension (with deps)",
+            "presentation": {
+                "showReuseMessage": false,
+                "clear": true
+            }
+        },
+        {
+            "type": "npm",
+            "script": "package:Browser-Extension",
+            "group": "build",
+            "problemMatcher": [],
+            "label": "Package: Browser Extension",
+            "presentation": {
+                "showReuseMessage": false,
+                "clear": true
+            }
+        }
+    ]
+}
