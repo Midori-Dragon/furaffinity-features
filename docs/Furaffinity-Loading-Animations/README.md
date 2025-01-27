@@ -1,17 +1,16 @@
 # Furaffinity Loading Animations
 
-Library for creating different loading animations on Furaffinity. Also see this Script on Greasy Fork as [Furaffinity-Loading-Animations](https://greasyfork.org/de/scripts/485153-furaffinity-loading-animations)
+Library for creating different loading animations on Furaffinity. Also see this Script on GreasyFork as [Furaffinity-Loading-Animations](https://greasyfork.org/scripts/485153-furaffinity-loading-animations)
 
 #### Table of Contents
 
 - [How to use](#how-to-use)
 - [Feature Roadmap](#feature-roadmap)
-- [Simplified Documentation](#documentation)
+- [Documentation](#documentation)
 
 ## How to use
 
-- `@require` this script with the following url "https://raw.githubusercontent.com/Midori-Dragon/Furaffinity-Loading-Animations/main/Furaffinity-Loading-Animations.js"
-  <br>
+- `@require` this script from GreasyFork or (in case of browser extension) import it as a module
 - Create a new Loading Animation:
   ```javascript
   const baseElem = document.getElementById('spinner-container');
@@ -23,7 +22,6 @@ Library for creating different loading animations on Furaffinity. Also see this 
   const barSpinner = new FALoadingBar(baseElem);
   ```
   See [FALoadingSpinner](#faloadingspinner) for more info
-  <br>
 - _Optional:_ Change Settings:
   ```javascript
   spinner.forecolorHex = "#FF0000";

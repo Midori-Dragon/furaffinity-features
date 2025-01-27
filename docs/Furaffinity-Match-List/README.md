@@ -1,26 +1,21 @@
 # Furaffinity Match List
 
-Helper Library to create a Matchlist for your custom Furaffinitiy Script. Also see this Script on Greasy Fork as [Furaffinity-Match-List](https://greasyfork.org/de/scripts/485827-furaffinity-match-list)
+Helper Library to create a Matchlist for your custom Furaffinitiy Script. Also see this Script on GreasyFork as [Furaffinity-Match-List](https://greasyfork.org/scripts/485827-furaffinity-match-list)
 
 #### Table of Contents
 
-- [Furaffinity Match List](#furaffinity-match-list)
-      - [Table of Contents](#table-of-contents)
-  - [How to use](#how-to-use)
-  - [Feature Roadmap](#feature-roadmap)
-  - [Documentation](#documentation)
-    - [MatchList](#matchlist)
+- [How to use](#how-to-use)
+- [Feature Roadmap](#feature-roadmap)
+- [Documentation](#documentation)
 
 ## How to use
 
-- `@require` this script with the following url "https://raw.githubusercontent.com/Midori-Dragon/Furaffinity-Match-List/main/Furaffinity-Match-List.js"
-  <br>
+- `@require` this script from GreasyFork or (in case of browser extension) import it as a module
 - Create a new MatchList:
   ```javascript
   const matchlist = new FAMatchList(customSettings); //customSettings is optional
   ```
   See [CustomSettings](https://github.com/Midori-Dragon/Furaffinity-Custom-Settings) for more info
-  <br>
 - Add Matches to the list with either `addMatch`, `matches.push` or set `matches` directly:
   ```javascript
   matchlist.addMatch("part/of-url");
@@ -28,11 +23,11 @@ Helper Library to create a Matchlist for your custom Furaffinitiy Script. Also s
   matchlist.matches = ["part/of-url"];
   ```
   See [MatchList](#matchlist) for more info
-  <br>
 - Check for matches:
   ```javascript
-  if (matchlist.hasMatch)
+  if (matchlist.hasMatch) {
     doSomething();
+  }
   ```
 
 ## Feature Roadmap

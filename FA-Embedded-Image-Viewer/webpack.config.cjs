@@ -16,6 +16,7 @@ module.exports = merge(common, {
 // @name        FA Embedded Image Viewer
 // @namespace   Violentmonkey Scripts
 // @match       *://*.furaffinity.net/*
+// @require     https://update.greasyfork.org/scripts/000000/0000000/Furaffinity-Prototype-Extensions.js
 // @require     https://update.greasyfork.org/scripts/483952/1486330/Furaffinity-Request-Helper.js
 // @require     https://update.greasyfork.org/scripts/492931/1363921/Furaffinity-Submission-Image-Viewer.js
 // @require     https://update.greasyfork.org/scripts/485827/1326313/Furaffinity-Match-List.js

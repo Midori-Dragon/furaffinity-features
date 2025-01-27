@@ -1,27 +1,23 @@
 # Furaffinity Custom Image Viewer
 
-Library for creating image elements on Furaffinity. Also see this Script on Github as [Furaffinity-Submission-Image-Viewer](https://github.com/Midori-Dragon/Furaffinity-Submission-Image-Viewer)
+Library for creating image elements on Furaffinity. Also see this Script on GreasyFork as [Furaffinity-Submission-Image-Viewer](https://greasyfork.org/scripts/492931-furaffinity-submission-image-viewer)
 
 #### Table of Contents
 
-- [Furaffinity Custom Image Viewer](#furaffinity-custom-image-viewer)
-      - [Table of Contents](#table-of-contents)
-  - [How to use](#how-to-use)
-  - [Feature Roadmap](#feature-roadmap)
-  - [Documentation](#documentation)
-    - [CustomImageViewer](#customimageviewer)
+- [How to use](#how-to-use)
+- [Feature Roadmap](#feature-roadmap)
+- [Documentation](#documentation)
 
 ## How to use
 
-- `@require` this script
-  <br/>
+- `@require` this script from GreasyFork or (in case of browser extension) import it as a module
 - Create a new Custom Image Viewer:
   ```javascript
   const baseElem = document.createElement("div");
   const faImageViewer = new FAImageViewer(baseElem, imgSrc, prevSrc);
   faImageViewer.load(); // starts loading the image
   ```
-- _Optional:_ Subscribe to Events:
+- *Optional:* Subscribe to Events:
   ```javascript
   faImageViewer.onImageLoad(() => doSomething()); // occurs if the image is fully loaded
   faImageViewer.onImageLoadStart(() => doSomething()); // occurs if the image started loading

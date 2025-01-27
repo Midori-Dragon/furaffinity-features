@@ -95,4 +95,4 @@ All Properties of the **RequestHelper** (`Gallery`, `Scraps`, `Favorites`, `Jour
 
 All Properties of the **RequestHelper** (`Gallery`, `Scraps`, `Favorites`, `Journals`) hold the same Static Properties. They all have the following Static Properties:
 
-- `static hardLink` - Link which to use for Gallery (Scraps, Favs, Journals) Request. Default is **FA Domain** (specified in [Request Helper](/fa-request-helper)) + `"/gallery/"` (`"/scraps/"`, `"/favorites/"`, `"/journals/"`)
+- `static hardLink` - Link which to use for Gallery (Scraps, Favs, Journals) Request. Default is **FA Domain** (specified in [Request Helper](/README)) + `"/gallery/"` (`"/scraps/"`, `"/favorites/"`, `"/journals/"`)

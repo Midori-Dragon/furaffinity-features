@@ -1,6 +1,6 @@
 # Furaffinity Custom Pages
 
-Helper Script to create Custom pages on Furaffinitiy. Also see this Script on Greasy Fork as [Furaffinity-Custom-Pages](https://greasyfork.org/de/scripts/475041-furaffinity-custom-pages)
+Helper Script to create Custom pages on Furaffinitiy. Also see this Script on Greasy Fork as [Furaffinity-Custom-Pages](https://greasyfork.org/scripts/476762-furaffinity-custom-pages)
 
 #### Table of Contents
 
@@ -10,21 +10,18 @@ Helper Script to create Custom pages on Furaffinitiy. Also see this Script on Gr
 
 ## How to use
 
-- `@require` this script with the following url "https://raw.githubusercontent.com/Midori-Dragon/Furaffinity-Custom-Pages/main/Furaffinity-Pages-Settings.js"
-  <br>
+- `@require` this script from GreasyFork or (in case of browser extension) import it as a module
 - Create a new CustomPage:
   ```javascript
   const customPage = new FACustomPage("pageUrl", "parameterName");
   ```
   See [CustomPage](#custompage) for more info
-  <br>
 - Subscribe to the onOpen Event (Either directly or with addEventListener):
   ```javascript
   customPage.onopen = (event) => { console.log(event.detail.parameterValue) };
   customPage.addEventListener("onOpen", (event) => { console.log(event.detail.parameterValue) });
   ```
   _`event.detail` is the [CustomData](#customdata) class_
-  <br>
 - Trigger the check for open pages:
   ```javascript
   FACustomPages.checkAllPages();

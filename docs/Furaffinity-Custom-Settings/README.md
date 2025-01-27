@@ -1,22 +1,16 @@
 # Furaffinity Custom Settings
 
-Helper Library to create Custom settings on Furaffinitiy. Also see this Script on Greasy Fork as [Furaffinity-Custom-Settings](https://greasyfork.org/de/scripts/475041-furaffinity-custom-settings)
+Helper Library to create Custom settings on Furaffinitiy. Also see this Script on GreasyFork as [Furaffinity-Custom-Settings](https://greasyfork.org/scripts/475041-furaffinity-custom-settings)
 
 #### Table of Contents
 
-- [Furaffinity Custom Settings](#furaffinity-custom-settings)
-      - [Table of Contents](#table-of-contents)
-  - [How to use](#how-to-use)
-  - [Feature Roadmap](#feature-roadmap)
-  - [Documentation](#documentation)
-    - [Setting](#setting)
-    - [SettingType](#settingtype)
-    - [Action](#action)
+- [How to use](#how-to-use)
+- [Feature Roadmap](#feature-roadmap)
+- [Documentation](#documentation)
 
 ## How to use
 
-- `@require` this script with the following url "https://raw.githubusercontent.com/Midori-Dragon/Furaffinity-Custom-Settings/main/Furaffinity-Custom-Settings.js"
-  <br>
+- `@require` this script from GreasyFork or (in case of browser extension) import it as a module
 - Create Settings Object:
   ```javascript
   const customSettings = new FACustomSettings(); // Multiple Settings Pages can be created
@@ -24,7 +18,6 @@ Helper Library to create Custom settings on Furaffinitiy. Also see this Script o
   customSettings.headerName = "My Script Settings"; // Change the Settings Header Name
   ```
   See [Settings](#settings) for more info
-  <br>
 - Create a new Setting:
   ```javascript
   const setting = CustomSettings.newSetting(SettingType, "Setting Name");
@@ -35,7 +28,6 @@ Helper Library to create Custom settings on Furaffinitiy. Also see this Script o
   setting.verifyRegex = /Regex/; // For Text Settings only
   ```
   See [Setting](#setting) for more info
-  <br>
 - Trigger when settings should be loaded:
   ```javascript
   CustomSettings.loadSettingsMenu(); //loads Navigation Menu & Settings if on Settings Page
