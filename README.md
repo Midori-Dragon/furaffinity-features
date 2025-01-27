@@ -29,10 +29,10 @@ The project follows a modular architecture:
 Quick image preview functionality that embeds images directly in the current page.
 
 **Current Features:**
-- Inline image preview without leaving the current page
-- Preview quality settings
-- Close after opening option
-- Works on galleries, favorites, search and browse pages
+- [x] Inline image preview without leaving the current page
+- [x] Preview quality settings
+- [x] Close after opening option
+- [x] Works on galleries, favorites, search and browse pages
 
 **Planned Features:**
 - [ ] Copy image button for embedded viewer
@@ -41,27 +41,27 @@ Quick image preview functionality that embeds images directly in the current pag
 Infinite scrolling functionality for gallery pages.
 
 **Current Features:**
-- Automatic page loading while scrolling
-- Customizable page separators
-- Works on gallery, favorites, scraps, and search pages
-- Loading animation integration
+- [x] Automatic page loading while scrolling
+- [x] Customizable page separators
+- [x] Works on gallery, favorites, scraps, and search pages
+- [x] Loading animation integration
 
 ### FA Webcomic Auto Loader
 Automatic loading of sequential comic pages.
 
 **Current Features:**
-- Auto-detection of comic navigation
-- Automatic page loading
-- Loading animations
-- Navigation button customization
+- [x] Auto-detection of comic navigation
+- [x] Automatic page loading
+- [x] Loading animations
+- [x] Navigation button customization
 
 ### Furaffinity Custom Settings
 Central settings management system for all modules.
 
 **Current Features:**
-- Settings persistence
-- Multiple setting types (boolean, number, text, action)
-- Per-module settings management
+- [x] Settings persistence
+- [x] Multiple setting types (boolean, number, text, action)
+- [x] Per-module settings management
 
 **Planned Features:**
 - [ ] New setting type combobox
@@ -71,36 +71,36 @@ Central settings management system for all modules.
 Provides loading animations for various async operations.
 
 **Current Features:**
-- Customizable loading spinners
-- Speed control
-- Multiple animation styles
+- [x] Customizable loading spinners
+- [x] Speed control
+- [x] Multiple animation styles
 
 ### Furaffinity Match List
 URL matching system for conditional feature activation.
 
 **Current Features:**
-- Pattern-based URL matching
-- Support for multiple match patterns
-- iframe support configuration
+- [x] Pattern-based URL matching
+- [x] Support for multiple match patterns
+- [x] iframe support configuration
 
 ### Furaffinity Request Helper
 Handles API requests and data fetching.
 
 **Current Features:**
-- API request wrapper for common requests
-- Rate limiting
-- Request queuing
-- Error handling
-- Cross-module request management
+- [x] API request wrapper for common requests
+- [x] Rate limiting
+- [x] Request queuing
+- [x] Error handling
+- [x] Cross-module request management
 
 ### Furaffinity Submission Image Viewer
 Enhanced image viewing capabilities.
 
 **Current Features:**
-- Full-size image viewing
-- Keyboard shortcuts
-- Loading state management
-- Zooming and panning functionality
+- [x] Full-size image viewing
+- [x] Keyboard shortcuts
+- [x] Loading state management
+- [x] Zooming and panning functionality
 
 ### Watches Favorite Viewer Module (Planned)
 Advanced system for monitoring and displaying favorites from watched users.
@@ -114,10 +114,10 @@ Advanced system for monitoring and displaying favorites from watched users.
 Shared utility functions and components used across other modules.
 
 **Current Features:**
-- Cross-module compatibility layer
-- Common utility functions
-- Browser extension integration helpers
-- Logging and debugging utilities
+- [x] Cross-module compatibility layer
+- [x] Common utility functions
+- [x] Browser extension integration helpers
+- [x] Logging and debugging utilities
 
 ## Installation
 
