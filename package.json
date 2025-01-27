@@ -9,7 +9,8 @@
     "build:FA-Infini-Gallery-Deps": "node build-scripts/build-with-deps.cjs ./FA-Infini-Gallery/webpack.config.cjs",
     "build:FA-Embedded-Image-Viewer-Deps": "node build-scripts/build-with-deps.cjs ./FA-Embedded-Image-Viewer/webpack.config.cjs",
     "build:Browser-Extension": "webpack --config ./Furaffinity-Features-Browser/webpack.config.cjs",
-    "build:Browser-Extension-Deps": "node build-scripts/build-with-deps.cjs ./Furaffinity-Features-Browser/webpack.config.cjs"
+    "build:Browser-Extension-Deps": "node build-scripts/build-with-deps.cjs ./Furaffinity-Features-Browser/webpack.config.cjs && node build-scripts/copy-extension-resources.cjs",
+    "package:Browser-Extension": "node build-scripts/copy-extension-resources.cjs && node build-scripts/package-extension.cjs"
   },
   "keywords": [],
   "author": "Midori Dragon",
@@ -24,6 +25,8 @@
     "@eslint/eslintrc": "^3.2.0",
     "@typescript-eslint/eslint-plugin": "^8.21.0",
     "@typescript-eslint/parser": "^8.21.0",
+    "archiver": "^7.0.1",
+    "copy-webpack-plugin": "^12.0.2",
     "css-loader": "^7.1.2",
     "eslint": "^9.19.0",
     "eslint-plugin-import": "^2.31.0",

@@ -17,7 +17,7 @@
         "*://*.furaffinity.net/*"
       ],
       "js": [
-        "/dist/bundle.user.js"
+        "/bundle.user.js"
       ],
       "run_at": "document_idle"
     }
