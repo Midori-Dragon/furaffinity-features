@@ -10,7 +10,7 @@ requestHelper.UserRequests.GalleryRequests;
 
 ## Class Properties
 
-- `GalleryRequests` - Class that holds all Gallery associated Requests (includes Favorites, Scraps and Journals) - [GalleryRequests](./user/gallery-requests)
+- `GalleryRequests` - Class that holds all Gallery associated Requests (includes Favorites, Scraps and Journals) - [GalleryRequests](/user/gallery-requests)
 
 ## Static Properties
 
