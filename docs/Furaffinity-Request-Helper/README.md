@@ -42,9 +42,9 @@ Helper Library (wrapper) for common Requests to Furaffinity. Also see this Scrip
 
 ### Class Properties
 
-- `UserRequests` - Class that holds all User associated Requests - [UserRequests](main/user)
-- `PersonalUserRequests` - Class that holds all Requests associated with your Account - [PersonalUserRequests](main/personal)
-- `SubmissionRequests` - Class that holds all Submission associated Requests - [SubmissionRequests](main/submissions)
+- `UserRequests` - Class that holds all User associated Requests - [UserRequests](./main/user)
+- `PersonalUserRequests` - Class that holds all Requests associated with your Account - [PersonalUserRequests](./main/personal)
+- `SubmissionRequests` - Class that holds all Submission associated Requests - [SubmissionRequests](./main/submissions)
 
 ---
 
