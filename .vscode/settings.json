@@ -149,10 +149,12 @@
         "**/node_modules": true,
         "**/.git": true,
         "**/build": true,
-        "**/.vs": true
+        "**/.vs": true,
+        "**/.github": true
     },
     "search.exclude": {
         "**/node_modules": true,
-        "**/.git": true
+        "**/.git": true,
+        "**/.github": true
     }
 }
