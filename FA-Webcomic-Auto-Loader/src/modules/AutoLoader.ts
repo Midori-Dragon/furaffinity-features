@@ -10,19 +10,19 @@ import getCurrViewSid from '../utils/getDocViewSid';
 import { Lightbox } from './Lightbox';
 
 export class AutoLoader {
-    private _submissionImg: HTMLImageElement;
-    private _currComicNav: ComicNavigation | null | undefined = null;
-    private _comicNavExists = false;
-    private _currSid = -1;
+    submissionImg: HTMLImageElement;
+    currComicNav: ComicNavigation | null | undefined = null;
+    comicNavExists = false;
+    currSid = -1;
     private _loadingSpinner: LoadingSpinner;
     
     constructor() {
         const descriptionElem = document.getElementById('columnpage')?.querySelector('div[class*="submission-description"]');
         if (descriptionElem != null) {
-            this._currComicNav = ComicNavigation.fromElement(descriptionElem as HTMLElement);
-            if (this._currComicNav != null) {
-                if (this._currComicNav.prevId !== -1 || this._currComicNav.firstId !== -1 || this._currComicNav.nextId !== -1) {
-                    this._comicNavExists = true;
+            this.currComicNav = ComicNavigation.fromElement(descriptionElem as HTMLElement);
+            if (this.currComicNav != null) {
+                if (this.currComicNav.prevId !== -1 || this.currComicNav.firstId !== -1 || this.currComicNav.nextId !== -1) {
+                    this.comicNavExists = true;
                     if (overwriteNavButtonsSetting.value) {
                         this.overwriteNavButtons();
                     }
@@ -30,28 +30,28 @@ export class AutoLoader {
             }
         }
 
-        this._currSid = getCurrViewSid(document);
+        this.currSid = getCurrViewSid(document);
 
-        this._submissionImg = document.getElementById('submissionImg')! as HTMLImageElement;
-        this._submissionImg.setAttribute('wal-index', '0');
-        this._submissionImg.setAttribute('wal-sid', this._currSid.toString());
+        this.submissionImg = document.getElementById('submissionImg')! as HTMLImageElement;
+        this.submissionImg.setAttribute('wal-index', '0');
+        this.submissionImg.setAttribute('wal-sid', this.currSid.toString());
 
         const searchButton = document.createElement('a');
-        searchButton.id = this._comicNavExists ? 'wal-auto-load-button' : 'wal-search-button';
+        searchButton.id = this.comicNavExists ? 'wal-auto-load-button' : 'wal-search-button';
         searchButton.classList.add('wal-button', 'button', 'standard', 'mobile-fix');
         searchButton.type = 'button';
         searchButton.style.margin = '20px 0 10px 0';
-        searchButton.textContent = this._comicNavExists ? 'Auto load Pages' : 'Search for similar Pages';
+        searchButton.textContent = this.comicNavExists ? 'Auto load Pages' : 'Search for similar Pages';
         searchButton.addEventListener('click', () => {
-            if (this._comicNavExists) {
+            if (this.comicNavExists) {
                 this.startAutoloader();
             } else {
                 this.startSimilarSearch();
             }
             searchButton.remove();
         });
-        this._submissionImg.parentNode!.appendChild(document.createElement('br'));
-        this._submissionImg.parentNode!.appendChild(searchButton);
+        this.submissionImg.parentNode!.appendChild(document.createElement('br'));
+        this.submissionImg.parentNode!.appendChild(searchButton);
 
         const loadingSpinnerContainer = document.createElement('div');
         loadingSpinnerContainer.classList.add('wal-loading-spinner');
@@ -59,7 +59,7 @@ export class AutoLoader {
         this._loadingSpinner = new window.FALoadingSpinner(loadingSpinnerContainer);
         this._loadingSpinner.delay = loadingSpinSpeedSetting.value;
         this._loadingSpinner.spinnerThickness = 6;
-        this._submissionImg.parentNode!.appendChild(loadingSpinnerContainer);
+        this.submissionImg.parentNode!.appendChild(loadingSpinnerContainer);
     }
 
     startAutoloader(): void {
@@ -68,11 +68,11 @@ export class AutoLoader {
 
     private async startAutoLoaderAsync(): Promise<void> {
         this._loadingSpinner.visible = true;
-        const autoLoader = new AutoLoaderSearch(this._submissionImg, this._currSid, this._currComicNav!);
+        const autoLoader = new AutoLoaderSearch(this.submissionImg, this.currSid, this.currComicNav!);
         const submissions = await autoLoader.search();
         this.addLoadedSubmissions(submissions);
         if (useCustomLightboxSetting.value) {
-            new Lightbox(this._currSid, submissions);
+            new Lightbox(this.currSid, submissions);
         }
         this._loadingSpinner.visible = false;
     }
@@ -83,16 +83,16 @@ export class AutoLoader {
 
     private async startSimilarSearchAsync(): Promise<void> {
         this._loadingSpinner.visible = true;
-        const forwardSearch = new ForwardSearch(this._currSid);
+        const forwardSearch = new ForwardSearch(this.currSid);
         const submissionsAfter = await forwardSearch.search();
 
-        const backwardSearch = new BackwardSearch(this._currSid, backwardSearchSetting.value, forwardSearch.currSubmissionPageNo);
+        const backwardSearch = new BackwardSearch(this.currSid, backwardSearchSetting.value, forwardSearch.currSubmissionPageNo);
         backwardSearch.sidToIgnore.push(...Object.keys(submissionsAfter).map(Number));
         const submissionsBefore = await backwardSearch.search();
 
         this.addLoadedSubmissions(submissionsBefore, submissionsAfter);
         if (useCustomLightboxSetting.value) {
-            new Lightbox(this._currSid, {...submissionsBefore, ...submissionsAfter});
+            new Lightbox(this.currSid, {...submissionsBefore, ...submissionsAfter});
         }
         this._loadingSpinner.visible = false;
     }
@@ -102,9 +102,9 @@ export class AutoLoader {
 
         for (const imgs of imgsArr) {
             Logger.logInfo(`${scriptName}: adding '${Object.keys(imgs).length}' submissions...`);
-            let prevSid = this._currSid;
+            let prevSid = this.currSid;
             for (const sid of Object.keys(imgs).map(Number)) {
-                if (imgs[sid].getAttribute('wal-sid') === this._currSid.toString()) {
+                if (imgs[sid].getAttribute('wal-sid') === this.currSid.toString()) {
                     continue;
                 }
 
@@ -132,7 +132,7 @@ export class AutoLoader {
     }
 
     overwriteNavButtons(): void {
-        if (!this._comicNavExists) {
+        if (!this.comicNavExists) {
             return;
         }
 
@@ -140,12 +140,12 @@ export class AutoLoader {
         const favoriteNav = columnpage?.querySelector('div[class*="favorite-nav"]');
 
         let prevButton = favoriteNav?.children[0];
-        if (prevButton != null && this._currComicNav!.prevId !== -1) {
+        if (prevButton != null && this.currComicNav!.prevId !== -1) {
             if (prevButton.textContent?.toLowerCase()?.includes('prev') ?? false) {
-                (prevButton as HTMLLinkElement).href = `/view/${this._currComicNav!.prevId}/`;
+                (prevButton as HTMLLinkElement).href = `/view/${this.currComicNav!.prevId}/`;
             } else {
                 const prevButtonReal = document.createElement('a');
-                prevButtonReal.href = `/view/${this._currComicNav!.prevId}/`;
+                prevButtonReal.href = `/view/${this.currComicNav!.prevId}/`;
                 prevButtonReal.classList.add('button', 'standard', 'mobile-fix');
                 prevButtonReal.textContent = 'Prev';
                 prevButtonReal.style.marginRight = '4px';
@@ -154,12 +154,12 @@ export class AutoLoader {
         }
 
         let nextButton = favoriteNav?.children[favoriteNav.children.length - 1];
-        if (nextButton != null && this._currComicNav!.nextId !== -1) {
+        if (nextButton != null && this.currComicNav!.nextId !== -1) {
             if (nextButton.textContent?.toLowerCase()?.includes('next') ?? false) {
-                (nextButton as HTMLLinkElement).href = `/view/${this._currComicNav!.nextId}/`;
+                (nextButton as HTMLLinkElement).href = `/view/${this.currComicNav!.nextId}/`;
             } else {
                 const nextButtonReal = document.createElement('a');
-                nextButtonReal.href = `/view/${this._currComicNav!.nextId}/`;
+                nextButtonReal.href = `/view/${this.currComicNav!.nextId}/`;
                 nextButtonReal.classList.add('button', 'standard', 'mobile-fix');
                 nextButtonReal.textContent = 'Next';
                 nextButtonReal.style.marginLeft = '4px';
