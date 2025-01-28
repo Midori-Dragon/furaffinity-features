@@ -66,37 +66,57 @@ async function resolveDependencies(dependencies, resolved = new Set(), order = [
         const modulePath = `./${moduleName}/dist/bundle.user.js`;
         const webpackConfigPath = `./${moduleName}/webpack.config.cjs`;
 
-        if (resolved.has(modulePath)) {
+        // Check in library-modules and feature-modules
+        const libraryModulePath = `./library-modules/${moduleName}/dist/bundle.user.js`;
+        const libraryConfigPath = `./library-modules/${moduleName}/webpack.config.cjs`;
+        const featureModulePath = `./feature-modules/${moduleName}/dist/bundle.user.js`;
+        const featureConfigPath = `./feature-modules/${moduleName}/webpack.config.cjs`;
+
+        if (resolved.has(libraryModulePath) || resolved.has(featureModulePath)) {
             console.log(`${colors.cyan}Skipping already resolved dependency: ${colors.blue}${moduleName}${colors.reset}\n`);
             continue;
         }
 
-        if (fs.existsSync(webpackConfigPath)) {
+        let configPath = null;
+        let buildPath = null;
+
+        // Try library-modules first
+        if (fs.existsSync(libraryConfigPath)) {
+            configPath = libraryConfigPath;
+            buildPath = libraryModulePath;
+        }
+        // Then try feature-modules
+        else if (fs.existsSync(featureConfigPath)) {
+            configPath = featureConfigPath;
+            buildPath = featureModulePath;
+        }
+
+        if (configPath) {
             console.log(`${colors.cyan}Resolving dependency: ${colors.blue}${moduleName}${colors.reset}`);
             try {
                 console.log(`   ${colors.cyan}Building ${colors.blue}${moduleName}${colors.reset}`);
-                await buildModule(webpackConfigPath);
+                await buildModule(configPath);
                 console.log(`   ${colors.green}Successfully built ${moduleName}${colors.reset}`);
             } catch (error) {
                 console.error(`${colors.red}Error building ${moduleName}:${colors.reset}`, error);
                 continue;
             }
 
-            if (fs.existsSync(modulePath)) {
-                resolved.add(modulePath);
-                const { dependencies: subDeps } = await extractDependencies(modulePath, moduleName);
+            if (fs.existsSync(buildPath)) {
+                resolved.add(buildPath);
+                const { dependencies: subDeps } = await extractDependencies(buildPath, moduleName);
                 if (subDeps.length > 0) {
                     console.log(`  ${colors.cyan}Found nested dependencies for ${colors.blue}${moduleName}:${colors.reset}`);
                     subDeps.forEach(subDep => console.log(`    ${colors.blue}- ${subDep}${colors.reset}`));
                 }
                 await resolveDependencies(subDeps, resolved, order);
-                order.push(modulePath);
+                order.push(buildPath);
                 console.log(`   ${colors.green}Added ${moduleName} to build order${colors.reset}`);
             } else {
-                console.warn(`  ${colors.yellow}Warning: Build file not found after building: ${modulePath}${colors.reset}`);
+                console.warn(`  ${colors.yellow}Warning: Build file not found after building: ${buildPath}${colors.reset}`);
             }
         } else {
-            console.warn(`  ${colors.yellow}Warning: Webpack config not found for dependency: ${webpackConfigPath}${colors.reset}`);
+            console.warn(`  ${colors.yellow}Warning: Webpack config not found for dependency in library-modules or feature-modules: ${moduleName}${colors.reset}`);
         }
     }
 

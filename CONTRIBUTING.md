@@ -25,11 +25,25 @@ Thank you for your interest in contributing to this project! This guide will hel
 
 ```
 project/
-├── <existing_feature>
-└── <your_new_feature>
-   ├── components/   # Reusable components
-   ├── modules/      # Feature modules
-   └── utils/        # Shared utility functions
+├── feature-modules/
+│   ├── <existing_feature>/
+│   │   ├── components/   # Reusable components
+│   │   ├── modules/      # Feature modules
+│   │   └── utils/        # Shared utility functions
+│   └── <your_new_feature>/
+│       ├── components/   # Reusable components
+│       ├── modules/      # Feature modules
+│       └── utils/        # Shared utility functions
+|
+└── library-modules/
+    ├── <existing_library>/
+    │   ├── components/   # Reusable components
+    │   ├── modules/      # Feature modules
+    │   └── utils/        # Shared utility functions
+    └── <your_new_library>/
+        ├── components/   # Reusable components
+        ├── modules/      # Feature modules
+        └── utils/        # Shared utility functions
 ```
 
 ## Development Guidelines
