@@ -2,12 +2,6 @@
 
 Library for creating different loading animations on Furaffinity. Also see this Script on GreasyFork as [Furaffinity-Loading-Animations](https://greasyfork.org/scripts/485153-furaffinity-loading-animations)
 
-#### Table of Contents
-
-- [How to use](#how-to-use)
-- [Feature Roadmap](#feature-roadmap)
-- [Documentation](#documentation)
-
 ## How to use
 
 - `@require` this script from GreasyFork or (in case of browser extension) import it as a module
@@ -22,7 +16,7 @@ Library for creating different loading animations on Furaffinity. Also see this 
   const barSpinner = new FALoadingBar(baseElem);
   ```
   See [FALoadingSpinner](#faloadingspinner) for more info
-- _Optional:_ Change Settings:
+- *Optional:* Change Settings:
   ```javascript
   spinner.forecolorHex = "#FF0000";
   spinner.spinnerThickness = 6;
@@ -30,25 +24,27 @@ Library for creating different loading animations on Furaffinity. Also see this 
 
 ## Feature Roadmap
 
-- [x] Have basic Options for all Loading Animations
-  - [x] Change Speed
-  - [x] Change Visibility
-  - [x] Change Size
-- [x] Have different Types of Animations
-  - [x] Text Spinner
-    - [x] Change Text
-    - [x] Change Font Size
-  - [x] Loading Spinner
-    - [x] Change Color
-    - [x] Change Thickness
-    - [x] Change Animation
-  - [x] Image Animation
-    - [x] Change Image
-    - [x] Change Animation
-  - [x] Loading Bar
-    - [x] Change Color
-    - [x] Change Text 
-  - [ ] Progress Bar
+| Feature                                       | Status      |
+| --------------------------------------------- | ----------- |
+| Have basic Options for all Loading Animations | ✅ Completed |
+| ⠀⠀⠀⠀Change Speed                              | ✅ Completed |
+| ⠀⠀⠀⠀Change Visibility                         | ✅ Completed |
+| ⠀⠀⠀⠀Change Size                               | ✅ Completed |
+| Have different Types of Animations            | ✅ Completed |
+| ⠀⠀⠀⠀Text Spinner                              | ✅ Completed |
+| ⠀⠀⠀⠀⠀⠀⠀⠀Change Text                           | ✅ Completed |
+| ⠀⠀⠀⠀⠀⠀⠀⠀Change Font Size                      | ✅ Completed |
+| ⠀⠀⠀⠀Loading Spinner                           | ✅ Completed |
+| ⠀⠀⠀⠀⠀⠀⠀⠀Change Color                          | ✅ Completed |
+| ⠀⠀⠀⠀⠀⠀⠀⠀Change Thickness                      | ✅ Completed |
+| ⠀⠀⠀⠀⠀⠀⠀⠀Change Animation                      | ✅ Completed |
+| ⠀⠀⠀⠀Image Animation                           | ✅ Completed |
+| ⠀⠀⠀⠀⠀⠀⠀⠀Change Image                          | ✅ Completed |
+| ⠀⠀⠀⠀⠀⠀⠀⠀Change Animation                      | ✅ Completed |
+| ⠀⠀⠀⠀Loading Bar                               | ✅ Completed |
+| ⠀⠀⠀⠀⠀⠀⠀⠀Change Color                          | ✅ Completed |
+| ⠀⠀⠀⠀⠀⠀⠀⠀Change Text                           | ✅ Completed |
+| Progress Bar                                  | ⬜ Planned   |
 
 ## Documentation
 
@@ -59,17 +55,19 @@ The FALoadingSpinner class contains following Properties:
 - `delay` - The time in Milliseconds which each full rotation takes. `default: 1000`
 - `size` - The size of the Spinner. `default: 60`
 - `spinnerThickness` - The thickness of the Spinner. `default: 4`
-- `spinnerLength` - The length of the Spinner. `default: 1` _(Can only be set in quarters. 1 = 25%, 2 = 50% ...)_
+- `spinnerLength` - The length of the Spinner. `default: 1` *(Can only be set in quarters. 1 = 25%, 2 = 50% ...)*
 - `linearSpin` - Whether the Spinner spins linearly. `default: false`
 - `forecolorHex` - The Forecolor of the Spinner in Hex. `default: #8941de`
 - `backcolorHex` - The Backcolor of the Spinner in Hex. `default: #f3f3f3`
 - `visible` - Whether the Spinner is visible. `default: false`
-- `animationCurve` - The Animation Curve of the Spinner. `default: "cubic-bezier(.53,.24,.46,.83)"` _(For example: "ease-in-out")_
+- `animationCurve` - The Animation Curve of the Spinner. `default: "cubic-bezier(.53,.24,.46,.83)"` *(For example: "ease-in-out")*
 - `baseElem` - The Base Element in which the SpinnerContainer Element is located.
 
 It has following functions:
 
 - `dispose()` - Disposes the FALoadingSpinner by removing it from the `baseElem`.
+
+---
 
 ### FALoadingTextSpinner
 
@@ -85,6 +83,8 @@ It has following functions:
 
 - `dispose()` - Disposes the FALoadingSpinner by removing it from the `baseElem`.
 
+---
+
 ### FALoadingImage
 
 The FALoadingImage class contains following Properties:
@@ -98,7 +98,7 @@ The FALoadingImage class contains following Properties:
 - `doRotateImage` - Whether the Image should be rotated during the animation. `default: true`
 - `rotateDegrees` - The amount of Degrees the Image should be rotated with each animation step. `default: 5`
 - `imageSrc` - The Source Url of the Image. `default: 'https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png'`
-- `isGrowing` - Whether the Image is currently growing or shrinking. Changes when animating. `default: true` _(only get)_
+- `isGrowing` - Whether the Image is currently growing or shrinking. Changes when animating. `default: true` *(only get)*
 - `scale` - The current Scale of the Image in percent. Changes when animating. `default: 1`
 - `rotation` - The current Rotation of the Image in Degrees. Changes when animating. `default: 0`
 - `visible` - Whether the Spinner is visible. `default: false`
@@ -107,6 +107,8 @@ The FALoadingImage class contains following Properties:
 It has following functions:
 
 - `dispose()` - Disposes the FALoadingSpinner by removing it from the `baseElem`.
+
+---
 
 ### FALoadingBar
 

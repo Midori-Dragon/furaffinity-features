@@ -18,11 +18,17 @@ requestHelper.UserRequests.PersonalUserRequests.Security;
 ## Class Functions
 
 - `async getSessionsPage(action, delay)` - Returns your Sessions Page
-  - _`action` - Specifies the action function that gets executed while the Request is going_
-  - _`delay` - Specifies the delay in Milliseconds between each execution of the `action` while the Request is_
+  - *`action` - Specifies the action function that gets executed while the Request is going*
+  - *`delay` - Specifies the delay in Milliseconds between each execution of the `action` while the Request is*
+
+  ---
+
 - `async getLogsPage(action, delay)` - Returns your Logs Page
-  - _`action` - Specifies the action function that gets executed while the Request is going_
-  - _`delay` - Specifies the delay in Milliseconds between each execution of the `action` while the Request is_
+  - *`action` - Specifies the action function that gets executed while the Request is going*
+  - *`delay` - Specifies the delay in Milliseconds between each execution of the `action` while the Request is*
+
+  ---
+
 - `async getLabelsPage(action, delay)` - Returns the your Labels Page
-  - _`action` - Specifies the action function that gets executed while the Request is going_
-  - _`delay` - Specifies the delay in Milliseconds between each execution of the `action` while the Request is_
+  - *`action` - Specifies the action function that gets executed while the Request is going*
+  - *`delay` - Specifies the delay in Milliseconds between each execution of the `action` while the Request is*

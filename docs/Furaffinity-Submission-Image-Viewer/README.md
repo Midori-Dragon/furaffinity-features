@@ -2,12 +2,6 @@
 
 Library for creating image elements on Furaffinity. Also see this Script on GreasyFork as [Furaffinity-Submission-Image-Viewer](https://greasyfork.org/scripts/492931-furaffinity-submission-image-viewer)
 
-#### Table of Contents
-
-- [How to use](#how-to-use)
-- [Feature Roadmap](#feature-roadmap)
-- [Documentation](#documentation)
-
 ## How to use
 
 - `@require` this script from GreasyFork or (in case of browser extension) import it as a module
@@ -30,8 +24,10 @@ Library for creating image elements on Furaffinity. Also see this Script on Grea
 
 ## Feature Roadmap
 
-- [x] Support preview image
-- [x] Have different events for image loading
+| Feature                                 | Status      |
+| --------------------------------------- | ----------- |
+| Support preview image                   | ✅ Completed |
+| Have different events for image loading | ✅ Completed |
 
 ## Documentation
 

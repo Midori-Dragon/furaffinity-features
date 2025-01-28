@@ -2,12 +2,6 @@
 
 Helper Library to create Custom settings on Furaffinitiy. Also see this Script on GreasyFork as [Furaffinity-Custom-Settings](https://greasyfork.org/scripts/475041-furaffinity-custom-settings)
 
-#### Table of Contents
-
-- [How to use](#how-to-use)
-- [Feature Roadmap](#feature-roadmap)
-- [Documentation](#documentation)
-
 ## How to use
 
 - `@require` this script from GreasyFork or (in case of browser extension) import it as a module
@@ -35,14 +29,16 @@ Helper Library to create Custom settings on Furaffinitiy. Also see this Script o
 
 ## Feature Roadmap
 
-- [x] Create new Settings and easily access Settings change
-- [x] Have different Setting Types
-  - [x] Number (TextField that only allows Numbers)
-  - [x] Boolean (Checkbox with a description)
-  - [x] Action (Button with a description)
-  - [x] Text (TextField that allow any Characters)
-- [x] Change Settings Page Name and Header Name
-- [x] Have multiple different Setting Pages
+| Feature                                               | Status      |
+| ----------------------------------------------------- | ----------- |
+| Create new Settings and easily access Settings change | ✅ Completed |
+| Have different Setting Types                          | ✅ Completed |
+| ⠀⠀⠀⠀Number (TextField that only allows Numbers)       | ✅ Completed |
+| ⠀⠀⠀⠀Boolean (Checkbox with a description)             | ✅ Completed |
+| ⠀⠀⠀⠀Action (Button with a description)                | ✅ Completed |
+| ⠀⠀⠀⠀Text (TextField that allow any Characters)        | ✅ Completed |
+| Change Settings Page Name and Header Name             | ✅ Completed |
+| Have multiple different Setting Pages                 | ✅ Completed |
 
 ## Documentation
 
@@ -53,9 +49,9 @@ The Setting class contains following Properties:
 - `id` - Can only be set once. Defines the Setting elements html id. Is set to setting Name, if not set manually.
 - `name` - Name of the Setting.
 - `description` - Description of the Setting.
-- `type` - Type of the Setting. _(See [SettingType](#settingtype) for more info)_
-- `defaultValue` - Default value for the Setting. _(Is ignored on `SettingTypes.Action`)_
-- `action` - Action that is executed when the Setting changes. _(See [Action](#action) for more info)_
+- `type` - Type of the Setting. *(See [SettingType](#settingtype) for more info)*
+- `defaultValue` - Default value for the Setting. *(Is ignored on `SettingTypes.Action`)*
+- `action` - Action that is executed when the Setting changes. *(See [Action](#action) for more info)*
 - `value` - Current value of the Setting.
 
 - `min` - Minimum value for `SettingType.Number`
@@ -64,14 +60,18 @@ The Setting class contains following Properties:
 
 - `verifyRegex` - Regex for validation of input for `SettingType.Text`
 
+---
+
 ### SettingType
 
 SettingType can have the following values:
 
-- `SettingType.Number` - A TextField that only accepts Numbers. _(Enables min, max, step)_
-- `SettingType.Text` - A TextField that allows any Character. _(Enables verifyRegex)_
+- `SettingType.Number` - A TextField that only accepts Numbers. *(Enables min, max, step)*
+- `SettingType.Text` - A TextField that allows any Character. *(Enables verifyRegex)*
 - `SettingType.Boolean` - A Checkbox with a description.
-- `SettingType.Action` - A Button with a certain Action. _(Value returns the name)_
+- `SettingType.Action` - A Button with a certain Action. *(Value returns the name)*
+
+---
 
 ### Input
 

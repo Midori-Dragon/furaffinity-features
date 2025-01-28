@@ -2,12 +2,6 @@
 
 Helper Script to create Custom pages on Furaffinitiy. Also see this Script on Greasy Fork as [Furaffinity-Custom-Pages](https://greasyfork.org/scripts/476762-furaffinity-custom-pages)
 
-#### Table of Contents
-
-- [How to use](#how-to-use)
-- [Feature Roadmap](#feature-roadmap)
-- [Documentation](#documentation)
-
 ## How to use
 
 - `@require` this script from GreasyFork or (in case of browser extension) import it as a module
@@ -21,7 +15,7 @@ Helper Script to create Custom pages on Furaffinitiy. Also see this Script on Gr
   customPage.onopen = (event) => { console.log(event.detail.parameterValue) };
   customPage.addEventListener("onOpen", (event) => { console.log(event.detail.parameterValue) });
   ```
-  _`event.detail` is the [CustomData](#customdata) class_
+  *`event.detail` is the [CustomData](#customdata) class*
 - Trigger the check for open pages:
   ```javascript
   FACustomPages.checkAllPages();
@@ -29,8 +23,10 @@ Helper Script to create Custom pages on Furaffinitiy. Also see this Script on Gr
 
 ## Feature Roadmap
 
-- [x] Have basic Custom Pages
-- [x] Support for url encoded parameters
+| Feature                            | Status      |
+| ---------------------------------- | ----------- |
+| Have basic Custom Pages            | ✅ Completed |
+| Support for url encoded parameters | ✅ Completed |
 
 ## Documentation
 
@@ -51,6 +47,8 @@ It has following functions:
 
 - `pageOpened(parameterValue, openedPage)` - Triggers the onopen event. Takes the current parameterValue and the openedPage HTML Document
 - `checkPageOpened()` - Checks if the CustomPage is open and triggers the event if it is
+
+---
 
 ### CustomData
 

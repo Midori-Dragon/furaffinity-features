@@ -19,14 +19,23 @@ requestHelper.UserRequests.PersonalUserRequests.UserProfile;
 ## Class Functions
 
 - `async getProfilePage(action, delay)` - Returns your profile Page
-  - _`action` - Specifies the action function that gets executed while the Request is going_
-  - _`delay` - Specifies the delay in Milliseconds between each execution of the `action` while the Request is_
+  - *`action` - Specifies the action function that gets executed while the Request is going*
+  - *`delay` - Specifies the delay in Milliseconds between each execution of the `action` while the Request is*
+
+  ---
+
 - `async getProfilebannerPage(action, delay)` - Returns your profilebanner Page
-  - _`action` - Specifies the action function that gets executed while the Request is going_
-  - _`delay` - Specifies the delay in Milliseconds between each execution of the `action` while the Request is_
+  - *`action` - Specifies the action function that gets executed while the Request is going*
+  - *`delay` - Specifies the delay in Milliseconds between each execution of the `action` while the Request is*
+
+  ---
+
 - `async getContactsPage(action, delay)` - Returns your contacts Page
-  - _`action` - Specifies the action function that gets executed while the Request is going_
-  - _`delay` - Specifies the delay in Milliseconds between each execution of the `action` while the Request is_
+  - *`action` - Specifies the action function that gets executed while the Request is going*
+  - *`delay` - Specifies the delay in Milliseconds between each execution of the `action` while the Request is*
+
+  ---
+
 - `async getAvatarPage(action, delay)` - Returns your avatar Page
-  - _`action` - Specifies the action function that gets executed while the Request is going_
-  - _`delay` - Specifies the delay in Milliseconds between each execution of the `action` while the Request is_
+  - *`action` - Specifies the action function that gets executed while the Request is going*
+  - *`delay` - Specifies the delay in Milliseconds between each execution of the `action` while the Request is*

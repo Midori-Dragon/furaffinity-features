@@ -2,12 +2,6 @@
 
 Helper Library to create a Matchlist for your custom Furaffinitiy Script. Also see this Script on GreasyFork as [Furaffinity-Match-List](https://greasyfork.org/scripts/485827-furaffinity-match-list)
 
-#### Table of Contents
-
-- [How to use](#how-to-use)
-- [Feature Roadmap](#feature-roadmap)
-- [Documentation](#documentation)
-
 ## How to use
 
 - `@require` this script from GreasyFork or (in case of browser extension) import it as a module
@@ -32,11 +26,13 @@ Helper Library to create a Matchlist for your custom Furaffinitiy Script. Also s
 
 ## Feature Roadmap
 
-- [x] Have basic Matchlist
-- [x] Have some Options
-  - [x] Whether to run in an IFrame
-  - [x] Whether to log the running status
-- [x] Integration with [Furaffinity-Custom-Settings](https://greasyfork.org/de/scripts/475041-furaffinity-custom-settings)
+| Feature                                                                             | Status      |
+| ----------------------------------------------------------------------------------- | ----------- |
+| Have basic Matchlist                                                                | ✅ Completed |
+| Have some Options                                                                   | ✅ Completed |
+| ⠀⠀⠀⠀Whether to run in an IFrame                                                     | ✅ Completed |
+| ⠀⠀⠀⠀Whether to log the running status                                               | ✅ Completed |
+| Integration with [Furaffinity-Custom-Settings](/Furaffinity-Custom-Settings/README) | ✅ Completed |
 
 ## Documentation
 
@@ -49,7 +45,7 @@ The MatchList class contains following Properties:
 - `match` - The current found match (if there is one)
 - `runInIFrame` - Wether your Script is allowed to run in an IFrame
 - `isWindowIFrame` - Wether the current Window is running in an IFrame
-- `customSettings` - The CustomSettings which to display if your Script is allowed to run _(See [CustomSettings](https://github.com/Midori-Dragon/Furaffinity-Custom-Settings))_
+- `customSettings` - The CustomSettings which to display if your Script is allowed to run *(See [CustomSettings](../Furaffinity-Custom-Settings/README))*
 
 It has following functions:
 

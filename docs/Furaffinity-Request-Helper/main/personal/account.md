@@ -18,11 +18,17 @@ requestHelper.UserRequests.PersonalUserRequests.AccountInformation;
 ## Class Functions
 
 - `async getSettingsPage(action, delay)` - Returns your Accounts Settings Page
-  - _`action` - Specifies the action function that gets executed while the Request is going_
-  - _`delay` - Specifies the delay in Milliseconds between each execution of the `action` while the Request is_
+  - *`action` - Specifies the action function that gets executed while the Request is going*
+  - *`delay` - Specifies the delay in Milliseconds between each execution of the `action` while the Request is*
+
+  ---
+
 - `async getSiteSettingsPage(action, delay)` - Returns your Accounts Site Page
-  - _`action` - Specifies the action function that gets executed while the Request is going_
-  - _`delay` - Specifies the delay in Milliseconds between each execution of the `action` while the Request is_
+  - *`action` - Specifies the action function that gets executed while the Request is going*
+  - *`delay` - Specifies the delay in Milliseconds between each execution of the `action` while the Request is*
+
+  ---
+
 - `async getUserSettingsPage(action, delay)` - Returns your Accounts User Page
-  - _`action` - Specifies the action function that gets executed while the Request is going_
-  - _`delay` - Specifies the delay in Milliseconds between each execution of the `action` while the Request is_
+  - *`action` - Specifies the action function that gets executed while the Request is going*
+  - *`delay` - Specifies the delay in Milliseconds between each execution of the `action` while the Request is*
