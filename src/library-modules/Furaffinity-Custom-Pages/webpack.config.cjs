@@ -1,7 +1,7 @@
 const { merge } = require('webpack-merge');
-const common = require('../../webpack.common.cjs');
 const webpack = require('webpack');
 const path = require('path');
+const common = require(path.resolve(process.cwd(), 'webpack.common.cjs'));
 
 module.exports = merge(common, {
     entry: path.resolve(__dirname, 'src/index.ts'),
@@ -13,12 +13,12 @@ module.exports = merge(common, {
         new webpack.BannerPlugin({
             banner: `
 // ==UserScript==
-// @name        Furaffinity-Submission-Image-Viewer
+// @name        Furaffinity-Custom-Pages
 // @namespace   Violentmonkey Scripts
-// @grant       GM_info
-// @version     1.1.0
+// @grant       none
+// @version     1.2.0
 // @author      Midori Dragon
-// @description Library for creating custom image elements on Furaffinity
+// @description Library to create Custom pages on Furaffinitiy
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
 // @license     MIT
 // ==/UserScript==

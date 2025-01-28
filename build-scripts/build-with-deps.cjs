@@ -63,14 +63,12 @@ async function extractDependencies(buildFilePath, moduleName = 'bundle.user.js')
 async function resolveDependencies(dependencies, resolved = new Set(), order = []) {
     for (const dep of dependencies) {
         const moduleName = path.basename(dep, '.js');
-        const modulePath = `./${moduleName}/dist/bundle.user.js`;
-        const webpackConfigPath = `./${moduleName}/webpack.config.cjs`;
 
         // Check in library-modules and feature-modules
-        const libraryModulePath = `./library-modules/${moduleName}/dist/bundle.user.js`;
-        const libraryConfigPath = `./library-modules/${moduleName}/webpack.config.cjs`;
-        const featureModulePath = `./feature-modules/${moduleName}/dist/bundle.user.js`;
-        const featureConfigPath = `./feature-modules/${moduleName}/webpack.config.cjs`;
+        const libraryModulePath = `./src/library-modules/${moduleName}/dist/bundle.user.js`;
+        const libraryConfigPath = `./src/library-modules/${moduleName}/webpack.config.cjs`;
+        const featureModulePath = `./src/feature-modules/${moduleName}/dist/bundle.user.js`;
+        const featureConfigPath = `./src/feature-modules/${moduleName}/webpack.config.cjs`;
 
         if (resolved.has(libraryModulePath) || resolved.has(featureModulePath)) {
             console.log(`${colors.cyan}Skipping already resolved dependency: ${colors.blue}${moduleName}${colors.reset}\n`);

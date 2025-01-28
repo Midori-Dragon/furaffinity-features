@@ -1,7 +1,7 @@
 const { merge } = require('webpack-merge');
-const common = require('../../webpack.common.cjs');
 const webpack = require('webpack');
 const path = require('path');
+const common = require(path.resolve(process.cwd(), 'webpack.common.cjs'));
 
 module.exports = merge(common, {
     entry: path.resolve(__dirname, 'src/index.ts'),
