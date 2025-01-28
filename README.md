@@ -17,26 +17,43 @@ This project provides various quality-of-life improvements and additional featur
 - As individual userscripts (using Violentmonkey, Tampermonkey, etc.)
 - As a browser extension (Chrome and Firefox)
 
-### Documentation
+### Project Progress
 
-Documentation for the project can be found [here](https://midori-dragon.github.io/furaffinity-features/).
+| Task                              | Status      |
+| --------------------------------- | ----------- |
+| Create needed Libraries           | ✅ Completed |
+| Add basic Features                | ✅ Completed |
+| Add basic Docs                    | ✅ Completed |
+| Add build scripts                 | ✅ Completed |
+| Support Browser Extension Chrome  | ✅ Completed |
+| Support Browser Extension Firefox | ⬜ Pending   |
+| First Release                     | ⬜ Pending   |
 
-### Feature Overview
+#### Feature Overview
 
-- [x] [FA Embedded Image Viewer](#fa-embedded-image-viewer)
+✅ [FA Embedded Image Viewer](#fa-embedded-image-viewer)
   - Embedds the clicked image on the current page
   - Works on galleries, favorites, scraps, search and browse pages
   - Supports preview image
   - Supports opening, faving and downloading images
-- [x] [FA Infini Gallery](#fa-infini-gallery)
+
+---
+
+✅ [FA Infini Gallery](#fa-infini-gallery)
   - Infinite scrolling functionality for gallery pages.
   - Works on gallery, favorites, scraps, search and browse pages
-- [x] [FA Webcomic Auto Loader](#fa-webcomic-auto-loader)
+
+---
+
+✅ [FA Webcomic Auto Loader](#fa-webcomic-auto-loader)
   - Automatic loading of sequential comic pages.
   - Auto-detection of comic navigation
   - Searching for similar pages if navigation is not present
   - Navigation button overwrite
-- [ ] [FA Watches Favorite Viewer](#fa-watches-favorite-viewer) (Planned)
+
+---
+
+⬜ [FA Watches Favorite Viewer](#fa-watches-favorite-viewer) (Planned)
   - Monitoring favorites of watched users
   - Viewing favorites of watched users  
 
@@ -45,99 +62,120 @@ Documentation for the project can be found [here](https://midori-dragon.github.i
 ### FA Embedded Image Viewer
 Quick image preview functionality that embeds images directly in the current page.
 
-**Current Features:**
-- [x] Inline image preview without leaving the current page
-- [x] Preview quality settings
-- [x] Close after opening option
-- [x] Works on galleries, favorites, search and browse pages
+| Feature Roadmap                                        | Status      |
+| ------------------------------------------------------ | ----------- |
+| Inline image preview without leaving the current page  | ✅ Completed |
+| Preview quality settings                               | ✅ Completed |
+| Close after opening option                             | ✅ Completed |
+| Works on galleries, favorites, search and browse pages | ✅ Completed |
+| Copy image button for embedded viewer                  | ⬜ Planned   |
 
-**Planned Features:**
-- [ ] Copy image button for embedded viewer
+---
 
 ### FA Infini Gallery
 Infinite scrolling functionality for gallery pages.
 
-**Current Features:**
-- [x] Automatic page loading while scrolling
-- [x] Customizable page separators
-- [x] Works on gallery, favorites, scraps, and search pages
-- [x] Loading animation integration
+| Feature Roadmap                                       | Status      |
+| ----------------------------------------------------- | ----------- |
+| Automatic page loading while scrolling                | ✅ Completed |
+| Customizable page separators                          | ✅ Completed |
+| Works on gallery, favorites, scraps, and search pages | ✅ Completed |
+| Loading animation integration                         | ✅ Completed |
+
+---
 
 ### FA Webcomic Auto Loader
 Automatic loading of sequential comic pages.
 
-**Current Features:**
-- [x] Auto-detection of comic navigation
-- [x] Searching for similar pages if navigation is not present
-- [x] Automatic page loading
-- [x] Loading animations
-- [x] Navigation button customization
+| Feature Roadmap                                          | Status      |
+| -------------------------------------------------------- | ----------- |
+| Auto-detection of comic navigation                       | ✅ Completed |
+| Searching for similar pages if navigation is not present | ✅ Completed |
+| Automatic page loading                                   | ✅ Completed |
+| Loading animations                                       | ✅ Completed |
+| Navigation button customization                          | ✅ Completed |
 
-### FA Watches Favorite Viewer (Planned)
+---
+
+### FA Watches Favorite Viewer
 Advanced system for monitoring and displaying favorites from watched users.
 
-**Planned Features:**
-- [ ] Scan favorites from watched users
-- [ ] New favorites detection
-- [ ] Favorites organization tools
+| Feature Roadmap                       | Status    |
+| ------------------------------------- | --------- |
+| Monitoring favorites of watched users | ⬜ Planned |
+| Viewing favorites of watched users    | ⬜ Planned |
 
 ## Library Modules
 
 ### Furaffinity Custom Settings
 Central settings management system for all modules.
 
-**Current Features:**
-- [x] Settings persistence
-- [x] Multiple setting types (boolean, number, text, action)
-- [x] Per-module settings management
+| Feature Roadmap                                        | Status      |
+| ------------------------------------------------------ | ----------- |
+| Settings persistence                                   | ✅ Completed |
+| Multiple setting types (boolean, number, text, action) | ✅ Completed |
+| Per-module settings management                         | ✅ Completed |
+| New setting type combobox                              | ⬜ Planned   |
+| Settings import/export functionality                   | ⬜ Planned   |
 
-**Planned Features:**
-- [ ] New setting type combobox
-- [ ] Settings import/export functionality
+---
 
 ### Furaffinity Loading Animations
 Provides loading animations for various async operations.
 
-**Current Features:**
-- [x] Customizable loading spinners
-- [x] Speed control
-- [x] Multiple animation styles
+| Feature Roadmap               | Status      |
+| ----------------------------- | ----------- |
+| Customizable loading spinners | ✅ Completed |
+| Speed control                 | ✅ Completed |
+| Multiple animation styles     | ✅ Completed |
+
+---
 
 ### Furaffinity Match List
 URL matching system for conditional feature activation.
 
-**Current Features:**
-- [x] Pattern-based URL matching
-- [x] Support for multiple match patterns
-- [x] iframe support configuration
+| Feature Roadmap                     | Status      |
+| ----------------------------------- | ----------- |
+| Pattern-based URL matching          | ✅ Completed |
+| Support for multiple match patterns | ✅ Completed |
+| iframe support configuration        | ✅ Completed |
+
+---
 
 ### Furaffinity Request Helper
 Handles API requests and data fetching.
 
-**Current Features:**
-- [x] API request wrapper for common requests
-- [x] Rate limiting
-- [x] Request queuing
-- [x] Error handling
-- [x] Cross-module request management
+| Feature Roadmap                         | Status      |
+| --------------------------------------- | ----------- |
+| API request wrapper for common requests | ✅ Completed |
+| Rate limiting                           | ✅ Completed |
+| Request queuing                         | ✅ Completed |
+| Error handling                          | ✅ Completed |
+| Cross-module request management         | ✅ Completed |
+
+---
 
 ### Furaffinity Submission Image Viewer
 Enhanced image viewing capabilities.
 
-**Current Features:**
-- [x] Full-size image viewing
-- [x] Keyboard shortcuts
-- [x] Loading state management
-- [x] Zooming and panning functionality
+| Feature Roadmap                   | Status      |
+| --------------------------------- | ----------- |
+| Full-size image viewing           | ✅ Completed |
+| Keyboard shortcuts                | ✅ Completed |
+| Loading state management          | ✅ Completed |
+| Zooming and panning functionality | ✅ Completed |
+
+---
 
 ### Global Utils Module
 Shared utility functions and components used across other modules.
 
-**Current Features:**
-- [x] Cross-module compatibility layer
-- [x] Common utility functions
-- [x] Browser extension integration helpers
-- [x] Logging and debugging utilities
+| Feature Roadmap                       | Status      |
+| ------------------------------------- | ----------- |
+| Cross-module compatibility layer      | ✅ Completed |
+| Common utility functions              | ✅ Completed |
+| Browser extension integration helpers | ✅ Completed |
+| Logging and debugging utilities       | ✅ Completed |
 
 ## Installation
 

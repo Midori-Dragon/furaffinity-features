@@ -5,7 +5,7 @@ Helper Library (wrapper) for common Requests to Furaffinity. Also see this Scrip
 <br>
 
 > [!NOTE]
-> The Documentation is still in progress and partly outdated.
+> The Request Helper documentation is still in progress and partly outdated.
 
 ## How to use
 

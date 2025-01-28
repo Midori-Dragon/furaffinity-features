@@ -2,14 +2,20 @@
 
 A collection of enhanced features for FurAffinity that can be installed either as individual userscripts or as one browser extension (Chrome/Firefox).
 
-#### Table of Contents
+<br>
 
-- [Overview](#overview)
-- [Feature Modules](#feature-modules)
-- [Library Modules](#library-modules)
-- [Usage](#usage)
-- [Development](#development)
-- [Contributing](#contributing)
+> [!NOTE]
+> This documentation is still in progress and may contain errors.
+
+| Table of Contents                   |
+| ----------------------------------- |
+| [Overview](#overview)               |
+| [Feature Modules](#feature-modules) |
+| [Library Modules](#library-modules) |
+| [Installation](#installation)       |
+| [Usage](#usage)                     |
+| [Development](#development)         |
+| [Contributing](#contributing)       |
 
 ## Overview
 
@@ -198,7 +204,9 @@ In the Settings dropdown menu there will be a new category `Extension Settings` 
 
 Here each Module can be configured separately.
 
-*Note: In Browser Extension mode the Settings will be synced if you're logged into the Browser.*
+> [!NOTE]
+> When used as a Browser Extension the Settings will be synced if you're logged into your Browser.
+> Otherwise the Settings will be saved locally.
 
 ## Development
 
@@ -237,7 +245,8 @@ npm install
 
 Note that each module has its own webpack configuration. In this webpack config the `banner` for the user script is defined.
 
-**Important: The `banner` is used by the build process to determine the modules dependencies!**
+> [!IMPORTANT]
+> The `banner` is used by the build process to determine the modules dependencies!
 
 ### Building
 
@@ -252,7 +261,8 @@ Example:
 npm run build:Browser-Extension-Deps
 ```
 
-*Note: `-Deps` suffix indicates that the build will also include dependencies*
+> [!NOTE]
+> The `Deps` suffix indicates that the build will also include dependencies
 
 ## Contributing
 
