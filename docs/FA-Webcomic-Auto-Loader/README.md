@@ -1,37 +1,34 @@
 # FA Webcomic Auto Loader
 
-A userscript/browser extension that enhances FurAffinity webcomic navigation by automatically detecting and loading comic pages. Also available on GreasyFork as [FA-Webcomic-Auto-Loader](https://greasyfork.org/scripts/FA-Webcomic-Auto-Loader).
-
-## Features
-
-- Automatic detection of webcomic navigation links
-- Forward and backward page searching
-- Custom lightbox integration
-- Loading animations with customizable speed
-- Configurable navigation button behavior
+A userscript/browser extension that enhances FurAffinity webcomic navigation by automatically detecting and loading comic pages. Also available on GreasyFork as [FA-Webcomic-Auto-Loader](https://greasyfork.org/scripts/457759-fa-webcomic-autoloader).
 
 ## How to use
 
-- `@require` this script from GreasyFork or import it as a module (for browser extensions)
-- Create an auto loader instance:
-  ```javascript
-  const autoLoader = new AutoLoader();
-  ```
+- Load this script from GreasyFork or use it inside the browser extensions
 - The loader will automatically:
   - Detect comic navigation elements
   - Enable forward/backward navigation
   - Handle lightbox integration if enabled
-  - Manage loading animations
+  - Offer loading all comic pages
+  - Searching for similar pages
 
 ## Feature Roadmap
 
-| Feature                                     | Status      |
-| ------------------------------------------ | ----------- |
-| Comic navigation detection                  | Completed |
-| Forward/backward searching                  | Completed |
-| Custom lightbox integration                 | Completed |
-| Loading animations                          | Completed |
-| Navigation button customization             | Completed |
+| Feature                         | Status      |
+| ------------------------------- | ----------- |
+| Comic navigation detection      | ✅ Completed |
+| Forward/backward searching      | ✅ Completed |
+| Custom lightbox integration     | ✅ Completed |
+| Loading animations              | ✅ Completed |
+| Navigation button customization | ✅ Completed |
+| Folder support                  | ✅ Completed |
+
+## Settings
+- `showSearchButton` - Enable/disable the search for similar pages button *(default: true)*
+- `loadingSpinSpeed` - Control loading animation speed *(default: 1000)*
+- `backwardSearch` - How many pages to search backwards *(default: 3)*
+- `overwriteNavButtons` - Whether to overwrite navigation buttons with comic navigation *(default: true)*
+- `useCustomLightbox` - Enable/disable custom lightbox *(default: true)*
 
 ## Documentation
 
@@ -40,14 +37,11 @@ A userscript/browser extension that enhances FurAffinity webcomic navigation by 
 The AutoLoader class contains the following properties:
 
 - `submissionImg` - The current comic page image
-- `currComicNav` - Current comic navigation instance
-- `loadingSpinner` - Loading animation component
+- `currComicNav` - Current comic navigation instance *(see [ComicNavigation](#comicnavigation))* 
+- `currComicNavExists` - Whether the current comic navigation instance exists
+- `currSid` - The current submission ID
 
-Settings:
-- `backwardSearch` - Enable/disable backward page searching
-- `useCustomLightbox` - Enable/disable custom lightbox
-- `overwriteNavButtons` - Customize navigation button behavior
-- `loadingSpinSpeed` - Control loading animation speed
+---
 
 ### ComicNavigation
 
@@ -57,10 +51,12 @@ Handles comic navigation detection and management:
 - Manages first, previous, and next page IDs
 - Provides navigation helper methods
 
-### AutoLoaderSearch
+---
 
-Base class for search functionality:
+### Searching
 
-- `ForwardSearch` - Handles searching for next pages
-- `BackwardSearch` - Handles searching for previous pages
-- Implements smart search algorithms to find related comic pages
+There are 3 classes for search functionality:
+
+- `ForwardSearch` - Handles searching for next comic pages if comic navigation is missing
+- `BackwardSearch` - Handles searching for previous comic pages if comic navigation is missing
+- `AutoLoaderSearch` - Handles comic page loading if comic navigation is present

@@ -1,22 +1,10 @@
 # FA Infini Gallery
 
-A userscript/browser extension that enhances FurAffinity gallery browsing by automatically loading the next page when scrolling to the bottom. Also available on GreasyFork as [FA-Infini-Gallery](https://greasyfork.org/scripts/FA-Infini-Gallery).
-
-## Features
-
-- Automatic loading of next gallery pages when scrolling
-- Seamless integration with FurAffinity's gallery layout
-- Supports all gallery types (user galleries, favorites, browse pages)
-- Smart scroll detection to prevent unnecessary loads
+A userscript/browser extension that enhances FurAffinity gallery browsing by automatically loading the next page when scrolling to the bottom. Also available on GreasyFork as [FA-Infini-Gallery](https://greasyfork.org/scripts/462632-fa-infini-gallery).
 
 ## How to use
 
-- `@require` this script from GreasyFork or import it as a module (for browser extensions)
-- Create an infinite gallery instance:
-  ```javascript
-  const infiniGallery = new InfiniGallery();
-  infiniGallery.startScrollDetection();
-  ```
+- Load this script from GreasyFork or use it inside the browser extensions
 - The gallery will automatically:
   - Detect when you reach the bottom of the page
   - Load and append the next page's content
@@ -24,12 +12,18 @@ A userscript/browser extension that enhances FurAffinity gallery browsing by aut
 
 ## Feature Roadmap
 
-| Feature                                     | Status      |
-| ------------------------------------------ | ----------- |
-| Automatic page loading                      | ✅ Completed |
-| Scroll detection                            | ✅ Completed |
-| Gallery management                          | ✅ Completed |
-| Support for all gallery types               | ✅ Completed |
+| Feature                                                                      | Status      |
+| ---------------------------------------------------------------------------- | ----------- |
+| Automatic page loading                                                       | ✅ Completed |
+| Scroll detection                                                             | ✅ Completed |
+| Gallery management                                                           | ✅ Completed |
+| Support for all gallery types                                                | ✅ Completed |
+| Custom Settings                                                              | ✅ Completed |
+| Integration with [Embedded-Image-Viewer](../FA-Embedded-Image-Viewer/README) | ✅ Completed |
+
+## Settings
+- `showPageSeparator` - Whether to show a page separator between pages *(default is `true`)*
+- `pageSeparatorText` - The text to use for the page separator *(default is `Infini-Gallery Page: %page%`)*
 
 ## Documentation
 
@@ -37,19 +31,12 @@ A userscript/browser extension that enhances FurAffinity gallery browsing by aut
 
 The InfiniGallery class contains the following properties:
 
-- `scanElem` - The element used to detect when to load the next page
+- `scanElem` - The element used to detect when to load the next page *(default is: `footer`)*
 - `galleryManager` - Manages the gallery content and loading
-- `scanInterval` - Internal timer for scroll detection
+
+---
 
 Methods:
 - `startScrollDetection()` - Starts monitoring for scroll position
 - `stopScrollDetection()` - Stops scroll detection
-- `loadNextPage()` - Loads and appends the next gallery page
-
-### GalleryManager
-
-Handles the actual loading and management of gallery content:
-
-- Manages page loading and content insertion
-- Handles pagination and URL management
-- Ensures proper content formatting and layout
+- `async loadNextPage()` - Loads and appends the next gallery page
