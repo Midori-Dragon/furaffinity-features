@@ -5,6 +5,10 @@ import { getByLinkFromFigcaption, getFavKey } from '../utils/Utils';
 import '../Styles/Style.css';
 import string from '../../../GlobalUtils/src/string';
 
+const embeddedModes = {
+    watchesFavoriteViewer: 'watchesfavoriteviewer',
+};
+
 export class EmbeddedImage extends EventTarget {
     embeddedElem: HTMLElement;
     submissionImg: HTMLImageElement | undefined;
@@ -134,7 +138,8 @@ export class EmbeddedImage extends EventTarget {
         const closeButton = document.getElementById('eiv-close-button')!;
         closeButton.addEventListener('click', this.remove.bind(this));
 
-        if (window.location.toString().toLowerCase().includes('msg/submissions')) {
+        const embeddedModesValues = Object.values(embeddedModes);
+        if (window.location.toString().toLowerCase().includes('msg/submissions') && embeddedModesValues.every(mode => !window.location.toString().toLocaleLowerCase().includes(mode))) {
             const removeSubButton = document.getElementById('eiv-remove-sub-button')!;
             removeSubButton.style.display = 'block';
             removeSubButton.addEventListener('click', () => void this.onRemoveSubClick(figure));
