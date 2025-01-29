@@ -7,6 +7,11 @@ A collection of enhanced features for FurAffinity that can be installed either a
 > [!NOTE]
 > This documentation is still in progress and may contain errors.
 
+<br>
+
+> [!NOTE]
+> Also find all mentioned Scripts on [GreasyFork](https://greasyfork.org/users/967324-midori-tsume) as individual userscripts.
+
 | Table of Contents                   |
 | ----------------------------------- |
 | [Overview](#overview)               |

@@ -2,6 +2,8 @@
 
 A collection of enhanced features for FurAffinity that can be installed either as individual userscripts or as one browser extension (Chrome/Firefox).
 
+Also find all mentioned Scripts on [GreasyFork](https://greasyfork.org/users/967324-midori-tsume) as individual userscripts.
+
 #### Table of Contents
 
 - [Overview](#overview)
