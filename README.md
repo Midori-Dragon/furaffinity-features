@@ -28,7 +28,7 @@ This project provides various quality-of-life improvements and additional featur
 | Add basic Docs                    | ✅ Completed |
 | Add build scripts                 | ✅ Completed |
 | Support Browser Extension Chrome  | ✅ Completed |
-| Support Browser Extension Firefox | ⬜ Pending   |
+| Support Browser Extension Firefox | ✅ Completed |
 | First Release                     | ⬜ Pending   |
 
 #### Feature Overview
