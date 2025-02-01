@@ -19,10 +19,7 @@ declare global {
 
 export const scriptName = 'FA Webcomic Auto Loader';
 
-const customSettings = new window.FACustomSettings();
-customSettings.extensionName = 'Extension Settings';
-customSettings.provider = 'Midori\'s Script Settings';
-customSettings.headerName = `${scriptName} Settings`;
+const customSettings = new window.FACustomSettings('Midori\'s Script Settings', `${scriptName} Settings`);
 
 export const showSearchButtonSetting = customSettings.newSetting(window.FASettingType.Boolean, 'Similar Search Button');
 showSearchButtonSetting.description = 'Sets wether the search for similar Pages button is show.';
@@ -46,12 +43,13 @@ useCustomLightboxSetting.defaultValue = true;
 
 customSettings.loadSettings();
 
-const matchList = new window.FAMatchList(customSettings);
-matchList.matches = ['net/view'];
-matchList.runInIFrame = false;
-
 export const requestHelper = new window.FARequestHelper(2);
 
-if (matchList.hasMatch) {
-    new AutoLoader();
+if (customSettings.isFeatureEnabled) {
+    const matchList = new window.FAMatchList(customSettings);
+    matchList.matches = ['net/view'];
+    matchList.runInIFrame = false;
+    if (matchList.hasMatch) {
+        new AutoLoader();
+    }
 }

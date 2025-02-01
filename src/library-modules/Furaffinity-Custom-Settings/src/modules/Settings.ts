@@ -7,15 +7,18 @@ import { SettingNumber } from '../components/SettingNumber';
 import { SettingText } from '../components/SettingText';
 import { SettingType, SettingClassMapping, SettingClassTypeMapping } from '../utils/SettingType';
 import { makeIdCompatible } from '../utils/Utils';
+import '../Styles/Style.css';
 
 export class Settings {
-    headerName = 'Extension Settings';
     settings: Record<string, ISetting<SettingType>> = {};
+    showFeatureEnabledSetting = true;
 
-    private _extensionName = 'Extension Settings';
-    private _extensionNameId = makeIdCompatible(this._extensionName);
-    private _provider = 'Custom Furaffinity Settings';
-    private _providerId = makeIdCompatible(this._provider);
+    private _menuName: string;
+    private _menuNameId: string;
+    private _provider: string;
+    private _providerId: string;
+    private _headerName: string;
+    private _isFeatureEnabledSetting: SettingBoolean;
 
     private _settingClassMapping: SettingClassTypeMapping = {
         [SettingType.Number]: SettingNumber,
@@ -24,28 +27,34 @@ export class Settings {
         [SettingType.Text]: SettingText,
     };
 
-    get extensionName(): string {
-        return this._extensionName;
-    }
-    set extensionName(value: string) {
-        this._extensionName = value;
-        this._extensionNameId = makeIdCompatible(value);
-    }
-    
-    get extensionNameId(): string {
-        return this._extensionNameId;
+    constructor(provider: string, headerName: string) {
+        this._menuName = 'Extension Settings';
+        this._menuNameId = makeIdCompatible('Extension Settings');
+        this._provider = provider;
+        this._providerId = makeIdCompatible(provider);
+        this._headerName = headerName;
+
+        this._isFeatureEnabledSetting = new SettingBoolean(this.providerId, `${headerName} Enabled`);
+        this._isFeatureEnabledSetting.defaultValue = true;
     }
 
+    get menuName(): string {
+        return this._menuName;
+    }
+    get menuNameId(): string {
+        return this._menuNameId;
+    }
     get provider(): string {
         return this._provider;
     }
-    set provider(value: string) {
-        this._provider = value;
-        this._providerId = makeIdCompatible(value);
-    }
-    
     get providerId(): string {
         return this._providerId;
+    }
+    get headerName(): string {
+        return this._headerName;
+    }
+    get isFeatureEnabled(): boolean {
+        return this._isFeatureEnabledSetting.value;
     }
 
     newSetting<T extends SettingType>(type: T, name: string): SettingClassMapping[T] {
@@ -57,9 +66,9 @@ export class Settings {
 
     loadSettings(): void {
         try {
-            this.addExSettingsMenu(this.extensionName, this.provider, this.extensionNameId, this.providerId);
+            this.addExSettingsMenu(this.menuName, this.provider, this.menuNameId, this.providerId);
             if (window.location.toString().includes('controls/settings')) {
-                this.addExSettingsMenuSidebar(this.extensionName, this.provider, this.extensionNameId, this.providerId);
+                this.addExSettingsMenuSidebar(this.menuName, this.provider, this.menuNameId, this.providerId);
                 if (window.location.toString().includes('?extension=' + this.providerId)) {
                     this.loadSettingValues(this.headerName, Object.values(this.settings));
                 }
@@ -97,10 +106,20 @@ export class Settings {
         headerContainer.className = 'section-header';
         const header = document.createElement('h2');
         header.textContent = headerName;
-        headerContainer.appendChild(header);
-        section.appendChild(headerContainer);
+        
         const bodyContainer = document.createElement('div');
         bodyContainer.className = 'section-body';
+        if (this._isFeatureEnabledSetting.value) {
+            bodyContainer.classList.remove('collapsed');
+        } else {
+            bodyContainer.classList.add('collapsed');
+        }
+
+        if (this.showFeatureEnabledSetting) {
+            headerContainer.appendChild(this.createFeatureEnableSetting(bodyContainer));
+        }
+        headerContainer.appendChild(header);
+        section.appendChild(headerContainer);
 
         for (const setting of settings) {
             bodyContainer.appendChild(this.createSettingContainer(setting));
@@ -109,10 +128,32 @@ export class Settings {
         section.appendChild(bodyContainer);
         content.appendChild(section);
     }
+    
+    private createFeatureEnableSetting(bodyContainer: HTMLElement): HTMLElement {
+        const enableFeatureSettingContainerElem = document.createElement('label');
+        enableFeatureSettingContainerElem.classList.add('switch');
+        const enableFeatureSettingInput = document.createElement('input');
+        enableFeatureSettingInput.type = 'checkbox';
+        enableFeatureSettingInput.id = 'toggleSwitch';
+        enableFeatureSettingInput.checked = this._isFeatureEnabledSetting.value;
+        enableFeatureSettingInput.addEventListener('input', (): void => {
+            this._isFeatureEnabledSetting.value = enableFeatureSettingInput.checked;
+            if (enableFeatureSettingInput.checked) {
+                bodyContainer.classList.remove('collapsed');
+            } else {
+                bodyContainer.classList.add('collapsed');
+            }
+        });
+        const enableFeatureSettingSpan = document.createElement('span');
+        enableFeatureSettingSpan.classList.add('slider');
+        enableFeatureSettingContainerElem.appendChild(enableFeatureSettingInput);
+        enableFeatureSettingContainerElem.appendChild(enableFeatureSettingSpan);
+        return enableFeatureSettingContainerElem;
+    }
 
     toString(): string {
         if (Object.keys(this.settings).length === 0) {
-            return `${this.extensionName} has no settings.`;
+            return `${this.menuName} has no settings.`;
         }
 
         let settingsString = '(';

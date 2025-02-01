@@ -24,10 +24,7 @@ declare global {
 
 export const scriptName = 'FA Embedded Image Viewer';
 
-const customSettings = new window.FACustomSettings();
-customSettings.extensionName = 'Extension Settings';
-customSettings.provider = 'Midori\'s Script Settings';
-customSettings.headerName = `${scriptName} Settings`;
+const customSettings = new window.FACustomSettings('Midori\'s Script Settings', `${scriptName} Settings`);
 
 export const openInNewTabSetting = customSettings.newSetting(window.FASettingType.Boolean, 'Open in new Tab');
 openInNewTabSetting.description = 'Wether to open links in a new Tab or the current one.';
@@ -53,22 +50,24 @@ customSettings.loadSettings();
 
 export const requestHelper = new window.FARequestHelper(2);
 
-const matchList = new window.FAMatchList(customSettings);
-matchList.matches = ['net/browse', 'net/user', 'net/gallery', 'net/search', 'net/favorites', 'net/scraps', 'net/controls/favorites', 'net/controls/submissions', 'net/msg/submissions', 'd.furaffinity.net'];
-matchList.runInIFrame = true;
-if (matchList.hasMatch) {
-    const page = new window.FACustomPage('d.furaffinity.net', 'eiv-download');
-    let pageDownload = false;
-    page.addEventListener('onOpen', (): void => {
-        downloadImage();
-        pageDownload = true;
-    });
-    page.checkPageOpened();
-
-    if (!pageDownload && !matchList.isWindowIFrame) {
-        void EmbeddedImage.addEmbeddedEventForAllFigures();
-        window.addEventListener('ei-update-embedded', () => {
-            void EmbeddedImage.addEmbeddedEventForAllFigures();
+if (customSettings.isFeatureEnabled) {
+    const matchList = new window.FAMatchList(customSettings);
+    matchList.matches = ['net/browse', 'net/user', 'net/gallery', 'net/search', 'net/favorites', 'net/scraps', 'net/controls/favorites', 'net/controls/submissions', 'net/msg/submissions', 'd.furaffinity.net'];
+    matchList.runInIFrame = true;
+    if (matchList.hasMatch) {
+        const page = new window.FACustomPage('d.furaffinity.net', 'eiv-download');
+        let pageDownload = false;
+        page.addEventListener('onOpen', (): void => {
+            downloadImage();
+            pageDownload = true;
         });
+        page.checkPageOpened();
+
+        if (!pageDownload && !matchList.isWindowIFrame) {
+            void EmbeddedImage.addEmbeddedEventForAllFigures();
+            window.addEventListener('ei-update-embedded', () => {
+                void EmbeddedImage.addEmbeddedEventForAllFigures();
+            });
+        }
     }
 }

@@ -7,10 +7,8 @@ Object.defineProperties(window, {
     FASettingType: { get: () => SettingType },
 });
 
-const customSettings = new Settings();   
-customSettings.extensionName = 'Extension Settings';
-customSettings.provider = 'Custom-Furaffinity-Settings';
-customSettings.headerName = 'Global Custom-Furaffinity-Settings';
+const customSettings = new Settings('Custom-Furaffinity-Settings', 'Global Custom-Furaffinity-Settings');
+customSettings.showFeatureEnabledSetting = false;
 
 export const loggingSetting = customSettings.newSetting(window.FASettingType.Number, 'Logging');
 loggingSetting.description = 'The logging level. 0 = none, 1 = errors, 2 = warnings, 3 = infos.';
