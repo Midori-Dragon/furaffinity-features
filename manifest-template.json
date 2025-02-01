@@ -1,0 +1,29 @@
+{
+    "manifest_version": 3,
+    "name": "FurAffinity Features",
+    "version": "1.0.0",
+    "description": "A collection of features and enhancements for Fur Affinity",
+    "author": "Midori Dragon",
+    "permissions": [
+        "storage",
+        "scripting"
+    ],
+    "host_permissions": [
+        "*://*.furaffinity.net/*"
+    ],
+    "content_scripts": [
+        {
+            "matches": [
+                "*://*.furaffinity.net/*"
+            ],
+            "js": [
+                "bundle.user.js"
+            ],
+            "run_at": "document_idle",
+            "all_frames": true
+        }
+    ],
+    "icons": {
+        "128": "icons/logo-x128.png"
+    }
+}

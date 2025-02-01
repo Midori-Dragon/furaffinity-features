@@ -143,3 +143,4 @@ package-lock.json
 .vs/
 .todo
 .github/
+manifest.json
