@@ -19,6 +19,8 @@ export class SettingNumber extends EventTarget implements ISetting<SettingType.N
 
     constructor(providerId: string, name: string) {
         super();
+        Object.setPrototypeOf(this, SettingNumber.prototype);
+
         this.name = name;
         this.id = providerId + '-' + makeIdCompatible(this.name);
         this.type = SettingType.Number;

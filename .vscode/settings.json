@@ -156,5 +156,6 @@
         "**/node_modules": true,
         "**/.git": true,
         "**/.github": true
-    }
+    },
+    "files.eol": "\n"
 }

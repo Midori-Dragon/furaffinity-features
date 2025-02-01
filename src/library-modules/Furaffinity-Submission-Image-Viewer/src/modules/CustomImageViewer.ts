@@ -40,6 +40,8 @@ export class CustomImageViewer extends EventTarget {
 
     constructor(parentContainer: HTMLElement, imageUrl: string, previewUrl?: string) {
         super();
+        Object.setPrototypeOf(this, CustomImageViewer.prototype);
+
         this.imageUrl = imageUrl;
         this.previewUrl = previewUrl;
 

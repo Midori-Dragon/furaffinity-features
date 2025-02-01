@@ -23,6 +23,8 @@ export class EmbeddedImage extends EventTarget {
 
     constructor(figure: HTMLElement) {
         super();
+        Object.setPrototypeOf(this, EmbeddedImage.prototype);
+        
         this.embeddedElem = document.createElement('div');
 
         this.createElements(figure);

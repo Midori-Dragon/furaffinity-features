@@ -15,6 +15,8 @@ export class SettingAction extends EventTarget implements ISetting<SettingType.A
 
     constructor(providerId: string, name: string) {
         super();
+        Object.setPrototypeOf(this, SettingAction.prototype);
+
         this.name = name;
         this.id = providerId + '-' + makeIdCompatible(this.name);
         this.type = SettingType.Action;

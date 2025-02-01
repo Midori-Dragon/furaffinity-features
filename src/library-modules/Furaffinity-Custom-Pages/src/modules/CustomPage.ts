@@ -11,6 +11,8 @@ export class CustomPage extends EventTarget {
 
     constructor(pageUrl: string, parameterName: string) {
         super();
+        Object.setPrototypeOf(this, CustomPage.prototype);
+
         this.pageUrl = pageUrl;
         this.parameterName = parameterName;
         CustomPage.customPages.push(this);

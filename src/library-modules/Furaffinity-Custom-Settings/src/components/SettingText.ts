@@ -19,6 +19,8 @@ export class SettingText extends EventTarget implements ISetting<SettingType.Tex
 
     constructor(providerId: string, name: string) {
         super();
+        Object.setPrototypeOf(this, SettingText.prototype);
+        
         this.name = name;
         this.id = providerId + '-' + makeIdCompatible(this.name);
         this.type = SettingType.Text;

@@ -16,6 +16,8 @@ export class SettingBoolean extends EventTarget implements ISetting<SettingType.
 
     constructor(providerId: string, name: string) {
         super();
+        Object.setPrototypeOf(this, SettingBoolean.prototype);
+
         this.name = name;
         this.id = providerId + '-' + makeIdCompatible(this.name);
         this.type = SettingType.Boolean;

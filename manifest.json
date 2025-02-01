@@ -17,12 +17,18 @@
         "*://*.furaffinity.net/*"
       ],
       "js": [
-        "/bundle.user.js"
+        "bundle.user.js"
       ],
       "run_at": "document_idle"
     }
   ],
   "icons": {
     "128": "icons/logo-x128.png"
+  },
+  "browser_specific_settings": {
+    "gecko": {
+      "id": "furaffinity-features@midori-dragon",
+      "strict_min_version": "109.0"
+    }
   }
 }
