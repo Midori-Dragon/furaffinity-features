@@ -24,7 +24,7 @@ export class EmbeddedImage extends EventTarget {
     constructor(figure: HTMLElement) {
         super();
         Object.setPrototypeOf(this, EmbeddedImage.prototype);
-        
+
         this.embeddedElem = document.createElement('div');
 
         this.createElements(figure);
@@ -199,8 +199,10 @@ export class EmbeddedImage extends EventTarget {
             submissionContainer.setAttribute('href', url ?? '');
 
             const result = getFavKey(doc);
-            if (result != null) {
-                const favButton = document.getElementById('eiv-fav-button')!;
+            const favButton = document.getElementById('eiv-fav-button')!;
+            if (result == null) {
+                favButton.style.display = 'none';
+            } else {
                 favButton.textContent = result.isFav ? '+Fav' : '-Fav';
                 favButton.setAttribute('isFav', result.isFav.toString());
                 favButton.setAttribute('key', result.favKey ?? '');

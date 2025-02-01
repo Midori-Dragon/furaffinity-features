@@ -1,6 +1,7 @@
 export default function (element: HTMLElement): void {
     const userLoggedIn = document.body.getAttribute('data-user-logged-in') === '1';
     if (!userLoggedIn) {
+        setBlockedState(element, false);
         return;
     }
     const tagsHideMissingTags = document.body.getAttribute('data-tag-blocklist-hide-tagless') === '1';
