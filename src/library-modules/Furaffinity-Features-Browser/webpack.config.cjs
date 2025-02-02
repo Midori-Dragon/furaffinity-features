@@ -20,10 +20,10 @@ module.exports = merge(common, {
 // ==UserScript==
 // @name        Furaffinity-Features-Browser
 // @namespace   Violentmonkey Scripts
-// @require     https://update.greasyfork.org/scripts/000000/0000000/Furaffinity-Prototype-Extensions.js
-// @require     https://update.greasyfork.org/scripts/000000/0000000/FA-Embedded-Image-Viewer.js
-// @require     https://update.greasyfork.org/scripts/000000/0000000/FA-Webcomic-Auto-Loader.js
-// @require     https://update.greasyfork.org/scripts/000000/0000000/FA-Infini-Gallery.js
+// @require     https://update.greasyfork.org/scripts/525666/1530872/Furaffinity-Prototype-Extensions.js
+// @require     https://update.greasyfork.org/scripts/458971/0000000/FA-Embedded-Image-Viewer.js
+// @require     https://update.greasyfork.org/scripts/462632/0000000/FA-Webcomic-Auto-Loader.js
+// @require     https://update.greasyfork.org/scripts/457759/0000000/FA-Infini-Gallery.js
 // @grant       none
 // @version     1.0.0
 // @author      Midori Dragon

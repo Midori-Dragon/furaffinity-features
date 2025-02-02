@@ -15,9 +15,9 @@ module.exports = merge(common, {
 // ==UserScript==
 // @name        Furaffinity-Request-Helper
 // @namespace   Violentmonkey Scripts
-// @require     https://update.greasyfork.org/scripts/000000/0000000/Furaffinity-Prototype-Extensions.js
+// @require     https://update.greasyfork.org/scripts/525666/1530872/Furaffinity-Prototype-Extensions.js
 // @grant       none
-// @version     1.2.0
+// @version     1.3.0
 // @author      Midori Dragon
 // @description Library to simplify requests to Furaffinity
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
