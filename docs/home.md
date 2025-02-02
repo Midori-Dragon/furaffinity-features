@@ -272,3 +272,5 @@ npm run build:Browser-Extension-Deps
 ## Contributing
 
 Contributions are welcome! Feel free to open issues and pull requests.
+
+Please read [Contributing](./contributing) for more information.

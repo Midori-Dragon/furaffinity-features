@@ -1,4 +1,5 @@
 - [Home](/)
+- [Contributing](/contributing)
 - **Feature Modules**
 - [Embedded Image Viewer](/FA-Embedded-Image-Viewer/README)
 - [Infini-Gallery](/FA-Infini-Gallery/README)

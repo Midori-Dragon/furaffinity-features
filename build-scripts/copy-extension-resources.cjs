@@ -39,7 +39,7 @@ async function copyExtensionFiles() {
     }
 
     // Copy icons folder if it exists
-    const iconsPath = path.resolve('./icons');
+    const iconsPath = path.resolve('./assets/icons');
     if (fs.existsSync(iconsPath)) {
         const iconsDistPath = path.join(distPath, 'icons');
         await mkdir(iconsDistPath, { recursive: true });
