@@ -27,6 +27,12 @@ module.exports = {
                     format: {
                         comments: /@name|@namespace|@author|@license|@match|@exclude-match|@include|@exclude|@version|@description|@icon|@require|@resource|@run-at|@noframes|@grant|@inject-into|@downloadURL|@supportURL|@homepageURL|@unwrap|@top-level-await|jshint|UserScript/,
                         beautify: true,
+                        semicolons: true
+                    },
+                    compress: {
+                        booleans: false,
+                        sequences: false,
+                        conditionals: false,
                     },
                     keep_classnames: true,
                     keep_fnames: true,
