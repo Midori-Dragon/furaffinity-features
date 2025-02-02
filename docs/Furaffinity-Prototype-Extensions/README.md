@@ -6,11 +6,11 @@ A collection of prototype extensions for needed Functions for other Modules.
 
 - `@require` this script from GreasyFork or (in case of browser extension) import it as a module
 - Use added Functionalities:
-```javascript
-let someString = "Hello World";
-someString = someString.trimEnd(" World");
-console.log(someString); // logs: "Hello"
-```
+  ```javascript
+  let someString = "Hello World";
+  someString = someString.trimEnd(" World");
+  console.log(someString); // logs: "Hello"
+  ```
 
 ## Feature Roadmap
 

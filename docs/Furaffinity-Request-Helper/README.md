@@ -1,4 +1,4 @@
-## Furaffinity Request Helper
+# Furaffinity Request Helper
 
 Helper Library (wrapper) for common Requests to Furaffinity. Also see this Script on GreasyFork as [Furaffinity-Request-Helper](https://greasyfork.org/scripts/483952-furaffinity-request-helper)
 
@@ -14,7 +14,6 @@ Helper Library (wrapper) for common Requests to Furaffinity. Also see this Scrip
   ```javascript
   const requestHelper = new FARequestHelper(2); // Where 2 is the max amount of simultaneous Requests for this instance.
   ```
-
 - Make a request using the created instance
   ```javascript
   requestHelper.UserRequests.GalleryRequests.Gallery.getPage("someusername", 1);
