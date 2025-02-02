@@ -24,12 +24,18 @@ async function copyExtensionFiles() {
     await mkdir(distPath, { recursive: true });
 
     // Copy manifest.json
-    const manifestPath = path.resolve('./manifest-template.json');
+    const manifestPath = path.resolve('./manifest.json');
+    const manifestDestPath = path.join(distPath, 'manifest.json');
     if (fs.existsSync(manifestPath)) {
-        const manifestDestPath = path.join(distPath, 'manifest.json');
         await copyFile(manifestPath, manifestDestPath);
     } else {
-        console.log(`${colors.yellow}Warning: 'manifest-template.json' not found${colors.reset}`);
+        console.log(`${colors.yellow}Warning: 'manifest.json' not found. Using 'manifest-template.json'${colors.reset}`);
+        const manifestTemplatePath = path.resolve('./manifest-template.json');
+        if (fs.existsSync(manifestTemplatePath)) {
+            await copyFile(manifestTemplatePath, manifestDestPath);
+        } else {
+            console.log(`${colors.yellow}Warning: 'manifest-template.json' not found${colors.reset}`);
+        }
     }
 
     // Copy icons folder if it exists
