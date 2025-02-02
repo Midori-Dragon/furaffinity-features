@@ -29,12 +29,12 @@ async function copyExtensionFiles() {
     if (fs.existsSync(manifestPath)) {
         await copyFile(manifestPath, manifestDestPath);
     } else {
-        console.log(`${colors.yellow}Warning: 'manifest.json' not found. Using 'manifest-template.json'${colors.reset}`);
+        console.log(`${colors.yellow}⚠ Warning: 'manifest.json' not found. Using 'manifest-template.json'${colors.reset}`);
         const manifestTemplatePath = path.resolve('./manifest-template.json');
         if (fs.existsSync(manifestTemplatePath)) {
             await copyFile(manifestTemplatePath, manifestDestPath);
         } else {
-            console.log(`${colors.yellow}Warning: 'manifest-template.json' not found${colors.reset}`);
+            console.log(`${colors.yellow}⚠ Warning: 'manifest-template.json' not found${colors.reset}`);
         }
     }
 
@@ -51,8 +51,13 @@ async function copyExtensionFiles() {
             await copyFile(iconPath, iconDestPath);
         }
     } else {
-        console.log(`${colors.yellow}Warning: icons folder not found${colors.reset}`);
+        console.log(`${colors.yellow}⚠ Warning: icons folder not found${colors.reset}`);
     }
 }
 
-copyExtensionFiles();
+try {
+    copyExtensionFiles();
+} catch (error) {
+    console.error(`${colors.red}✗ Failed to copy extension resources: ${error}${colors.reset}`);
+    process.exit(1);
+}

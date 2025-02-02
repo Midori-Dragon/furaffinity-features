@@ -29,16 +29,16 @@ async function packageExtension() {
 
         // Listen for all archive data to be written
         output.on('close', () => {
-            const size = (archive.pointer() / 1024 / 1024).toFixed(2);
-            console.log(`${colors.green}✓ Extension packaged successfully!${colors.reset}`);
-            console.log(`${colors.blue}Final size: ${colors.reset}${size} MB`);
+            const size = (archive.pointer() / 1024).toFixed(2);
+            console.log(`\n${colors.green}✓ Extension packaged successfully!${colors.reset}`);
+            console.log(`${colors.blue}Final size: ${colors.reset}${size} KB\n`);
             resolve();
         });
 
         // Handle warnings
         archive.on('warning', (err) => {
             if (err.code === 'ENOENT') {
-                console.log(`${colors.yellow}Warning: ${err}${colors.reset}`);
+                console.log(`${colors.yellow}⚠ Warning: ${err}${colors.reset}`);
             } else {
                 reject(err);
             }
@@ -46,7 +46,7 @@ async function packageExtension() {
 
         // Handle errors
         archive.on('error', (err) => {
-            console.error(`${colors.red}Error: ${err}${colors.reset}`);
+            console.error(`${colors.red}✗ Error: ${err}${colors.reset}`);
             reject(err);
         });
 
@@ -71,7 +71,7 @@ async function main() {
     try {
         await packageExtension();
     } catch (error) {
-        console.error(`${colors.red}Failed to package extension: ${error}${colors.reset}`);
+        console.error(`${colors.red}✗ Failed to package extension: ${error}${colors.reset}`);
         process.exit(1);
     }
 }

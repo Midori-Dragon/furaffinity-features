@@ -94,9 +94,9 @@ async function resolveDependencies(dependencies, resolved = new Set(), order = [
             try {
                 console.log(`   ${colors.cyan}Building ${colors.blue}${moduleName}${colors.reset}`);
                 await buildModule(configPath);
-                console.log(`   ${colors.green}Successfully built ${moduleName}${colors.reset}`);
+                console.log(`   ${colors.green}✓ Successfully built ${moduleName}${colors.reset}`);
             } catch (error) {
-                console.error(`${colors.red}Error building ${moduleName}:${colors.reset}`, error);
+                console.error(`${colors.red}✗ Error building ${moduleName}:${colors.reset}`, error);
                 continue;
             }
 
@@ -109,12 +109,12 @@ async function resolveDependencies(dependencies, resolved = new Set(), order = [
                 }
                 await resolveDependencies(subDeps, resolved, order);
                 order.push(buildPath);
-                console.log(`   ${colors.green}Added ${moduleName} to build order${colors.reset}`);
+                console.log(`   ${colors.green}✓ Added ${moduleName} to build order${colors.reset}`);
             } else {
-                console.warn(`  ${colors.yellow}Warning: Build file not found after building: ${buildPath}${colors.reset}`);
+                console.warn(`  ${colors.yellow}⚠ Warning: Build file not found after building: ${buildPath}${colors.reset}`);
             }
         } else {
-            console.warn(`  ${colors.yellow}Warning: Webpack config not found for dependency in library-modules or feature-modules: ${moduleName}${colors.reset}`);
+            console.warn(`  ${colors.yellow}⚠ Warning: Webpack config not found for dependency in library-modules or feature-modules: ${moduleName}${colors.reset}`);
         }
     }
 
@@ -133,7 +133,7 @@ async function processFile(filePath) {
     const bannerMatch = content.match(bannerRegex);
 
     if (!bannerMatch) {
-        console.warn(`  ${colors.yellow}No banner found in ${filePath}${colors.reset}`);
+        console.warn(`  ${colors.yellow}⚠ No banner found in ${filePath}${colors.reset}`);
         return { name: 'Unknown', version: '0.0.0', content };
     }
 
@@ -143,7 +143,7 @@ async function processFile(filePath) {
 
     const name = nameMatch ? nameMatch[1].trim() : 'Unknown';
     const version = versionMatch ? versionMatch[1].trim() : '0.0.0';
-    console.log(`   ${colors.green}Extracted metadata: ${colors.blue}${name} v${version}${colors.reset}`);
+    console.log(`   ${colors.green}✓ Extracted metadata: ${colors.blue}${name} v${version}${colors.reset}`);
 
     // Remove the banner from the content
     const cleanedContent = content.replace(bannerRegex, '').trim();
@@ -177,11 +177,19 @@ async function combineFiles(filePaths, outputPath) {
     await writeFile(outputPath, combinedContent);
 }
 
+async function emptyDir(dir) {
+    if (fs.existsSync(dir)) {
+        fs.rmSync(dir, { recursive: true, force: true });
+    }
+    fs.mkdirSync(dir, { recursive: true });
+    console.log(`   ${colors.green}✓ Cleared '${path.basename(dir)}' folder successfully${colors.reset}\n`);
+}
+
 // Main function
 async function main() {
     const args = process.argv.slice(2);
     if (args.length < 1) {
-        console.error(`${colors.red}Usage: node build-with-deps.cjs <path_to_webpack_config>${colors.reset}`);
+        console.error(`${colors.red}✗ Usage: node build-with-deps.cjs <path_to_webpack_config>${colors.reset}`);
         process.exit(1);
     }
 
@@ -190,12 +198,15 @@ async function main() {
     const outputPath = path.join(distFolder, 'bundle.user.js');
 
     try {
+        console.log(`${colors.cyan}Clearing dist Folder...${colors.reset}`);
+        await emptyDir(distFolder);
+
         const moduleName = path.basename(path.dirname(webpackConfigPath));
         console.log(`${colors.cyan}Building ${moduleName}...${colors.reset}`);
         const stats = await buildModule(webpackConfigPath);
 
         const mainBuildFilePath = stats.outputPath + '\\bundle.user.js';
-        console.log(`   ${colors.green}${moduleName} build successfully${colors.reset}\n`);
+        console.log(`   ${colors.green}✓ ${moduleName} build successfully${colors.reset}\n`);
 
         console.log(`${colors.cyan}Extracting dependencies from ${moduleName}...${colors.reset}`);
         const { banner, dependencies } = await extractDependencies(mainBuildFilePath, moduleName);
@@ -206,9 +217,12 @@ async function main() {
         console.log(`\n${colors.cyan}Combining files...${colors.reset}`);
         await combineFiles([...orderedDependencies, mainBuildFilePath], outputPath);
 
-        console.log(`\n${colors.green}Final combined file created at: ${outputPath}${colors.reset}\n`);
+        const statsFinal = fs.statSync(outputPath);
+        const fileSize = (statsFinal.size / 1024).toFixed(2) + ' KB';
+        console.log(`\n${colors.green}✓ Feature build successfully!${colors.reset}`);
+        console.log(`${colors.blue}Final size: ${colors.reset}${fileSize}\n`);
     } catch (error) {
-        console.error(`${colors.red}Build failed:${colors.reset}`, error);
+        console.error(`${colors.red}✗ Build failed:${colors.reset}`, error);
         process.exit(1);
     }
 }
