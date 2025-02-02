@@ -10,7 +10,7 @@
     "build:FA-Embedded-Image-Viewer-Deps": "node build-scripts/build-with-deps.cjs ./src/feature-modules/FA-Embedded-Image-Viewer/webpack.config.cjs",
     "build:Browser-Extension": "webpack --config ./src/library-modules/Furaffinity-Features-Browser/webpack.config.cjs",
     "build:Browser-Extension-Deps": "node build-scripts/build-with-deps.cjs ./src/library-modules/Furaffinity-Features-Browser/webpack.config.cjs && node build-scripts/copy-extension-resources.cjs",
-    "package:Browser-Extension": "node build-scripts/copy-extension-resources.cjs && node build-scripts/package-extension.cjs",
+    "package:Browser-Extension": "node build-scripts/package-extension.cjs",
     "start:firefox": "web-ext run --source-dir=./dist",
     "start:chrome": "start chrome --load-extension=\"./dist\""
   },
