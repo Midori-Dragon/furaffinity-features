@@ -32,6 +32,7 @@
             "group": "build",
             "problemMatcher": [],
             "label": "Build: FA-Webcomic-Auto-Loader (with deps)",
+            "detail": "Build FA-Webcomic-Auto-Loader including dependencies",
             "presentation": {
                 "showReuseMessage": false,
                 "clear": true
@@ -43,6 +44,7 @@
             "group": "build",
             "problemMatcher": [],
             "label": "Build: Infini Gallery (with deps)",
+            "detail": "Build Infini Gallery including dependencies",
             "presentation": {
                 "showReuseMessage": false,
                 "clear": true
@@ -54,6 +56,7 @@
             "group": "build",
             "problemMatcher": [],
             "label": "Build: Embedded Image Viewer (with deps)",
+            "detail": "Build Embedded Image Viewer including dependencies",
             "presentation": {
                 "showReuseMessage": false,
                 "clear": true
@@ -65,6 +68,7 @@
             "group": "build",
             "problemMatcher": [],
             "label": "Build: Browser Extension",
+            "detail": "Build Browser Extension without dependencies",
             "presentation": {
                 "showReuseMessage": false,
                 "clear": true
@@ -76,6 +80,7 @@
             "group": "build",
             "problemMatcher": [],
             "label": "Build: Browser Extension (with deps)",
+            "detail": "Build Browser Extension including all dependencies",
             "presentation": {
                 "showReuseMessage": false,
                 "clear": true
@@ -87,6 +92,19 @@
             "group": "build",
             "problemMatcher": [],
             "label": "Package: Browser Extension",
+            "detail": "Package Browser Extension",
+            "presentation": {
+                "showReuseMessage": false,
+                "clear": true
+            }
+        },
+        {
+            "type": "npm",
+            "script": "package:source",
+            "group": "build",
+            "problemMatcher": [],
+            "label": "Package: Source",
+            "detail": "Package all source code",
             "presentation": {
                 "showReuseMessage": false,
                 "clear": true
