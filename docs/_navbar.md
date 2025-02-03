@@ -1,4 +1,3 @@
-- [Home](/)
 - [Embedded Image Viewer](/FA-Embedded-Image-Viewer/README)
 - [Infini-Gallery](/FA-Infini-Gallery/README)
 - [Webcomic Auto-Loader](/FA-Webcomic-Auto-Loader/README)
