@@ -18,6 +18,7 @@ A userscript/browser extension that enhances FurAffinity gallery browsing by aut
 | Scroll detection                                                             | ✅ Completed |
 | Gallery management                                                           | ✅ Completed |
 | Support for all gallery types                                                | ✅ Completed |
+| Support for watches pages                                                    | ✅ Completed |
 | Custom Settings                                                              | ✅ Completed |
 | Integration with [Embedded-Image-Viewer](../FA-Embedded-Image-Viewer/README) | ✅ Completed |
 

@@ -29,6 +29,7 @@ A userscript/browser extension that enhances FurAffinity webcomic navigation by 
 - `backwardSearch` - How many pages to search backwards *(default: 3)*
 - `overwriteNavButtons` - Whether to overwrite navigation buttons with comic navigation *(default: true)*
 - `useCustomLightbox` - Enable/disable custom lightbox *(default: true)*
+- `useCustomLightboxNav` - Enable/disable custom lightbox navigation *(default: true)*
 
 ## Documentation
 
