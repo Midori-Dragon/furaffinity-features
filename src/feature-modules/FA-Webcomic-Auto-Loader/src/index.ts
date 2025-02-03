@@ -41,6 +41,10 @@ export const useCustomLightboxSetting = customSettings.newSetting(window.FASetti
 useCustomLightboxSetting.description = 'Sets wether the default Lightbox (fullscreen view) is overwritten by the Auto-Loader.';
 useCustomLightboxSetting.defaultValue = true;
 
+export const customLightboxShowNavSetting = customSettings.newSetting(window.FASettingType.Boolean, 'Custom Lightbox Show Nav');
+customLightboxShowNavSetting.description = 'Sets wether the Lightbox Navigation (next/prev) is shown in the Custom Lightbox.';
+customLightboxShowNavSetting.defaultValue = true;
+
 customSettings.loadSettings();
 
 export const requestHelper = new window.FARequestHelper(2);

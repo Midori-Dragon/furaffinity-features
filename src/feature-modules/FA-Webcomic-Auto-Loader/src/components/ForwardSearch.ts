@@ -4,7 +4,7 @@ import isSubmissionPageInScraps from '../../../../library-modules/GlobalUtils/sr
 import { Logger } from '../../../../library-modules/GlobalUtils/src/Logger';
 import string from '../../../../library-modules/GlobalUtils/src/string';
 import getCurrGalleryFolder from '../../../../library-modules/GlobalUtils/src/URL-Functions/getCurrGalleryFolder';
-import generalizeString from '../utils/generalizeString';
+import figureTitleIsGenerallyEqual from '../utils/figureTitleIsGenerallyEqual';
 import getDocUsername from '../utils/getDocUsername';
 import { IAutoLoaderSearchable } from './IAutoLoaderSearchable';
 
@@ -58,7 +58,7 @@ export class ForwardSearch implements IAutoLoaderSearchable {
         }
         let figuresFlattend = figures.flat();
         figuresFlattend = figuresFlattend.filter(figure => !this.sidToIgnore.includes(parseInt(figure.id.trimStart('sid-'))));
-        figuresFlattend = figuresFlattend.filter(figure => this.figureTitleIsGenerallyEqual(figure, currTitle!));
+        figuresFlattend = figuresFlattend.filter(figure => figureTitleIsGenerallyEqual(figure, currTitle!));
         figuresFlattend.reverse();
         Logger.logInfo(`${scriptName}: searching figures forward found '${figuresFlattend.length}' figures`);
 
@@ -79,17 +79,5 @@ export class ForwardSearch implements IAutoLoaderSearchable {
             Logger.logInfo(`${scriptName}: loaded submission '${figureSid}' with index '${(i + 1).toString()}'`);
         }
         return result;
-    }
-
-    private figureTitleIsGenerallyEqual(figure: HTMLElement, title: string): boolean {
-        const figCaption = figure.querySelector('figcaption');
-        const titleElem = figCaption?.querySelector('a[href*="view"]');
-        if (titleElem != null) {
-            const figTitle = (titleElem as HTMLAnchorElement).title.toLowerCase();
-            const figTitleGeneralized = generalizeString(figTitle, true, true, true, true, true, true);
-            const currTitleGeneralized = generalizeString(title, true, true, true, true, true, true);
-            return figTitleGeneralized.includes(currTitleGeneralized) || currTitleGeneralized.includes(figTitleGeneralized);
-        }
-        return false;
     }
 }

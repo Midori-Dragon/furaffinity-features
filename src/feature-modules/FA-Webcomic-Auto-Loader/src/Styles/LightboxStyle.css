@@ -1,0 +1,20 @@
+.wal-lightbox-nav {
+    position: fixed;
+    left: 50%;
+    bottom: 10px;
+    transform: translateX(-50%);
+    opacity: 0.7;
+    transition: opacity 0.2s linear;
+    z-index: 100000000;
+}
+
+.wal-lightbox-nav:hover {
+    opacity: 1;
+}
+
+.wal-no-select {
+    user-select: none;
+    -webkit-user-select: none;
+    -moz-user-select: none;
+    -ms-user-select: none;
+}
