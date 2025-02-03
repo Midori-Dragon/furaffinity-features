@@ -13,7 +13,8 @@
     "package:Browser-Extension": "node build-scripts/copy-extension-resources.cjs && node build-scripts/package-extension.cjs",
     "package:source": "node build-scripts/package-source.cjs",
     "start:firefox": "web-ext run --source-dir=./dist",
-    "start:chrome": "start chrome --load-extension=\"./dist\""
+    "start:chrome": "start chrome --load-extension=\"./dist\"",
+    "docs": "docsify serve docs"
   },
   "keywords": [],
   "author": "Midori Dragon",

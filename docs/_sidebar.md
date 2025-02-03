@@ -24,3 +24,4 @@
 - **Links**
 - [<i class="fa-brands fa-github"></i> Github](https://github.com/Midori-Dragon/furaffinity-features)
 - [<img src="https://raw.githubusercontent.com/denilsonsa/denilsonsa.github.io/refs/heads/master/icons/GreasyFork.svg" style="width: 16px; margin: 0px;" /> GreasyFork](https://greasyfork.org/en/users/967324-midori-tsume)
+- [<i class="fa-solid fa-house-user"></i> My Homepage](https://midori-dragon.carrd.co/)
