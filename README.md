@@ -4,11 +4,16 @@ A collection of enhanced features for FurAffinity that can be installed either a
 
 Also find all mentioned Scripts on [GreasyFork](https://greasyfork.org/users/967324-midori-tsume) as individual userscripts.
 
+Install Browser extension here:
+- Chrome Web Store (Pending...)
+- [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/furaffinity-features/)
+
 #### Table of Contents
 
 - [Overview](#overview)
 - [Feature Modules](#feature-modules)
 - [Library Modules](#library-modules)
+- [Installation](#installation)
 - [Usage](#usage)
 - [Development](#development)
 - [Contributing](#contributing)
@@ -183,11 +188,11 @@ Shared utility functions and components used across other modules.
 
 ### As Userscripts
 1. Install a userscript manager (Violentmonkey, Tampermonkey, etc.)
-2. Select and install desired feature modules from my [Greasy Fork](https://greasyfork.org/en/users/967324-midori-tsume) profile
+2. Select and install desired feature modules from my [Greasy Fork](https://greasyfork.org/users/967324-midori-tsume) profile
 3. Configure module settings as needed
 
 ### As Browser Extension
-1. Install from Chrome Web Store / Firefox Add-ons (links coming soon)
+1. Install from Chrome Web Store / [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/furaffinity-features/)
 2. Enable desired features
 3. Configure extension settings
 

@@ -2,15 +2,16 @@
 
 A collection of enhanced features for FurAffinity that can be installed either as individual userscripts or as one browser extension (Chrome/Firefox).
 
+Also find all mentioned Scripts on [GreasyFork](https://greasyfork.org/users/967324-midori-tsume) as individual userscripts.
+
+Install Browser extension here:
+- Chrome Web Store (Pending...)
+- [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/furaffinity-features/)
+
 <br>
 
 > [!NOTE]
 > This documentation is still in progress and may contain errors.
-
-<br>
-
-> [!NOTE]
-> Also find all mentioned Scripts on [GreasyFork](https://greasyfork.org/users/967324-midori-tsume) as individual userscripts.
 
 | Table of Contents                   |
 | ----------------------------------- |
@@ -196,7 +197,7 @@ Shared utility functions and components used across other modules.
 3. Configure module settings as needed
 
 ### As Browser Extension
-1. Install from Chrome Web Store / Firefox Add-ons (links coming soon)
+1. Install from Chrome Web Store / [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/furaffinity-features/)
 2. Enable desired features
 3. Configure extension settings
 
