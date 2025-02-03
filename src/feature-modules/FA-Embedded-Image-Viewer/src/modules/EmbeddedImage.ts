@@ -73,8 +73,8 @@ export class EmbeddedImage extends EventTarget {
     private async onRemoveSubClick(figure: HTMLElement): Promise<void> {
         const sid = figure.id.trimStart('sid-');
         this.remove();
-        await requestHelper.PersonalUserRequests.MessageRequests.NewSubmissions.removeSubmissions([sid]);
         figure.remove();
+        await requestHelper.PersonalUserRequests.MessageRequests.NewSubmissions.removeSubmissions([sid]);
     }
 
     private invokeRemove(): void {
