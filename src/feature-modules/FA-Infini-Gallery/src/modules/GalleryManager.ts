@@ -3,6 +3,7 @@ import { FavoritesPage } from '../components/FavoritesPage';
 import { GalleryPage } from '../components/GalleryPage';
 import { ScrapsPage } from '../components/ScrapsPage';
 import { SearchPage } from '../components/SearchPage';
+import { WatchesPage } from '../components/WatchesPage';
 import { IGalleryPage } from './IGalleryPage';
 
 export class GalleryManager {
@@ -14,15 +15,16 @@ export class GalleryManager {
     isScraps: boolean;
     isBrowse: boolean;
     isSearch: boolean;
+    isWatches: boolean;
 
     constructor() {
-        this.isGallery = window.location.toString().includes('net/gallery');
+        this.isGallery = window.location.toString().toLowerCase().includes('net/gallery');
         
-        this.isFavorites = window.location.toString().includes('net/favorites');
+        this.isFavorites = window.location.toString().toLowerCase().includes('net/favorites');
         
-        this.isScraps = window.location.toString().includes('net/scraps');
+        this.isScraps = window.location.toString().toLowerCase().includes('net/scraps');
 
-        this.isBrowse = window.location.toString().includes('net/browse');
+        this.isBrowse = window.location.toString().toLowerCase().includes('net/browse');
         if (this.isBrowse) {
             const pageOption = document.getElementById('manual-page');
             if (pageOption instanceof HTMLInputElement) {
@@ -30,7 +32,9 @@ export class GalleryManager {
             }
         }
         
-        this.isSearch = window.location.toString().includes('net/search');
+        this.isSearch = window.location.toString().toLowerCase().includes('net/search');
+
+        this.isWatches = window.location.toString().toLowerCase().includes('net/controls/buddylist');
     }
 
     async loadNextPage(): Promise<void> {
@@ -48,16 +52,18 @@ export class GalleryManager {
         }
 
         let nextPage: IGalleryPage | undefined;
-        if (this.isGallery === true) {
+        if (this.isGallery) {
             nextPage = new GalleryPage(this.pageNo);
-        } else if (this.isFavorites === true) {
+        } else if (this.isFavorites) {
             nextPage = new FavoritesPage(this.currDataFavId, this.pageNo);
-        } else if (this.isScraps === true) {
+        } else if (this.isScraps) {
             nextPage = new ScrapsPage(this.pageNo);
-        } else if (this.isBrowse === true) {
+        } else if (this.isBrowse) {
             nextPage = new BrowsePage(this.pageNo);
-        } else if (this.isSearch === true) {
+        } else if (this.isSearch) {
             nextPage = new SearchPage(this.pageNo);
+        } else if (this.isWatches) {
+            nextPage = new WatchesPage(this.pageNo);
         }
         if (nextPage != null) {
             const spacer = document.createElement('div');

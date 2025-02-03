@@ -36,7 +36,7 @@ export const requestHelper = new window.FARequestHelper(2);
 
 if (customSettings.isFeatureEnabled) {
     const matchList = new window.FAMatchList(customSettings);
-    matchList.matches = ['net/gallery', 'net/favorites', 'net/scraps', 'net/browse', 'net/search'];
+    matchList.matches = ['net/gallery', 'net/favorites', 'net/scraps', 'net/browse', 'net/search', 'net/controls/buddylist'];
     matchList.runInIFrame = false;
     if (matchList.hasMatch) {
         const infiniGallery = new InfiniGallery();
