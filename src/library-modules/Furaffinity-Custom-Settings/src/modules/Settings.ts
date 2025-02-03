@@ -103,12 +103,12 @@ export class Settings {
         section.id = headerName + '_settingscontainer';
         section.className = 'exsettings';
         const headerContainer = document.createElement('div');
-        headerContainer.className = 'section-header';
+        headerContainer.className = 'section-header cs';
         const header = document.createElement('h2');
         header.textContent = headerName;
         
         const bodyContainer = document.createElement('div');
-        bodyContainer.className = 'section-body';
+        bodyContainer.className = 'section-body cs';
         if (this._isFeatureEnabledSetting.value) {
             bodyContainer.classList.remove('collapsed');
         } else {
@@ -131,7 +131,7 @@ export class Settings {
     
     private createFeatureEnableSetting(bodyContainer: HTMLElement): HTMLElement {
         const enableFeatureSettingContainerElem = document.createElement('label');
-        enableFeatureSettingContainerElem.classList.add('switch');
+        enableFeatureSettingContainerElem.classList.add('switch-cs');
         const enableFeatureSettingInput = document.createElement('input');
         enableFeatureSettingInput.type = 'checkbox';
         enableFeatureSettingInput.id = 'toggleSwitch';
@@ -145,7 +145,7 @@ export class Settings {
             }
         });
         const enableFeatureSettingSpan = document.createElement('span');
-        enableFeatureSettingSpan.classList.add('slider');
+        enableFeatureSettingSpan.classList.add('slider-cs');
         enableFeatureSettingContainerElem.appendChild(enableFeatureSettingInput);
         enableFeatureSettingContainerElem.appendChild(enableFeatureSettingSpan);
         return enableFeatureSettingContainerElem;

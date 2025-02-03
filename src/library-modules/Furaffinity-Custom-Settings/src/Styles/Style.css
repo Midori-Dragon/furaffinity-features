@@ -1,4 +1,4 @@
-.switch {
+.switch-cs {
     position: relative;
     display: inline-block;
     width: 52px;
@@ -6,13 +6,13 @@
     margin: 6px 8px 6px 0;
 }
 
-.switch input {
+.switch-cs input {
     opacity: 0;
     width: 0;
     height: 0;
 }
 
-.slider {
+.slider-cs {
     position: absolute;
     cursor: pointer;
     top: 0;
@@ -24,7 +24,7 @@
     border-radius: 34px;
 }
 
-.slider:before {
+.slider-cs:before {
     position: absolute;
     content: "";
     height: 20px;
@@ -36,25 +36,25 @@
     border-radius: 50%;
 }
 
-input:checked+.slider {
+input:checked+.slider-cs {
     background-color: #4CAF50;
 }
 
-input:checked+.slider:before {
+input:checked+.slider-cs:before {
     transform: translateX(26px);
 }
 
-.section-header {
+.section-header.cs {
     display: flex;
     align-items: center;
 }
 
-.section-body {
+.section-body.cs {
     opacity: 1;
     transition: opacity 0.3s linear;
 }
 
-.section-body.collapsed {
+.section-body.cs.collapsed {
     opacity: 0.4;
     pointer-events: none;
 }
