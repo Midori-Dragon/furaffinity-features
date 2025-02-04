@@ -13,15 +13,15 @@ Install Browser extension here:
 > [!NOTE]
 > This documentation is still in progress and may contain errors.
 
-| Table of Contents                   |
-| ----------------------------------- |
-| [Overview](#overview)               |
-| [Feature Modules](#feature-modules) |
-| [Library Modules](#library-modules) |
-| [Installation](#installation)       |
-| [Usage](#usage)                     |
-| [Development](#development)         |
-| [Contributing](#contributing)       |
+| Table of Contents                      |
+| -------------------------------------- |
+| [1. Overview](#overview)               |
+| [2. Feature Modules](#feature-modules) |
+| [3. Library Modules](#library-modules) |
+| [4. Installation](#installation)       |
+| [5. Usage](#usage)                     |
+| [6. Development](#development)         |
+| [7. Contributing](#contributing)       |
 
 ## Overview
 
