@@ -5,7 +5,7 @@ A collection of enhanced features for FurAffinity that can be installed either a
 Also find all mentioned Scripts on [GreasyFork](https://greasyfork.org/users/967324-midori-tsume) as individual userscripts.
 
 Install Browser extension here:
-- Chrome Web Store (Pending...)
+- [Chrome Web Store](https://chromewebstore.google.com/detail/furaffinity-features/dedddeinlepdkegmhnlggepfoeakikmc)
 - [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/furaffinity-features/)
 
 <br>
@@ -28,19 +28,6 @@ Install Browser extension here:
 This project provides various quality-of-life improvements and additional features for Fur Affinity. It's built with TypeScript and can be used in two ways:
 - As individual userscripts (using Violentmonkey, Tampermonkey, etc.)
 - As a browser extension (Chrome and Firefox)
-
-### Project Progress
-
-| Task                              | Status      |
-| --------------------------------- | ----------- |
-| Create needed Libraries           | ✅ Completed |
-| Add basic Features                | ✅ Completed |
-| Add basic Docs                    | ✅ Completed |
-| Add build scripts                 | ✅ Completed |
-| Support Browser Extension Chrome  | ✅ Completed |
-| Support Browser Extension Firefox | ✅ Completed |
-| First Release Firefox             | ✅ Completed |
-| First Release Chrome              | ⬜ Pending   |
 
 #### Feature Overview
 
