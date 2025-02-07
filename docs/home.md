@@ -4,14 +4,13 @@ A collection of enhanced features for FurAffinity that can be installed either a
 
 Also find all mentioned Scripts on [GreasyFork](https://greasyfork.org/users/967324-midori-tsume) as individual userscripts.
 
-Install Browser extension here:
-- [Chrome Web Store](https://chromewebstore.google.com/detail/furaffinity-features/dedddeinlepdkegmhnlggepfoeakikmc)
-- [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/furaffinity-features/)
+#### Install Browser extension here:
+
+<i class="fa-brands fa-chrome"></i>⠀[Chrome Web Store](https://chromewebstore.google.com/detail/furaffinity-features/dedddeinlepdkegmhnlggepfoeakikmc)
+
+<i class="fa-brands fa-firefox-browser"></i>⠀[Firefox Add-ons](https://addons.mozilla.org/firefox/addon/furaffinity-features/)
 
 <br>
-
-> [!NOTE]
-> This documentation is still in progress and may contain errors.
 
 | Table of Contents                      |
 | -------------------------------------- |

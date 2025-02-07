@@ -22,6 +22,8 @@
 - [Custom Pages](/Furaffinity-Custom-Pages/README)
 - [Custom Settings](/Furaffinity-Custom-Settings/README)
 - **Links**
-- [<i class="fa-brands fa-github"></i> Github](https://github.com/Midori-Dragon/furaffinity-features)
-- [<img src="https://raw.githubusercontent.com/denilsonsa/denilsonsa.github.io/refs/heads/master/icons/GreasyFork.svg" style="width: 16px; margin: 0px;" /> GreasyFork](https://greasyfork.org/en/users/967324-midori-tsume)
-- [<i class="fa-solid fa-house-user"></i> My Homepage](https://midori-dragon.carrd.co/)
+- [<i class="fa-brands fa-github"></i>⠀Github](https://github.com/Midori-Dragon/furaffinity-features)
+- [<img src="https://raw.githubusercontent.com/denilsonsa/denilsonsa.github.io/refs/heads/master/icons/GreasyFork.svg" style="width: 16px; margin: 0px;" />⠀GreasyFork](https://greasyfork.org/en/users/967324-midori-tsume)
+- [<i class="fa-brands fa-chrome"></i>⠀Chrome Web Store](https://chromewebstore.google.com/detail/furaffinity-features/dedddeinlepdkegmhnlggepfoeakikmc)
+- [<i class="fa-brands fa-firefox-browser"></i>⠀Firefox Add-ons](https://addons.mozilla.org/firefox/addon/furaffinity-features/)
+- [<i class="fa-solid fa-house-user"></i>⠀My Homepage](https://midori-dragon.carrd.co/)
