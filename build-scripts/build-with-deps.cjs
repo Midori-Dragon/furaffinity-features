@@ -2,11 +2,23 @@ const webpack = require('webpack');
 const fs = require('fs');
 const path = require('path');
 const util = require('util');
+const crypto = require('crypto');
 
 // Promisify filesystem functions for cleaner async/await usage
 const readFile = util.promisify(fs.readFile);
 const writeFile = util.promisify(fs.writeFile);
-// const exec = util.promisify(require('child_process').exec);
+const readdir = util.promisify(fs.readdir);
+const stat = util.promisify(fs.stat);
+
+// ANSI color codes
+const colors = {
+    reset: '\x1b[0m',
+    green: '\x1b[32m',
+    yellow: '\x1b[33m',
+    red: '\x1b[31m',
+    cyan: '\x1b[36m',
+    blue: '\x1b[34m'
+};
 
 // Helper function to build a module using Webpack
 async function buildModule(webpackConfigPath) {
@@ -23,16 +35,6 @@ async function buildModule(webpackConfigPath) {
         });
     });
 }
-
-// ANSI color codes
-const colors = {
-    reset: '\x1b[0m',
-    green: '\x1b[32m',
-    yellow: '\x1b[33m',
-    red: '\x1b[31m',
-    cyan: '\x1b[36m',
-    blue: '\x1b[34m'
-};
 
 // Extract dependencies from the banner of a build file
 async function extractDependencies(buildFilePath, moduleName = 'bundle.user.js') {
@@ -59,45 +61,117 @@ async function extractDependencies(buildFilePath, moduleName = 'bundle.user.js')
     return { banner, dependencies };
 }
 
+// Calculate hash of a directory recursively
+async function calculateDirectoryHash(directory) {
+    const hash = crypto.createHash('sha256');
+
+    async function processDirectory(dir) {
+        const files = await readdir(dir);
+
+        // Sort files for consistent hash
+        for (const file of files.sort()) {
+            const fullPath = path.join(dir, file);
+            const stats = await stat(fullPath);
+
+            if (stats.isDirectory()) {
+                // Skip node_modules and dist directories
+                if (file !== 'node_modules' && file !== 'dist') {
+                    await processDirectory(fullPath);
+                }
+            } else {
+                // Only hash source files
+                if (file.endsWith('.ts') || file.endsWith('.tsx') || file.endsWith('.js') || file.endsWith('.jsx') || file.endsWith('.css') || file.endsWith('.html')) {
+                    const content = await readFile(fullPath);
+                    hash.update(`${fullPath}:${content}`);
+                }
+            }
+        }
+    }
+
+    await processDirectory(directory);
+    return hash.digest('hex');
+}
+
+// Check if dependency needs rebuilding
+async function needsRebuilding(modulePath, buildPath) {
+    const hashFile = path.join(path.dirname(buildPath), '.build-hash');
+
+    // Get current hash
+    const currentHash = await calculateDirectoryHash(modulePath);
+
+    try {
+        // Check if build exists and has hash
+        if (fs.existsSync(buildPath) && fs.existsSync(hashFile)) {
+            const savedHash = await readFile(hashFile, 'utf-8');
+            return currentHash !== savedHash;
+        }
+        return true;
+    } catch (error) {
+        console.warn(`  ${colors.yellow}⚠ Warning: Error reading build hash for ${path.basename(modulePath)}${colors.reset}`);
+    }
+}
+
+// Save build hash
+async function saveBuildHash(modulePath, buildPath) {
+    const hash = await calculateDirectoryHash(modulePath);
+    const hashFile = path.join(path.dirname(buildPath), '.build-hash');
+    await writeFile(hashFile, hash);
+}
+
 // Recursively resolve dependencies and ensure correct order
 async function resolveDependencies(dependencies, resolved = new Set(), order = []) {
     for (const dep of dependencies) {
         const moduleName = path.basename(dep, '.js');
 
         // Check in library-modules and feature-modules
-        const libraryModulePath = `./src/library-modules/${moduleName}/dist/bundle.user.js`;
-        const libraryConfigPath = `./src/library-modules/${moduleName}/webpack.config.cjs`;
-        const featureModulePath = `./src/feature-modules/${moduleName}/dist/bundle.user.js`;
-        const featureConfigPath = `./src/feature-modules/${moduleName}/webpack.config.cjs`;
+        const libraryModulePath = `./src/library-modules/${moduleName}`;
+        const libraryConfigPath = path.join(libraryModulePath, 'webpack.config.cjs');
+        const libraryBuildPath = path.join(libraryModulePath, 'dist/bundle.user.js');
 
-        if (resolved.has(libraryModulePath) || resolved.has(featureModulePath)) {
+        const featureModulePath = `./src/feature-modules/${moduleName}`;
+        const featureConfigPath = path.join(featureModulePath, 'webpack.config.cjs');
+        const featureBuildPath = path.join(featureModulePath, 'dist/bundle.user.js');
+
+        if (resolved.has(libraryBuildPath) || resolved.has(featureBuildPath)) {
             console.log(`${colors.cyan}Skipping already resolved dependency: ${colors.blue}${moduleName}${colors.reset}\n`);
             continue;
         }
 
         let configPath = null;
         let buildPath = null;
+        let modulePath = null;
 
         // Try library-modules first
         if (fs.existsSync(libraryConfigPath)) {
             configPath = libraryConfigPath;
-            buildPath = libraryModulePath;
+            buildPath = libraryBuildPath;
+            modulePath = libraryModulePath;
         }
         // Then try feature-modules
         else if (fs.existsSync(featureConfigPath)) {
             configPath = featureConfigPath;
-            buildPath = featureModulePath;
+            buildPath = featureBuildPath;
+            modulePath = featureModulePath;
         }
 
-        if (configPath) {
+        if (configPath && modulePath) {
             console.log(`${colors.cyan}Resolving dependency: ${colors.blue}${moduleName}${colors.reset}`);
-            try {
-                console.log(`   ${colors.cyan}Building ${colors.blue}${moduleName}${colors.reset}`);
-                await buildModule(configPath);
-                console.log(`   ${colors.green}✓ Successfully built ${moduleName}${colors.reset}`);
-            } catch (error) {
-                console.error(`${colors.red}✗ Error building ${moduleName}:${colors.reset}`, error);
-                continue;
+
+            // Check if rebuild is needed
+            const shouldRebuild = await needsRebuilding(modulePath, buildPath);
+
+            if (!shouldRebuild && fs.existsSync(buildPath)) {
+                console.log(`   ${colors.green}✓ Using cached build for ${moduleName}${colors.reset}`);
+            } else {
+                try {
+                    console.log(`   ${colors.cyan}Building ${colors.blue}${moduleName}${colors.reset}`);
+                    await buildModule(configPath);
+                    await saveBuildHash(modulePath, buildPath);
+                    console.log(`   ${colors.green}✓ Successfully built ${moduleName}${colors.reset}`);
+                } catch (error) {
+                    console.error(`${colors.red}✗ Error building ${moduleName}:${colors.reset}`, error);
+                    continue;
+                }
             }
 
             if (fs.existsSync(buildPath)) {
