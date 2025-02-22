@@ -4,6 +4,7 @@
 - [Embedded Image Viewer](/FA-Embedded-Image-Viewer/README)
 - [Infini-Gallery](/FA-Infini-Gallery/README)
 - [Webcomic Auto-Loader](/FA-Webcomic-Auto-Loader/README)
+- [Instant Nuker](/FA-Instant-Nuker/README)
 - **Library Modules**
 - [Prototype Extensions](/Furaffinity-Prototype-Extensions/README)
 - [Request Helper](/Furaffinity-Request-Helper/README)
