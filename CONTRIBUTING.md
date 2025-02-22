@@ -23,28 +23,39 @@ Thank you for your interest in contributing to this project! This guide will hel
 
 ### Project Organization
 
-```
-project/
-├── feature-modules/
-│   ├── <existing_feature>/
-│   │   ├── components/   # Reusable components
-│   │   ├── modules/      # Feature modules
-│   │   └── utils/        # Shared utility functions
-│   └── <your_new_feature>/
-│       ├── components/   # Reusable components
-│       ├── modules/      # Feature modules
-│       └── utils/        # Shared utility functions
-|
-└── library-modules/
-    ├── <existing_library>/
-    │   ├── components/   # Reusable components
-    │   ├── modules/      # Feature modules
-    │   └── utils/        # Shared utility functions
-    └── <your_new_library>/
-        ├── components/   # Reusable components
-        ├── modules/      # Feature modules
-        └── utils/        # Shared utility functions
-```
+<div>
+  <pre>
+  project/
+  ├── <span style="color: #ba5656;">assets/</span>          # Static assets
+  ├── <span style="color: #c09553;">build-scripts/</span>   # Build scripts
+  ├── <span style="color: #d8be7c;">dist/</span>            # Build output
+  ├── <span style="color: #dc7a7a;">docs/</span>            # Documentation
+  │   ├── <span style="color: #50fa7b;">&lt;existing_feature_docs&gt;/</span>
+  │   ├── <span style="color: #50fa7b;">&lt;your_new_feature_docs&gt;/</span>
+  │   ├── <span style="color: #c09553;">contributing.md</span>
+  │   └── <span style="color: #c09553;">home.md</span>
+  └── <span style="color: #06cc14;">src/</span>
+      ├── <span style="color: #ff79c6;">feature-modules/</span>
+      │   ├── <span style="color: #50fa7b;">&lt;existing_feature&gt;/</span>
+      │   │   ├── <span style="color: #8be9fd;">components/</span>   # Reusable components
+      │   │   ├── <span style="color: #8be9fd;">modules/</span>      # Feature modules
+      │   │   └── <span style="color: #8be9fd;">utils/</span>        # Shared utility functions
+      │   └── <span style="color: #50fa7b;">&lt;your_new_feature&gt;/</span>
+      │       ├── <span style="color: #8be9fd;">components/</span>   # Reusable components
+      │       ├── <span style="color: #8be9fd;">modules/</span>      # Feature modules
+      │       └── <span style="color: #8be9fd;">utils/</span>        # Shared utility functions
+      │
+      └── <span style="color: #ffb86c;">library-modules/</span>
+            ├── <span style="color: #50fa7b;">&lt;existing_library&gt;/</span>
+            │   ├── <span style="color: #8be9fd;">components/</span>   # Reusable components
+            │   ├── <span style="color: #8be9fd;">modules/</span>      # Feature modules
+            │   └── <span style="color: #8be9fd;">utils/</span>        # Shared utility functions
+            └── <span style="color: #50fa7b;">&lt;your_new_library&gt;/</span>
+               ├── <span style="color: #8be9fd;">components/</span>   # Reusable components
+               ├── <span style="color: #8be9fd;">modules/</span>      # Feature modules
+               └── <span style="color: #8be9fd;">utils/</span>        # Shared utility functions
+  </pre>
+</div>
 
 ## Development Guidelines
 
