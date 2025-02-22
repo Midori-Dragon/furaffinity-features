@@ -52,6 +52,12 @@ This project provides various quality-of-life improvements and additional featur
 
 ---
 
+✅ [FA Instant Nuker](#fa-instant-nuker)
+  - Instantly removes messages from the current page
+  - Supports removing messages from different categories
+
+---
+
 ⬜ [FA Watches Favorite Viewer](#fa-watches-favorite-viewer) (Planned)
   - Monitoring favorites of watched users
   - Viewing favorites of watched users  
@@ -96,6 +102,16 @@ Automatic loading of sequential comic pages.
 
 ---
 
+### FA Instant Nuker
+Instantly removes messages from the current page.
+
+| Feature Roadmap                           | Status      |
+| ----------------------------------------- | ----------- |
+| Remove messages instantly                 | ✅ Completed |
+| Remove messages from different categories | ✅ Completed |
+
+---
+
 ### FA Watches Favorite Viewer
 Advanced system for monitoring and displaying favorites from watched users.
 
@@ -114,7 +130,7 @@ Central settings management system for all modules.
 | Settings persistence                                   | ✅ Completed |
 | Multiple setting types (boolean, number, text, action) | ✅ Completed |
 | Per-module settings management                         | ✅ Completed |
-| New setting type combobox                              | ⬜ Planned   |
+| New setting type combobox                              | ✅ Completed |
 | Settings import/export functionality                   | ⬜ Planned   |
 
 ---
