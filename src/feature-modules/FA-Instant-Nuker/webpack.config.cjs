@@ -17,9 +17,9 @@ module.exports = merge(common, {
 // @namespace   Violentmonkey Scripts
 // @match       *://*.furaffinity.net/*
 // @require     https://update.greasyfork.org/scripts/525666/1530872/Furaffinity-Prototype-Extensions.js
-// @require     https://update.greasyfork.org/scripts/483952/1530883/Furaffinity-Request-Helper.js
+// @require     https://update.greasyfork.org/scripts/483952/1541529/Furaffinity-Request-Helper.js
 // @require     https://update.greasyfork.org/scripts/485827/1530881/Furaffinity-Match-List.js
-// @require     https://update.greasyfork.org/scripts/475041/1531083/Furaffinity-Custom-Settings.js
+// @require     https://update.greasyfork.org/scripts/475041/1541526/Furaffinity-Custom-Settings.js
 // @grant       GM_info
 // @version     1.0.0
 // @author      Midori Dragon

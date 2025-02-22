@@ -17,12 +17,12 @@ module.exports = merge(common, {
 // @namespace   Violentmonkey Scripts
 // @match       *://*.furaffinity.net/*
 // @require     https://update.greasyfork.org/scripts/525666/1530872/Furaffinity-Prototype-Extensions.js
-// @require     https://update.greasyfork.org/scripts/483952/1530883/Furaffinity-Request-Helper.js
+// @require     https://update.greasyfork.org/scripts/483952/1541529/Furaffinity-Request-Helper.js
 // @require     https://update.greasyfork.org/scripts/492931/1530871/Furaffinity-Submission-Image-Viewer.js
 // @require     https://update.greasyfork.org/scripts/485827/1530881/Furaffinity-Match-List.js
 // @require     https://update.greasyfork.org/scripts/485153/1530882/Furaffinity-Loading-Animations.js
 // @require     https://update.greasyfork.org/scripts/476762/1530884/Furaffinity-Custom-Pages.js
-// @require     https://update.greasyfork.org/scripts/475041/1531083/Furaffinity-Custom-Settings.js
+// @require     https://update.greasyfork.org/scripts/475041/1541526/Furaffinity-Custom-Settings.js
 // @grant       GM_info
 // @version     2.4.2
 // @author      Midori Dragon
