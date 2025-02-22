@@ -8,6 +8,7 @@
     "build:FA-Webcomic-Auto-Loader-Deps": "node build-scripts/build-with-deps.cjs ./src/feature-modules/FA-Webcomic-Auto-Loader/webpack.config.cjs",
     "build:FA-Infini-Gallery-Deps": "node build-scripts/build-with-deps.cjs ./src/feature-modules/FA-Infini-Gallery/webpack.config.cjs",
     "build:FA-Embedded-Image-Viewer-Deps": "node build-scripts/build-with-deps.cjs ./src/feature-modules/FA-Embedded-Image-Viewer/webpack.config.cjs",
+    "build:FA-Instant-Nuker-Deps": "node build-scripts/build-with-deps.cjs ./src/feature-modules/FA-Instant-Nuker/webpack.config.cjs",
     "build:Browser-Extension": "webpack --config ./src/library-modules/Furaffinity-Features-Browser/webpack.config.cjs",
     "build:Browser-Extension-Deps": "node build-scripts/build-with-deps.cjs ./src/library-modules/Furaffinity-Features-Browser/webpack.config.cjs && node build-scripts/copy-extension-resources.cjs",
     "package:Browser-Extension": "node build-scripts/copy-extension-resources.cjs && node build-scripts/package-extension.cjs",
