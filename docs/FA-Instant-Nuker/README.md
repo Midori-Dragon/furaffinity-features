@@ -1,6 +1,6 @@
 # FA Instant Nuker
 
-A userscript/browser extension that enhances FurAffinity gallery browsing by providing a nuke button, that when pressed instantly nukes the current page without asking for confirmation. Also available on GreasyFork as [FA-Instant-Nuker](https://greasyfork.org/scripts/462632-fa-instant-nuker).
+A userscript/browser extension that enhances FurAffinity gallery browsing by providing a nuke button, that when pressed instantly nukes the current page without asking for confirmation. Also available on GreasyFork as [FA-Instant-Nuker](https://greasyfork.org/scripts/527752-fa-instant-nuker).
 
 ## How to use
 
