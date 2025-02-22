@@ -16,5 +16,10 @@
     ],
     "icons": {
         "128": "icons/logo-x128.png"
+    },
+    "browser_specific_settings": {
+        "gecko": {
+            "id": "furaffinity-features@midori-dragon"
+        }
     }
 }
