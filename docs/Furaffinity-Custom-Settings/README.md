@@ -37,6 +37,7 @@ Helper Library to create Custom settings on Furaffinitiy. Also see this Script o
 | ⠀⠀⠀⠀Boolean (Checkbox with a description)             | ✅ Completed |
 | ⠀⠀⠀⠀Action (Button with a description)                | ✅ Completed |
 | ⠀⠀⠀⠀Text (TextField that allow any Characters)        | ✅ Completed |
+| ⠀⠀⠀⠀Option (Combobox with multiple options)           | ✅ Completed |
 | Change Settings Page Name and Header Name             | ✅ Completed |
 | Have multiple different Setting Pages                 | ✅ Completed |
 
@@ -60,6 +61,10 @@ The Setting class contains following Properties:
 
 - `verifyRegex` - Regex for validation of input for `SettingType.Text`
 
+- `values` - Option values for `SettingType.Option`
+- `addOption(value, text)` - Function to add an option to `SettingType.Option`
+- `removeOption(value)` - Function to remove an option from `SettingType.Option`
+
 ---
 
 ### SettingType
@@ -70,6 +75,7 @@ SettingType can have the following values:
 - `SettingType.Text` - A TextField that allows any Character. *(Enables verifyRegex)*
 - `SettingType.Boolean` - A Checkbox with a description.
 - `SettingType.Action` - A Button with a certain Action. *(Value returns the name)*
+- `SettingType.Option` - A Combobox with multiple options. *(Enables values)*
 
 ---
 
