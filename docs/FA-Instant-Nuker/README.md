@@ -1,4 +1,4 @@
-# FA Infini Gallery
+# FA Instant Nuker
 
 A userscript/browser extension that enhances FurAffinity gallery browsing by providing a nuke button, that when pressed instantly nukes the current page without asking for confirmation. Also available on GreasyFork as [FA-Instant-Nuker](https://greasyfork.org/scripts/462632-fa-instant-nuker).
 
@@ -30,14 +30,19 @@ A userscript/browser extension that enhances FurAffinity gallery browsing by pro
 
 The SubmissionNuker class creates the Submissions Nuke button upon calling the constructor. *(see [NukeButton](#nukebutton))*
 
+---
+
 ### MessageNuker
 
 The MessageNuker class creates the all message types Nuke buttons upon calling the constructor. *(see [NukeButton](#nukebutton))*
+
+---
 
 ### NukeButton
 
 The NukeButton class creates a Nuke button of a specific message type upon calling the constructor. *(see [MessageType](#messagetype))*
 
+---
 
 ### MessageType
 
