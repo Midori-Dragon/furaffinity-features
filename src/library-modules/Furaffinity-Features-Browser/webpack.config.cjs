@@ -24,8 +24,9 @@ module.exports = merge(common, {
 // @require     https://update.greasyfork.org/scripts/458971/0000000/FA-Embedded-Image-Viewer.js
 // @require     https://update.greasyfork.org/scripts/457759/0000000/FA-Webcomic-Auto-Loader.js
 // @require     https://update.greasyfork.org/scripts/462632/0000000/FA-Infini-Gallery.js
+// @require     https://update.greasyfork.org/scripts/462632/0000000/FA-Instant-Nuker.js
 // @grant       GM_info
-// @version     1.0.3
+// @version     1.1.0
 // @author      Midori Dragon
 // @description Browser Extension for Furaffinity Features
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png

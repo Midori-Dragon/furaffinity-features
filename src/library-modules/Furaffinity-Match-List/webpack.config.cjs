@@ -16,7 +16,7 @@ module.exports = merge(common, {
 // @name        Furaffinity-Match-List
 // @namespace   Violentmonkey Scripts
 // @grant       GM_info
-// @version     1.1.0
+// @version     1.1.1
 // @author      Midori Dragon
 // @description Library to create a matchlist for your Furaffinity Script
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png

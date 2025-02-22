@@ -13,13 +13,17 @@ module.exports = merge(common, {
         new webpack.BannerPlugin({
             banner: `
 // ==UserScript==
-// @name        Furaffinity-Request-Helper
+// @name        FA Instant Nuker
 // @namespace   Violentmonkey Scripts
+// @match       *://*.furaffinity.net/*
 // @require     https://update.greasyfork.org/scripts/525666/1530872/Furaffinity-Prototype-Extensions.js
-// @grant       none
-// @version     1.4.0
+// @require     https://update.greasyfork.org/scripts/483952/1530883/Furaffinity-Request-Helper.js
+// @require     https://update.greasyfork.org/scripts/485827/1530881/Furaffinity-Match-List.js
+// @require     https://update.greasyfork.org/scripts/475041/1531083/Furaffinity-Custom-Settings.js
+// @grant       GM_info
+// @version     1.0.0
 // @author      Midori Dragon
-// @description Library to simplify requests to Furaffinity
+// @description Adds nuke buttons to instantly nuke all submissions or messages
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
 // @license     MIT
 // ==/UserScript==

@@ -2,12 +2,14 @@ import { SettingNumber } from '../components/SettingNumber';
 import { SettingBoolean } from '../components/SettingBoolean';
 import { SettingAction } from '../components/SettingAction';
 import { SettingText } from '../components/SettingText';
+import { SettingOption } from '../components/SettingOption';
 
 export enum SettingType {
     Number,
     Boolean,
     Action,
     Text,
+    Option
 }
 
 export interface SettingTypeMapping {
@@ -15,6 +17,7 @@ export interface SettingTypeMapping {
     [SettingType.Boolean]: boolean;
     [SettingType.Action]: string;
     [SettingType.Text]: string;
+    [SettingType.Option]: string;
 }
 
 export interface SettingClassMapping {
@@ -22,6 +25,7 @@ export interface SettingClassMapping {
     [SettingType.Boolean]: SettingBoolean;
     [SettingType.Action]: SettingAction;
     [SettingType.Text]: SettingText;
+    [SettingType.Option]: SettingOption;
 }
 
 export interface SettingClassTypeMapping {
@@ -29,4 +33,5 @@ export interface SettingClassTypeMapping {
     [SettingType.Boolean]: typeof SettingBoolean;
     [SettingType.Action]: typeof SettingAction;
     [SettingType.Text]: typeof SettingText;
+    [SettingType.Option]: typeof SettingOption;
 }

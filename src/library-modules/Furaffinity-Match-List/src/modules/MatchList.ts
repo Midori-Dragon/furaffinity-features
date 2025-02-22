@@ -24,12 +24,12 @@ export class MatchList {
         let runString = this.logRunning ? `${GMInfo.scriptName} v${GMInfo.scriptVersion}` : '';
         let run = true;
         if (window.location.toString().includes('settings?extension')) {
-            runString = 'Settings: ' + runString;
+            runString = `Settings: ${GMInfo.scriptName} v${GMInfo.scriptVersion}`;
             run = false;
         } else if (this.customSettings != null) {
-            runString = `Running: ${runString} ${this.customSettings.toString()}`;
+            runString = `${this.customSettings.headerName}: ${this.customSettings.toString()}`;
         } else {
-            runString = 'Running: ' + runString;
+            runString = `Running: ${GMInfo.scriptName} v${GMInfo.scriptVersion}`;
         }
         if (this.logRunning) {
             console.info(`%c${runString}`, color);

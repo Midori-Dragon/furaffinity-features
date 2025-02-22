@@ -8,6 +8,7 @@ import { SettingText } from '../components/SettingText';
 import { SettingType, SettingClassMapping, SettingClassTypeMapping } from '../utils/SettingType';
 import { makeIdCompatible } from '../utils/Utils';
 import '../Styles/Style.css';
+import { SettingOption } from '../components/SettingOption';
 
 export class Settings {
     settings: Record<string, ISetting<SettingType>> = {};
@@ -25,6 +26,7 @@ export class Settings {
         [SettingType.Boolean]: SettingBoolean,
         [SettingType.Action]: SettingAction,
         [SettingType.Text]: SettingText,
+        [SettingType.Option]: SettingOption
     };
 
     constructor(provider: string, headerName: string) {
