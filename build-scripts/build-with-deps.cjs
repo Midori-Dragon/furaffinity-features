@@ -20,6 +20,8 @@ const colors = {
     blue: '\x1b[34m'
 };
 
+const hashIncludeFileTypes = ['ts', 'tsx', 'js', 'jsx', 'cjs', 'css', 'html'];
+
 // Helper function to build a module using Webpack
 async function buildModule(webpackConfigPath) {
     const webpackConfig = require(path.resolve(webpackConfigPath));
@@ -80,7 +82,7 @@ async function calculateDirectoryHash(directory) {
                 }
             } else {
                 // Only hash source files
-                if (file.endsWith('.ts') || file.endsWith('.tsx') || file.endsWith('.js') || file.endsWith('.jsx') || file.endsWith('.css') || file.endsWith('.html')) {
+                if (hashIncludeFileTypes.includes(file.split('.').pop())) {
                     const content = await readFile(fullPath);
                     hash.update(`${fullPath}:${content}`);
                 }
