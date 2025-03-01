@@ -10,6 +10,10 @@ export class InfiniGallery {
     constructor() {
         this.scanElem = document.getElementById('footer')!;
         this.galleryManager = new GalleryManager();
+
+        window.addEventListener('ig-stop-detection', () => {
+            this.stopScrollDetection();
+        });
     }
 
     startScrollDetection(): void {

@@ -9,20 +9,26 @@ export class CustomPage extends EventTarget {
     private _onOpen?: (customData: CustomData) => void;
     private static customPages: CustomPage[] = [];
 
-    constructor(pageUrl: string, parameterName: string) {
+    constructor(pageUrl: string, parameterName = '') {
         super();
         Object.setPrototypeOf(this, CustomPage.prototype);
 
         this.pageUrl = pageUrl;
         this.parameterName = parameterName;
         CustomPage.customPages.push(this);
-        Logger.logInfo(`New CustomPage at '${pageUrl}'='${parameterName}'`);
+        if (parameterName !== '') {
+            Logger.logInfo(`New CustomPage at '${pageUrl}'='${parameterName}'`);
+        } else {
+            Logger.logInfo(`New CustomPage at '${pageUrl}'`);
+        }
     }
 
     get isOpen(): boolean {
         const url = window.location.toString();
         if (!url.includes(this.pageUrl)) {
             return false;
+        } else if (this.parameterName === '') {
+            return true;
         }
         const parameter = extractParameterFromURL(url, this.parameterName);
         const isOpen = parameter?.key === this.parameterName;

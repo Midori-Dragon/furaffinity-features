@@ -1,3 +1,4 @@
+import getWatchesFromPage from '../../../../library-modules/GlobalUtils/src/FA-Functions/getWatchesFromPage';
 import { Logger } from '../../../../library-modules/GlobalUtils/src/Logger';
 import { requestHelper, showPageSeparatorSetting } from '../index';
 import { IGalleryPage } from '../modules/IGalleryPage';
@@ -31,7 +32,7 @@ export class WatchesPage implements IGalleryPage {
         prevWatches ??= [];
         const prevHrefs = prevWatches.map(watch => (watch.querySelector('a[href]') as HTMLLinkElement)?.href);
 
-        let watches = this.getWatchesFromPage(page);
+        let watches = getWatchesFromPage(page);
         watches = watches.filter(watch => !prevHrefs.includes((watch.querySelector('a[href]') as HTMLLinkElement)?.href));
 
         if (watches.length !== 0) {
@@ -55,24 +56,5 @@ export class WatchesPage implements IGalleryPage {
         }
 
         return watches;
-    }
-
-    private getWatchesFromPage(page: Document): HTMLElement[] {
-        try {
-            const watchList: HTMLElement[] = [];
-            const pageColumnPage = page.getElementById('columnpage')!;
-            const pageSectionBody = pageColumnPage.querySelector('div[class="section-body"]')!;
-            const pageWatches = pageSectionBody.querySelector('div[class="flex-watchlist"]')!;
-            const watches = pageWatches.querySelectorAll('div[class="flex-item-watchlist aligncenter"]')!;
-
-            for (const watch of Array.from(watches).map(elem => elem as HTMLElement)) {
-                watchList.push(watch);
-            }
-
-            return watchList;
-        } catch (e) {
-            Logger.logError(e);
-            return [];
-        }
     }
 }
