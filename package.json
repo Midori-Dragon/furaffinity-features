@@ -24,6 +24,7 @@
   "dependencies": {
     "@types/chrome": "^0.0.299",
     "@types/firefox-webext-browser": "^120.0.4",
+    "@types/pako": "^2.0.3",
     "@types/webextension-polyfill": "^0.12.1"
   },
   "devDependencies": {
