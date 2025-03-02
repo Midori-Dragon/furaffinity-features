@@ -1,7 +1,7 @@
 import { customLightboxShowNavSetting, scriptName } from '..';
 import { Logger } from '../../../../library-modules/GlobalUtils/src/Logger';
 import string from '../../../../library-modules/GlobalUtils/src/string';
-import '../Styles/LightboxStyle.css';
+import '../styles/LightboxStyle.css';
 
 export class Lightbox {
     currWalIndex = 0;

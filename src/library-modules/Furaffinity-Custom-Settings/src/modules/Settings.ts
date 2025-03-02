@@ -7,7 +7,7 @@ import { SettingNumber } from '../components/SettingNumber';
 import { SettingText } from '../components/SettingText';
 import { SettingType, SettingClassMapping, SettingClassTypeMapping } from '../utils/SettingType';
 import { makeIdCompatible } from '../utils/Utils';
-import '../Styles/Style.css';
+import '../styles/Style.css';
 import { SettingOption } from '../components/SettingOption';
 
 export class Settings {

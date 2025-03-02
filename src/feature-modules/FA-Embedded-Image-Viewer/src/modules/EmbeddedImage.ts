@@ -2,7 +2,7 @@ import { closeEmbedAfterOpenSetting, loadingSpinSpeedFavSetting, loadingSpinSpee
 import { LoadingSpinner } from '../../../../library-modules/Furaffinity-Loading-Animations/src/components/LoadingSpinner';
 import { EmbeddedHTML } from '../components/EmbeddedHTML';
 import { getByLinkFromFigcaption, getFavKey } from '../utils/Utils';
-import '../Styles/Style.css';
+import '../styles/Style.css';
 import string from '../../../../library-modules/GlobalUtils/src/string';
 
 const embeddedModes = {
