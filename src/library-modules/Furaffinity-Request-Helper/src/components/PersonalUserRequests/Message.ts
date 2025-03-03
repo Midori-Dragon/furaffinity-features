@@ -1,4 +1,4 @@
-import { Semaphore } from '../../utils/Semaphore';
+import { Semaphore } from '../../../../GlobalUtils/src/Semaphore';
 import { NewSubmissions } from './MessageRequests/NewSubmissions';
 import { NewMessages } from './MessageRequests/NewMessages';
 

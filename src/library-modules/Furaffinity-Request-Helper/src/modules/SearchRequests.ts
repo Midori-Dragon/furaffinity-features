@@ -1,4 +1,4 @@
-import { Semaphore } from '../utils/Semaphore';
+import { Semaphore } from '../../../GlobalUtils/src/Semaphore';
 import { PercentHelper } from '../utils/PercentHelper';
 import { IdArray } from '../utils/ArrayHelper';
 import { Page } from '../components/GalleryRequests/Page';

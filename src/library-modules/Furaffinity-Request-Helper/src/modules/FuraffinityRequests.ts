@@ -1,4 +1,4 @@
-import { Semaphore } from '../utils/Semaphore';
+import { Semaphore } from '../../../GlobalUtils/src/Semaphore';
 import { WaitAndCallAction } from '../utils/WaitAndCallAction';
 import { UserRequests } from './UserRequests';
 import { PersonalUserRequests } from './PersonalUserRequests';

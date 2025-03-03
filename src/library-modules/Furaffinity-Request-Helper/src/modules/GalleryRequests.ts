@@ -1,6 +1,6 @@
 import { PercentHelper } from '../utils/PercentHelper';
 import { IdArray } from '../utils/ArrayHelper';
-import { Semaphore } from '../utils/Semaphore';
+import { Semaphore } from '../../../GlobalUtils/src/Semaphore';
 import { Gallery } from '../components/GalleryRequests/Gallery';
 import { Scraps } from '../components/GalleryRequests/Scraps';
 import { Favorites } from '../components/GalleryRequests/Favorites';

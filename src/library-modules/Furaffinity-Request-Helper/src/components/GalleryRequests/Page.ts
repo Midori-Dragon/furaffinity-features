@@ -1,4 +1,4 @@
-import { Semaphore } from '../../utils/Semaphore';
+import { Semaphore } from '../../../../GlobalUtils/src/Semaphore';
 import { Gallery } from './Gallery';
 import { Scraps } from './Scraps';
 import { Favorites } from './Favorites';

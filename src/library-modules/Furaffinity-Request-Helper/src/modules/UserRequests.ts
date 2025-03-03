@@ -1,5 +1,5 @@
 import { WaitAndCallAction } from '../utils/WaitAndCallAction';
-import { Semaphore } from '../utils/Semaphore';
+import { Semaphore } from '../../../GlobalUtils/src/Semaphore';
 import { FuraffinityRequests } from './FuraffinityRequests';
 import { GalleryRequests } from './GalleryRequests';
 import { SearchRequests } from './SearchRequests';

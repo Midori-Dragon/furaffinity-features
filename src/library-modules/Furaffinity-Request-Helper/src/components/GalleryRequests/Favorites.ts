@@ -2,7 +2,7 @@ import { WaitAndCallAction } from '../../utils/WaitAndCallAction';
 import { IdArray } from '../../utils/ArrayHelper';
 import { Page } from './Page';
 import { FuraffinityRequests } from '../../modules/FuraffinityRequests';
-import { Semaphore } from '../../utils/Semaphore';
+import { Semaphore } from '../../../../GlobalUtils/src/Semaphore';
 import { convertToNumber } from '../../utils/GeneralUtils';
 import { Logger } from '../../../../GlobalUtils/src/Logger';
 

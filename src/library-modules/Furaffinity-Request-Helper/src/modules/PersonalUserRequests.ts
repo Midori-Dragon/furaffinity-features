@@ -1,4 +1,4 @@
-import { Semaphore } from '../utils/Semaphore';
+import { Semaphore } from '../../../GlobalUtils/src/Semaphore';
 import { Message } from '../components/PersonalUserRequests/Message';
 import { AccountInformation } from '../components/PersonalUserRequests/AccountInformation';
 import { UserProfile } from '../components/PersonalUserRequests/UserProfile';
