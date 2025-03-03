@@ -76,6 +76,18 @@
         },
         {
             "type": "npm",
+            "script": "build:FA-Watches-Favorites-Viewer-Deps",
+            "group": "build",
+            "problemMatcher": [],
+            "label": "Build: Watches Favorites Viewer (with deps)",
+            "detail": "Build Watches Favorites Viewer including dependencies",
+            "presentation": {
+                "showReuseMessage": false,
+                "clear": true
+            }
+        },
+        {
+            "type": "npm",
             "script": "build:Browser-Extension",
             "group": "build",
             "problemMatcher": [],

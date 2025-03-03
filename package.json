@@ -9,12 +9,14 @@
     "build:FA-Infini-Gallery-Deps": "node build-scripts/build-with-deps.cjs ./src/feature-modules/FA-Infini-Gallery/webpack.config.cjs",
     "build:FA-Embedded-Image-Viewer-Deps": "node build-scripts/build-with-deps.cjs ./src/feature-modules/FA-Embedded-Image-Viewer/webpack.config.cjs",
     "build:FA-Instant-Nuker-Deps": "node build-scripts/build-with-deps.cjs ./src/feature-modules/FA-Instant-Nuker/webpack.config.cjs",
+    "build:FA-Watches-Favorites-Viewer-Deps": "node build-scripts/build-with-deps.cjs ./src/feature-modules/FA-Watches-Favorites-Viewer/webpack.config.cjs",
     "build:Browser-Extension": "webpack --config ./src/library-modules/Furaffinity-Features-Browser/webpack.config.cjs",
     "build:Browser-Extension-Deps": "node build-scripts/build-with-deps.cjs ./src/library-modules/Furaffinity-Features-Browser/webpack.config.cjs && node build-scripts/copy-extension-resources.cjs",
     "package:Browser-Extension": "node build-scripts/copy-extension-resources.cjs && node build-scripts/package-extension.cjs",
     "package:source": "node build-scripts/package-source.cjs",
     "start:firefox": "web-ext run --source-dir=./dist",
     "start:chrome": "start chrome --load-extension=\"./dist\"",
+    "serve": "http-server ./dist -p 8080 -c-1 -o -s",
     "docs": "docsify serve docs"
   },
   "keywords": [],
@@ -25,7 +27,8 @@
     "@types/chrome": "^0.0.299",
     "@types/firefox-webext-browser": "^120.0.4",
     "@types/pako": "^2.0.3",
-    "@types/webextension-polyfill": "^0.12.1"
+    "@types/webextension-polyfill": "^0.12.1",
+    "pako": "^2.1.0"
   },
   "devDependencies": {
     "@eslint/eslintrc": "^3.2.0",
@@ -37,6 +40,7 @@
     "eslint": "^9.19.0",
     "eslint-plugin-import": "^2.31.0",
     "html-webpack-plugin": "^5.6.3",
+    "http-server": "^14.1.1",
     "style-loader": "^4.0.0",
     "ts-loader": "^9.5.2",
     "typescript": "^5.7.3",
