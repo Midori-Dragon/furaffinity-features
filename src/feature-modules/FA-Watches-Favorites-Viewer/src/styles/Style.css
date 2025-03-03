@@ -1,0 +1,38 @@
+.wfv-watch-container {
+    position: relative;
+    display: inline-block;
+}
+
+.wfv-watch-container img {
+    display: block;
+    width: 100%;
+    transition: opacity 0.2s ease;
+}
+
+.wfv-watch-container .wfv-ignore-text {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    color: white;
+    font-size: 20px;
+    font-weight: bold;
+    opacity: 0;
+    transition: opacity 0.2s ease;
+}
+
+.wfv-watch-container:hover img {
+    opacity: 0.5;
+}
+
+.wfv-watch-container:hover .wfv-ignore-text {
+    opacity: 1;
+}
+
+.wfv-watch-container.ignored img {
+    opacity: 0.2;
+}
+
+.wfv-watch-container.ignored:hover img {
+    opacity: 0.5;
+}
