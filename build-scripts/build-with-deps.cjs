@@ -274,9 +274,6 @@ async function main() {
     const outputPath = path.join(distFolder, 'bundle.user.js');
 
     try {
-        console.log(`${colors.cyan}Clearing dist Folder...${colors.reset}`);
-        await emptyDir(distFolder);
-
         const moduleName = path.basename(path.dirname(webpackConfigPath));
         console.log(`${colors.cyan}Building ${moduleName}...${colors.reset}`);
         const stats = await buildModule(webpackConfigPath);
@@ -289,6 +286,9 @@ async function main() {
 
         console.log(`\n${colors.cyan}Resolving dependencies...${colors.reset}`);
         const orderedDependencies = await resolveDependencies(dependencies);
+
+        console.log(`\n${colors.cyan}Clearing dist Folder...${colors.reset}`);
+        await emptyDir(distFolder);
 
         console.log(`\n${colors.cyan}Combining files...${colors.reset}`);
         await combineFiles([...orderedDependencies, mainBuildFilePath], outputPath);
