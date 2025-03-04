@@ -42,7 +42,8 @@ async function getContentAllWatchesPagesLocal(semaphore: Semaphore): Promise<Doc
     let usersDoc = await FuraffinityRequests.getHTML(ManageContent.hardLinks['buddylist'] + 'x', semaphore);
     const columnPage = usersDoc?.getElementById('columnpage');
     const sectionBody = columnPage?.querySelector('div[class="section-body"');
-    const pages = sectionBody?.querySelectorAll(':scope > a');
+    const paginationLinks = sectionBody?.querySelector('div[class*="pagination-links"]');
+    const pages = paginationLinks?.querySelectorAll(':scope > a');
     const userPageDocs = [];
     if (pages != null) {
         for (let i = 1; i <= pages.length; i++) {
