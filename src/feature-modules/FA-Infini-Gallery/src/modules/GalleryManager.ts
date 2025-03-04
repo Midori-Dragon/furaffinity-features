@@ -35,6 +35,16 @@ export class GalleryManager {
         this.isSearch = window.location.toString().toLowerCase().includes('net/search');
 
         this.isWatches = window.location.toString().toLowerCase().includes('net/controls/buddylist');
+        if (this.isWatches) {
+            const columnpage = document.getElementById('columnpage');
+            const gallery = columnpage?.querySelector('div[class="section-body"]');
+            const paginationLinks = gallery?.querySelector('div[class*="pagination-links"]');
+            if (paginationLinks != null) {
+                const paginationLinksElem = paginationLinks as HTMLElement;
+                paginationLinksElem.style.display = 'none';
+                paginationLinksElem.insertBeforeThis(document.createElement('br'));
+            }
+        }
     }
 
     async loadNextPage(): Promise<void> {
