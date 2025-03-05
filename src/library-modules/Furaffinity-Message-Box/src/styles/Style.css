@@ -1,0 +1,146 @@
+/* Base styles */
+.message-box-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(0, 0, 0, 0.5);
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    z-index: 9999;
+}
+
+/* Dark theme (default) */
+.message-box-container {
+    border: 1px solid #444;
+    border-radius: 5px;
+    padding: 20px;
+    max-width: 500px;
+    width: 100%;
+    font-family: Arial, sans-serif;
+    transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;
+}
+
+.message-box-header {
+    display: flex;
+    align-items: center;
+    margin-bottom: 15px;
+}
+
+.message-box-icon-container {
+    margin-right: 15px;
+    width: 32px;
+    height: 32px;
+    flex-shrink: 0;
+}
+
+.message-box-title {
+    font-size: 18px;
+    font-weight: bold;
+    margin: 0;
+    transition: color 0.3s;
+}
+
+.message-box-content {
+    margin-bottom: 20px;
+    line-height: 1.5;
+    transition: color 0.3s;
+}
+
+.message-box-button-container {
+    display: flex;
+    justify-content: flex-end;
+    gap: 10px;
+}
+
+.message-box-button {
+    padding: 8px 16px;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: bold;
+    background-color: #f1efeb;
+    transition: background-color 0.2s, color 0.2s, border-color 0.2s;
+}
+
+.message-box-button:hover {
+    background-color: #e0ded8;
+}
+
+/* Theme: Dark */
+body[class*="theme-dark"] .message-box-container {
+    background-color: #353b45;
+    border-color: #444;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+body[class*="theme-dark"] .message-box-button {
+    background-color: #434b5b;
+}
+
+body[class*="theme-dark"] .message-box-button:hover {
+    background-color: #576175;
+}
+
+/* Theme: Aurora */
+body[class*="theme-aurora"] .message-box-container {
+    background-color: #262931;
+    border-color: #444;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+body[class*="theme-aurora"] .message-box-button {
+    background-color: #65707c;
+}
+
+body[class*="theme-aurora"] .message-box-button:hover {
+    background-color: #8692a0;
+}
+
+/* Theme: Retro */
+body[class*="theme-retro"] .message-box-container {
+    background-color: #2e3b41;
+    border-color: #444;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+body[class*="theme-retro"] .message-box-button {
+    background-color: #4c585e;
+}
+
+body[class*="theme-retro"] .message-box-button:hover {
+    background-color: #7b909a;
+}
+
+/* Theme: Slate */
+body[class*="theme-slate"] .message-box-container {
+    background-color: #202225;
+    border-color: #444;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);
+}
+
+body[class*="theme-slate"] .message-box-button {
+    background-color: #8c8c8c;
+}
+
+body[class*="theme-slate"] .message-box-button:hover {
+    background-color: #b3b1b1;
+}
+
+/* Theme: Light - already defined in base styles */
+body[class*="theme-light"] .message-box-container {
+    background-color: #f7f7f7;
+    border-color: #ccc;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+}
+
+body[class*="theme-light"] .message-box-button {
+    background-color: #f1efeb;
+}
+
+body[class*="theme-light"] .message-box-button:hover {
+    background-color: #f1ede7;
+}
