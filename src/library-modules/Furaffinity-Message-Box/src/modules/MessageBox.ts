@@ -4,6 +4,7 @@ import { DialogResult } from '../components/DialogResult';
 import { MessageBoxIcons } from '../components/MessageBoxIcons';
 import { MessageBoxThemes } from '../components/MessageBoxThemes';
 import '../styles/Style.css';
+import string from '../../../GlobalUtils/src/string';
 
 export class MessageBox {
     private static overlay: HTMLDivElement | null = null;
@@ -11,26 +12,6 @@ export class MessageBox {
     private static result: DialogResult = DialogResult.None;
     private static resolvePromise: ((value: DialogResult) => void) | null = null;
     private static currentTheme: MessageBoxThemes = MessageBoxThemes.Light;
-
-    /**
-     * Sets the theme for all message boxes.
-     * @param theme The theme to use for message boxes.
-     */
-    public static setTheme(theme: MessageBoxThemes): void {
-        this.currentTheme = theme;
-        
-        // Remove all theme classes from body
-        document.body.classList.remove(
-            'theme-light',
-            'theme-dark',
-            'theme-aurora',
-            'theme-retro',
-            'theme-slate'
-        );
-        
-        // Add the theme class
-        document.body.classList.add(`theme-${theme}`);
-    }
     
     /**
      * Gets the current theme.
@@ -81,7 +62,7 @@ export class MessageBox {
         }
         
         // Add title if specified
-        if (caption) {
+        if (!string.isNullOrWhitespace(caption)) {
             const title = document.createElement('h3');
             title.className = 'message-box-title';
             title.textContent = caption;
@@ -89,7 +70,7 @@ export class MessageBox {
         }
         
         // Add header to container if it has children
-        if (header.children.length > 0) {
+        if (header.children.length !== 0) {
             this.container.appendChild(header);
         }
         
@@ -174,14 +155,14 @@ export class MessageBox {
         this.result = result;
         
         // Remove from DOM
-        if (this.overlay) {
+        if (this.overlay != null) {
             document.body.removeChild(this.overlay);
             this.overlay = null;
             this.container = null;
         }
         
         // Resolve the promise
-        if (this.resolvePromise) {
+        if (this.resolvePromise != null) {
             this.resolvePromise(result);
             this.resolvePromise = null;
         }

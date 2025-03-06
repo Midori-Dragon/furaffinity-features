@@ -1,3 +1,15 @@
+import { MessageBox } from './modules/MessageBox';
+import { MessageBoxIcon } from './components/MessageBoxIcon';
+import { MessageBoxButtons } from './components/MessageBoxButtons';
+import { DialogResult } from './components/DialogResult';
+
+Object.defineProperties(window, {
+    FAMessageBox: { get: () => MessageBox },
+    FAMessageBoxButtons: { get: () => MessageBoxButtons },
+    FAMessageBoxIcon: { get: () => MessageBoxIcon },
+    FAMessageBoxResult: { get: () => DialogResult },
+});
+
 let themeClassName = 'dark';
 const themeStylesheets = document.head.querySelectorAll('link[rel="stylesheet"][href]') ?? [];
 for (const themeStylesheet of Array.from(themeStylesheets)) {

@@ -19,6 +19,7 @@
   - [Submission Requests](/Furaffinity-Request-Helper/main/submissions)
 - [Submission Image Viewer](/Furaffinity-Submission-Image-Viewer/README)
 - [Match List](/Furaffinity-Match-List/README)
+- [Message Box](/Furaffinity-Message-Box/README)
 - [Loading Animations](/Furaffinity-Loading-Animations/README)
 - [Custom Pages](/Furaffinity-Custom-Pages/README)
 - [Custom Settings](/Furaffinity-Custom-Settings/README)
