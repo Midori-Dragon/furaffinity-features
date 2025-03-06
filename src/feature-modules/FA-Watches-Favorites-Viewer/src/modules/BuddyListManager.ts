@@ -6,17 +6,20 @@ import '../styles/Style.css';
 export class BuddyListManager {
     watchList: HTMLElement[] = [];
 
+    private sectionBody: HTMLElement;
+
     constructor() {
         window.dispatchEvent(new CustomEvent('ig-stop-detection'));
+
+        const columnPage = document.getElementById('columnpage')!;
+        this.sectionBody = columnPage.querySelector('div[class="section-body"]')!;
+        this.sectionBody.innerHTML = '';
+
         void this.showBuddyList();
     }
 
     private async showBuddyList(): Promise<void> {
-        const columnPage = document.getElementById('columnpage')!;
-        const sectionBody = columnPage.querySelector('div[class="section-body"]')!;
-        sectionBody.innerHTML = '';
-
-        const loadingSpinner = new window.FALoadingSpinner(sectionBody as HTMLElement);
+        const loadingSpinner = new window.FALoadingSpinner(this.sectionBody as HTMLElement);
         loadingSpinner.delay = loadingSpinSpeedSetting.value;
         loadingSpinner.spinnerThickness = 6;
         loadingSpinner.visible = true;
@@ -39,8 +42,8 @@ export class BuddyListManager {
 
         const flexWatchList = document.createElement('div');
         flexWatchList.classList.add('flex-watchlist');
-        sectionBody.appendChild(document.createElement('br'));
-        sectionBody.appendChild(flexWatchList);
+        this.sectionBody.appendChild(document.createElement('br'));
+        this.sectionBody.appendChild(flexWatchList);
         flexWatchList.append(...this.watchList);
     }
 
@@ -70,7 +73,7 @@ export class BuddyListManager {
             }
         }
 
-        const removeElement = watchElem.querySelector('a[style]');
+        const removeElement = watchElem.querySelector('a[class*="remove-link"]');
         removeElement?.remove();
 
         watchElem.appendChild(document.createElement('br'));
@@ -88,7 +91,7 @@ export class BuddyListManager {
         flexItemWatchlistAvatar.classList.toggle('ignored', ignored);
 
         const controls = watchElem.querySelector('div[class*="flex-item-watchlist-controls"]')! as HTMLElement;
-        const displayName = controls.querySelector('strong')! as HTMLElement;
+        const displayName = controls.querySelector('span[title]')! as HTMLElement;
         displayName.style.textDecoration = ignored ? 'line-through' : 'none';
         displayName.style.backgroundColor = ignored ? 'rgba(255, 0, 0, 0.2)' : 'transparent';
         // const name = displayName.textContent?.trimEnd(' [✓]').trimEnd(' [✗]');

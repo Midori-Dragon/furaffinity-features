@@ -1,7 +1,8 @@
 import { StorageWrapper } from '../../../../library-modules/GlobalUtils/src/Browser-API/StorageWrapper';
 import { Logger } from '../../../../library-modules/GlobalUtils/src/Logger';
-import { PakoWrapper } from '../../../../library-modules/GlobalUtils/src/PakoWrapper';
 import { FavsScanner } from '../modules/FavsScanner';
+import { FigureDataSaver } from '../utils/FigureDataSaver';
+import { checkMigrateNeeded, migrate } from '../utils/Migrate';
 
 export class WatchScanButton {
     static readonly scanResultId = 'wfv-scan-results';
@@ -23,10 +24,22 @@ export class WatchScanButton {
     }
 
     private async startScan(): Promise<void> {
+        const migrateNeeded = await checkMigrateNeeded();
+        if (migrateNeeded) {
+            const result = await window.FAMessageBox.show('Watches Favorite Viewer updated.Do you want to migrate your old data?', 'Confirm Migration', window.FAMessageBoxButtons.YesNoCancel, window.FAMessageBoxIcon.Question);
+            if (result === window.FADialogResult.Yes) {
+                await migrate();
+            } else if (result === window.FADialogResult.Cancel) {
+                return;
+            }
+        }
+
+        this.wfButton.textContent = 'WF: 0.00%';
+
         const scanner = new FavsScanner();
         await scanner.init();
-        const figures = await scanner.scanAllUsers((username, percent) => {
-            Logger.logInfo(`${percent}% | ${username}`);
+        const figures = await scanner.scanAllUsers((username, percent, userFigures) => {
+            Logger.logInfo(`${percent}% | ${username} | ${userFigures.length}`);
             this.wfButton.textContent = `WF: ${percent.toFixed(2)}%`;
         });
 
@@ -36,10 +49,7 @@ export class WatchScanButton {
             return;
         }
 
-        const figureStrings = figures.map(figure => figure.outerHTML);
-        const json = JSON.stringify(figureStrings);
-        const compressed = PakoWrapper.compress(json);
-        await StorageWrapper.setItemAsync(WatchScanButton.scanResultId, compressed);
+        await FigureDataSaver.saveFigures(figures);
 
         this.wfButton.textContent = `${figures.length}WF`;
         this.wfButton.onclick = null;

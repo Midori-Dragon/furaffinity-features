@@ -8,6 +8,12 @@ import { BuddyListManager } from './modules/BuddyListManager';
 import { WatchesFavoritesPage } from './modules/WatchesFavoritesPage';
 import { LoadingSpinner } from '../../../library-modules/Furaffinity-Loading-Animations/src/components/LoadingSpinner';
 import { WatchScanButton } from './components/WatchScanButton';
+import { LastSidList } from './utils/LastSidList';
+import { MessageBox } from '../../../library-modules/Furaffinity-Message-Box/src/modules/MessageBox';
+import { DialogResult } from '../../../library-modules/Furaffinity-Message-Box/src/components/DialogResult';
+import { MessageBoxButtons } from '../../../library-modules/Furaffinity-Message-Box/src/components/MessageBoxButtons';
+import { MessageBoxIcon } from '../../../library-modules/Furaffinity-Message-Box/src/components/MessageBoxIcon';
+import { WatchesFavoritesMenuButton } from './components/WatchesFavoritesMenuButton';
 
 declare global {
     interface Window {
@@ -17,6 +23,10 @@ declare global {
         FAMatchList: typeof MatchList;
         FACustomPage: typeof CustomPage;
         FALoadingSpinner: typeof LoadingSpinner;
+        FAMessageBox: typeof MessageBox;
+        FAMessageBoxButtons: typeof MessageBoxButtons;
+        FAMessageBoxIcon: typeof MessageBoxIcon;
+        FADialogResult: typeof DialogResult;
     }
 }
 
@@ -32,34 +42,38 @@ export const maxFavsAmountSetting = customSettings.newSetting(window.FASettingTy
 maxFavsAmountSetting.description = 'Sets the maximum number of Favs loaded per Watch.';
 maxFavsAmountSetting.defaultValue = 100;
 
-export const doImmediateScanSetting = customSettings.newSetting(window.FASettingType.Boolean, 'Do Immediate Scan');
-doImmediateScanSetting.description = 'Sets wether a scan is started immediately uppon loading a Page.';
-doImmediateScanSetting.defaultValue = false;
-
 export const showDublicateFavsSetting = customSettings.newSetting(window.FASettingType.Boolean, 'Show Dublicate Favs');
 showDublicateFavsSetting.description = 'Sets wether to show dublicate Submissions. (when multiple people Faved the same Submission)';
 showDublicateFavsSetting.defaultValue = true;
+
+export const showFavFromWatcherSetting = customSettings.newSetting(window.FASettingType.Boolean, 'Show Fav From Watcher');
+showFavFromWatcherSetting.description = 'Sets wether to show from which watch the Fav comes.';
+showFavFromWatcherSetting.defaultValue = true;
 
 export const loadingSpinSpeedSetting = customSettings.newSetting(window.FASettingType.Number, 'Loading Animation Speed');
 loadingSpinSpeedSetting.description = 'The duration that the loading animation of the Embedded element to load takes for a full rotation in milliseconds.';
 loadingSpinSpeedSetting.defaultValue = 1000;
 
-export const resetSynchronizationErrorSetting = customSettings.newSetting(window.FASettingType.Action, 'Reset Synchronization');
-resetSynchronizationErrorSetting.description = 'Resets the synchronisation to fix errors.';
-resetSynchronizationErrorSetting.addEventListener('input', () => {
-    console.log('RESET');
-});
-
 export const resetLastSeenFavsSetting = customSettings.newSetting(window.FASettingType.Action, 'Reset Last Seen Favs');
 resetLastSeenFavsSetting.description = 'Resets the last seen favs variable to reinitialize the Fav-Scanner.';
 resetLastSeenFavsSetting.addEventListener('input', () => {
-    console.log('RESET');
+    void MessageBox.show('Are you sure you want to reset the last seen favs?', 'Confirm Reset', MessageBoxButtons.YesNo, MessageBoxIcon.Question).then(async (result) => {
+        if (result === DialogResult.Yes) {
+            await LastSidList.clearSidList();
+        }
+    });
 });
 
 export const showIgnoreListSetting = customSettings.newSetting(window.FASettingType.Action, 'Show Ignore List');
 showIgnoreListSetting.description = 'Opens the Ignore List in a new Tab.';
 showIgnoreListSetting.addEventListener('input', () => {
     window.open('https://www.furaffinity.net/controls/buddylist?mode=wfv-buddylist', '_blank');
+});
+
+export const showLastWatchesFavoritesSetting = customSettings.newSetting(window.FASettingType.Action, 'Show Last Favs');
+showLastWatchesFavoritesSetting.description = 'Opens the last Watches Favorites in a new Tab.';
+showLastWatchesFavoritesSetting.addEventListener('input', () => {
+    window.open('https://www.furaffinity.net/msg/submissions?mode=wfv-favorites', '_blank');
 });
 
 customSettings.loadSettings();
@@ -71,8 +85,6 @@ if (customSettings.isFeatureEnabled) {
     matchList.matches = ['furaffinity.net'];
     matchList.runInIFrame = false;
     if (matchList.hasMatch) {
-        console.log('Match');
-
         const pageBuddyListEdit = new window.FACustomPage('controls/buddylist', 'mode');
         pageBuddyListEdit.addEventListener('onOpen', (event: Event) => {
             const customEvent = event as CustomEvent<CustomData>;
@@ -94,5 +106,6 @@ if (customSettings.isFeatureEnabled) {
         watchesFavoritesPage.checkPageOpened();
 
         new WatchScanButton();
+        new WatchesFavoritesMenuButton();
     }
 }
