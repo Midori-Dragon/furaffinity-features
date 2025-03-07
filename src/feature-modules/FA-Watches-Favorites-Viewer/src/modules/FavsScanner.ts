@@ -66,7 +66,7 @@ export class FavsScanner {
     }
 
     async scanUser(username: string): Promise<HTMLElement[]> {
-        const lastFavId = this.lastFavIds[username].trimStart('sid-');
+        const lastFavId = this.lastFavIds[username]?.trimStart('sid-');
         const watchFavScanner = new WatchFavScanner(username, lastFavId);
         let figures = await watchFavScanner.scan(true);
         if (figures.length > maxFavsAmountSetting.value) {
