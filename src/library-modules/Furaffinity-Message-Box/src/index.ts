@@ -7,7 +7,7 @@ Object.defineProperties(window, {
     FAMessageBox: { get: () => MessageBox },
     FAMessageBoxButtons: { get: () => MessageBoxButtons },
     FAMessageBoxIcon: { get: () => MessageBoxIcon },
-    FAMessageBoxResult: { get: () => DialogResult },
+    FADialogResult: { get: () => DialogResult },
 });
 
 let themeClassName = 'dark';

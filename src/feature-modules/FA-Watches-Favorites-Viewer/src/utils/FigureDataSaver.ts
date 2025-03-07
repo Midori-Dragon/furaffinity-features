@@ -28,4 +28,8 @@ export class FigureDataSaver {
         
         return figures;
     }
+
+    static async clear(): Promise<void> {
+        await StorageWrapper.removeItemAsync(this.scanResultId);
+    }
 }

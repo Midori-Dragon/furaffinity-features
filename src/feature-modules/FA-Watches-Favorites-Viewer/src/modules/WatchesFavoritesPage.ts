@@ -10,7 +10,7 @@ export class WatchesFavoritesPage {
 
         let gallery = standardPage.querySelector('section[id="gallery-0"]');
         if (gallery == null) {
-            const messageCenterSubmissions = standardPage.querySelector('section[id="messagecenter-submissions"]')!;
+            const messageCenterSubmissions = standardPage.querySelector('div[id="messagecenter-submissions"]')!;
             gallery = document.createElement('section');
             gallery.id = 'gallery-0';
             gallery.classList.add('gallery', 'messagecenter', 'with-checkboxes', 's-250', 'wfv-gallery');

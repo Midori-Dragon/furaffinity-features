@@ -31,16 +31,16 @@ export async function migrateLastSidList(): Promise<void> {
     await StorageWrapper.removeItemAsync('wflastfavs');
 }
 
-export async function checkMigrateNeeded(): Promise<boolean> {
-    return !await checkMigrateIgnoreListNeeded() || !await checkMigrateSidListNeeded();
+export async function checkMigrationNeeded(): Promise<boolean> {
+    return await checkIgnoreListMigrationNeeded() || await checkSidListMigrationNeeded();
 }
 
-export async function checkMigrateIgnoreListNeeded(): Promise<boolean> {
+export async function checkIgnoreListMigrationNeeded(): Promise<boolean> {
     const oldIgnoreListJson = await StorageWrapper.getItemAsync('wfexcludedusers');
     return !string.isNullOrWhitespace(oldIgnoreListJson);
 }
 
-export async function checkMigrateSidListNeeded(): Promise<boolean> {
+export async function checkSidListMigrationNeeded(): Promise<boolean> {
     const oldLastSidListJson = await StorageWrapper.getItemAsync('wflastfavs');
     return !string.isNullOrWhitespace(oldLastSidListJson);
 }

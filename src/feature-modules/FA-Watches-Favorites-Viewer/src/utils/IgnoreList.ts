@@ -19,6 +19,12 @@ export class IgnoreList {
             return;
         }
         usernames.splice(usernames.indexOf(username), 1);
+
+        if (usernames.length === 0) {
+            await StorageWrapper.removeItemAsync(this.id);
+            return;
+        }
+
         const json = JSON.stringify(usernames);
         await StorageWrapper.setItemAsync(this.id, json);
     }
@@ -29,6 +35,11 @@ export class IgnoreList {
     }
 
     static async setIgnoreList(usernames: string[]): Promise<void> {
+        if (usernames.length === 0) {
+            await StorageWrapper.removeItemAsync(this.id);
+            return;
+        }
+        
         const json = JSON.stringify(usernames);
         await StorageWrapper.setItemAsync(this.id, json);
     }

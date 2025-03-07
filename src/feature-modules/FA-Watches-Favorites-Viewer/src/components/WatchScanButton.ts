@@ -1,8 +1,7 @@
-import { StorageWrapper } from '../../../../library-modules/GlobalUtils/src/Browser-API/StorageWrapper';
 import { Logger } from '../../../../library-modules/GlobalUtils/src/Logger';
 import { FavsScanner } from '../modules/FavsScanner';
 import { FigureDataSaver } from '../utils/FigureDataSaver';
-import { checkMigrateNeeded, migrate } from '../utils/Migrate';
+import { checkMigrationNeeded, migrate } from '../utils/Migrate';
 
 export class WatchScanButton {
     static readonly scanResultId = 'wfv-scan-results';
@@ -24,7 +23,7 @@ export class WatchScanButton {
     }
 
     private async startScan(): Promise<void> {
-        const migrateNeeded = await checkMigrateNeeded();
+        const migrateNeeded = await checkMigrationNeeded();
         if (migrateNeeded) {
             const result = await window.FAMessageBox.show('Watches Favorite Viewer updated.Do you want to migrate your old data?', 'Confirm Migration', window.FAMessageBoxButtons.YesNoCancel, window.FAMessageBoxIcon.Question);
             if (result === window.FADialogResult.Yes) {
@@ -44,7 +43,6 @@ export class WatchScanButton {
         });
 
         if (figures.length === 0) {
-            await StorageWrapper.removeItemAsync(WatchScanButton.scanResultId);
             this.wfButton.textContent = 'WF Scan again';
             return;
         }
