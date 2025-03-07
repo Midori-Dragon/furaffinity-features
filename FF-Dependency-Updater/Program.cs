@@ -29,7 +29,7 @@ public class Program
             var banner = await ExtractBannerAsync(webpackConfig);
 
             var name = GetValue(banner, @"//\s*@name\s+(.*)");
-            SendMessage($"Loading {name}...");
+            SendInfo($"Loading {name}...");
 
             try
             {
@@ -66,11 +66,11 @@ public class Program
         List<ScriptInfo> scriptInfosToUpdate = [];
         foreach (var scriptInfo in scriptInfos)
         {
-            SendMessage($"Checking {scriptInfo.Name}...");
+            SendInfo($"Checking {scriptInfo.Name}...");
             var scriptInfosToCheck = scriptInfos.Where(x => x.Dependencies.Any(x => x.Id == scriptInfo.HomepageUrl?.Id));
             if (scriptInfosToCheck.Count() == 0)
             {
-                SendMessage("No modules to update.");
+                SendInfo("No modules to update.");
                 SendMessage();
                 continue;
             }
@@ -122,16 +122,21 @@ public class Program
             }
         }
 
-        SendMessage("Updating Module Dependencies...");
-        SendMessage();
+        SendInfo("Updating Module Dependencies...");
         foreach (var scriptInfoToUpdate in scriptInfosToUpdate)
         {
-            SendMessage($"Updating {scriptInfoToUpdate.Name}...");
-            await ModifyBannerAsync(scriptInfoToUpdate.WebpackPath, scriptInfoToUpdate);
-            SendSuccess("Done!");
-            SendMessage();
+            try
+            {
+                await ModifyBannerAsync(scriptInfoToUpdate.WebpackPath, scriptInfoToUpdate);
+                SendSuccess($"Updated {scriptInfoToUpdate.Name}");
+            }
+            catch
+            {
+                SendError($"Failed to update {scriptInfoToUpdate.Name}");
+            }
         }
 
+        SendMessage();
         SendSuccess("All Modules updated!");
 
         Exit(confirm);
@@ -272,6 +277,7 @@ public class Program
     }
 
     static void SendMessage(string? text = null) => Console.WriteLine(text);
+    static void SendInfo(string? text = null) => SendInColor(ConsoleColor.DarkCyan, text);
     static void SendSuccess(string? text = null) => SendInColor(ConsoleColor.DarkGreen, text);
     static void SendWarning(string? text = null) => SendInColor(ConsoleColor.DarkYellow, text);
     static void SendError(string? text = null) => SendInColor(ConsoleColor.Red, text);
