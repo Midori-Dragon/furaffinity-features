@@ -150,12 +150,20 @@
         "**/.git": true,
         "**/build": true,
         "**/.vs": true,
-        "**/.github": true
+        "**/.github": true,
+        "**/bin": true,
+        "**/obj": true,
+        "**/Properties": true,
+        "**/packages": true,
     },
     "search.exclude": {
         "**/node_modules": true,
         "**/.git": true,
-        "**/.github": true
+        "**/.github": true,
+        "**/bin": true,
+        "**/obj": true,
+        "**/Properties": true,
+        "**/packages": true,
     },
     "files.eol": "\n"
 }

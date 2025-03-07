@@ -16,6 +16,7 @@
     "package:source": "node build-scripts/package-source.cjs",
     "start:firefox": "web-ext run --source-dir=./dist",
     "start:chrome": "start chrome --load-extension=\"./dist\"",
+    "update-deps": "cd ./build-scripts/ && FF-Dependency-Updater.exe -y",
     "serve": "http-server ./dist -p 8080 -c-1 -o -s",
     "docs": "docsify serve docs"
   },
