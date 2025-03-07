@@ -6,7 +6,7 @@ import '../styles/Style.css';
 import string from '../../../../library-modules/GlobalUtils/src/string';
 
 const embeddedModes = {
-    watchesFavoriteViewer: 'watchesfavoriteviewer',
+    watchesFavoriteViewer: 'wfv-favorites',
 };
 
 export class EmbeddedImage extends EventTarget {
