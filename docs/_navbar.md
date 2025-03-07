@@ -2,3 +2,4 @@
 - [Infini-Gallery](/FA-Infini-Gallery/README)
 - [Webcomic Auto-Loader](/FA-Webcomic-Auto-Loader/README)
 - [Instant Nuker](/FA-Instant-Nuker/README)
+- [Watches Favorites Viewer](/FA-Watches-Favorites-Viewer/README)
