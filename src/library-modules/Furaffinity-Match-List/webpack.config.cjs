@@ -16,11 +16,13 @@ module.exports = merge(common, {
 // @name        Furaffinity-Match-List
 // @namespace   Violentmonkey Scripts
 // @grant       GM_info
-// @version     1.1.1
+// @version     1.1.2
 // @author      Midori Dragon
 // @description Library to create a matchlist for your Furaffinity Script
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
 // @license     MIT
+// @homepageURL https://greasyfork.org/scripts/485827-furaffinity-match-list
+// @supportURL  https://greasyfork.org/scripts/485827-furaffinity-match-list/feedback
 // ==/UserScript==
 // jshint esversion: 8
 `,

@@ -16,11 +16,13 @@ module.exports = merge(common, {
 // @name        Furaffinity-Submission-Image-Viewer
 // @namespace   Violentmonkey Scripts
 // @grant       GM_info
-// @version     1.1.0
+// @version     1.1.1
 // @author      Midori Dragon
 // @description Library for creating custom image elements on Furaffinity
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
 // @license     MIT
+// @homepageURL https://greasyfork.org/scripts/492931-furaffinity-submission-image-viewer
+// @supportURL  https://greasyfork.org/scripts/492931-furaffinity-submission-image-viewer/feedback
 // ==/UserScript==
 // jshint esversion: 8
 `,

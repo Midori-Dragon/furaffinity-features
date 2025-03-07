@@ -16,11 +16,13 @@ module.exports = merge(common, {
 // @name        Furaffinity-Custom-Settings
 // @namespace   Violentmonkey Scripts
 // @grant       none
-// @version     4.2.0
+// @version     4.2.1
 // @author      Midori Dragon
 // @description Library to create Custom settings on Furaffinitiy
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
 // @license     MIT
+// @homepageURL https://greasyfork.org/scripts/475041-furaffinity-custom-settings
+// @supportURL  https://greasyfork.org/scripts/475041-furaffinity-custom-settings/feedback
 // ==/UserScript==
 // jshint esversion: 8
 `,

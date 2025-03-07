@@ -16,11 +16,13 @@ module.exports = merge(common, {
 // @name        Furaffinity-Custom-Pages
 // @namespace   Violentmonkey Scripts
 // @grant       none
-// @version     1.2.0
+// @version     1.2.2
 // @author      Midori Dragon
 // @description Library to create Custom pages on Furaffinitiy
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
 // @license     MIT
+// @homepageURL https://greasyfork.org/scripts/476762-furaffinity-custom-settings
+// @supportURL  https://greasyfork.org/scripts/476762-furaffinity-custom-settings/feedback
 // ==/UserScript==
 // jshint esversion: 8
 `,

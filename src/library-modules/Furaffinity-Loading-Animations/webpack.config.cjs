@@ -15,13 +15,15 @@ module.exports = merge(common, {
 // ==UserScript==
 // @name        Furaffinity-Loading-Animations
 // @namespace   Violentmonkey Scripts
-// @require     https://update.greasyfork.org/scripts/525666/1530872/Furaffinity-Prototype-Extensions.js
+// @require     https://update.greasyfork.org/scripts/525666/1549449/Furaffinity-Prototype-Extensions.js
 // @grant       none
-// @version     1.2.0
+// @version     1.2.1
 // @author      Midori Dragon
 // @description Library for creating different loading animations on Furaffinity
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
 // @license     MIT
+// @homepageURL https://greasyfork.org/scripts/485153-furaffinity-loading-animations
+// @supportURL  https://greasyfork.org/scripts/485153-furaffinity-loading-animations/feedback
 // ==/UserScript==
 // jshint esversion: 8
 `,

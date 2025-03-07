@@ -15,13 +15,15 @@ module.exports = merge(common, {
 // ==UserScript==
 // @name        Furaffinity-Request-Helper
 // @namespace   Violentmonkey Scripts
-// @require     https://update.greasyfork.org/scripts/525666/1530872/Furaffinity-Prototype-Extensions.js
+// @require     https://update.greasyfork.org/scripts/525666/1549449/Furaffinity-Prototype-Extensions.js
 // @grant       none
-// @version     1.4.0
+// @version     1.4.1
 // @author      Midori Dragon
 // @description Library to simplify requests to Furaffinity
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
 // @license     MIT
+// @homepageURL https://greasyfork.org/scripts/483952-furaffinity-request-helper
+// @supportURL  https://greasyfork.org/scripts/483952-furaffinity-request-helper/feedback
 // ==/UserScript==
 // jshint esversion: 8
 `,
