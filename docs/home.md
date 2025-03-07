@@ -58,9 +58,12 @@ This project provides various quality-of-life improvements and additional featur
 
 ---
 
-⬜ [FA Watches Favorite Viewer](#fa-watches-favorite-viewer) (Planned)
-  - Monitoring favorites of watched users
-  - Viewing favorites of watched users  
+✅ [FA Watches Favorites Viewer](#fa-watches-favorites-viewer)
+  - Scan watches for new favorites
+  - Custom favorites page to view favorites from watches
+  - Ignore list management
+  - Show favorite source (which watcher)
+  - Duplicate favorites filtering
 
 ## Feature Modules
 
@@ -112,13 +115,18 @@ Instantly removes messages from the current page.
 
 ---
 
-### FA Watches Favorite Viewer
+### FA Watches Favorites Viewer
 Advanced system for monitoring and displaying favorites from watched users.
 
-| Feature Roadmap                       | Status    |
-| ------------------------------------- | --------- |
-| Monitoring favorites of watched users | ⬜ Planned |
-| Viewing favorites of watched users    | ⬜ Planned |
+| Feature Roadmap                                                        | Status      |
+| ---------------------------------------------------------------------- | ----------- |
+| Scan watches for new favorites                                         | ✅ Completed |
+| Custom favorites page                                                  | ✅ Completed |
+| Ignore list management                                                 | ✅ Completed |
+| Show favorite source (which watcher)                                   | ✅ Completed |
+| Duplicate favorites filtering                                          | ✅ Completed |
+| Loading animations                                                     | ✅ Completed |
+| Integration with [Embedded-Image-Viewer](./FA-Embedded-Image-Viewer)   | ✅ Completed |
 
 ## Library Modules
 
@@ -257,6 +265,29 @@ Note that each module has its own webpack configuration. In this webpack config 
 > [!IMPORTANT]
 > The `banner` is used by the build process to determine the modules dependencies!
 
+#### UserScript Context
+
+When testing the Project as UserScript you can either manually copy the `bundle.user.js` file from the `dist` folder to the userscript manager or use the `npm run serve` command to host a local http server, where you can copy the link to the `bundle.user.js` file to use for the userscript manager. This method also allows the userscript manager to automatically update the userscript every time you build the project.
+
+#### Browser Extension Context
+
+When testing the Project as Browser Extension you can use the `npm run start:firefox` or `npm run start:chrome` command to start the browser extension. This will start the browser and load the extension from the `dist` folder.
+
+> [!NOTE]
+> UserScript Context is generally easier and faster to test. But Browser Extension Context is more restricted and may not work in all cases UserScript Context does.
+
+#### Docs
+
+Docs can be edited and then previewed by running `npm run docs`
+
+#### Dependencies
+
+Since dependencies are written in the banner of the webpack config, updating them can be annoying.
+Using `npm run update-deps` will update all dependency versions in the banners.
+
+> [!NOTE]
+> Current Dependency Versions will be compared to the latest versions from [GreasyFork](https://greasyfork.org/en/users/967324-midori-tsume). This requires the Modules to be uploaded there and the banner to contain the require dependency as well as the homepageURL.
+
 ### Building
 
 Building command names can be found in `package.json`
@@ -272,6 +303,10 @@ npm run build:Browser-Extension-Deps
 
 > [!NOTE]
 > The `Deps` suffix indicates that the build will also include dependencies
+
+### Packaging
+
+If you are happy with your changes, you can package the module by running `npm run package:Browser-Extension` to package the browser extension or `npm run package:source` to package the source code.
 
 ## Contributing
 

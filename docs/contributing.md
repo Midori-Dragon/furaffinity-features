@@ -58,6 +58,13 @@ Thank you for your interest in contributing to this project! This guide will hel
 </div>
 
 
+#### Not included in the VSCode Project is:
+<div>
+  <pre>
+  project/
+  └── <span style="color: #d8be7c;">FF-Dependency-Updater/</span>      # Dependency Version Updater Project
+  </pre>
+</div>
 
 ## Development Guidelines
 
@@ -70,6 +77,7 @@ Thank you for your interest in contributing to this project! This guide will hel
    - Keep external dependencies to a minimum
    - Prefer vanilla JavaScript / TypeScript solutions when possible
    - If you need a third-party library, discuss it in the issue/pullrequest first
+   - Use `npm run update-deps` to update dependency versions (requires the modules to be uploaded to GreasyFork)
 
 3. **Module Structure**
    - Each new feature should be in its own directory
@@ -79,20 +87,47 @@ Thank you for your interest in contributing to this project! This guide will hel
 4. **Building**
    - Create a new build command entry in `package.json`. You can look at the existing build commands for reference
    - If possible use `build-scripts/build-with-deps.cjs` for your build process as it will handle the module dependencies for you
-   - Add the build command to `.vscode/tasks.json`. You can look at the existing task configs for reference
-   - Use `npm run build:<your_module_name>` to build a specific module
+   - Use `npm run build:<your_module_name>` to build a specific module or use `shift + ctrl + b` to view default build commands and select `Build: Browser Extension (with Deps)` to build the whole project
+
+5. **Testing**
+   - For UserScript: Copy the build `bundle.user.js` file either from the top `dist` folder or from your modules `dist` folder to the userscript manager or use the `npm run serve` command to host a local server (copy link to `bundle.user.js` file to use for the userscript manager) for automatic updates
+   - For Browser Extension: Use the `npm run start:firefox` or `npm run start:chrome` command to start the browser extension
+
+6. **Docs**
+   - Each module has its own documentation and should be maintained in a simular way to the existing documentation
+   - Use `npm run docs` to generate and host documentation
+
+7. **Packaging**
+   - Use `npm run package:Browser-Extension` to package the Project
+   - Use `npm run package:source` to package the source code
 
 ## Getting Started
 
-1. Fork the repository
-2. Create a new branch for your feature
+1. Fork and clone the repository
+2. Navigate to the project directory
 3. Set up the development environment:
    ```bash
    npm install
    ```
-4. Make your changes following the guidelines above
-5. Test both userscript and browser extension functionality
-6. Submit a pull request
+4. Create a new Module Folder in `src/feature-modules/` or `src/library-modules/`
+5. Copy an already existing `webpack.config.cjs` to your new module folder and update the userscript banner to fit your new module (name, description, author, etc.)
+6. Create a new `src` folder inside your new module folder
+7. Create new `index.ts` file inside the `src` folder
+8. Create new `modules`, `components`, `utils` and `styles` folders inside the `src` folder (if needed)
+9. Develop your feature following the guidelines (For reference you can always look at existing modules)
+10. Test both userscript and browser extension functionality
+11. Submit a pull request
+
+> [!NOTE]
+> `FA-Embedded-Image-Viewer` is currently the most complex Feature
+> 
+> `FA-Instant-Nuker` is currently the simplest Feature
+> 
+> `Furaffinity-Request-Helper` is currently the biggest Library
+> 
+> `Furaffinity-Custom-Settings` is currently the most complex Library
+> 
+> `Furaffinity-Match-List` is currently the simplest Library
 
 ## Questions?
 
@@ -100,6 +135,7 @@ If you have questions or need clarification, feel free to:
 - Open an issue for discussion
 - Ask questions in your pull request
 - Check existing issues and PRs for similar topics
+- Contact me (Methods found on my [Homepage](https://midori-dragon.carrd.co/))
 
 Remember, these guidelines are meant to help maintain project consistency while keeping things simple. The main focus is on ensuring dual compatibility (userscript/extension) and maintaining the modular structure.
 
