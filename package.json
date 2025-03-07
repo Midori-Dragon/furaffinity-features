@@ -18,7 +18,7 @@
     "start:chrome": "start chrome --load-extension=\"./dist\"",
     "update-deps": "cd ./build-scripts/ && FF-Dependency-Updater.exe -y",
     "serve": "http-server ./dist -p 8080 -c-1 -o -s",
-    "docs": "docsify serve docs"
+    "docs": "docsify serve docs -o"
   },
   "keywords": [],
   "author": "Midori Dragon",
@@ -38,6 +38,7 @@
     "archiver": "^7.0.1",
     "copy-webpack-plugin": "^12.0.2",
     "css-loader": "^7.1.2",
+    "docsify-cli": "^4.4.4",
     "eslint": "^9.19.0",
     "eslint-plugin-import": "^2.31.0",
     "html-webpack-plugin": "^5.6.3",
