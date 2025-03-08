@@ -1,4 +1,5 @@
 import { loadingSpinSpeedSetting } from '..';
+import checkTagsAll from '../../../../library-modules/GlobalUtils/src/FA-Functions/checkTagsAll';
 import { cleanUpToParent } from '../utils/cleanUpToParent';
 import { FigureDataSaver } from '../utils/FigureDataSaver';
 
@@ -44,6 +45,7 @@ export class WatchesFavoritesPage {
         this.gallerySection.append(...figures);
 
         window.dispatchEvent(new CustomEvent('ei-update-embedded'));
+        checkTagsAll(document);
 
         loadingSpinner.visible = false;
     }

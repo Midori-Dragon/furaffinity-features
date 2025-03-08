@@ -1,6 +1,9 @@
+import { Logger } from '../Logger';
+
 export default function (element: HTMLElement): void {
     const userLoggedIn = document.body.getAttribute('data-user-logged-in') === '1';
     if (!userLoggedIn) {
+        Logger.logWarning('User is not logged in, skipping tag check');
         setBlockedState(element, false);
         return;
     }
@@ -17,6 +20,7 @@ export default function (element: HTMLElement): void {
             setBlockedState(element, false);
         } else {
             setBlockedState(element, true);
+            Logger.logInfo(`${element.id} blocked tags: ${blockedTags.join(', ')}`);
 
             // provide hint
             blockReason = 'Blocked tags:\n';
@@ -42,7 +46,8 @@ export default function (element: HTMLElement): void {
 }
 
 function getBannedTags(tags: string[] | undefined | null): string[] {
-    const tagsBlocklist = document.body.getAttribute('data-tag-blocklist') ?? [];
+    const blockedTags = document.body.getAttribute('data-tag-blocklist') ?? '';
+    const tagsBlocklist = Array.from(blockedTags.split(' '));
     
     let bTags = [];
 

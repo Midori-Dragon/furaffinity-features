@@ -23,8 +23,10 @@ const customSettings = new window.FACustomSettings('Midori\'s Script Settings', 
 
 export const selectNukeIconSetting = customSettings.newSetting(window.FASettingType.Option, 'Select Nuke Icon');
 selectNukeIconSetting.description = 'Select the Nuke Icon to use for the Nuke Button.';
-selectNukeIconSetting.addOption(NukeIconOptions.Red, 'Red Nuke Icon');
-selectNukeIconSetting.addOption(NukeIconOptions.White, 'White Nuke Icon');
+selectNukeIconSetting.options = {
+    [NukeIconOptions.Red]: 'Red Nuke Icon',
+    [NukeIconOptions.White]: 'White Nuke Icon'
+};
 selectNukeIconSetting.defaultValue = NukeIconOptions.Red;
 
 customSettings.loadSettings();

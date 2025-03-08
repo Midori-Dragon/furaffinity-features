@@ -4,6 +4,7 @@ import { EmbeddedHTML } from '../components/EmbeddedHTML';
 import { getByLinkFromFigcaption, getFavKey } from '../utils/Utils';
 import '../styles/Style.css';
 import string from '../../../../library-modules/GlobalUtils/src/string';
+import { Logger } from '../../../../library-modules/GlobalUtils/src/Logger';
 
 const embeddedModes = {
     watchesFavoriteViewer: 'wfv-favorites',
@@ -162,13 +163,8 @@ export class EmbeddedImage extends EventTarget {
             const imgSrc = this.submissionImg.src;
             let prevSrc = this.submissionImg.getAttribute('data-preview-src') ?? undefined;
             if (!string.isNullOrWhitespace(prevSrc)) {
-                if (previewQualitySetting.value <= 2) {
-                    prevSrc = prevSrc?.replace('@600', '@200');
-                } else if (previewQualitySetting.value === 3) {
-                    prevSrc = prevSrc?.replace('@600', '@300');
-                } else if (previewQualitySetting.value === 4) {
-                    prevSrc = prevSrc?.replace('@600', '@400');
-                }
+                Logger.logInfo('Preview quality @' + previewQualitySetting.value);
+                prevSrc = prevSrc?.replace('@600', '@' + previewQualitySetting.value);
             }
 
             const submissionContainer = document.getElementById('eiv-submission-container')!;
@@ -294,7 +290,7 @@ export class EmbeddedImage extends EventTarget {
     }
 
     static async addEmbeddedEventForAllFigures(): Promise<void> {
-        const nonEmbeddedFigures = document.querySelectorAll('figure:not([embedded])');
+        const nonEmbeddedFigures = document.querySelectorAll('figure:not([embedded])') ?? [];
         for (const figure of Array.from(nonEmbeddedFigures)) {
             // Set the attribute to mark this element as embedded
             figure.setAttribute('embedded', 'true');

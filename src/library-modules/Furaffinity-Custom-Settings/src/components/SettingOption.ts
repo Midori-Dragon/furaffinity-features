@@ -29,39 +29,23 @@ export class SettingOption extends EventTarget implements ISetting<SettingType.O
         this._settingInputElem = this.settingElem.querySelector('select') as HTMLSelectElement;
     }
 
-    get values(): Record<string, string> {
-        const options: Record<string, string> = {};
-        for (const option of Array.from(this._settingInputElem.options)) {
-            options[option.value] = option.textContent ?? '';
-        }
-        return options;
-    }
-    set values(newValue: Record<string, string>) {
-        this._settingInputElem.innerHTML = '';
-        for (const [value, text] of Object.entries(newValue)) {
-            const option = document.createElement('option');
-            option.value = value;
-            option.textContent = text;
-            this._settingInputElem.options.add(option);
-        }
-    }
-
     get value(): SettingTypeMapping[SettingType.Option] {
         return localStorage.getItem(this.id) ?? this.defaultValue;
     }
     set value(newValue: SettingTypeMapping[SettingType.Option]) {
         try {
-            if (newValue === this.defaultValue) {
+            // eslint-disable-next-line eqeqeq
+            if (newValue == this.defaultValue) {
                 localStorage.removeItem(this.id);
                 void SyncedStorage.removeItem(this.id);
             } else {
-                localStorage.setItem(this.id, newValue);
-                void SyncedStorage.setItem(this.id, newValue);
+                localStorage.setItem(this.id, newValue.toString());
+                void SyncedStorage.setItem(this.id, newValue.toString());
             }
         } catch (error) {
             Logger.logError(error);
         }
-        this._settingInputElem.value = newValue;
+        this._settingInputElem.value = newValue.toString();
         this.invokeInput(this._settingInputElem);
     }
 
@@ -73,6 +57,26 @@ export class SettingOption extends EventTarget implements ISetting<SettingType.O
         this.value = this.value;
     }
 
+    get options(): Record<string, string> {
+        const options: Record<string, string> = {};
+        for (const option of Array.from(this._settingInputElem.options)) {
+            options[option.value] = option.textContent ?? '';
+        }
+        return options;
+    }
+    set options(newValue: Record<string | number, string | number>) {
+        const currValue = this.value;
+        this._settingInputElem.innerHTML = '';
+        for (const [value, text] of Object.entries(newValue)) {
+            this.addOption(value, text);
+        }
+        if (Array.from(this._settingInputElem.options).some(x => x.value === currValue.toString())) {
+            this.value = currValue;
+        } else {
+            this.value = this.defaultValue;
+        }
+    }
+
     get onInput(): ((source: HTMLElement) => void) | undefined {
         return this._onInput;
     }
@@ -80,20 +84,20 @@ export class SettingOption extends EventTarget implements ISetting<SettingType.O
         this._onInput = handler;
     }
 
-    addOption(value: string, text: string): void {
-        if (this._settingInputElem.options.namedItem(value) != null) {
+    addOption(value: string | number, text: string | number): void {
+        if (this._settingInputElem.options.namedItem(value.toString()) != null) {
             Logger.logWarning(`Option with value "${value}" already exists.`);
             return;
         }
 
         const option = document.createElement('option');
-        option.value = value;
-        option.textContent = text;
+        option.value = value.toString();
+        option.textContent = text.toString();
         this._settingInputElem.options.add(option);
     }
 
-    removeOption(value: string): void {
-        const option = this._settingInputElem.options.namedItem(value);
+    removeOption(value: string | number): void {
+        const option = this._settingInputElem.options.namedItem(value.toString());
         if (option == null) {
             Logger.logWarning(`Option with value "${value}" does not exist.`);
             return;

@@ -61,7 +61,7 @@ The Setting class contains following Properties:
 
 - `verifyRegex` - Regex for validation of input for `SettingType.Text`
 
-- `values` - Option values for `SettingType.Option`
+- `options` - Option values for `SettingType.Option`
 - `addOption(value, text)` - Function to add an option to `SettingType.Option`
 - `removeOption(value)` - Function to remove an option from `SettingType.Option`
 

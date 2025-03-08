@@ -17,7 +17,7 @@ export interface SettingTypeMapping {
     [SettingType.Boolean]: boolean;
     [SettingType.Action]: string;
     [SettingType.Text]: string;
-    [SettingType.Option]: string;
+    [SettingType.Option]: string | number;
 }
 
 export interface SettingClassMapping {

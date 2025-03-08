@@ -10,11 +10,16 @@ Object.defineProperties(window, {
 const customSettings = new Settings('Custom-Furaffinity-Settings', 'Global Custom-Furaffinity-Settings');
 customSettings.showFeatureEnabledSetting = false;
 
-export const loggingSetting = customSettings.newSetting(window.FASettingType.Number, 'Logging');
-loggingSetting.description = 'The logging level. 0 = none, 1 = errors, 2 = warnings, 3 = infos.';
+export const loggingSetting = customSettings.newSetting(window.FASettingType.Option, 'Logging');
+loggingSetting.description = 'Sets the logging level.';
 loggingSetting.defaultValue = LogLevel.Error;
-loggingSetting.addEventListener('input', (): void => Logger.setLogLevel(loggingSetting.value));
-Logger.setLogLevel(loggingSetting.value);
+loggingSetting.options = {
+    [LogLevel.Error]: LogLevel[LogLevel.Error],
+    [LogLevel.Warning]: LogLevel[LogLevel.Warning],
+    [LogLevel.Info]: LogLevel[LogLevel.Info]
+};
+loggingSetting.addEventListener('input', (): void => Logger.setLogLevel(parseInt(loggingSetting.value.toString())));
+Logger.setLogLevel(parseInt(loggingSetting.value.toString()));
 
 export const showResetButtonSetting = customSettings.newSetting(SettingType.Boolean, 'Show Reset Button');
 showResetButtonSetting.description = 'Set wether the "Reset this Setting" button is shown in other Settings.';

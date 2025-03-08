@@ -42,9 +42,16 @@ export const closeEmbedAfterOpenSetting = customSettings.newSetting(window.FASet
 closeEmbedAfterOpenSetting.description = 'Wether to close the current embedded Submission after it is opened in a new Tab (also for open Gallery).';
 closeEmbedAfterOpenSetting.defaultValue = true;
 
-export const previewQualitySetting = customSettings.newSetting(window.FASettingType.Number, 'Preview Quality');
+export const previewQualitySetting = customSettings.newSetting(window.FASettingType.Option, 'Preview Quality');
 previewQualitySetting.description = 'The quality of the preview image. Value range is 2-6. (Higher values can be slower)';
-previewQualitySetting.defaultValue = 3;
+previewQualitySetting.defaultValue = 400;
+previewQualitySetting.options = {
+    200: 'Very Low',
+    300: 'Low',
+    400: 'Medium',
+    500: 'High',
+    600: 'Very High'
+};
 
 customSettings.loadSettings();
 
