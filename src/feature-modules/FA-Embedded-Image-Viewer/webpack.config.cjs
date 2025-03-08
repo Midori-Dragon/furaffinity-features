@@ -22,9 +22,9 @@ module.exports = merge(common, {
 // @require     https://update.greasyfork.org/scripts/485827/1549457/Furaffinity-Match-List.js
 // @require     https://update.greasyfork.org/scripts/485153/1549461/Furaffinity-Loading-Animations.js
 // @require     https://update.greasyfork.org/scripts/476762/1549463/Furaffinity-Custom-Pages.js
-// @require     https://update.greasyfork.org/scripts/475041/1549465/Furaffinity-Custom-Settings.js
+// @require     https://update.greasyfork.org/scripts/475041/1550020/Furaffinity-Custom-Settings.js
 // @grant       GM_info
-// @version     2.4.3
+// @version     2.4.4
 // @author      Midori Dragon
 // @description Embeds the clicked Image on the Current Site, so you can view it without loading the submission Page
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png

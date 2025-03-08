@@ -21,9 +21,9 @@ module.exports = merge(common, {
 // @require     https://update.greasyfork.org/scripts/485827/1549457/Furaffinity-Match-List.js
 // @require     https://update.greasyfork.org/scripts/528997/1549467/Furaffinity-Message-Box.js
 // @require     https://update.greasyfork.org/scripts/476762/1549463/Furaffinity-Custom-Pages.js
-// @require     https://update.greasyfork.org/scripts/475041/1549465/Furaffinity-Custom-Settings.js
+// @require     https://update.greasyfork.org/scripts/475041/1550020/Furaffinity-Custom-Settings.js
 // @grant       GM_info
-// @version     3.0.1
+// @version     3.0.2
 // @author      Midori Dragon
 // @description Scans the Favorites of your Watches for new Favorites and shows a Button to view these (if any where found). (Works like Submission Page)
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
