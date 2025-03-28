@@ -24,7 +24,6 @@ A userscript/browser extension that adds a new function to scan for favorites of
 
 ## Settings
 
-- `Show load last X Favs` - Whether to show the button to load the last X favorites *(default is `false`)*
 - `Max Favs Amount` - Maximum number of favorites loaded per watch *(default is `100`)*
 - `Show Dublicate Favs` - Whether to show duplicate submissions when multiple people faved the same submission *(default is `true`)*
 - `Show Fav From Watcher` - Whether to show which watcher faved each submission *(default is `true`)*
