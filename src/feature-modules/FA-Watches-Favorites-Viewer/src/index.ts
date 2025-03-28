@@ -34,17 +34,13 @@ export const scriptName = 'FA Watches Favorites Viewer';
 
 const customSettings = new window.FACustomSettings('Midori\'s Script Settings', `${scriptName} Settings`);
 
-export const showLoadLastXFavsButtonSetting = customSettings.newSetting(window.FASettingType.Boolean, 'Show load last X Favs');
-showLoadLastXFavsButtonSetting.description = 'Sets wether the search for similar Pages button is show.';
-showLoadLastXFavsButtonSetting.defaultValue = false;
-
 export const maxFavsAmountSetting = customSettings.newSetting(window.FASettingType.Number, 'Max Favs Amount');
 maxFavsAmountSetting.description = 'Sets the maximum number of Favs loaded per Watch.';
 maxFavsAmountSetting.defaultValue = 100;
 
 export const showDublicateFavsSetting = customSettings.newSetting(window.FASettingType.Boolean, 'Show Dublicate Favs');
 showDublicateFavsSetting.description = 'Sets wether to show dublicate Submissions. (when multiple people Faved the same Submission)';
-showDublicateFavsSetting.defaultValue = true;
+showDublicateFavsSetting.defaultValue = false;
 
 export const showFavFromWatcherSetting = customSettings.newSetting(window.FASettingType.Boolean, 'Show Fav From Watcher');
 showFavFromWatcherSetting.description = 'Sets wether to show from which watch the Fav comes.';

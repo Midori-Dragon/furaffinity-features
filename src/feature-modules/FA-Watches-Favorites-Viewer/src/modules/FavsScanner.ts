@@ -77,6 +77,7 @@ export class FavsScanner {
 
     applyFigureSettings(figures: HTMLElement[]): HTMLElement[] {
         if (!showDublicateFavsSetting.value) {
+            Logger.logInfo('Removing duplicate favorites');
             const seenIds = new Set();
             figures = figures.filter(figure => {
                 if (!seenIds.has(figure.id)) {
@@ -88,6 +89,7 @@ export class FavsScanner {
         }
 
         if (showFavFromWatcherSetting.value) {
+            Logger.logInfo('Adding watch information to favorites');
             for (const figure of figures) {
                 try {
                     const fromUser = figure.getAttribute('wfv-from-user')!;
