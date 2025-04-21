@@ -208,13 +208,13 @@ Shared utility functions and components used across other modules.
 3. Configure module settings as needed
 
 ### As Browser Extension
-1. Install from Chrome Web Store / [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/furaffinity-features/)
+1. Install from [Chrome Web Store](https://chromewebstore.google.com/detail/furaffinity-features/dedddeinlepdkegmhnlggepfoeakikmc) / [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/furaffinity-features/)
 2. Enable desired features
 3. Configure extension settings
 
 ## Usage
 
-By default all features are enabled. Disabling features is currently not supported, but will be added in the future.
+By default all features are enabled. You can disable features by going to the Settings page and deactivating the desired features.
 
 Settings can be found on Fur Affinity itself.
 In the Settings dropdown menu there will be a new category `Extension Settings` with an option `FurAffinity Features`.
