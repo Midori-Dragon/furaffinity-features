@@ -1,4 +1,4 @@
-import { maxFavsAmountSetting, requestHelper, showDublicateFavsSetting, showFavFromWatcherSetting } from '..';
+import { maxFavsAmountSetting, maxWatcherAmountSetting, requestHelper, showDublicateFavsSetting, showFavFromWatcherSetting } from '..';
 import { StorageWrapper } from '../../../../library-modules/GlobalUtils/src/Browser-API/StorageWrapper';
 import getWatchesFromPage from '../../../../library-modules/GlobalUtils/src/FA-Functions/getWatchesFromPage';
 import string from '../../../../library-modules/GlobalUtils/src/string';
@@ -7,7 +7,7 @@ import { IgnoreList } from '../utils/IgnoreList';
 import { Semaphore } from '../../../../library-modules/GlobalUtils/src/Semaphore';
 import { LastSidList } from '../utils/LastSidList';
 import { Logger } from '../../../../library-modules/GlobalUtils/src/Logger';
-import getByContainerFromFigure from '../utils/getByContainerFromFigure';
+import { FAFigure } from '../components/FAFigure';
 
 export class FavsScanner {
     static readonly progressPercentId = 'wfv-scan-progress-percent';
@@ -19,28 +19,31 @@ export class FavsScanner {
         this.ignoredUsers = await IgnoreList.getIgnoreList();
     }
 
-    async scanAllUsers(callBack?: (username: string, percent: number, userFigures: HTMLElement[]) => void): Promise<HTMLElement[]> {
+    async scanAllUsers(callBack?: (username: string, percent: number, userFigures: FAFigure[]) => void): Promise<FAFigure[]> {
         await StorageWrapper.removeItemAsync(FavsScanner.progressPercentId);
         const watchesPages = await requestHelper.PersonalUserRequests.ManageContent.getAllWatchesPages();
         const watches = watchesPages.map(page => getWatchesFromPage(page)).flat();
-        const usernames = watches.map(watch => watch.querySelector('img[alt]')?.getAttribute('alt'));
+        let usernames = watches.map(watch => watch.querySelector('img[alt]')?.getAttribute('alt'));
+        if (maxWatcherAmountSetting.value < usernames.length) {
+            usernames = usernames.slice(0, maxWatcherAmountSetting.value);
+        }
         
         // Create a semaphore with max concurrency of 2
         const semaphore = new Semaphore(requestHelper.maxAmountRequests);
         
         // Filter out null/whitespace usernames and ignored users
-        const validUsernames = usernames.filter(username => 
+        usernames = usernames.filter(username => 
             !string.isNullOrWhitespace(username) && 
             !this.ignoredUsers.includes(username!)
         );
 
-        let figures: HTMLElement[] = [];
+        let figures: FAFigure[] = [];
         let percent = 0.0;
         let current = 0;
-        const total = validUsernames.length;
+        const total = usernames.length;
         
         // Use Promise.all with a map to process users concurrently with semaphore control
-        await Promise.all(validUsernames.map(async (username) => {
+        await Promise.all(usernames.map(async (username) => {
             // Acquire a semaphore permit
             await semaphore.acquire();
             
@@ -65,7 +68,7 @@ export class FavsScanner {
         return figures;
     }
 
-    async scanUser(username: string): Promise<HTMLElement[]> {
+    async scanUser(username: string): Promise<FAFigure[]> {
         const lastFavId = this.lastFavIds[username]?.trimStart('sid-');
         const watchFavScanner = new WatchFavScanner(username, lastFavId);
         let figures = await watchFavScanner.scan(true);
@@ -75,7 +78,7 @@ export class FavsScanner {
         return figures;
     }
 
-    applyFigureSettings(figures: HTMLElement[]): HTMLElement[] {
+    applyFigureSettings(figures: FAFigure[]): FAFigure[] {
         if (!showDublicateFavsSetting.value) {
             Logger.logInfo('Removing duplicate favorites');
             const seenIds = new Set();
@@ -88,31 +91,33 @@ export class FavsScanner {
             });
         }
 
-        if (showFavFromWatcherSetting.value) {
+        if (!showFavFromWatcherSetting.value) {
             Logger.logInfo('Adding watch information to favorites');
             for (const figure of figures) {
                 try {
-                    const fromUser = figure.getAttribute('wfv-from-user')!;
-                    const fromUserDisplay = figure.getAttribute('wfv-from-userDisplay')!;
-                    const byElemContainer = getByContainerFromFigure(figure)!;
+                    figure.figCaption.fromId = '';
+                    figure.figCaption.fromUsername = '';
+                    // const fromUser = figure.getAttribute('wfv-from-user')!;
+                    // const fromUserDisplay = figure.getAttribute('wfv-from-userDisplay')!;
+                    // const byElemContainer = getByContainerFromFigure(figure)!;
 
-                    const fromContainer = document.createElement('p');
-                    fromContainer.classList.add('wfv-from-container');
+                    // const fromContainer = document.createElement('p');
+                    // fromContainer.classList.add('wfv-from-container');
 
-                    const fromElem = document.createElement('i');
-                    fromElem.classList.add('wfv-from-elem');
-                    fromElem.textContent = 'from ';
-                    fromContainer.appendChild(fromElem);
+                    // const fromElem = document.createElement('i');
+                    // fromElem.classList.add('wfv-from-elem');
+                    // fromElem.textContent = 'from ';
+                    // fromContainer.appendChild(fromElem);
 
-                    const fromElemValue = document.createElement('a');
-                    fromElemValue.classList.add('wfv-from-elem-value');
-                    fromElemValue.textContent = fromUserDisplay;
-                    fromElemValue.href = `/user/${fromUser}`;
-                    fromElemValue.title = fromUserDisplay;
-                    fromElemValue.style.fontWeight = '100';
-                    fromContainer.appendChild(fromElemValue);
+                    // const fromElemValue = document.createElement('a');
+                    // fromElemValue.classList.add('wfv-from-elem-value');
+                    // fromElemValue.textContent = fromUserDisplay;
+                    // fromElemValue.href = `/user/${fromUser}`;
+                    // fromElemValue.title = fromUserDisplay;
+                    // fromElemValue.style.fontWeight = '100';
+                    // fromContainer.appendChild(fromElemValue);
 
-                    byElemContainer.insertAfterThis(fromContainer);
+                    // byElemContainer.insertAfterThis(fromContainer);
                 } catch {
                     Logger.logError(`Failed to get from watch for ${figure.id}`);
                 }

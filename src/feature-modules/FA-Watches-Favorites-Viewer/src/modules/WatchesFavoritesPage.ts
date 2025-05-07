@@ -42,7 +42,8 @@ export class WatchesFavoritesPage {
         loadingSpinner.visible = true;
 
         const figures = await FigureDataSaver.loadFigures();
-        this.gallerySection.append(...figures);
+        const htmlFigures = figures.map(figure => figure.ToHTMLElement());
+        this.gallerySection.append(...htmlFigures);
 
         window.dispatchEvent(new CustomEvent('ei-update-embedded'));
         checkTagsAll(document);

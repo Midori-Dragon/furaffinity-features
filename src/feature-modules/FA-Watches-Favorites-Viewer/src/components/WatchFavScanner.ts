@@ -1,6 +1,7 @@
 import { requestHelper } from '..';
 import { Logger } from '../../../../library-modules/GlobalUtils/src/Logger';
 import { LastSidList } from '../utils/LastSidList';
+import { FAFigure } from './FAFigure';
 
 export class WatchFavScanner {
     username: string;
@@ -11,7 +12,7 @@ export class WatchFavScanner {
         this.lastSid = lastSid;
     }
 
-    async scan(updateLastSid = false): Promise<HTMLElement[]> {
+    async scan(updateLastSid = false): Promise<FAFigure[]> {
         let initSuccess = false;
         if (this.lastSid == null || this.lastSid === -1) {
             Logger.logWarning('No last sid given. Initializing...');
@@ -21,13 +22,20 @@ export class WatchFavScanner {
             }
         }
 
+        const userPage = await requestHelper.UserRequests.getUserPage(this.username);
+        const userpageNavHeader = userPage?.body.querySelector('userpage-nav-header');
+        const userNameSpan = userpageNavHeader?.querySelector('span[class="js-displayName"]');
+        const userDisplayName = userNameSpan?.textContent;
+
         const figures = await requestHelper.UserRequests.GalleryRequests.Favorites.getFiguresBetweenIds(this.username, -1, this.lastSid);
+        
         let newFigures = figures.flat();
 
         for (const figure of newFigures) {
             try {
-                figure.setAttribute('wfv-from-user', this.username);
-                figure.setAttribute('wfv-from-userDisplay', this.username);
+                const figCaption = figure.querySelector('figcaption');
+                figCaption?.setAttribute('wfv-from-user', this.username);
+                figCaption?.setAttribute('wfv-from-userDisplay', userDisplayName ?? '');
             }
             catch {
                 Logger.logError(`Failed to process figure for: ${this.username}`);
@@ -45,7 +53,7 @@ export class WatchFavScanner {
             await LastSidList.setSid(this.username, this.lastSid);
         }
         
-        return newFigures;
+        return newFigures.map(figure => new FAFigure(figure));
     }
 
     async init(): Promise<boolean> {
