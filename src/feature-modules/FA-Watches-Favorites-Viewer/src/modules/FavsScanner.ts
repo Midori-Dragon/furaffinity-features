@@ -1,4 +1,4 @@
-import { maxFavsAmountSetting, maxWatcherAmountSetting, requestHelper, showDublicateFavsSetting, showFavFromWatcherSetting } from '..';
+import { maxFavsAmountSetting, requestHelper, showDublicateFavsSetting, showFavFromWatcherSetting } from '..';
 import { StorageWrapper } from '../../../../library-modules/GlobalUtils/src/Browser-API/StorageWrapper';
 import getWatchesFromPage from '../../../../library-modules/GlobalUtils/src/FA-Functions/getWatchesFromPage';
 import string from '../../../../library-modules/GlobalUtils/src/string';
@@ -13,6 +13,7 @@ export class FavsScanner {
     static readonly progressPercentId = 'wfv-scan-progress-percent';
     lastFavIds: Record<string, string> = {};
     ignoredUsers: string[] = [];
+    amountOperations = 0;
 
     async init(): Promise<void> {
         this.lastFavIds = await LastSidList.getSidList();
@@ -24,9 +25,6 @@ export class FavsScanner {
         const watchesPages = await requestHelper.PersonalUserRequests.ManageContent.getAllWatchesPages();
         const watches = watchesPages.map(page => getWatchesFromPage(page)).flat();
         let usernames = watches.map(watch => watch.querySelector('img[alt]')?.getAttribute('alt'));
-        if (maxWatcherAmountSetting.value < usernames.length) {
-            usernames = usernames.slice(0, maxWatcherAmountSetting.value);
-        }
         
         // Create a semaphore with max concurrency of 2
         const semaphore = new Semaphore(requestHelper.maxAmountRequests);
@@ -69,10 +67,16 @@ export class FavsScanner {
     }
 
     async scanUser(username: string): Promise<FAFigure[]> {
+        if (this.amountOperations >= 80) {
+            Logger.logWarning(`Amount of operations reached 80. Stopping scan for ${username}.`);
+            return [];
+        }
+
         const lastFavId = this.lastFavIds[username]?.trimStart('sid-');
         const watchFavScanner = new WatchFavScanner(username, lastFavId);
         let figures = await watchFavScanner.scan(true);
         if (figures.length > maxFavsAmountSetting.value) {
+            this.amountOperations++;
             figures = figures.slice(0, maxFavsAmountSetting.value);
         }
         return figures;
@@ -97,27 +101,6 @@ export class FavsScanner {
                 try {
                     figure.figCaption.fromId = '';
                     figure.figCaption.fromUsername = '';
-                    // const fromUser = figure.getAttribute('wfv-from-user')!;
-                    // const fromUserDisplay = figure.getAttribute('wfv-from-userDisplay')!;
-                    // const byElemContainer = getByContainerFromFigure(figure)!;
-
-                    // const fromContainer = document.createElement('p');
-                    // fromContainer.classList.add('wfv-from-container');
-
-                    // const fromElem = document.createElement('i');
-                    // fromElem.classList.add('wfv-from-elem');
-                    // fromElem.textContent = 'from ';
-                    // fromContainer.appendChild(fromElem);
-
-                    // const fromElemValue = document.createElement('a');
-                    // fromElemValue.classList.add('wfv-from-elem-value');
-                    // fromElemValue.textContent = fromUserDisplay;
-                    // fromElemValue.href = `/user/${fromUser}`;
-                    // fromElemValue.title = fromUserDisplay;
-                    // fromElemValue.style.fontWeight = '100';
-                    // fromContainer.appendChild(fromElemValue);
-
-                    // byElemContainer.insertAfterThis(fromContainer);
                 } catch {
                     Logger.logError(`Failed to get from watch for ${figure.id}`);
                 }

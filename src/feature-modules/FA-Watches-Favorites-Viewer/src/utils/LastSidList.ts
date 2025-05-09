@@ -3,11 +3,12 @@ import { StorageWrapper } from '../../../../library-modules/GlobalUtils/src/Brow
 export class LastSidList {
     static readonly id = 'wfv-last-favs';
 
-    static async setSid(username: string, sid: string): Promise<void> {
+    static async setSid(username: string, sid: string): Promise<boolean> {
         const sids = await this.getSidList();
         sids[username] = sid;
         const json = JSON.stringify(sids);
-        await StorageWrapper.setItemAsync(this.id, json);
+        const success = await StorageWrapper.setItemAsync(this.id, json);
+        return success;
     }
 
     static async getSid(username: string): Promise<string | null> {
@@ -15,8 +16,9 @@ export class LastSidList {
         return sids[username] ?? null;
     }
 
-    static async clearSidList(): Promise<void> {
-        await StorageWrapper.removeItemAsync(this.id);
+    static async clearSidList(): Promise<boolean> {
+        const success = await StorageWrapper.removeItemAsync(this.id);
+        return success;
     }
 
     static async getSidList(): Promise<Record<string, string>> {

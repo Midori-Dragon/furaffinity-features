@@ -7,36 +7,40 @@ import { FAFigure } from '../components/FAFigure';
 export class FigureDataSaver {
     static readonly scanResultIdPrefix = 'wfv-scan-results';
     static readonly chunkSize = 60;
-    
-    static async saveFigures(figures: FAFigure[]): Promise<void> {
+    static readonly maxChunkBytes = 8192 * 0.9; // 90% of 8KB to leave some leeway
 
-        // Split figures into chunks of 60
-        const chunks: FAFigure[][] = [];
-        for (let i = 0; i < figures.length; i += this.chunkSize) {
-            chunks.push(figures.slice(i, i + this.chunkSize));
-        }
+    static async saveFigures(figures: FAFigure[]): Promise<boolean> {
+        // build compressed chunks
+        try {
+            const compressedChunks = PakoWrapper.splitByCompressedSize(figures, this.maxChunkBytes);
 
-        // Save each chunk with an incremental key
-        const compressedChunks = [];
-        for (let i = 0; i < chunks.length; i++) {
-            const json = JSON.stringify(chunks[i]);
-            const compressed = PakoWrapper.compress(json);
-            compressedChunks.push(compressed);
-        }
+            if (compressedChunks.length) {
+                await this.clear();
+            }
 
-        // Clear any existing data
-        if (compressedChunks.length !== 0) {
-            await this.clear();
+            for (let i = 0; i < compressedChunks.length; i++) {
+                const key = `${this.scanResultIdPrefix}-${i + 1}`;
+                const success  = await StorageWrapper.setItemAsync(key, compressedChunks[i]);
+                Logger.logInfo(`Chunk ${i + 1}/${compressedChunks.length}: ${compressedChunks[i].length} bytes`);
+                if (!success) {
+                    Logger.logError(`Failed to save chunk ${i + 1}. Aborting.`);
+                    return false;
+                }
+            }
+
+            // store the count
+            const success = await StorageWrapper.setItemAsync(`${this.scanResultIdPrefix}-count`, compressedChunks.length.toString());
+            if (!success) {
+                Logger.logError('Failed to save chunk count.');
+            }
+            return success;
         }
-        for (let i = 0; i < compressedChunks.length; i++) {
-            const chunkKey = `${this.scanResultIdPrefix}-${i + 1}`;
-            Logger.logInfo(`Saving chunk ${i + 1}/${compressedChunks.length} with size: ${compressedChunks[i].length} bytes`);
-            await StorageWrapper.setItemAsync(chunkKey, compressedChunks[i]);
+        catch (error) {
+            Logger.logError(`Failed to save figures: ${error}`);
+            return false;
         }
-        
-        // Save the total number of chunks for later retrieval
-        await StorageWrapper.setItemAsync(`${this.scanResultIdPrefix}-count`, chunks.length.toString());
     }
+
 
     static async loadFigures(): Promise<FAFigure[]> {
         // Get the total number of chunks

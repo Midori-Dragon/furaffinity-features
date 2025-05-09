@@ -50,7 +50,11 @@ export class WatchFavScanner {
 
         if (updateLastSid && newFigures.length !== 0) {
             this.lastSid = newFigures[0].id.trimStart('sid-');
-            await LastSidList.setSid(this.username, this.lastSid);
+            const success = await LastSidList.setSid(this.username, this.lastSid);
+            if (!success) {
+                Logger.logError(`Failed to save last sid for: ${this.username}`);
+                return [];
+            }
         }
         
         return newFigures.map(figure => new FAFigure(figure));

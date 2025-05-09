@@ -24,6 +24,43 @@ export class PakoWrapper {
     }
 
     /**
+     * Splits an array of items into chunks based on the compressed size of each chunk.
+     * @param items - The array of items to split.
+     * @returns An array of Uint8Array chunks.
+     */
+    static splitByCompressedSize<T>(items: T[], maxBytes: number): string[] {
+        const chunks: string[] = [];
+        let bucket: T[] = [];
+
+        for (const item of items) {
+            bucket.push(item);
+
+            // Compress the current bucket
+            const compressed = this.compress(JSON.stringify(bucket));
+
+            if (compressed.length > maxBytes) {
+                // The last push overflowed ─ remove it, finish the old bucket
+                bucket.pop();
+
+                // Handle pathological case: a single item is already too large
+                if (bucket.length === 0) {
+                    throw new Error(
+                        `Single figure exceeds the ${maxBytes}-byte quota (compressed).`
+                    );
+                }
+
+                chunks.push(this.compress(JSON.stringify(bucket)));  // finalise previous
+                bucket = [item];                               // start a fresh one
+            }
+        }
+
+        if (bucket.length) {
+            chunks.push(this.compress(JSON.stringify(bucket)));
+        }
+        return chunks;
+    }
+
+    /**
      * Converts a Uint8Array to a base64 encoded string.
      * @param uint8Array - The Uint8Array to convert.
      * @returns A base64 encoded string.
