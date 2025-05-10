@@ -1,6 +1,6 @@
 import { loadingSpinSpeedSetting } from '..';
 import checkTagsAll from '../../../../library-modules/GlobalUtils/src/FA-Functions/checkTagsAll';
-import { cleanUpToParent } from '../utils/cleanUpToParent';
+import { hideUpToParent } from '../utils/cleanUpToParent';
 import { FigureDataSaver } from '../utils/FigureDataSaver';
 
 export class WatchesFavoritesPage {
@@ -9,28 +9,32 @@ export class WatchesFavoritesPage {
     constructor() {
         const standardPage = document.getElementById('standardpage')!;
 
-        let gallery = standardPage.querySelector('section[id="gallery-0"]');
-        if (gallery == null) {
+        let galleryZero = standardPage.querySelector('section[id="gallery-0"]');
+        if (galleryZero == null) {
             const messageCenterSubmissions = standardPage.querySelector('div[id="messagecenter-submissions"]')!;
-            gallery = document.createElement('section');
-            gallery.id = 'gallery-0';
-            gallery.classList.add('gallery', 'messagecenter', 'with-checkboxes', 's-250', 'wfv-gallery');
-            messageCenterSubmissions.appendChild(gallery);
+            galleryZero = document.createElement('section');
+            galleryZero.id = 'gallery-0';
+            galleryZero.classList.add('gallery', 'messagecenter', 'with-checkboxes', 's-250', 'wfv-gallery');
+            messageCenterSubmissions.appendChild(galleryZero);
         }
 
-        this.gallerySection = gallery as HTMLElement;
+        this.gallerySection = galleryZero as HTMLElement;
         const sectionHeader = standardPage.querySelector('div[class*="section-header"]')?.parentElement;
         const headerElem = sectionHeader?.querySelector('h2');
         if (headerElem != null) {
             headerElem.textContent = 'Watches Favorites';
         }
-        cleanUpToParent(this.gallerySection as HTMLElement, standardPage, sectionHeader);
-        this.gallerySection.insertBeforeThis(document.createElement('br'));
 
-        const figures = this.gallerySection.querySelectorAll('figure');
-        for (const figure of Array.from(figures)) {
-            figure.remove();
+        const allGalleries = standardPage.querySelectorAll('section[id^="gallery-"]');
+        for (const gallery of Array.from(allGalleries)) {
+            const figures = gallery.querySelectorAll('figure');
+            for (const figure of Array.from(figures)) {
+                figure.remove();
+            }
         }
+
+        hideUpToParent(this.gallerySection as HTMLElement, standardPage, sectionHeader);
+        this.gallerySection.insertBeforeThis(document.createElement('br'));
 
         void this.show();
     }
