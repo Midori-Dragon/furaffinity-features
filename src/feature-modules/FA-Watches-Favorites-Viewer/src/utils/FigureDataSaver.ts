@@ -46,18 +46,39 @@ export class FigureDataSaver {
         // Get the total number of chunks
         const countStr = await StorageWrapper.getItemAsync(`${this.scanResultIdPrefix}-count`);
         if (string.isNullOrWhitespace(countStr)) {
-            return [];
+            Logger.logWarning('No Chunk Count found. Trying to load figures anyway.');
+            return await this.loadFiguresWithoutChunkCount();
+        } else {
+            const count = parseInt(countStr, 10);
+            return await this.loadFiguresByChunk(count);
         }
-        
-        const count = parseInt(countStr, 10);
+    }
+
+    private static async loadFiguresByChunk(chunkCount: number): Promise<FAFigure[]> {
         let allFigures: FAFigure[] = [];
-        
-        // Load each chunk and combine them
-        for (let i = 1; i <= count; i++) {
+        for (let i = 1; i <= chunkCount; i++) {
             const chunkKey = `${this.scanResultIdPrefix}-${i}`;
             const compressedData = await StorageWrapper.getItemAsync(chunkKey);
             
             if (compressedData !== null && compressedData !== undefined) {
+                const decompressed = PakoWrapper.decompress(compressedData);
+                let figures = JSON.parse(decompressed) as FAFigure[];
+                figures = figures.map(figure => FAFigure.getRevivedObject(figure));
+                
+                allFigures = allFigures.concat(figures);
+            }
+        }
+        
+        return allFigures;
+    }
+
+    private static async loadFiguresWithoutChunkCount(): Promise<FAFigure[]> {
+        let allFigures: FAFigure[] = [];
+        for (let i = 1; i <= this.chunkSize; i++) {
+            const chunkKey = `${this.scanResultIdPrefix}-${i}`;
+            const compressedData = await StorageWrapper.getItemAsync(chunkKey);
+            
+            if (compressedData != null) {
                 const decompressed = PakoWrapper.decompress(compressedData);
                 let figures = JSON.parse(decompressed) as FAFigure[];
                 figures = figures.map(figure => FAFigure.getRevivedObject(figure));

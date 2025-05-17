@@ -1,5 +1,6 @@
 import { loadingSpinSpeedSetting } from '..';
 import checkTagsAll from '../../../../library-modules/GlobalUtils/src/FA-Functions/checkTagsAll';
+import { Logger } from '../../../../library-modules/GlobalUtils/src/Logger';
 import { hideUpToParent } from '../utils/cleanUpToParent';
 import { FigureDataSaver } from '../utils/FigureDataSaver';
 
@@ -46,6 +47,7 @@ export class WatchesFavoritesPage {
         loadingSpinner.visible = true;
 
         const figures = await FigureDataSaver.loadFigures();
+        Logger.logInfo(`Loaded ${figures.length} figures`);
         const htmlFigures = figures.map(figure => figure.ToHTMLElement());
         this.gallerySection.append(...htmlFigures);
 
