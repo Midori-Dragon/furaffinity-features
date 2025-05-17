@@ -5,10 +5,11 @@ A userscript/browser extension that adds a new function to scan for favorites of
 ## How to use
 
 - Load this script from GreasyFork or use it inside the browser extensions
-- Automatically adds a new "WF Scan" button to the menu bar
+- Automatically adds a new "WF Scan" button to the top menu bar (where new submissions and messages are)
   - When clicked, the script will scan all your watchers for new favorites
   - When the scan is done, a new "WF" message will be added to the message bar showing the number of new favorites
   - When clicked, the script will show the new favorites in a new page
+- To view the results of the last scan a new Option "Watches Favorites" is shown in the "Manage My Content" FA Section
 
 ## Feature Roadmap
 

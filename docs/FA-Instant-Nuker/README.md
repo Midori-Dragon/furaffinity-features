@@ -5,9 +5,9 @@ A userscript/browser extension that enhances FurAffinity gallery browsing by pro
 ## How to use
 
 - Load this script from GreasyFork or use it inside the browser extensions
-- Messages will automatically:
+- Messages and New Submission Page will automatically:
   - Show a new Nuke button without any Text
-  - Nuke the corresponding messages when the button is pressed
+  - Nuke the corresponding messages or submissions when the button is pressed instantly without any confirmation
 
 ## Feature Roadmap
 

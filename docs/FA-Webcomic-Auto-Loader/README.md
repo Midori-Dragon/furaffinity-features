@@ -5,12 +5,12 @@ A userscript/browser extension that enhances FurAffinity webcomic navigation by 
 ## How to use
 
 - Load this script from GreasyFork or use it inside the browser extensions
+- A new Button for "Auto loading" and "Searhcing for simular Submissions" will be shown below the Image on a submission page
 - The loader will automatically:
-  - Detect comic navigation elements
-  - Enable forward/backward navigation
+  - Detect comic navigation elements and use them for loading next and previous pages
+  - Enable forward/backward navigation using the actual comic navigation
   - Handle lightbox integration if enabled
-  - Offer loading all comic pages
-  - Searching for similar pages
+- When no comic navigation is found, the loader will search for similar pages
 
 ## Feature Roadmap
 

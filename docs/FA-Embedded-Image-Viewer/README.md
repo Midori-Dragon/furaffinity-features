@@ -10,6 +10,7 @@ A userscript/browser extension that enhances image viewing on FurAffinity by pro
   - Loading animations
   - Quality settings
   - various buttons and options on the embedded page
+- To use just click on any submission and it will be embedded on the current page
 
 ## Feature Roadmap
 
