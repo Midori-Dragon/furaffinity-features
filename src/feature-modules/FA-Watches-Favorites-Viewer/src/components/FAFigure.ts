@@ -1,3 +1,5 @@
+import { showDetailedMadeByTextSetting } from '..';
+
 export class FAFigure {
 
     id: string;
@@ -145,6 +147,16 @@ export class FAFigureFigCaption {
         const figCaption = document.createElement('figcaption');
         const firstP = document.createElement('p');
 
+        let fromText = '';
+        let byText = '';
+        if (showDetailedMadeByTextSetting.value) {
+            fromText = 'faved by ';
+            byText = 'made by ';
+        } else {
+            fromText = 'from ';
+            byText = 'by ';
+        }
+
         const a = document.createElement('a');
         a.href = `/view/${this.id}/`;
         a.title = this.title;
@@ -154,7 +166,7 @@ export class FAFigureFigCaption {
 
         const secondP = document.createElement('p');
         const i = document.createElement('i');
-        i.textContent = 'from ';
+        i.textContent = fromText;
         secondP.appendChild(i);
         const a2 = document.createElement('a');
         a2.href = `/user/${this.fromId}/`;
@@ -166,7 +178,7 @@ export class FAFigureFigCaption {
 
         const thirdP = document.createElement('p');
         const i2 = document.createElement('i');
-        i2.textContent = 'by ';
+        i2.textContent = byText;
         thirdP.appendChild(i2);
         const a3 = document.createElement('a');
         a3.href = `/user/${this.byUserId}/`;

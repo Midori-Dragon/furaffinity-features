@@ -10,7 +10,7 @@ export class NukeButton {
     constructor(messageType: MessageType) {
         this.messageType = messageType;
         this.nukeButton = document.createElement('button');
-
+        this.nukeButton.type = 'button';
         this.nukeButton.classList.add('in-button', 'standard', 'nuke');
 
         if (selectNukeIconSetting.value === NukeIconOptions.Red) {
@@ -45,6 +45,9 @@ export class NukeButton {
         case MessageType.Submission:
             await requestHelper.PersonalUserRequests.MessageRequests.NewSubmissions.nukeSubmissions();
             break;
-        } 
+        }
+        setTimeout(() => {
+            window.location.reload();
+        }, 20);
     }
 }

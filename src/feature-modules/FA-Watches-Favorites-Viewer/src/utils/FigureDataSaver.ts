@@ -74,18 +74,26 @@ export class FigureDataSaver {
 
     private static async loadFiguresWithoutChunkCount(): Promise<FAFigure[]> {
         let allFigures: FAFigure[] = [];
-        for (let i = 1; i <= this.chunkSize; i++) {
-            const chunkKey = `${this.scanResultIdPrefix}-${i}`;
-            const compressedData = await StorageWrapper.getItemAsync(chunkKey);
-            
-            if (compressedData != null) {
-                const decompressed = PakoWrapper.decompress(compressedData);
-                let figures = JSON.parse(decompressed) as FAFigure[];
-                figures = figures.map(figure => FAFigure.getRevivedObject(figure));
+
+        let compressedData: string | null | undefined;
+        let i = 1;
+        do {
+            try {
+                const chunkKey = `${this.scanResultIdPrefix}-${i}`;
+                compressedData = await StorageWrapper.getItemAsync(chunkKey);
+                if (compressedData != null) {
+                    const decompressed = PakoWrapper.decompress(compressedData);
+                    let figures = JSON.parse(decompressed) as FAFigure[];
+                    figures = figures.map(figure => FAFigure.getRevivedObject(figure));
                 
-                allFigures = allFigures.concat(figures);
+                    allFigures = allFigures.concat(figures);
+                }
             }
-        }
+            catch (error) {
+                Logger.logError(`Failed to load chunk ${i}: ${error}`);
+            }
+            i++;
+        } while (compressedData != null && i <= 1000);
         
         return allFigures;
     }
@@ -95,14 +103,33 @@ export class FigureDataSaver {
         const countStr = await StorageWrapper.getItemAsync(`${this.scanResultIdPrefix}-count`);
         if (countStr !== null && countStr !== undefined && countStr !== '') {
             const count = parseInt(countStr, 10);
-            
-            // Remove each chunk
-            for (let i = 1; i <= count; i++) {
-                const chunkKey = `${this.scanResultIdPrefix}-${i}`;
-                await StorageWrapper.removeItemAsync(chunkKey);
-            }
+            await this.clearByChunk(count);
+        } else {
+            await this.clearWithoutChunkCount();
         }
-        
+    }
+
+    private static async clearByChunk(chunkCount: number): Promise<void> {
+        // Remove each chunk
+        for (let i = 1; i <= chunkCount; i++) {
+            const chunkKey = `${this.scanResultIdPrefix}-${i}`;
+            await StorageWrapper.removeItemAsync(chunkKey);
+        }
+
+        // Remove the count key
+        await StorageWrapper.removeItemAsync(`${this.scanResultIdPrefix}-count`);
+    }
+
+    private static async clearWithoutChunkCount(): Promise<void> {
+        // Remove each chunk
+        let i = 1;
+        let chunkKey = `${this.scanResultIdPrefix}-${i}`;
+        while (await StorageWrapper.getItemAsync(chunkKey) != null && i <= 1000) {
+            await StorageWrapper.removeItemAsync(chunkKey);
+            chunkKey = `${this.scanResultIdPrefix}-${i}`;
+            i++;
+        }
+
         // Remove the count key
         await StorageWrapper.removeItemAsync(`${this.scanResultIdPrefix}-count`);
     }

@@ -29,6 +29,7 @@ A userscript/browser extension that adds a new function to scan for favorites of
 - `Show Dublicate Favs` - Whether to show duplicate submissions when multiple people faved the same submission *(default is `true`)*
 - `Show Fav From Watcher` - Whether to show which watcher faved each submission *(default is `true`)*
 - `Loading Animation Speed` - Duration of the loading animation in milliseconds *(default is `1000`)*
+- `Show Detailed MadeByText` - Whether to show "Made By" and "Faved by" instead of "By" and "From" text *(default is `true`)*
 - `Reset Last Seen Favs` - Action button to reset the last seen favorites to reinitialize the scanner
 - `Show Ignore List` - Action button to open the ignore list in a new tab
 - `Show Last Favs` - Action button to open the last watches favorites in a new tab
