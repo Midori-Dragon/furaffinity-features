@@ -9,6 +9,7 @@ import { SettingType, SettingClassMapping, SettingClassTypeMapping } from '../ut
 import { makeIdCompatible } from '../utils/Utils';
 import '../styles/Style.css';
 import { SettingOption } from '../components/SettingOption';
+import { StorageWrapper } from '../../../GlobalUtils/src/Browser-API/StorageWrapper';
 
 export class Settings {
     settings: Record<string, ISetting<SettingType>> = {};
@@ -38,6 +39,14 @@ export class Settings {
 
         this._isFeatureEnabledSetting = new SettingBoolean(this.providerId, `${headerName} Enabled`);
         this._isFeatureEnabledSetting.defaultValue = true;
+
+        let currSettingsJson = localStorage.getItem('ff-registered-settings');
+        currSettingsJson ??= '[]';
+        const currSettings = JSON.parse(currSettingsJson) as Array<string>;
+        if (!currSettings.includes(this.providerId)) {
+            currSettings.push(this.providerId);
+            localStorage.setItem('ff-registered-settings', JSON.stringify(currSettings));
+        }
     }
 
     get menuName(): string {
@@ -74,6 +83,63 @@ export class Settings {
                 if (window.location.toString().includes('?extension=' + this.providerId)) {
                     this.loadSettingValues(this.headerName, Object.values(this.settings));
                 }
+            }
+        } catch (error) {
+            Logger.logError(error);
+        }
+    }
+
+    async exportSettings(): Promise<void> {
+        try {
+            let registeredSettingsJson = localStorage.getItem('ff-registered-settings');
+            registeredSettingsJson ??= '[]';
+            const registeredSettings = JSON.parse(registeredSettingsJson) as Array<string>;
+            if (registeredSettings.length === 0) {
+                return;
+            }
+
+            let settings = await StorageWrapper.getAllItemsAsync();
+            if (settings == null) {
+                return;
+            }
+
+            settings = Object.entries(settings)
+                .filter(([key]) => registeredSettings.some(setting => key.startsWith(setting)))
+                .reduce((obj, [key, value]) => {
+                    obj[key] = value;
+                    return obj;
+                }, {} as Record<string, any>);
+
+            Logger.logInfo('Exporting Settings');
+            Logger.logInfo(settings);
+
+            if (Object.keys(settings).length === 0) {
+                return;
+            }
+
+            const settingsString = JSON.stringify(settings, null, 2);
+            const blob = new Blob([settingsString], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `${this.providerId}_settings.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+        } catch (error) {
+            Logger.logError(error);
+        }
+    }
+
+    async importSettings(settingsJson: string): Promise<void> {
+        try {
+            Logger.logInfo('Importing Settings');
+            Logger.logInfo(settingsJson);
+            settingsJson ??= '{}';
+            const settings = JSON.parse(settingsJson) as Record<string, any>;
+            for (const [key, value] of Object.entries(settings)) {
+                await StorageWrapper.setItemAsync(key, value);
             }
         } catch (error) {
             Logger.logError(error);
@@ -185,7 +251,7 @@ export class Settings {
         settingDesc.appendChild(settingDescText);
         settingContainer.appendChild(settingDesc);
 
-        if (showResetButtonSetting.value) {
+        if (showResetButtonSetting.value && setting.type !== SettingType.Action) {
             settingDesc.appendChild(document.createElement('br'));
             settingDesc.appendChild(this.createSettingReset(setting));
         }

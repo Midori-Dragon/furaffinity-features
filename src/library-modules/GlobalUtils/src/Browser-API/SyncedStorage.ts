@@ -47,6 +47,29 @@ export class SyncedStorage {
         }
     }
 
+    static async getAllItems(): Promise<Record<string, any>> {
+        if (!GMInfo.isBrowserEnvironment()) {
+            Logger.logWarning('SyncedStorage is only available in browser extensions.');
+            return {};
+        }
+        Logger.logInfo('Getting all items from synced storage');
+
+        const api = GMInfo.getBrowserAPI();
+        if (api.storage != null) {
+            return new Promise((resolve, reject) => {
+                api.storage.sync.get(null, (result: { [key: string]: any }) => {
+                    if (api.runtime.lastError != null) {
+                        return reject(api.runtime.lastError);
+                    }
+                    resolve(result);
+                });
+            });
+        } else {
+            Logger.logError('Unsupported storage API.');
+            return {};
+        }
+    }
+
     static async removeItem(key: any): Promise<void> {
         if (!GMInfo.isBrowserEnvironment()) {
             Logger.logWarning('SyncedStorage is only available in browser extensions.');

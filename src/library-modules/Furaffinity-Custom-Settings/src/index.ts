@@ -7,7 +7,7 @@ Object.defineProperties(window, {
     FASettingType: { get: () => SettingType },
 });
 
-const customSettings = new Settings('Custom-Furaffinity-Settings', 'Global Custom-Furaffinity-Settings');
+const customSettings = new Settings('Custom Furaffinity Settings', 'Global Custom Furaffinity Settings');
 customSettings.showFeatureEnabledSetting = false;
 
 export const loggingSetting = customSettings.newSetting(window.FASettingType.Option, 'Logging');
@@ -24,6 +24,28 @@ Logger.setLogLevel(parseInt(loggingSetting.value.toString()));
 export const showResetButtonSetting = customSettings.newSetting(SettingType.Boolean, 'Show Reset Button');
 showResetButtonSetting.description = 'Set wether the "Reset this Setting" button is shown in other Settings.';
 showResetButtonSetting.defaultValue = true;
+
+export const importSettingsSetting = customSettings.newSetting(SettingType.Action, 'Import Settings');
+importSettingsSetting.description = 'Imports the Settings from a JSON file.';
+importSettingsSetting.addEventListener('input', (): void => {
+    const fileInput = document.createElement('input');
+    fileInput.type = 'file';
+    fileInput.accept = '.json';
+    fileInput.addEventListener('change', (): void => {
+        const file = fileInput.files?.[0];
+        if (file) {
+            void file.text().then((content) => {
+                void customSettings.importSettings(content);
+                location.reload();
+            });
+        }
+    });
+    fileInput.click();
+});
+
+export const exportSettingsSetting = customSettings.newSetting(SettingType.Action, 'Export Settings');
+exportSettingsSetting.description = 'Exports the current Settings to a JSON file.';
+exportSettingsSetting.addEventListener('input', (): void => void customSettings.exportSettings());
 
 customSettings.loadSettings();
 

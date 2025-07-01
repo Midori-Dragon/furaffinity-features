@@ -60,4 +60,23 @@ export class StorageWrapper {
             return false;
         }
     }
+
+    static async getAllItemsAsync(): Promise<Record<string, any>> {
+        try {
+            const localStorageItems: Record<string, any> = {};
+            for (let i = 0; i < localStorage.length; i++) {
+                const key = localStorage.key(i);
+                if (key == null)
+                    continue;
+                const value = localStorage.getItem(key);
+                localStorageItems[key] = value;
+            }
+            const syncedItems = await SyncedStorage.getAllItems();
+            return { ...localStorageItems, ...syncedItems };
+        }
+        catch {
+            Logger.logError('Failed to get all items from storage');
+            return {};
+        }
+    }
 }
