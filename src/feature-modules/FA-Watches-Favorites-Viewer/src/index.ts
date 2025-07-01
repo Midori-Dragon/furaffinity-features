@@ -32,7 +32,7 @@ declare global {
 
 export const scriptName = 'FA Watches Favorites Viewer';
 
-const customSettings = new window.FACustomSettings('Midori\'s Script Settings', `${scriptName} Settings`);
+const customSettings = new window.FACustomSettings('Furaffinity Features Settings', `${scriptName} Settings`);
 
 export const maxFavsAmountSetting = customSettings.newSetting(window.FASettingType.Number, 'Max Favs Amount');
 maxFavsAmountSetting.description = 'Sets the maximum number of Favs scanned per Watch.';

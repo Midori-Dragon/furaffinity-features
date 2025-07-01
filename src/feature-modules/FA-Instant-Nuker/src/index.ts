@@ -19,7 +19,7 @@ declare global {
 
 export const scriptName = 'FA Instant Nuker';
 
-const customSettings = new window.FACustomSettings('Midori\'s Script Settings', `${scriptName} Settings`);
+const customSettings = new window.FACustomSettings('Furaffinity Features Settings', `${scriptName} Settings`);
 
 export const selectNukeIconSetting = customSettings.newSetting(window.FASettingType.Option, 'Select Nuke Icon');
 selectNukeIconSetting.description = 'Select the Nuke Icon to use for the Nuke Button.';

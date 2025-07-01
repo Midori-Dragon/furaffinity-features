@@ -24,7 +24,7 @@ declare global {
 
 export const scriptName = 'FA Embedded Image Viewer';
 
-const customSettings = new window.FACustomSettings('Midori\'s Script Settings', `${scriptName} Settings`);
+const customSettings = new window.FACustomSettings('Furaffinity Features Settings', `${scriptName} Settings`);
 
 export const openInNewTabSetting = customSettings.newSetting(window.FASettingType.Boolean, 'Open in new Tab');
 openInNewTabSetting.description = 'Wether to open links in a new Tab or the current one.';

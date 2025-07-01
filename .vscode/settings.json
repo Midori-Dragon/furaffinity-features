@@ -154,8 +154,7 @@
         "**/bin": true,
         "**/obj": true,
         "**/Properties": true,
-        "**/packages": true,
-        "**/FF-Dependency-Updater":true
+        "**/packages": true
     },
     "search.exclude": {
         "**/node_modules": true,
@@ -164,8 +163,7 @@
         "**/bin": true,
         "**/obj": true,
         "**/Properties": true,
-        "**/packages": true,
-        "**/FF-Dependency-Updater":true
+        "**/packages": true
     },
     "files.eol": "\n"
 }

@@ -46,8 +46,6 @@ export class NukeButton {
             await requestHelper.PersonalUserRequests.MessageRequests.NewSubmissions.nukeSubmissions();
             break;
         }
-        setTimeout(() => {
-            window.location.reload();
-        }, 20);
+        location.reload();
     }
 }

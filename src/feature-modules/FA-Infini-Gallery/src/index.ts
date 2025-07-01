@@ -19,7 +19,7 @@ declare global {
 
 export const scriptName = 'FA Infini-Gallery';
 
-const customSettings = new window.FACustomSettings('Midori\'s Script Settings', `${scriptName} Settings`);
+const customSettings = new window.FACustomSettings('Furaffinity Features Settings', `${scriptName} Settings`);
 
 export const showPageSeparatorSetting = customSettings.newSetting(window.FASettingType.Boolean, 'Page Separator');
 showPageSeparatorSetting.description = 'Set wether a Page Separator is shown for each new Page loaded. Default: Show Page Separators';

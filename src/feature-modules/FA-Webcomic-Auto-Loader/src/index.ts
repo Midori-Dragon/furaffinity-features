@@ -19,7 +19,7 @@ declare global {
 
 export const scriptName = 'FA Webcomic Auto Loader';
 
-const customSettings = new window.FACustomSettings('Midori\'s Script Settings', `${scriptName} Settings`);
+const customSettings = new window.FACustomSettings('Furaffinity Features Settings', `${scriptName} Settings`);
 
 export const showSearchButtonSetting = customSettings.newSetting(window.FASettingType.Boolean, 'Similar Search Button');
 showSearchButtonSetting.description = 'Sets wether the search for similar Pages button is show.';

@@ -20,9 +20,9 @@ module.exports = merge(common, {
 // @require     https://update.greasyfork.org/scripts/483952/1549453/Furaffinity-Request-Helper.js
 // @require     https://update.greasyfork.org/scripts/485827/1549457/Furaffinity-Match-List.js
 // @require     https://update.greasyfork.org/scripts/485153/1549461/Furaffinity-Loading-Animations.js
-// @require     https://update.greasyfork.org/scripts/475041/1550020/Furaffinity-Custom-Settings.js
+// @require     https://update.greasyfork.org/scripts/475041/1617223/Furaffinity-Custom-Settings.js
 // @grant       GM_info
-// @version     2.2.3
+// @version     2.2.4
 // @author      Midori Dragon
 // @description Automatically loads the next page of the gallery as you reach the bottom
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
