@@ -137,7 +137,7 @@ Central settings management system for all modules.
 | Multiple setting types (boolean, number, text, action) | ✅ Completed |
 | Per-module settings management                         | ✅ Completed |
 | New setting type combobox                              | ✅ Completed |
-| Settings import/export functionality                   | ⬜ Planned   |
+| Import and Export Settings                             | ✅ Completed |
 
 ---
 

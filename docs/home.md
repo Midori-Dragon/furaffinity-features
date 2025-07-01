@@ -118,15 +118,15 @@ Instantly removes messages from the current page.
 ### FA Watches Favorites Viewer
 Advanced system for monitoring and displaying favorites from watched users.
 
-| Feature Roadmap                                                        | Status      |
-| ---------------------------------------------------------------------- | ----------- |
-| Scan watches for new favorites                                         | ✅ Completed |
-| Custom favorites page                                                  | ✅ Completed |
-| Ignore list management                                                 | ✅ Completed |
-| Show favorite source (which watcher)                                   | ✅ Completed |
-| Duplicate favorites filtering                                          | ✅ Completed |
-| Loading animations                                                     | ✅ Completed |
-| Integration with [Embedded-Image-Viewer](./FA-Embedded-Image-Viewer)   | ✅ Completed |
+| Feature Roadmap                                                      | Status      |
+| -------------------------------------------------------------------- | ----------- |
+| Scan watches for new favorites                                       | ✅ Completed |
+| Custom favorites page                                                | ✅ Completed |
+| Ignore list management                                               | ✅ Completed |
+| Show favorite source (which watcher)                                 | ✅ Completed |
+| Duplicate favorites filtering                                        | ✅ Completed |
+| Loading animations                                                   | ✅ Completed |
+| Integration with [Embedded-Image-Viewer](./FA-Embedded-Image-Viewer) | ✅ Completed |
 
 ## Library Modules
 
@@ -139,7 +139,7 @@ Central settings management system for all modules.
 | Multiple setting types (boolean, number, text, action) | ✅ Completed |
 | Per-module settings management                         | ✅ Completed |
 | New setting type combobox                              | ✅ Completed |
-| Settings import/export functionality                   | ⬜ Planned   |
+| Import and Export Settings                             | ✅ Completed |
 
 ---
 

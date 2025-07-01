@@ -40,6 +40,7 @@ Helper Library to create Custom settings on Furaffinitiy. Also see this Script o
 | ⠀⠀⠀⠀Option (Combobox with multiple options)           | ✅ Completed |
 | Change Settings Page Name and Header Name             | ✅ Completed |
 | Have multiple different Setting Pages                 | ✅ Completed |
+| Import and Export Settings                            | ✅ Completed |
 
 ## Documentation
 
