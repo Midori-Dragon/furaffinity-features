@@ -1,4 +1,7 @@
-# Furaffinity Features
+# <img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/logo.png" height="30"> Furaffinity Features
+
+[![Chrome users](https://img.shields.io/chrome-web-store/users/dedddeinlepdkegmhnlggepfoeakikmc?label=chrome%20users&color=4285f4&logo=google-chrome)](https://chromewebstore.google.com/detail/dedddeinlepdkegmhnlggepfoeakikmc)
+[![Firefox users](https://img.shields.io/amo/users/furaffinity-features?label=firefox%20users&color=ff7139&logo=firefox-browser)](https://addons.mozilla.org/firefox/addon/furaffinity-features/)
 
 A collection of enhanced features for FurAffinity that can be installed either as individual userscripts or as one browser extension (Chrome/Firefox).
 
