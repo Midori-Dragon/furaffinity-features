@@ -53,6 +53,10 @@ previewQualitySetting.options = {
     600: 'Very High'
 };
 
+export const showWatchingInfoSetting = customSettings.newSetting(window.FASettingType.Boolean, 'Show Watching Info');
+showWatchingInfoSetting.description = 'Wether to show if the user is watching the Submissions Author.';
+showWatchingInfoSetting.defaultValue = false;
+
 customSettings.loadSettings();
 
 export const requestHelper = new window.FARequestHelper(2);

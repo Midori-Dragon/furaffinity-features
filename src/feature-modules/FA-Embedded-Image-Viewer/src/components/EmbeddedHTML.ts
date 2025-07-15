@@ -14,6 +14,11 @@ export class EmbeddedHTML {
         </div>
         <div id="eiv-preview-spinner-container"></div>
     </div>
+    <div id="eiv-additional-info-container">
+        <a>by </a>
+        <a id="eiv-additional-info">unknown</a>
+        <a id="eiv-additional-info-watching"></a>
+    </div>
 </div>`;
     }
 }

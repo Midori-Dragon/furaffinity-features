@@ -33,7 +33,7 @@
 #eiv-button-container {
     position: relative;
     margin-top: 20px;
-    margin-bottom: 20px;
+    margin-bottom: 6px;
     margin-left: 20px;
 }
 
@@ -54,4 +54,8 @@
     margin-left: 4px;
     margin-right: 4px;
     user-select: none;
+}
+
+#eiv-additional-info {
+    color: #afc6e1;
 }

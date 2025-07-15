@@ -15,6 +15,25 @@ export function getByLinkFromFigcaption(figcaption: HTMLElement | undefined | nu
     return null;
 }
 
+export function getUserFromFigcaption(figcaption: HTMLElement | undefined | null): string | null {
+    if (figcaption != null) {
+        const infos = figcaption.querySelectorAll('i');
+        let userLink = null;
+        for (const info of Array.from(infos)) {
+            if (info.textContent?.toLowerCase().includes('by') ?? false) {
+                const linkElem = info.parentNode?.querySelector('a[href][title]');
+                if (linkElem) {
+                    userLink = linkElem.getAttribute('href');
+                    userLink = userLink?.trimEnd('/');
+                    userLink = userLink?.split('/').pop() ?? null;
+                }
+            }
+        }
+        return userLink;
+    }
+    return null;
+}
+
 export function getFavKey(doc: Document): { favKey: string | null; isFav: boolean } | null {
     // Get the column page element
     const columnPage = doc.getElementById('columnpage');

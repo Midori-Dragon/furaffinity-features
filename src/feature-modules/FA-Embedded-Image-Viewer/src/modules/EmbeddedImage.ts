@@ -1,7 +1,7 @@
-import { closeEmbedAfterOpenSetting, loadingSpinSpeedFavSetting, loadingSpinSpeedSetting, openInNewTabSetting, previewQualitySetting, requestHelper } from '..';
+import { closeEmbedAfterOpenSetting, loadingSpinSpeedFavSetting, loadingSpinSpeedSetting, openInNewTabSetting, previewQualitySetting, requestHelper, showWatchingInfoSetting } from '..';
 import { LoadingSpinner } from '../../../../library-modules/Furaffinity-Loading-Animations/src/components/LoadingSpinner';
 import { EmbeddedHTML } from '../components/EmbeddedHTML';
-import { getByLinkFromFigcaption, getFavKey } from '../utils/Utils';
+import { getByLinkFromFigcaption, getFavKey, getUserFromFigcaption } from '../utils/Utils';
 import '../styles/Style.css';
 import string from '../../../../library-modules/GlobalUtils/src/string';
 import { Logger } from '../../../../library-modules/GlobalUtils/src/Logger';
@@ -46,6 +46,7 @@ export class EmbeddedImage extends EventTarget {
         document.addEventListener('click', this.onDocumentClick.bind(this));
 
         void this.fillSubDocInfos(figure);
+        void this.fillUserInfos(figure);
     }
 
     static get embeddedExists(): boolean {
@@ -148,6 +149,14 @@ export class EmbeddedImage extends EventTarget {
             removeSubButton.addEventListener('click', () => void this.onRemoveSubClick(figure));
         }
 
+        const additionalInfo = document.getElementById('eiv-additional-info');
+        const figcaption = figure.querySelector('figcaption');
+        const byElem = figcaption?.querySelector('a[href*="user/"]');
+        if (byElem != null && additionalInfo != null) {
+            additionalInfo.textContent = `${byElem.textContent}`;
+            additionalInfo.setAttribute('href', byElem.getAttribute('href') ?? '');
+        }
+
         const previewLoadingSpinnerContainer = document.getElementById('eiv-preview-spinner-container')!;
         previewLoadingSpinnerContainer.addEventListener('click', (): void => {
             this.previewLoadingSpinner.visible = false;
@@ -228,6 +237,34 @@ export class EmbeddedImage extends EventTarget {
                 });
                 document.body.appendChild(iframe);
             });
+        }
+    }
+
+    async fillUserInfos(figure: HTMLElement): Promise<void> {
+        if (showWatchingInfoSetting.value) {
+            const additionalInfoWatching = document.getElementById('eiv-additional-info-watching');
+            const figcaption = figure.querySelector('figcaption');
+            if (figcaption != null && additionalInfoWatching != null) {
+                const userLink = getUserFromFigcaption(figcaption);
+                console.log(userLink);
+                if (userLink != null) {
+                    const userPage = await requestHelper.UserRequests.getUserPage(userLink);
+                    if (userPage != null) {
+                        const siteContent = userPage.getElementById('site-content');
+                        const navInterfaceButtons = siteContent?.querySelector('userpage-nav-interface-buttons');
+
+                        if (navInterfaceButtons != null) {
+                            const watchButton = navInterfaceButtons?.querySelector('a[href^="/watch/"]');
+                            console.log(watchButton?.outerHTML);
+                            if (watchButton == null) {
+                                additionalInfoWatching.textContent = ' (watching)';
+                            } else {
+                                additionalInfoWatching.textContent = ' (not watching)';
+                            }
+                        }
+                    }
+                }
+            }
         }
     }
 
