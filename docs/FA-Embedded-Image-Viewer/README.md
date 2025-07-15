@@ -29,6 +29,7 @@ A userscript/browser extension that enhances image viewing on FurAffinity by pro
 - `loadingSpinSpeed` - Controls the speed of the loading animation *(default is `1000`)*
 - `closeEmbedAfterOpen` - Whether to close the embed after opening in new tab *(default is `true`)*
 - `previewQuality` - Controls the quality of the preview image *(default is `3`)*
+- `showWatchingInfo` - Controls whether to show if the user is watching the Submissions Author *(default is `false`)*
 
 ## Documentation
 
