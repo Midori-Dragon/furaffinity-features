@@ -13,6 +13,10 @@ Also find all mentioned Scripts on [GreasyFork](https://greasyfork.org/users/967
 
 <br>
 
+Feel free to visit [docs](https://midori-dragon.github.io/furaffinity-features/).
+
+---
+
 #### Table of Contents
 
 - [Overview](#overview)
@@ -22,6 +26,8 @@ Also find all mentioned Scripts on [GreasyFork](https://greasyfork.org/users/967
 - [Usage](#usage)
 - [Development](#development)
 - [Contributing](#contributing)
+
+---
 
 ## Overview
 
@@ -65,6 +71,8 @@ This project provides various quality-of-life improvements and additional featur
   - Ignore list management
   - Show favorite source (which watcher)
   - Duplicate favorites filtering
+
+<br>
 
 ## Feature Modules
 
@@ -119,15 +127,17 @@ Instantly removes messages from the current page.
 ### FA Watches Favorite Viewer
 Advanced system for monitoring and displaying favorites from watched users.
 
-| Feature Roadmap                                                        | Status      |
-| ---------------------------------------------------------------------- | ----------- |
-| Scan watches for new favorites                                         | ✅ Completed |
-| Custom favorites page                                                  | ✅ Completed |
-| Ignore list management                                                 | ✅ Completed |
-| Show favorite source (which watcher)                                   | ✅ Completed |
-| Duplicate favorites filtering                                          | ✅ Completed |
-| Loading animations                                                     | ✅ Completed |
-| Integration with [Embedded-Image-Viewer](./FA-Embedded-Image-Viewer)   | ✅ Completed |
+| Feature Roadmap                                                      | Status      |
+| -------------------------------------------------------------------- | ----------- |
+| Scan watches for new favorites                                       | ✅ Completed |
+| Custom favorites page                                                | ✅ Completed |
+| Ignore list management                                               | ✅ Completed |
+| Show favorite source (which watcher)                                 | ✅ Completed |
+| Duplicate favorites filtering                                        | ✅ Completed |
+| Loading animations                                                   | ✅ Completed |
+| Integration with [Embedded-Image-Viewer](./FA-Embedded-Image-Viewer) | ✅ Completed |
+
+<br>
 
 ## Library Modules
 
@@ -201,6 +211,8 @@ Shared utility functions and components used across other modules.
 | Browser extension integration helpers | ✅ Completed |
 | Logging and debugging utilities       | ✅ Completed |
 
+<br>
+
 ## Installation
 
 ### As Userscripts
@@ -213,6 +225,8 @@ Shared utility functions and components used across other modules.
 2. Enable desired features
 3. Configure extension settings
 
+<br>
+
 ## Usage
 
 By default all features are enabled. You can disable features by going to the Settings page and deactivating the desired features.
@@ -223,6 +237,8 @@ In the Settings dropdown menu there will be a new category `Extension Settings` 
 Here each Module can be configured separately.
 
 *Note: In Browser Extension mode the Settings will be synced if you're logged into the Browser.*
+
+<br>
 
 ## Development
 
@@ -302,6 +318,8 @@ npm run build:Browser-Extension-Deps
 If you are happy with your changes, you can package the module by running `npm run package:Browser-Extension` to package the browser extension or `npm run package:source` to package the source code.
 
 *Note: `-Deps` suffix indicates that the build will also include dependencies*
+
+<br>
 
 ## Contributing
 
