@@ -17,7 +17,7 @@ module.exports = merge(common, {
 // @namespace   Violentmonkey Scripts
 // @require     https://update.greasyfork.org/scripts/525666/1549449/Furaffinity-Prototype-Extensions.js
 // @grant       none
-// @version     1.4.1
+// @version     1.4.2
 // @author      Midori Dragon
 // @description Library to simplify requests to Furaffinity
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png

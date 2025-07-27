@@ -31,33 +31,34 @@ export class BrowsePage implements IGalleryPage {
                 // Get the value of the option from the selected option element
                 const optionValue = optionContainer?.querySelector('option[selected]')?.getAttribute('value');
                 // Set the option in the browse options object
-                if (optionValue != null) {
-                    switch (optionName) {
-                    case 'category':
-                        currBrowseOptions.category = parseInt(optionValue);
-                        break;
-                    case 'type':
-                        currBrowseOptions.type = parseInt(optionValue);
-                        break;
-                    case 'species':
-                        currBrowseOptions.species = parseInt(optionValue);
-                        break;
-                    case 'gender':
-                        currBrowseOptions.gender = parseInt(optionValue);
-                        break;
-                    case 'results':
-                        currBrowseOptions.results = parseInt(optionValue);
-                        break;
-                    case 'ratingGeneral':
-                        currBrowseOptions.ratingGeneral = optionValue === 'true';
-                        break;
-                    case 'ratingMature':
-                        currBrowseOptions.ratingMature = optionValue === 'true';
-                        break;
-                    case 'ratingAdult':
-                        currBrowseOptions.ratingAdult = optionValue === 'true';
-                        break;
-                    }
+                if (optionValue == null) {
+                    continue;
+                }
+                switch (optionName) {
+                case 'category':
+                    currBrowseOptions.category = parseInt(optionValue);
+                    break;
+                case 'type':
+                    currBrowseOptions.type = parseInt(optionValue);
+                    break;
+                case 'species':
+                    currBrowseOptions.species = parseInt(optionValue);
+                    break;
+                case 'gender':
+                    currBrowseOptions.gender = optionValue;
+                    break;
+                case 'results':
+                    currBrowseOptions.perPage = parseInt(optionValue);
+                    break;
+                case 'ratingGeneral':
+                    currBrowseOptions.ratingGeneral = optionValue === 'true';
+                    break;
+                case 'ratingMature':
+                    currBrowseOptions.ratingMature = optionValue === 'true';
+                    break;
+                case 'ratingAdult':
+                    currBrowseOptions.ratingAdult = optionValue === 'true';
+                    break;
                 }
             } catch { }
         }

@@ -4,6 +4,7 @@ import { Page } from '../GalleryRequests/Page';
 import { FuraffinityRequests } from '../../modules/FuraffinityRequests';
 import { SearchRequests } from '../../modules/SearchRequests';
 import { convertToNumber } from '../../utils/GeneralUtils';
+import { BrowseOptions } from './Browse';
 
 export class Search {
     private readonly _semaphore: Semaphore;
@@ -86,8 +87,12 @@ export class Search {
 
 export class SearchOptions {
     input: string | undefined;
+    perPage: number;
     orderBy: string | undefined;
     orderDirection: string | undefined;
+    category: number | undefined;
+    type: number | undefined;
+    species: number | undefined;
     range: string | undefined;
     rangeFrom: string | Date | undefined;
     rangeTo: string | Date | undefined;
@@ -104,8 +109,12 @@ export class SearchOptions {
 
     constructor() {
         this.input = '';
+        this.perPage = 72;
         this.orderBy = SearchOptions.orderBy['relevancy'];
         this.orderDirection = SearchOptions.orderDirection['descending'];
+        this.category = BrowseOptions.category['all'];
+        this.type = BrowseOptions.type['all'];
+        this.species = BrowseOptions.species['any'];
         this.range = SearchOptions.range['alltime'];
         this.rangeFrom = undefined;
         this.rangeTo = undefined;

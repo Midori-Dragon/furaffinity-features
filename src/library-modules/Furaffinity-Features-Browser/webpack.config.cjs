@@ -28,7 +28,7 @@ module.exports = merge(common, {
 // @require     https://update.greasyfork.org/scripts/527752/0000000/FA-Instant-Nuker.js
 // @require     https://update.greasyfork.org/scripts/463464/0000000/FA-Watches-Favorites-Viewer.js
 // @grant       GM_info
-// @version     1.2.8
+// @version     1.2.9
 // @author      Midori Dragon
 // @description Browser Extension for Furaffinity Features
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png

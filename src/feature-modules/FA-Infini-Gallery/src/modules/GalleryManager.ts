@@ -33,6 +33,13 @@ export class GalleryManager {
         }
         
         this.isSearch = window.location.toString().toLowerCase().includes('net/search');
+        if (this.isSearch) {
+            const searchAdvanced = document.getElementById('search-advanced');
+            const pageStartInput = searchAdvanced?.querySelector('input[class*="js-pageNumInput"]');
+            if (pageStartInput != null && pageStartInput instanceof HTMLInputElement) {
+                this.pageNo = parseInt(pageStartInput.value);
+            }
+        }
 
         this.isWatches = window.location.toString().toLowerCase().includes('net/controls/buddylist');
         if (this.isWatches) {

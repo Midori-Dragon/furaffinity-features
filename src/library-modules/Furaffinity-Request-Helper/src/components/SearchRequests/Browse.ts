@@ -88,8 +88,8 @@ export class BrowseOptions {
     category: number | undefined;
     type: number | undefined;
     species: number | undefined;
-    gender: number | undefined;
-    results: number | undefined;
+    gender: string | undefined;
+    perPage: number | undefined;
     ratingGeneral = true;
     ratingMature = true;
     ratingAdult = true;
@@ -99,24 +99,31 @@ export class BrowseOptions {
         this.type = BrowseOptions.type['all'];
         this.species = BrowseOptions.species['any'];
         this.gender = BrowseOptions.gender['any'];
-        this.results = BrowseOptions.results['72'];
+        this.perPage = BrowseOptions.results['72'];
     }
 
     static get category(): Record<string, number> {
         return {
             'all': 1,
+            '3d-models': 34,
             'artwork-digital': 2,
             'artwork-traditional': 3,
             'cel-shading': 4,
             'crafting': 5,
             'designs': 6,
-            'flash': 7,
+            'food-recipes': 32,
             'fursuiting': 8,
             'icons': 9,
             'mosaics': 10,
             'photography': 11,
-            'food-recipes': 32,
+            'pixel-art': 36,
             'sculpting': 12,
+            'virtual-photography': 35,
+            '2d-animation': 37,
+            '3d-animation': 38,
+            'pixel-animation': 39,
+            'flash': 7,
+            'interactive-media': 40,
             'story': 13,
             'poetry': 14,
             'prose': 15,
@@ -154,6 +161,8 @@ export class BrowseOptions {
             'still-life': 12,
             'tutorials': 13,
             'miscellaneous': 14,
+            'general-furry-art': 100,
+            'abduction': 122,
             'baby-fur': 101,
             'bondage': 102,
             'digimon': 103,
@@ -175,7 +184,6 @@ export class BrowseOptions {
             'tf-tg': 120,
             'vore': 117,
             'water-sports': 118,
-            'general-furry-art': 100,
             'techno': 201,
             'trance': 202,
             'house': 203,
@@ -595,19 +603,19 @@ export class BrowseOptions {
             'zebra': 6071
         };
     }
-    static get gender(): Record<string, number> {
+    static get gender(): Record<string, string> {
         return {
-            'any': 0,
-            'male': 2,
-            'female': 3,
-            'herm': 4,
-            'intersex': 11,
-            'trans-male': 8,
-            'trans-female': 9,
-            'non-binary': 10,
-            'multiple': 6,
-            'other': 7,
-            'not-specified': 7
+            'any': '',
+            'male': 'male',
+            'female': 'female',
+            // 'herm': 'herm',
+            'trans-male': 'trans_male',
+            'trans-female': 'trans_female',
+            'intersex': 'intersex',
+            'non-binary': 'non_binary',
+            // 'multiple': 'multiple',
+            // 'other': 'other',
+            // 'not-specified': 'not-specified'
         };
     }
     static get results(): Record<string, number> {
