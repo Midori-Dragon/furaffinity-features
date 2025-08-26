@@ -28,7 +28,10 @@ export class ComicNavigation {
             if (string.isNullOrWhitespace(idText)) {
                 continue;
             }
-            idText = idText!.trimEnd('/');
+
+            const i = idText!.search(/[?#]/);
+            idText = i === -1 ? idText! : idText!.slice(0, i);
+            idText = idText.trimEnd('/');
             idText = idText.split('/').pop()!;
 
             if (navText!.includes('prev')) {

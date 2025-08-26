@@ -1,7 +1,14 @@
 import { customLightboxShowNavSetting, scriptName } from '..';
 import { Logger } from '../../../../library-modules/GlobalUtils/src/Logger';
 import string from '../../../../library-modules/GlobalUtils/src/string';
+import { LightboxHTML } from '../components/LightboxHTML';
 import '../styles/LightboxStyle.css';
+
+declare global {
+    interface Window {
+        Viewer: any;
+    }
+}
 
 export class Lightbox {
     currWalIndex = 0;
@@ -12,7 +19,9 @@ export class Lightbox {
     private _boundHandleArrowKeys: (event: KeyboardEvent) => void;
 
     constructor(orgSid: number, imgs: Record<number, HTMLImageElement>) {
-        this._lightboxContainer = document.body.querySelector('div[class*="lightbox-submission"]')!;
+        this.initializeViewerCanvas();
+
+        this._lightboxContainer = document.body.querySelector('div[class*="viewer-canvas"]')!;
         this._imgCount = Object.keys(imgs).length;
 
         const columnpage = document.getElementById('columnpage')!;
@@ -32,7 +41,7 @@ export class Lightbox {
     }
 
     get isHidden(): boolean {
-        return this._lightboxContainer.classList.contains('hidden');
+        return this._lightboxContainer.parentElement?.classList.contains('hidden') ?? false;
     }
     set isHidden(value: boolean) {
         if (this.isHidden === value) {
@@ -41,7 +50,7 @@ export class Lightbox {
 
         if (value) {
             window.removeEventListener('keydown', this._boundHandleArrowKeys);
-            this._lightboxContainer.classList.add('hidden');
+            this._lightboxContainer.parentElement?.classList.add('hidden');
             this._lightboxNavContainer?.classList.add('hidden');
             for (const child of Array.from(this._lightboxContainer.children)) {
                 child.classList.add('hidden');
@@ -49,7 +58,7 @@ export class Lightbox {
         } else {
             window.addEventListener('keydown', this._boundHandleArrowKeys);
             this._lightboxContainer.children[this.currWalIndex]?.classList.remove('hidden');
-            this._lightboxContainer.classList.remove('hidden');
+            this._lightboxContainer.parentElement?.classList.remove('hidden');
             this._lightboxNavContainer?.classList.remove('hidden');
         }    
     }
@@ -132,6 +141,9 @@ export class Lightbox {
 
             const clone = img.cloneNode(false) as HTMLImageElement;
             clone.classList.add('hidden');
+            clone.style.height = '100%';
+            clone.style.width = '100%';
+            clone.style.objectFit = 'contain';
 
             this._lightboxContainer.appendChild(clone);
         }
@@ -164,5 +176,18 @@ export class Lightbox {
         container.appendChild(rightButton);
 
         return container;
+    }
+
+    private initializeViewerCanvas(): void {
+        const viewerCanvas = document.body.querySelector('div[class*="viewer-canvas"]');
+        
+        if (!viewerCanvas) {
+            const viewerTemp = document.createElement('div');
+            viewerTemp.innerHTML = LightboxHTML.html;
+            const viewerContainer = viewerTemp.firstElementChild!;
+            document.body.appendChild(viewerContainer);
+            
+            Logger.logInfo(`${scriptName}: Created viewer canvas structure in hidden state`);
+        }
     }
 }
