@@ -11,7 +11,7 @@ export class NukeButton {
         this.messageType = messageType;
         this.nukeButton = document.createElement('button');
         this.nukeButton.type = 'button';
-        this.nukeButton.classList.add('in-button', 'standard', 'nuke');
+        this.nukeButton.classList.add('button', 'standard', 'nuke');
 
         if (selectNukeIconSetting.value === NukeIconOptions.Red) {
             const nukeIcon = document.createElement('div');
