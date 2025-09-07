@@ -52,7 +52,7 @@ export class CustomImageViewer extends EventTarget {
         this.faImage.imgElem.classList.add('siv-image-main');
         this.faImage.imgElem.addEventListener('load', this.faImageLoaded.bind(this));
 
-        this.faImagePreview = new FAImage();
+        this.faImagePreview = new FAImage(false, false);
         this.faImagePreview.imgElem.classList.add('siv-image-preview');
 
         this._invisibleContainer = document.createElement('div');
@@ -90,6 +90,15 @@ export class CustomImageViewer extends EventTarget {
             this.faImagePreview.src = this.previewUrl;
             this.faImagePreview.imgElem.addEventListener('load', this.invokePreviewImageLoad.bind(this));
         }
+    }
+
+    destroy(): void {
+        this.faImage.destroy();
+        this.faImagePreview.destroy();
+    }
+
+    destroyPreview(): void {
+        this.faImagePreview.destroy();
     }
 
     async load(): Promise<void> {
