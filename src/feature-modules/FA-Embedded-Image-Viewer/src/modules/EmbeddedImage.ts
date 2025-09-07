@@ -5,6 +5,7 @@ import { getByLinkFromFigcaption, getFavKey, getUserFromFigcaption } from '../ut
 import '../styles/Style.css';
 import string from '../../../../library-modules/GlobalUtils/src/string';
 import { Logger } from '../../../../library-modules/GlobalUtils/src/Logger';
+import { CustomImageViewer } from '../../../../library-modules/Furaffinity-Submission-Image-Viewer/src/modules/CustomImageViewer';
 
 const embeddedModes = {
     watchesFavoriteViewer: 'wfv-favorites',
@@ -15,6 +16,7 @@ export class EmbeddedImage extends EventTarget {
     submissionImg: HTMLImageElement | undefined;
     favRequestRunning = false;
     downloadRequestRunning = false;
+    faImageViewer: CustomImageViewer | undefined;
 
     private _imageLoaded = false;
     private _onRemove?: () => void;
@@ -85,6 +87,7 @@ export class EmbeddedImage extends EventTarget {
     }
 
     remove(): void {
+        this.faImageViewer?.destroy();
         this.embeddedElem.parentNode?.removeChild(this.embeddedElem);
         document.removeEventListener('click', this.onDocumentClick);
         this.invokeRemove();
@@ -177,28 +180,28 @@ export class EmbeddedImage extends EventTarget {
             }
 
             const submissionContainer = document.getElementById('eiv-submission-container')!;
-            const faImageViewer = new window.FAImageViewer(submissionContainer, imgSrc, prevSrc);
-            faImageViewer.faImage.imgElem.id = 'eiv-submission-img';
-            faImageViewer.faImagePreview.imgElem.id = 'eiv-preview-submission-img';
-            faImageViewer.faImage.imgElem.classList.add('eiv-submission-img');
-            faImageViewer.faImagePreview.imgElem.classList.add('eiv-submission-img');
-            faImageViewer.faImage.imgElem.style.maxWidth = faImageViewer.faImagePreview.imgElem.style.maxWidth = window.innerWidth - 20 * 2 + 'px';
-            faImageViewer.faImage.imgElem.style.maxHeight = faImageViewer.faImagePreview.imgElem.style.maxHeight = window.innerHeight - ddmenu.clientHeight - 38 * 2 - 20 * 2 - 100 + 'px';
-            faImageViewer.addEventListener('image-load-start', (): void => {
+            this.faImageViewer = new window.FAImageViewer(submissionContainer, imgSrc, prevSrc);
+            this.faImageViewer.faImage.imgElem.id = 'eiv-submission-img';
+            this.faImageViewer.faImagePreview.imgElem.id = 'eiv-preview-submission-img';
+            this.faImageViewer.faImage.imgElem.classList.add('eiv-submission-img');
+            this.faImageViewer.faImagePreview.imgElem.classList.add('eiv-submission-img');
+            this.faImageViewer.faImage.imgElem.style.maxWidth = this.faImageViewer.faImagePreview.imgElem.style.maxWidth = window.innerWidth - 20 * 2 + 'px';
+            this.faImageViewer.faImage.imgElem.style.maxHeight = this.faImageViewer.faImagePreview.imgElem.style.maxHeight = window.innerHeight - ddmenu.clientHeight - 38 * 2 - 20 * 2 - 100 + 'px';
+            this.faImageViewer.addEventListener('image-load-start', (): void => {
                 this._imageLoaded = false;
             });
-            faImageViewer.addEventListener('image-load', (): void => {
+            this.faImageViewer.addEventListener('image-load', (): void => {
                 this._imageLoaded = true;
                 this.loadingSpinner.visible = false;
                 this.previewLoadingSpinner.visible = false;
             });
-            faImageViewer.addEventListener('preview-image-load', (): void => {
+            this.faImageViewer.addEventListener('preview-image-load', (): void => {
                 this.loadingSpinner.visible = false;
                 if (!this._imageLoaded) {
                     this.previewLoadingSpinner.visible = true;
                 }
             });
-            void faImageViewer.load();
+            void this.faImageViewer.load();
 
             const url = doc.querySelector('meta[property="og:url"]')?.getAttribute('content');
             submissionContainer.setAttribute('href', url ?? '');
