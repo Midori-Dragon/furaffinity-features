@@ -2,6 +2,7 @@ import { loadingSpinSpeedSetting, requestHelper } from '..';
 import getWatchesFromPage from '../../../../library-modules/GlobalUtils/src/FA-Functions/getWatchesFromPage';
 import { IgnoreList } from '../utils/IgnoreList';
 import '../styles/Style.css';
+import { Logger } from '../../../../library-modules/GlobalUtils/src/Logger';
 
 export class BuddyListManager {
     watchList: HTMLElement[] = [];
@@ -15,7 +16,40 @@ export class BuddyListManager {
         this.sectionBody = columnPage.querySelector('div[class="section-body"]')!;
         this.sectionBody.innerHTML = '';
 
-        void this.showBuddyList();
+        void this.initialize();
+    }
+
+    private async initialize(): Promise<void> {
+        await this.showBuddyList();
+
+        const buttonContainer = document.createElement('div');
+        buttonContainer.id = 'wfv-buddylist-button-container';
+        buttonContainer.style.display = 'flex';
+        buttonContainer.style.justifyContent = 'flex-end';
+        buttonContainer.style.gap = '8px';
+
+        const input = document.createElement('input');
+        input.type = 'file';
+        input.accept = '.json';
+        input.addEventListener('change', (e) => void this.importBuddyList(e));
+
+        const importButton = document.createElement('button');
+        importButton.id = 'wfv-import-button';
+        importButton.classList.add('button', 'standard');
+        importButton.textContent = 'Import';
+        importButton.addEventListener('click', () => input.click());
+        buttonContainer.appendChild(importButton);
+
+        const exportButton = document.createElement('button');
+        exportButton.id = 'wfv-export-button';
+        exportButton.classList.add('button', 'standard');
+        exportButton.textContent = 'Export';
+        exportButton.addEventListener('click', () => void this.exportBuddyList());
+        buttonContainer.appendChild(exportButton);
+
+        const br = document.createElement('br');
+        this.sectionBody.firstChild?.insertBeforeThis(br);
+        br.insertAfterThis(buttonContainer);
     }
 
     private async showBuddyList(): Promise<void> {
@@ -94,8 +128,6 @@ export class BuddyListManager {
         const displayName = controls.querySelector('span[title]')! as HTMLElement;
         displayName.style.textDecoration = ignored ? 'line-through' : 'none';
         displayName.style.backgroundColor = ignored ? 'rgba(255, 0, 0, 0.2)' : 'transparent';
-        // const name = displayName.textContent?.trimEnd(' [✓]').trimEnd(' [✗]');
-        // displayName.textContent = `${name} [${ignored ? '✗' : '✓'}]`;
     }
 
     private async handleIgnoreClick(watchElem: HTMLElement): Promise<void> {
@@ -108,5 +140,37 @@ export class BuddyListManager {
             void IgnoreList.add(username);
         }
         this.watchElemSetIgnoreStatus(watchElem, !ignored);
+    }
+
+    private async importBuddyList(e: Event): Promise<void> {
+        const target = e.target as HTMLInputElement;
+        const file = target.files?.[0];
+
+        if (file == null) {
+            return;
+        }
+        
+        try {
+            const text = await file.text();
+            const ignoreList = JSON.parse(text);
+            await IgnoreList.setIgnoreList(ignoreList);
+            
+            Logger.logInfo('Buddy list imported successfully');
+            window.location.reload();
+        } catch (error) {
+            Logger.logError('Failed to import buddy list', error);
+        }
+    }
+
+    private async exportBuddyList(): Promise<void> {
+        const ignoreList = await IgnoreList.getIgnoreList();
+        const json = JSON.stringify(ignoreList, null, 2);
+        const blob = new Blob([json], { type: 'application/json' });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement('a');
+        a.href = url;
+        a.download = 'buddylist.json';
+        a.click();
+        URL.revokeObjectURL(url);
     }
 }
