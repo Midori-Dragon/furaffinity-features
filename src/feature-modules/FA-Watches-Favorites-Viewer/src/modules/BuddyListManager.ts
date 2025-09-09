@@ -169,7 +169,7 @@ export class BuddyListManager {
         const url = URL.createObjectURL(blob);
         const a = document.createElement('a');
         a.href = url;
-        a.download = 'buddylist.json';
+        a.download = 'wfv-excludedusers.json';
         a.click();
         URL.revokeObjectURL(url);
     }
