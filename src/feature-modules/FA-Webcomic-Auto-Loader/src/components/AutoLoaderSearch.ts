@@ -51,6 +51,10 @@ export class AutoLoaderSearch implements IAutoLoaderSearchable {
     }
 
     async getPage(sid: number): Promise<HTMLImageElement | undefined> {
+        if (sid <= 0) {
+            return undefined;
+        }
+
         const page = (await requestHelper.SubmissionRequests.getSubmissionPage(sid))!;
 
         const img = page.getElementById('submissionImg')!;

@@ -12,17 +12,32 @@ import { Lightbox } from './Lightbox';
 export class AutoLoader {
     submissionImg: HTMLImageElement;
     currComicNav: ComicNavigation | null | undefined = null;
-    comicNavExists = false;
     currSid = -1;
     private _loadingSpinner: LoadingSpinner;
+    private _comicNavExists = false;
+    private _searchButton: HTMLAnchorElement;
     
     constructor() {
+        this.currSid = getCurrViewSid(document);
+
+        this.submissionImg = document.getElementById('submissionImg')! as HTMLImageElement;
+        this.submissionImg.setAttribute('wal-index', '0');
+        this.submissionImg.setAttribute('wal-sid', this.currSid.toString());
+
+        this._searchButton = document.createElement('a');
+        this._searchButton.id = 'wal-search-button';
+        this._searchButton.classList.add('wal-button', 'button', 'standard', 'mobile-fix');
+        this._searchButton.type = 'button';
+        this._searchButton.style.margin = '20px 0 10px 0';
+        this.submissionImg.parentNode!.appendChild(document.createElement('br'));
+        this.submissionImg.parentNode!.appendChild(this._searchButton);
+        
         const descriptionElem = document.getElementById('columnpage')?.querySelector('div[class*="submission-description"]');
         if (descriptionElem != null) {
             this.currComicNav = ComicNavigation.fromElement(descriptionElem as HTMLElement);
             if (this.currComicNav != null) {
                 if (this.currComicNav.prevId !== -1 || this.currComicNav.firstId !== -1 || this.currComicNav.nextId !== -1) {
-                    this.comicNavExists = true;
+                    this._comicNavExists = true;
                     if (overwriteNavButtonsSetting.value) {
                         this.overwriteNavButtons();
                     }
@@ -30,28 +45,7 @@ export class AutoLoader {
             }
         }
 
-        this.currSid = getCurrViewSid(document);
-
-        this.submissionImg = document.getElementById('submissionImg')! as HTMLImageElement;
-        this.submissionImg.setAttribute('wal-index', '0');
-        this.submissionImg.setAttribute('wal-sid', this.currSid.toString());
-
-        const searchButton = document.createElement('a');
-        searchButton.id = this.comicNavExists ? 'wal-auto-load-button' : 'wal-search-button';
-        searchButton.classList.add('wal-button', 'button', 'standard', 'mobile-fix');
-        searchButton.type = 'button';
-        searchButton.style.margin = '20px 0 10px 0';
-        searchButton.textContent = this.comicNavExists ? 'Auto load Pages' : 'Search for similar Pages';
-        searchButton.addEventListener('click', () => {
-            if (this.comicNavExists) {
-                this.startAutoloader();
-            } else {
-                this.startSimilarSearch();
-            }
-            searchButton.remove();
-        });
-        this.submissionImg.parentNode!.appendChild(document.createElement('br'));
-        this.submissionImg.parentNode!.appendChild(searchButton);
+        this.updateSearchButton(this.comicNavExists);
 
         const loadingSpinnerContainer = document.createElement('div');
         loadingSpinnerContainer.classList.add('wal-loading-spinner');
@@ -62,6 +56,17 @@ export class AutoLoader {
         this.submissionImg.parentNode!.appendChild(loadingSpinnerContainer);
     }
 
+    get comicNavExists(): boolean {
+        return this._comicNavExists;
+    }
+    set comicNavExists(value: boolean) {
+        if (value === this.comicNavExists) {
+            return;
+        }
+        this._comicNavExists = value;
+        this.updateSearchButton(value);
+    }
+
     startAutoloader(): void {
         void this.startAutoLoaderAsync();
     }
@@ -70,9 +75,16 @@ export class AutoLoader {
         this._loadingSpinner.visible = true;
         const autoLoader = new AutoLoaderSearch(this.submissionImg, this.currSid, this.currComicNav!);
         const submissions = await autoLoader.search();
-        this.addLoadedSubmissions(submissions);
-        if (useCustomLightboxSetting.value) {
-            new Lightbox(this.currSid, submissions);
+
+        const submissionIds = Object.keys(submissions).map(Number);
+        if (submissionIds.length === 0 || (submissionIds.length === 1 && submissionIds[0] === this.currSid)) {
+            this.comicNavExists = false;
+        }
+        else {
+            this.addLoadedSubmissions(submissions);
+            if (useCustomLightboxSetting.value) {
+                new Lightbox(this.currSid, submissions);
+            }
         }
         this._loadingSpinner.visible = false;
     }
@@ -165,6 +177,22 @@ export class AutoLoader {
                 nextButtonReal.style.marginLeft = '4px';
                 nextButton.insertAfterThis(nextButtonReal);
             }
+        }
+    }
+
+    private updateSearchButton(showAutoLoader: boolean): void {
+        this._searchButton.style.display = 'inline-block';
+        this._searchButton.textContent = showAutoLoader ? 'Auto load Pages' : 'Search for similar Pages';
+        if (showAutoLoader) {
+            this._searchButton.onclick = (): void => {
+                this.startAutoloader();
+                this._searchButton.style.display = 'none';
+            };
+        } else {
+            this._searchButton.onclick = (): void => {
+                this.startSimilarSearch();
+                this._searchButton.style.display = 'none';
+            };
         }
     }
 }
