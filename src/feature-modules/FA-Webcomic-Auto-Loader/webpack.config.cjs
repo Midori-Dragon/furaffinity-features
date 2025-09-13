@@ -22,7 +22,7 @@ module.exports = merge(common, {
 // @require     https://update.greasyfork.org/scripts/485153/1549461/Furaffinity-Loading-Animations.js
 // @require     https://update.greasyfork.org/scripts/475041/1617223/Furaffinity-Custom-Settings.js
 // @grant       GM_info
-// @version     2.2.5
+// @version     2.2.6
 // @author      Midori Dragon
 // @description Gives you the option to load all the subsequent comic pages on a FurAffinity comic page automatically. Even for pages without given Links
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
