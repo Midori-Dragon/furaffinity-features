@@ -112,6 +112,18 @@
         },
         {
             "type": "npm",
+            "script": "build:Browser-Extension-Deps-Rebuild",
+            "group": "build",
+            "problemMatcher": [],
+            "label": "Rebuild: Browser Extension (with deps)",
+            "detail": "Rebuild Browser Extension including all dependencies",
+            "presentation": {
+                "showReuseMessage": false,
+                "clear": true
+            }
+        },
+        {
+            "type": "npm",
             "script": "package:Browser-Extension",
             "group": "build",
             "problemMatcher": [],

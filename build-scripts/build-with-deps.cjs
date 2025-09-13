@@ -121,7 +121,7 @@ async function saveBuildHash(modulePath, buildPath) {
 }
 
 // Recursively resolve dependencies and ensure correct order
-async function resolveDependencies(dependencies, resolved = new Set(), order = []) {
+async function resolveDependencies(dependencies, rebuild = false, resolved = new Set(), order = []) {
     for (const dep of dependencies) {
         const moduleName = path.basename(dep, '.js');
 
@@ -160,7 +160,11 @@ async function resolveDependencies(dependencies, resolved = new Set(), order = [
             console.log(`${colors.cyan}Resolving dependency: ${colors.blue}${moduleName}${colors.reset}`);
 
             // Check if rebuild is needed
-            const shouldRebuild = await needsRebuilding(modulePath, buildPath);
+            let shouldRebuild = true;
+
+            if (!rebuild) {
+                shouldRebuild = await needsRebuilding(modulePath, buildPath);
+            }
 
             if (!shouldRebuild && fs.existsSync(buildPath)) {
                 console.log(`   ${colors.green}✓ Using cached build for ${moduleName}${colors.reset}`);
@@ -183,7 +187,7 @@ async function resolveDependencies(dependencies, resolved = new Set(), order = [
                     console.log(`  ${colors.cyan}Found nested dependencies for ${colors.blue}${moduleName}:${colors.reset}`);
                     subDeps.forEach(subDep => console.log(`    ${colors.blue}- ${subDep}${colors.reset}`));
                 }
-                await resolveDependencies(subDeps, resolved, order);
+                await resolveDependencies(subDeps, rebuild, resolved, order);
                 order.push(buildPath);
                 console.log(`   ${colors.green}✓ Added ${moduleName} to build order${colors.reset}`);
             } else {
@@ -269,6 +273,11 @@ async function main() {
         process.exit(1);
     }
 
+    let rebuild = false;
+    if (args.includes('--rebuild') || args.includes('-r')) {
+        rebuild = true;
+    }
+
     const webpackConfigPath = args[0];
     const distFolder = path.resolve(__dirname, '..', 'dist');
     const outputPath = path.join(distFolder, 'bundle.user.js');
@@ -285,7 +294,7 @@ async function main() {
         const { banner, dependencies } = await extractDependencies(mainBuildFilePath, moduleName);
 
         console.log(`\n${colors.cyan}Resolving dependencies...${colors.reset}`);
-        const orderedDependencies = await resolveDependencies(dependencies);
+        const orderedDependencies = await resolveDependencies(dependencies, rebuild);
 
         console.log(`\n${colors.cyan}Clearing dist Folder...${colors.reset}`);
         await emptyDir(distFolder);
