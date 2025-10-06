@@ -18,9 +18,9 @@ export class FuraffinityRequests {
     };
 
     private _semaphore: Semaphore;
-    private static _useHttps = true;
-    private static _httpsString = 'https://';
-    private static _domain = 'www.furaffinity.net';
+    private static _useHttps = window.location.protocol.includes('https');
+    private static _httpsString = window.location.protocol.trimEnd(':') + '://';
+    private static _domain = window.location.hostname;
 
     constructor(maxAmountRequests = 2) {
         this._semaphore = new Semaphore(maxAmountRequests);

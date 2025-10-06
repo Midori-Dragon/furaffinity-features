@@ -17,52 +17,61 @@ export class Favorites {
         return FuraffinityRequests.fullUrl + '/favorites/';
     }
 
-    async getSubmissionDataFavId(username : string, submissionId?: string | number, fromDataFavId?: string | number, toDataFavId?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<number> {
+    async getSubmissionDataFavId(username : string, submissionId?: string | number, fromDataFavId?: string | number, toDataFavId?: string | number, maxPageNo?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<number> {
         submissionId = convertToNumber(submissionId);
         fromDataFavId = convertToNumber(fromDataFavId);
         toDataFavId = convertToNumber(toDataFavId);
+        maxPageNo = convertToNumber(maxPageNo);
         
-        return await WaitAndCallAction.callFunctionAsync(getSubmissionDataFavId, [username, submissionId, fromDataFavId, toDataFavId, this.semaphore], action, delay);
+        return await WaitAndCallAction.callFunctionAsync(getSubmissionDataFavId, [username, submissionId, fromDataFavId, toDataFavId, maxPageNo, this.semaphore], action, delay);
     }
 
-    async getFiguresBetweenIds(username: string, fromId?: string | number, toId?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
+    async getFiguresBetweenIds(username: string, fromId?: string | number, toId?: string | number, maxPageNo?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
         fromId = convertToNumber(fromId);
         toId = convertToNumber(toId);
+        maxPageNo = convertToNumber(maxPageNo);
         
         if (fromId == null || fromId <= 0) {
-            return await WaitAndCallAction.callFunctionAsync(getFavoritesFiguresTillId, [username, toId, undefined, this.semaphore], action, delay);
+            return await WaitAndCallAction.callFunctionAsync(getFavoritesFiguresTillId, [username, toId, undefined, maxPageNo, this.semaphore], action, delay);
         } else if (toId == null || toId <= 0) {
-            return await WaitAndCallAction.callFunctionAsync(getFavoritesFiguresSinceId, [username, fromId, undefined, this.semaphore], action, delay);
+            return await WaitAndCallAction.callFunctionAsync(getFavoritesFiguresSinceId, [username, fromId, undefined, maxPageNo, this.semaphore], action, delay);
         } else {
-            return await WaitAndCallAction.callFunctionAsync(getFavoritesFiguresBetweenIds, [username, fromId, toId, undefined, undefined, this.semaphore], action, delay, true);
+            return await WaitAndCallAction.callFunctionAsync(getFavoritesFiguresBetweenIds, [username, fromId, toId, undefined, undefined, maxPageNo, this.semaphore], action, delay, true);
         }
     }
 
-    async getFiguresBetweenIdsBetweenPages(username: string, fromId?: string | number, toId?: string | number, fromDataFavId?: string | number, toDataFavId?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
+    /** @deprecated Use `getFiguresBetweenIdsBetweenDataIds` instead. */
+    async getFiguresBetweenIdsBetweenPages(username: string, fromId?: string | number, toId?: string | number, fromDataFavId?: string | number, toDataFavId?: string | number, maxPageNo?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
+        return await this.getFiguresBetweenIdsBetweenDataIds(username, fromId, toId, fromDataFavId, toDataFavId, maxPageNo, action, delay);
+    }
+        
+    async getFiguresBetweenIdsBetweenDataIds(username: string, fromId?: string | number, toId?: string | number, fromDataFavId?: string | number, toDataFavId?: string | number, maxPageNo?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
         fromId = convertToNumber(fromId);
         toId = convertToNumber(toId);
         fromDataFavId = convertToNumber(fromDataFavId);
         toDataFavId = convertToNumber(toDataFavId);
+        maxPageNo = convertToNumber(maxPageNo);
         
         if (fromId == null || fromId <= 0) {
-            return await WaitAndCallAction.callFunctionAsync(getFavoritesFiguresTillId, [username, toId, fromDataFavId, this.semaphore], action, delay);
+            return await WaitAndCallAction.callFunctionAsync(getFavoritesFiguresTillId, [username, toId, fromDataFavId, maxPageNo, this.semaphore], action, delay);
         } else if (toId == null || toId <= 0) {
-            return await WaitAndCallAction.callFunctionAsync(getFavoritesFiguresSinceId, [username, fromId, toDataFavId, this.semaphore], action, delay);
+            return await WaitAndCallAction.callFunctionAsync(getFavoritesFiguresSinceId, [username, fromId, toDataFavId, maxPageNo, this.semaphore], action, delay);
         } else {
-            return await WaitAndCallAction.callFunctionAsync(getFavoritesFiguresBetweenIds, [username, fromId, toId, fromDataFavId, toDataFavId, this.semaphore], action, delay, true);
+            return await WaitAndCallAction.callFunctionAsync(getFavoritesFiguresBetweenIds, [username, fromId, toId, fromDataFavId, toDataFavId, maxPageNo, this.semaphore], action, delay, true);
         }
     }
 
-    async getFiguresBetweenPages(username: string, fromDataFavId?: string | number, toDataFavId?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
+    async getFiguresBetweenPages(username: string, fromDataFavId?: string | number, toDataFavId?: string | number, maxPageNo?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
         fromDataFavId = convertToNumber(fromDataFavId);
         toDataFavId = convertToNumber(toDataFavId);
+        maxPageNo = convertToNumber(maxPageNo);
         
         if (fromDataFavId == null || fromDataFavId <= 0) {
-            return await WaitAndCallAction.callFunctionAsync(getFavoritesFiguresTillPage, [username, toDataFavId, this.semaphore], action, delay, true);
+            return await WaitAndCallAction.callFunctionAsync(getFavoritesFiguresTillPage, [username, toDataFavId, maxPageNo, this.semaphore], action, delay, true);
         } else if (toDataFavId == null || toDataFavId <= 0) {
-            return await WaitAndCallAction.callFunctionAsync(getFavoritesFiguresSincePage, [username, fromDataFavId, this.semaphore], action, delay);
+            return await WaitAndCallAction.callFunctionAsync(getFavoritesFiguresSincePage, [username, fromDataFavId, maxPageNo, this.semaphore], action, delay);
         } else {
-            return await WaitAndCallAction.callFunctionAsync(getFavoritesFiguresBetweenPages, [username, fromDataFavId, toDataFavId, this.semaphore], action, delay, true);
+            return await WaitAndCallAction.callFunctionAsync(getFavoritesFiguresBetweenPages, [username, fromDataFavId, toDataFavId, maxPageNo, this.semaphore], action, delay, true);
         }
     }
 
@@ -81,7 +90,7 @@ export class Favorites {
     }
 }
 
-async function getSubmissionDataFavId(username: string, submissionId: number | undefined, fromDataFavId: number | undefined, toDataFavId: number | undefined, semaphore: Semaphore): Promise<number> {
+async function getSubmissionDataFavId(username: string, submissionId: number | undefined, fromDataFavId: number | undefined, toDataFavId: number | undefined, maxPageNo: number | undefined, semaphore: Semaphore): Promise<number> {
     if (submissionId == null || submissionId <= 0) {
         Logger.logError('No submissionId given');
         return -1;
@@ -94,11 +103,16 @@ async function getSubmissionDataFavId(username: string, submissionId: number | u
         Logger.logWarning('toDataFavId must be greater than 0. Using default 1 instead.');
         toDataFavId = -1;
     }
+    if (maxPageNo == null || maxPageNo <= 0) {
+        Logger.logWarning('maxPageNo must be greater than 0. Using default ' + Number.MAX_SAFE_INTEGER + ' instead.');
+        maxPageNo = Number.MAX_SAFE_INTEGER;
+    }
 
     let dataFavId = fromDataFavId;
     let lastFigureId: string | undefined;
     let running = true;
-    while (running) {
+    let i = 0;
+    while (running && i < maxPageNo) {
         const figures = await getFavoritesFigures(username, dataFavId, 1, semaphore);
         let currFigureId = lastFigureId;
         if (figures.length !== 0) {
@@ -117,12 +131,13 @@ async function getSubmissionDataFavId(username: string, submissionId: number | u
         if (currFigureId === lastFigureId) {
             running = false;
         }
+        i++;
     }
 
     return -1;
 }
 
-async function getFavoritesFiguresTillId(username: string, toId: number | undefined, fromDataFavId: number | undefined, semaphore: Semaphore): Promise<HTMLElement[][]> {
+async function getFavoritesFiguresTillId(username: string, toId: number | undefined, fromDataFavId: number | undefined, maxPageNo: number | undefined, semaphore: Semaphore): Promise<HTMLElement[][]> {
     if (toId == null || toId <= 0) {
         Logger.logError('No toId given');
         return [];
@@ -131,12 +146,17 @@ async function getFavoritesFiguresTillId(username: string, toId: number | undefi
         Logger.logWarning('No fromDataFavId given. Using default 1 instead.');
         fromDataFavId = -1;
     }
+    if (maxPageNo == null || maxPageNo <= 0) {
+        Logger.logWarning('maxPageNo must be greater than 0. Using default ' + Number.MAX_SAFE_INTEGER + ' instead.');
+        maxPageNo = Number.MAX_SAFE_INTEGER;
+    }
 
     let running = true;
     let dataFavId = fromDataFavId;
     const allFigures = [];
     let lastFigureId: string | undefined;
-    while (running) {
+    let i = 0;
+    while (running && i < maxPageNo) {
         const figures = await getFavoritesFigures(username, dataFavId, 1, semaphore);
         let currFigureId = lastFigureId;
         if (figures.length !== 0) {
@@ -158,12 +178,13 @@ async function getFavoritesFiguresTillId(username: string, toId: number | undefi
                 allFigures.push(figures);
             }
         }
+        i++;
     }
 
     return allFigures;
 }
 
-async function getFavoritesFiguresSinceId(username: string, fromId: number | undefined, toDataFavId: number | undefined, semaphore: Semaphore): Promise<HTMLElement[][]> {
+async function getFavoritesFiguresSinceId(username: string, fromId: number | undefined, toDataFavId: number | undefined, maxPageNo: number | undefined, semaphore: Semaphore): Promise<HTMLElement[][]> {
     if (fromId == null || fromId <= 0) {
         Logger.logError('No fromId given');
         return [];
@@ -172,14 +193,19 @@ async function getFavoritesFiguresSinceId(username: string, fromId: number | und
         Logger.logWarning('No toDataFavId given. Using default 1 instead.');
         toDataFavId = -1;
     }
+    if (maxPageNo == null || maxPageNo <= 0) {
+        Logger.logWarning('maxPageNo must be greater than 0. Using default ' + Number.MAX_SAFE_INTEGER + ' instead.');
+        maxPageNo = Number.MAX_SAFE_INTEGER;
+    }
 
     let dataFavId = toDataFavId >= 0 ? toDataFavId : -1;
     const direction = toDataFavId >= 0 ? -1 : 1;
     let lastFigureId: string | undefined;
     let running = true;
+    let i = 0;
 
     if (toDataFavId < 0) {
-        while (running) {
+        while (running && i < maxPageNo) {
             const figures = await getFavoritesFigures(username, dataFavId, direction, semaphore);
             let currFigureId = lastFigureId;
             if (figures.length !== 0) {
@@ -198,12 +224,14 @@ async function getFavoritesFiguresSinceId(username: string, fromId: number | und
                     dataFavId = parseInt(dataFavIdString);
                 }
             }
+            i++;
         }
         running = true;
+        i = 0;
     }
 
     const allFigures = [];
-    while (running) {
+    while (running && i < maxPageNo) {
         const figures = await getFavoritesFigures(username, dataFavId, direction, semaphore);
         let currFigureId = lastFigureId;
         if (figures.length !== 0) {
@@ -234,6 +262,7 @@ async function getFavoritesFiguresSinceId(username: string, fromId: number | und
                 }
             }
         }
+        i++;
     }
     if (direction < 0) {
         allFigures.reverse();
@@ -242,7 +271,7 @@ async function getFavoritesFiguresSinceId(username: string, fromId: number | und
     return allFigures;
 }
 
-async function getFavoritesFiguresBetweenIds(username: string, fromId: number | undefined, toId: number | undefined, fromDataFavId: number | undefined, toDataFavId: number | undefined, semaphore: Semaphore): Promise<HTMLElement[][]> {
+async function getFavoritesFiguresBetweenIds(username: string, fromId: number | undefined, toId: number | undefined, fromDataFavId: number | undefined, toDataFavId: number | undefined, maxPageNo: number | undefined, semaphore: Semaphore): Promise<HTMLElement[][]> {
     if (fromId == null || fromId <= 0) {
         Logger.logError('No fromId given');
         return [];
@@ -259,13 +288,18 @@ async function getFavoritesFiguresBetweenIds(username: string, fromId: number | 
         Logger.logWarning('No toDataFavId given. Using default 1 instead.');
         toDataFavId = -1;
     }
+    if (maxPageNo == null || maxPageNo <= 0) {
+        Logger.logWarning('maxPageNo must be greater than 0. Using default ' + Number.MAX_SAFE_INTEGER + ' instead.');
+        maxPageNo = Number.MAX_SAFE_INTEGER;
+    }
 
     const direction = fromDataFavId >= 0 ? 1 : (toDataFavId >= 0 ? -1 : 1);
     let dataFavId = fromDataFavId >= 0 ? fromDataFavId : toDataFavId;
     let lastFigureId: string | undefined;
     let running = true;
+    let i = 0;
     if (fromDataFavId < 0 && toDataFavId < 0) {
-        while (running) {
+        while (running && i < maxPageNo) {
             const figures = await getFavoritesFigures(username, dataFavId, direction, semaphore);
             let currFigureId = lastFigureId;
             if (figures.length !== 0) {
@@ -284,13 +318,15 @@ async function getFavoritesFiguresBetweenIds(username: string, fromId: number | 
                     running = false;
                 }
             }
+            i++;
         }
         running = true;
+        i = 0;
     }
 
     const allFigures = [];
     lastFigureId = undefined;
-    while (running) {
+    while (running && i < maxPageNo) {
         const figures = await getFavoritesFigures(username, dataFavId, direction, semaphore);
         let currFigureId: string | undefined = lastFigureId;
         if (figures.length !== 0) {
@@ -325,6 +361,7 @@ async function getFavoritesFiguresBetweenIds(username: string, fromId: number | 
                 }
             }
         }
+        i++;
     }
     if (direction < 0) {
         allFigures.reverse();
@@ -333,17 +370,22 @@ async function getFavoritesFiguresBetweenIds(username: string, fromId: number | 
     return allFigures;
 }
 
-async function getFavoritesFiguresTillPage(username: string, toDataFavId: number | undefined, semaphore: Semaphore): Promise<HTMLElement[][]> {
+async function getFavoritesFiguresTillPage(username: string, toDataFavId: number | undefined, maxPageNo: number | undefined, semaphore: Semaphore): Promise<HTMLElement[][]> {
     if (toDataFavId == null || toDataFavId <= 0) {
         Logger.logWarning('toDataFavId must be greater than 0. Using default 1 instead.');
         toDataFavId = -1;
+    }
+    if (maxPageNo == null || maxPageNo <= 0) {
+        Logger.logWarning('maxPageNo must be greater than 0. Using default ' + Number.MAX_SAFE_INTEGER + ' instead.');
+        maxPageNo = Number.MAX_SAFE_INTEGER;
     }
 
     let dataFavId = toDataFavId;
     const allFigures = [];
     let lastFigureId: string | undefined;
     let running = true;
-    while (running) {
+    let i = 0;
+    while (running && i < maxPageNo) {
         const figures = await getFavoritesFigures(username, dataFavId, 1, semaphore);
         let currFigureId = lastFigureId;
         if (figures.length !== 0) {
@@ -365,22 +407,28 @@ async function getFavoritesFiguresTillPage(username: string, toDataFavId: number
                 allFigures.push(figures);
             }
         }
+        i++;
     }
 
     return allFigures;
 }
 
-async function getFavoritesFiguresSincePage(username: string, fromDataFavId: number | undefined, semaphore: Semaphore): Promise<HTMLElement[][]> {
+async function getFavoritesFiguresSincePage(username: string, fromDataFavId: number | undefined, maxPageNo: number | undefined, semaphore: Semaphore): Promise<HTMLElement[][]> {
     if (fromDataFavId == null || fromDataFavId <= 0) {
         Logger.logWarning('fromDataFavId must be greater than 0. Using default 1 instead.');
         fromDataFavId = -1;
+    }
+    if (maxPageNo == null || maxPageNo <= 0) {
+        Logger.logWarning('maxPageNo must be greater than 0. Using default ' + Number.MAX_SAFE_INTEGER + ' instead.');
+        maxPageNo = Number.MAX_SAFE_INTEGER;
     }
 
     let dataFavId = fromDataFavId;
     const allFigures = [];
     let lastFigureId: string | undefined;
     let running = true;
-    while (running) {
+    let i = 0;
+    while (running && i < maxPageNo) {
         const figures = await getFavoritesFigures(username, dataFavId, 1, semaphore);
         let currFigureId = lastFigureId;
         if (figures.length !== 0) {
@@ -401,12 +449,13 @@ async function getFavoritesFiguresSincePage(username: string, fromDataFavId: num
                 allFigures.push(figures);
             }
         }
+        i++;
     }
 
     return allFigures;
 }
 
-async function getFavoritesFiguresBetweenPages(username: string, fromDataFavId: number | undefined, toDataFavId: number | undefined, semaphore: Semaphore): Promise<HTMLElement[][]> {
+async function getFavoritesFiguresBetweenPages(username: string, fromDataFavId: number | undefined, toDataFavId: number | undefined, maxPageNo: number | undefined, semaphore: Semaphore): Promise<HTMLElement[][]> {
     if (fromDataFavId == null || fromDataFavId <= 0) {
         Logger.logWarning('fromDataFavId must be greater than 0. Using default 1 instead.');
         fromDataFavId = -1;
@@ -415,12 +464,17 @@ async function getFavoritesFiguresBetweenPages(username: string, fromDataFavId: 
         Logger.logWarning('toDataFavId must be greater than 0. Using default 1 instead.');
         toDataFavId = -1;
     }
+    if (maxPageNo == null || maxPageNo <= 0) {
+        Logger.logWarning('maxPageNo must be greater than 0. Using default ' + Number.MAX_SAFE_INTEGER + ' instead.');
+        maxPageNo = Number.MAX_SAFE_INTEGER;
+    }
 
     let dataFavId = fromDataFavId;
     const allFigures = [];
     let lastFigureId: string | undefined;
     let running = true;
-    while (running) {
+    let i = 0;
+    while (running && i < maxPageNo) {
         const figures = await getFavoritesFigures(username, dataFavId, 1, semaphore);
         let currFigureId = lastFigureId;
         if (figures.length !== 0) {
@@ -444,6 +498,7 @@ async function getFavoritesFiguresBetweenPages(username: string, fromDataFavId: 
                 allFigures.push(figures);
             }
         }
+        i++;
     }
 
     return allFigures;
