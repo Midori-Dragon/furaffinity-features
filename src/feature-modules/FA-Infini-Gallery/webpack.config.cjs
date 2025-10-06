@@ -22,7 +22,7 @@ module.exports = merge(common, {
 // @require     https://update.greasyfork.org/scripts/485153/1549461/Furaffinity-Loading-Animations.js
 // @require     https://update.greasyfork.org/scripts/475041/1617223/Furaffinity-Custom-Settings.js
 // @grant       GM_info
-// @version     2.2.5
+// @version     2.2.6
 // @author      Midori Dragon
 // @description Automatically loads the next page of the gallery as you reach the bottom
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
