@@ -154,7 +154,8 @@ export class EmbeddedImage extends EventTarget {
 
         const additionalInfo = document.getElementById('eiv-additional-info');
         const figcaption = figure.querySelector('figcaption');
-        const byElem = figcaption?.querySelector('a[href*="user/"]');
+        const userElems = figcaption?.querySelectorAll('a[href*="user/"]');
+        const byElem = userElems?.[userElems.length - 1];
         if (byElem != null && additionalInfo != null) {
             additionalInfo.textContent = `${byElem.textContent}`;
             additionalInfo.setAttribute('href', byElem.getAttribute('href') ?? '');
