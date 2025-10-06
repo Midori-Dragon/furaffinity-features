@@ -133,6 +133,9 @@ async function getSubmissionDataFavId(username: string, submissionId: number | u
         }
         i++;
     }
+    if (i >= maxPageNo) {
+        Logger.logWarning('Max page number reached. Aborting.');
+    }
 
     return -1;
 }
@@ -180,6 +183,9 @@ async function getFavoritesFiguresTillId(username: string, toId: number | undefi
         }
         i++;
     }
+    if (i >= maxPageNo) {
+        Logger.logWarning('Max page number reached. Aborting.');
+    }
 
     return allFigures;
 }
@@ -226,6 +232,9 @@ async function getFavoritesFiguresSinceId(username: string, fromId: number | und
             }
             i++;
         }
+        if (i >= maxPageNo) {
+            Logger.logWarning('Max page number reached. Aborting.');
+        }
         running = true;
         i = 0;
     }
@@ -266,6 +275,9 @@ async function getFavoritesFiguresSinceId(username: string, fromId: number | und
     }
     if (direction < 0) {
         allFigures.reverse();
+    }
+    if (i >= maxPageNo) {
+        Logger.logWarning('Max page number reached. Aborting.');
     }
 
     return allFigures;
@@ -320,6 +332,9 @@ async function getFavoritesFiguresBetweenIds(username: string, fromId: number | 
             }
             i++;
         }
+        if (i >= maxPageNo) {
+            Logger.logWarning('Max page number reached. Aborting.');
+        }
         running = true;
         i = 0;
     }
@@ -362,6 +377,9 @@ async function getFavoritesFiguresBetweenIds(username: string, fromId: number | 
             }
         }
         i++;
+    }
+    if (i >= maxPageNo) {
+        Logger.logWarning('Max page number reached. Aborting.');
     }
     if (direction < 0) {
         allFigures.reverse();
@@ -409,6 +427,9 @@ async function getFavoritesFiguresTillPage(username: string, toDataFavId: number
         }
         i++;
     }
+    if (i >= maxPageNo) {
+        Logger.logWarning('Max page number reached. Aborting.');
+    }
 
     return allFigures;
 }
@@ -450,6 +471,9 @@ async function getFavoritesFiguresSincePage(username: string, fromDataFavId: num
             }
         }
         i++;
+    }
+    if (i >= maxPageNo) {
+        Logger.logWarning('Max page number reached. Aborting.');
     }
 
     return allFigures;
@@ -499,6 +523,9 @@ async function getFavoritesFiguresBetweenPages(username: string, fromDataFavId: 
             }
         }
         i++;
+    }
+    if (i >= maxPageNo) {
+        Logger.logWarning('Max page number reached. Aborting.');
     }
 
     return allFigures;
