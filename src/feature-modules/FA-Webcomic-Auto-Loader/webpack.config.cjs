@@ -17,7 +17,7 @@ module.exports = merge(common, {
 // @namespace   Violentmonkey Scripts
 // @match       *://*.furaffinity.net/*
 // @require     https://update.greasyfork.org/scripts/525666/1549449/Furaffinity-Prototype-Extensions.js
-// @require     https://update.greasyfork.org/scripts/483952/1631111/Furaffinity-Request-Helper.js
+// @require     https://update.greasyfork.org/scripts/483952/1672829/Furaffinity-Request-Helper.js
 // @require     https://update.greasyfork.org/scripts/485827/1549457/Furaffinity-Match-List.js
 // @require     https://update.greasyfork.org/scripts/485153/1549461/Furaffinity-Loading-Animations.js
 // @require     https://update.greasyfork.org/scripts/475041/1617223/Furaffinity-Custom-Settings.js
