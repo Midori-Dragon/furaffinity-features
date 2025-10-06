@@ -50,6 +50,10 @@ export const loadingSpinSpeedSetting = customSettings.newSetting(window.FASettin
 loadingSpinSpeedSetting.description = 'The duration that the loading animation of the Embedded element to load takes for a full rotation in milliseconds.';
 loadingSpinSpeedSetting.defaultValue = 1000;
 
+export const maxAmountOfScannedPagesPerWatcher = customSettings.newSetting(window.FASettingType.Number, 'Max Amount of Scanned Pages per Watcher');
+maxAmountOfScannedPagesPerWatcher.description = 'Sets the maximum number of pages scanned per Watcher.';
+maxAmountOfScannedPagesPerWatcher.defaultValue = 4;
+
 export const showDetailedMadeByTextSetting = customSettings.newSetting(window.FASettingType.Boolean, 'Show Detailed "Made By" Text');
 showDetailedMadeByTextSetting.description = 'Sets wether to show "Made By" and "Faved by" instead of "By" and "From" text.';
 showDetailedMadeByTextSetting.defaultValue = true;

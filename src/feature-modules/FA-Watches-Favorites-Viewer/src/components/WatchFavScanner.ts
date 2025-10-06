@@ -1,4 +1,4 @@
-import { requestHelper } from '..';
+import { maxAmountOfScannedPagesPerWatcher, requestHelper } from '..';
 import { Logger } from '../../../../library-modules/GlobalUtils/src/Logger';
 import { LastSidList } from '../utils/LastSidList';
 import { FAFigure } from './FAFigure';
@@ -27,7 +27,7 @@ export class WatchFavScanner {
         const userNameSpan = userpageNavHeader?.querySelector('span[class="js-displayName"]');
         const userDisplayName = userNameSpan?.textContent;
 
-        const figures = await requestHelper.UserRequests.GalleryRequests.Favorites.getFiguresBetweenIds(this.username, -1, this.lastSid);
+        const figures = await requestHelper.UserRequests.GalleryRequests.Favorites.getFiguresBetweenIds(this.username, -1, this.lastSid, maxAmountOfScannedPagesPerWatcher.value);
         
         let newFigures = figures.flat();
 
