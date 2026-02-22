@@ -24,7 +24,7 @@ jobs:
         run: npm ci
 
       - name: Build all modules
-        run: npm run build:Browser-Extension-Deps-Rebuild
+        run: npm run build:Browser-Extension-Rebuild
 
       - name: Package extension
         run: npm run package:Browser-Extension
