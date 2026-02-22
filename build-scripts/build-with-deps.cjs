@@ -277,6 +277,7 @@ async function main() {
         const fileSize = (statsFinal.size / 1024).toFixed(2) + ' KB';
         console.log(`\n${colors.green}✓ Feature build successfully!${colors.reset}`);
         console.log(`${colors.blue}Final size: ${colors.reset}${fileSize}\n`);
+        process.exit(0);
     } catch (error) {
         console.error(`${colors.red}✗ Build failed:${colors.reset}`, error);
         process.exit(1);
