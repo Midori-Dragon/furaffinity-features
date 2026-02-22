@@ -13,13 +13,13 @@ Thank you for your interest in contributing to this project! This guide will hel
 2. **Module Independence**: 
    - Each top-level directory represents an independent user script
    - Scripts should be self-contained with minimal dependencies on other modules
-   - If your feature needs functionality from another module, reference it in your webpack config banner
+   - If your feature needs functionality from another module, reference it in your Rollup config banner
    - Dependencies to Third-Party Modules are allowed, but should be kept minimal, in thought of the userscript size
 
 3. **Technology Stack**:
    - TypeScript is used for all script development
    - ESLint for code linting
-   - Webpack for building and bundling
+   - Rollup for building and bundling
 
 ### Project Organization
 
@@ -71,13 +71,13 @@ Thank you for your interest in contributing to this project! This guide will hel
 
 3. **Module Structure**
    - Each new feature should be in its own directory
-   - Include a webpack config with appropriate userscript/extension headers
+   - Include a rollup config with appropriate userscript/extension headers
    - Document any special setup requirements
 
 4. **Building**
    - Create a new build command entry in `package.json`. You can look at the existing build commands for reference
    - If possible use `build-scripts/build-with-deps.cjs` for your build process as it will handle the module dependencies for you
-   - Use `npm run build:<your_module_name>` to build a specific module or use `shift + ctrl + b` to view default build commands and select `Build: Browser Extension (with Deps)` to build the whole project
+   - Use `npm run build:<your_module_name>` to build a specific module or use `shift + ctrl + b` to view default build commands and select `Build: Browser Extension` to build the whole project
 
 5. **Testing**
    - For UserScript: Copy the build `furaffinity-features.user.js` file from the top `dist` folder (or `bundle.user.js` from your individual module's `dist` folder) to the userscript manager or use the `npm run serve` command to host a local server (copy link to the file to use for the userscript manager) for automatic updates
@@ -89,7 +89,6 @@ Thank you for your interest in contributing to this project! This guide will hel
 
 7. **Packaging**
    - Use `npm run package:Browser-Extension` to package the Project
-   - Use `npm run package:source` to package the source code
 
 ## Getting Started
 
@@ -100,7 +99,7 @@ Thank you for your interest in contributing to this project! This guide will hel
    npm install
    ```
 4. Create a new Module Folder in `src/feature-modules/` or `src/library-modules/`
-5. Copy an already existing `webpack.config.cjs` to your new module folder and update the userscript banner to fit your new module (name, description, author, etc.)
+5. Copy an already existing `rollup.config.cjs` to your new module folder and update the userscript banner to fit your new module (name, description, author, etc.)
 6. Create a new `src` folder inside your new module folder
 7. Create new `index.ts` file inside the `src` folder
 8. Create new `modules`, `components`, `utils` and `styles` folders inside the `src` folder (if needed)
@@ -108,15 +107,16 @@ Thank you for your interest in contributing to this project! This guide will hel
 10. Test both userscript and browser extension functionality
 11. Submit a pull request
 
-*Note: `FA-Embedded-Image-Viewer` is currently the most complex Feature*
-
-*Note: `FA-Instant-Nuker` is currently the simplest Feature*
-
-*Note: `Furaffinity-Request-Helper` is currently the biggest Library*
-
-*Note: `Furaffinity-Custom-Settings` is currently the most complex Library*
-
-*Note: `Furaffinity-Match-List` is currently the simplest Library*
+> [!NOTE]
+> `FA-Embedded-Image-Viewer` is currently the most complex Feature
+> 
+> `FA-Instant-Nuker` is currently the simplest Feature
+> 
+> `Furaffinity-Request-Helper` is currently the biggest Library
+> 
+> `Furaffinity-Custom-Settings` is currently the most complex Library
+> 
+> `Furaffinity-Match-List` is currently the simplest Library
 
 ## Questions?
 

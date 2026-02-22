@@ -13,19 +13,17 @@ Also find all mentioned Scripts on [GreasyFork](https://greasyfork.org/users/967
 
 <br>
 
-Feel free to visit [docs](https://midori-dragon.github.io/furaffinity-features/).
+Feel free to visit the [docs](https://midori-dragon.github.io/furaffinity-features/).
 
----
-
-#### Table of Contents
-
-- [Overview](#overview)
-- [Feature Modules](#feature-modules)
-- [Library Modules](#library-modules)
-- [Installation](#installation)
-- [Usage](#usage)
-- [Development](#development)
-- [Contributing](#contributing)
+| Table of Contents                      |
+| -------------------------------------- |
+| [1. Overview](#overview)               |
+| [2. Feature Modules](#feature-modules) |
+| [3. Library Modules](#library-modules) |
+| [4. Installation](#installation)       |
+| [5. Usage](#usage)                     |
+| [6. Development](#development)         |
+| [7. Contributing](#contributing)       |
 
 ---
 
@@ -34,6 +32,8 @@ Feel free to visit [docs](https://midori-dragon.github.io/furaffinity-features/)
 This project provides various quality-of-life improvements and additional features for Fur Affinity. It's built with TypeScript and can be used in two ways:
 - As individual userscripts (using Violentmonkey, Tampermonkey, etc.)
 - As a browser extension (Chrome and Firefox)
+
+All feature and library modules are also bundled together as a single combined userscript — [Furaffinity Features](https://greasyfork.org/en/users/967324-midori-tsume) — available on GreasyFork. See the [docs](./docs/Furaffinity-Features/README.md) for details.
 
 #### Feature Overview
 
@@ -124,18 +124,18 @@ Instantly removes messages from the current page.
 
 ---
 
-### FA Watches Favorite Viewer
+### FA Watches Favorites Viewer
 Advanced system for monitoring and displaying favorites from watched users.
 
-| Feature Roadmap                                                      | Status      |
-| -------------------------------------------------------------------- | ----------- |
-| Scan watches for new favorites                                       | ✅ Completed |
-| Custom favorites page                                                | ✅ Completed |
-| Ignore list management                                               | ✅ Completed |
-| Show favorite source (which watcher)                                 | ✅ Completed |
-| Duplicate favorites filtering                                        | ✅ Completed |
-| Loading animations                                                   | ✅ Completed |
-| Integration with [Embedded-Image-Viewer](./FA-Embedded-Image-Viewer) | ✅ Completed |
+| Feature Roadmap                                                                     | Status      |
+| ----------------------------------------------------------------------------------- | ----------- |
+| Scan watches for new favorites                                                      | ✅ Completed |
+| Custom favorites page                                                               | ✅ Completed |
+| Ignore list management                                                              | ✅ Completed |
+| Show favorite source (which watcher)                                                | ✅ Completed |
+| Duplicate favorites filtering                                                       | ✅ Completed |
+| Loading animations                                                                  | ✅ Completed |
+| Integration with [Embedded-Image-Viewer](./docs/FA-Embedded-Image-Viewer/README.md) | ✅ Completed |
 
 <br>
 
@@ -190,14 +190,58 @@ Handles API requests and data fetching.
 ---
 
 ### Furaffinity Submission Image Viewer
-Enhanced image viewing capabilities.
+Custom image viewer component used to display submission images with preview support.
 
-| Feature Roadmap                   | Status      |
-| --------------------------------- | ----------- |
-| Full-size image viewing           | ✅ Completed |
-| Keyboard shortcuts                | ✅ Completed |
-| Loading state management          | ✅ Completed |
-| Zooming and panning functionality | ✅ Completed |
+| Feature Roadmap                         | Status      |
+| --------------------------------------- | ----------- |
+| Support preview image                   | ✅ Completed |
+| Loading state management                | ✅ Completed |
+| Have different events for image loading | ✅ Completed |
+| Zooming and panning via panzoom         | ✅ Completed |
+
+---
+
+### Furaffinity Custom Pages
+Helper library for creating custom pages on FurAffinity via URL parameters.
+
+| Feature Roadmap                    | Status      |
+| ---------------------------------- | ----------- |
+| Have basic Custom Pages            | ✅ Completed |
+| Support for url encoded parameters | ✅ Completed |
+
+---
+
+### Furaffinity Message Box
+Library for showing styled message dialogs that match FurAffinity themes.
+
+| Feature Roadmap                  | Status      |
+| -------------------------------- | ----------- |
+| Have MessageBox                  | ✅ Completed |
+| Support different icon types     | ✅ Completed |
+| Support different button sets    | ✅ Completed |
+| Support FurAffinity color themes | ✅ Completed |
+
+---
+
+### Furaffinity Prototype Extensions
+A collection of prototype extensions for `String` and `Node`.
+
+| Feature Roadmap   | Status      |
+| ----------------- | ----------- |
+| String extensions | ✅ Completed |
+| Node extensions   | ✅ Completed |
+
+---
+
+### GlobalUtils
+Internal shared utility classes and functions used across all modules (Logger, Semaphore, storage wrappers, FA DOM helpers, URL helpers).
+
+| Feature Roadmap                       | Status      |
+| ------------------------------------- | ----------- |
+| Cross-module compatibility layer      | ✅ Completed |
+| Common utility functions              | ✅ Completed |
+| Browser extension integration helpers | ✅ Completed |
+| Logging and debugging utilities       | ✅ Completed |
 
 ---
 
@@ -238,7 +282,9 @@ In the Settings dropdown menu there will be a new category `Extension Settings` 
 
 Here each Module can be configured separately.
 
-*Note: In Browser Extension mode the Settings will be synced if you're logged into the Browser.*
+> [!NOTE]
+> When used as a Browser Extension the Settings will be synced if you're logged into your Browser.
+> Otherwise the Settings will be saved locally.
 
 <br>
 
@@ -256,7 +302,7 @@ The project follows a modular architecture:
 #### Technical Stack
 - TypeScript for type-safe development
 - ESLint for code quality
-- Webpack for building and bundling
+- Rollup for building and bundling
 - Support for both userscript and browser extension formats
 
 ### Prerequisites
@@ -277,9 +323,10 @@ npm install
 
 ### Developing
 
-Note that each module has its own webpack configuration. In this webpack config the `banner` for the user script is defined.
+Note that each module has its own Rollup configuration. In this Rollup config the `banner` for the user script is defined.
 
-**Important: The `banner` is used by the build process to determine the modules dependencies!**
+> [!IMPORTANT]
+> The `banner` is used by the build process to determine the modules dependencies!
 
 #### UserScript Context
 
@@ -289,37 +336,29 @@ When testing the Project as UserScript you can either manually copy the `furaffi
 
 When testing the Project as Browser Extension you can use the `npm run start:firefox` or `npm run start:chrome` command to start the browser extension. This will start the browser and load the extension from the `dist` folder.
 
-*Note: UserScript Context is generally easier and faster to test. But Browser Extension Context is more restricted and may not work in all cases UserScript Context does.*
+> [!NOTE]
+> UserScript Context is generally easier and faster to test. But Browser Extension Context is more restricted and may not work in all cases UserScript Context does.
 
 #### Docs
 
 Docs can be edited and then previewed by running `npm run docs`
-
-#### Dependencies
-
-Since dependencies are written in the banner of the webpack config, updating them can be annoying.
-Using `npm run update-deps` will update all dependency versions in the banners.
-
-*Note: Current Dependency Versions will be compared to the latest versions from [GreasyFork](https://greasyfork.org/en/users/967324-midori-tsume). This requires the Modules to be uploaded there and the banner to contain the require dependency as well as the homepageURL.*
 
 ### Building
 
 Building command names can be found in `package.json`
 
 ```bash
-npm run build:<module_name>
+npm run build:Browser-Extension
 ```
 
-Example:
+To do a full rebuild including all dependencies:
 ```bash
-npm run build:Browser-Extension-Deps
+npm run build:Browser-Extension-Rebuild
 ```
 
 ### Packaging
 
-If you are happy with your changes, you can package the module by running `npm run package:Browser-Extension` to package the browser extension or `npm run package:source` to package the source code.
-
-*Note: `-Deps` suffix indicates that the build will also include dependencies*
+If you are happy with your changes, you can package the browser extension by running `npm run package:Browser-Extension`.
 
 <br>
 
@@ -327,4 +366,4 @@ If you are happy with your changes, you can package the module by running `npm r
 
 Contributions are welcome! Feel free to open issues and pull requests.
 
-Please read [Contributing](./CONTRIBUTING.md) for more information.
+Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for more information.
