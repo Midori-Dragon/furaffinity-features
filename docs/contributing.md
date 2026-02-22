@@ -68,7 +68,6 @@ Thank you for your interest in contributing to this project! This guide will hel
    - Keep external dependencies to a minimum
    - Prefer vanilla JavaScript / TypeScript solutions when possible
    - If you need a third-party library, discuss it in the issue/pullrequest first
-   - Use `npm run update-deps` to update dependency versions (requires the modules to be uploaded to GreasyFork)
 
 3. **Module Structure**
    - Each new feature should be in its own directory

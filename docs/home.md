@@ -317,14 +317,6 @@ When testing the Project as Browser Extension you can use the `npm run start:fir
 
 Docs can be edited and then previewed by running `npm run docs`
 
-#### Dependencies
-
-Since dependencies are written in the banner of the Rollup config, updating them can be annoying.
-Using `npm run update-deps` will update all dependency versions in the banners.
-
-> [!NOTE]
-> Current Dependency Versions will be compared to the latest versions from [GreasyFork](https://greasyfork.org/en/users/967324-midori-tsume). This requires the Modules to be uploaded there and the banner to contain the require dependency as well as the homepageURL.
-
 ### Building
 
 Building command names can be found in `package.json`
