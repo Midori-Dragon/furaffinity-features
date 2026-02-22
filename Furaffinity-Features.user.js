@@ -16,7 +16,7 @@
 // @require     https://greasyfork.org/scripts/528997-furaffinity-message-box/code/528997-furaffinity-message-box.js
 // @require     https://greasyfork.org/scripts/463464-fa-watches-favorites-viewer/code/463464-fa-watches-favorites-viewer.js
 // @grant       GM_info
-// @version     1.3.1
+// @version     1.3.2
 // @author      Midori Dragon
 // @description Combines all Furaffinity Features Scripts into one
 // @icon        https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/logo.png
