@@ -3,6 +3,9 @@ const fs = require('fs');
 const path = require('path');
 const util = require('util');
 const crypto = require('crypto');
+const { moduleSlugFromUrl, findModuleDir, extractRequiresFromBanner } = require('./module-resolver.cjs');
+
+const srcRoot = path.resolve(__dirname, '..', 'src');
 
 // Promisify filesystem functions for cleaner async/await usage
 const readFile = util.promisify(fs.readFile);
@@ -40,25 +43,9 @@ async function buildModule(rollupConfigPath) {
 async function extractDependencies(buildFilePath, moduleName = 'bundle.user.js') {
     console.log(`   ${colors.cyan}Extracting dependencies from: ${colors.blue}${moduleName}${colors.reset}`);
     const content = await readFile(buildFilePath, 'utf-8');
-    const bannerStart = content.indexOf('// ==UserScript==');
-    const bannerEnd = content.indexOf('// ==/UserScript==');
-
-    if (bannerStart === -1 || bannerEnd === -1) {
-        throw new Error('No valid UserScript banner found in the build file.');
-    }
-
-    const banner = content.substring(bannerStart, bannerEnd + '// ==/UserScript=='.length);
-    const requireRegex = /@require\s+([^\s]+)/g;
-
-    const dependencies = [];
-    let match;
-    while ((match = requireRegex.exec(banner)) !== null) {
-        const dep = match[1];
-        console.log(`   ${colors.blue}Found dependency: ${dep}${colors.reset}`);
-        dependencies.push(dep);
-    }
-
-    return { banner, dependencies };
+    const dependencies = extractRequiresFromBanner(content);
+    dependencies.forEach(dep => console.log(`   ${colors.blue}Found dependency: ${dep}${colors.reset}`));
+    return { dependencies };
 }
 
 // Calculate hash of a directory recursively
@@ -118,34 +105,11 @@ async function saveBuildHash(modulePath, buildPath) {
     await writeFile(hashFile, hash);
 }
 
-// Extract module slug from a GreasyFork URL.
-// Handles versionless format: https://greasyfork.org/scripts/<id>-<slug>/code/<id>-<slug>.js
-// Handles legacy versioned format: https://update.greasyfork.org/scripts/<id>/<ver>/<ScriptName>.js
-function moduleSlugFromUrl(url) {
-    const base = path.basename(url, '.js');
-    // Versionless: base is "<id>-<slug>" — strip the leading numeric id
-    return base.replace(/^\d+-/, '');
-}
-
-// Find a module directory by case-insensitive slug match across library- and feature-modules
-function findModuleDir(slug) {
-    const baseDirs = [
-        path.resolve('./src/library-modules'),
-        path.resolve('./src/feature-modules'),
-    ];
-    for (const baseDir of baseDirs) {
-        if (!fs.existsSync(baseDir)) continue;
-        const entry = fs.readdirSync(baseDir).find(e => e.toLowerCase() === slug.toLowerCase());
-        if (entry) return path.join(baseDir, entry);
-    }
-    return null;
-}
-
 // Recursively resolve dependencies and ensure correct order
 async function resolveDependencies(dependencies, rebuild = false, resolved = new Set(), order = []) {
     for (const dep of dependencies) {
         const slug = moduleSlugFromUrl(dep);
-        const moduleDir = findModuleDir(slug);
+        const moduleDir = findModuleDir(slug, srcRoot);
 
         if (!moduleDir) {
             console.warn(`  ${colors.yellow}⚠ Warning: Rollup config not found for dependency: ${slug}${colors.reset}`);
