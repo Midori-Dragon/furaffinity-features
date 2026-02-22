@@ -9,12 +9,14 @@ jobs:
   publish:
     if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Download extension zip and source archive from release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TAG=$(gh api /repos/${{ github.repository }}/releases/latest --jq '.tag_name')
+          TAG=$(gh release list --repo ${{ github.repository }} --limit 1 --json tagName --jq '.[0].tagName')
           gh release download "$TAG" \
             --repo ${{ github.repository }} \
             --pattern 'furaffinity-features-extension.zip' \
@@ -22,17 +24,27 @@ jobs:
           curl -fsSL "https://github.com/${{ github.repository }}/archive/refs/tags/${TAG}.zip" \
             -o dist/furaffinity-features-source.zip
 
-      - name: Upload to Firefox Add-on Store
-        uses: browser-actions/release-firefox-addon@latest
-        with:
-          addon-id: ${{ secrets.FIREFOX_EXTENSION_UUID }}
-          addon-path: 'dist/furaffinity-features-extension.zip'
-          source-path: 'dist/furaffinity-features-source.zip'
-          approval-note: |
-            The source project requires Node.js 20.x and npm.
-            To build the extension, run:
-              npm ci
-              npm run build:Browser-Extension-Deps-Rebuild
-              npm run package:Browser-Extension
-          auth-api-issuer: ${{ secrets.FIREFOX_AUTH_API_ISSUER }}
-          auth-api-secret: ${{ secrets.FIREFOX_AUTH_API_SECRET }}
+      - name: Verify zips exist
+        run: |
+          for f in dist/furaffinity-features-extension.zip dist/furaffinity-features-source.zip; do
+            if [ -f "$f" ]; then
+              echo "✓ $f exists ($(du -h $f | cut -f1))"
+            else
+              echo "✗ $f NOT FOUND" && exit 1
+            fi
+          done
+
+      # - name: Upload to Firefox Add-on Store
+      #   uses: browser-actions/release-firefox-addon@latest
+      #   with:
+      #     addon-id: ${{ secrets.FIREFOX_EXTENSION_UUID }}
+      #     addon-path: 'dist/furaffinity-features-extension.zip'
+      #     source-path: 'dist/furaffinity-features-source.zip'
+      #     approval-note: |
+      #       The source project requires Node.js 20.x and npm.
+      #       To build the extension, run:
+      #         npm ci
+      #         npm run build:Browser-Extension-Deps-Rebuild
+      #         npm run package:Browser-Extension
+      #     auth-api-issuer: ${{ secrets.FIREFOX_AUTH_API_ISSUER }}
+      #     auth-api-secret: ${{ secrets.FIREFOX_AUTH_API_SECRET }}

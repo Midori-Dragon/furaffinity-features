@@ -23,6 +23,7 @@ jobs:
         uses: actions/setup-node@v4
         with:
           node-version: 20
+          cache: 'npm'
 
       - name: Install dependencies
         run: npm ci
@@ -62,5 +63,5 @@ jobs:
           git add -A
           # Only commit if there are actual changes
           git diff --staged --quiet && echo "No changes to publish." || \
-            git commit -m "Release $(gh api /repos/${{ github.repository }}/releases/latest --jq '.tag_name')"
+            git commit -m "Release $(gh release list --repo ${{ github.repository }} --limit 1 --json tagName --jq '.[0].tagName')"
           git push origin greasyfork-releases

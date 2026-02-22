@@ -9,23 +9,33 @@ jobs:
   publish:
     if: github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
+    permissions:
+      contents: read
     steps:
       - name: Download extension zip from release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
-          TAG=$(gh api /repos/${{ github.repository }}/releases/latest --jq '.tag_name')
+          TAG=$(gh release list --repo ${{ github.repository }} --limit 1 --json tagName --jq '.[0].tagName')
           gh release download "$TAG" \
             --repo ${{ github.repository }} \
             --pattern 'furaffinity-features-extension.zip' \
             --dir dist/
 
-      - name: Upload to Chrome Web Store
-        uses: mobilefirstllc/cws-publish@latest
-        with:
-          action: 'upload'
-          client_id: ${{ secrets.CHROME_CLIENT_ID }}
-          client_secret: ${{ secrets.CHROME_SECRET }}
-          refresh_token: ${{ secrets.CHROME_REFRESH_TOKEN }}
-          extension_id: ${{ secrets.CHROME_EXTENSION_ID }}
-          zip_file: 'dist/furaffinity-features-extension.zip'
+      - name: Verify zip exists
+        run: |
+          if [ -f dist/furaffinity-features-extension.zip ]; then
+            echo "✓ dist/furaffinity-features-extension.zip exists ($(du -h dist/furaffinity-features-extension.zip | cut -f1))"
+          else
+            echo "✗ dist/furaffinity-features-extension.zip NOT FOUND" && exit 1
+          fi
+
+      # - name: Upload to Chrome Web Store
+      #   uses: mobilefirstllc/cws-publish@latest
+      #   with:
+      #     action: 'upload'
+      #     client_id: ${{ secrets.CHROME_CLIENT_ID }}
+      #     client_secret: ${{ secrets.CHROME_SECRET }}
+      #     refresh_token: ${{ secrets.CHROME_REFRESH_TOKEN }}
+      #     extension_id: ${{ secrets.CHROME_EXTENSION_ID }}
+      #     zip_file: 'dist/furaffinity-features-extension.zip'
