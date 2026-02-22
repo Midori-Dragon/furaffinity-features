@@ -5,9 +5,9 @@
   "type": "module",
   "scripts": {
     "lint": "eslint .",
-    "build:Browser-Extension": "rollup --config ./src/feature-modules/Furaffinity-Features/rollup.config.cjs",
-    "build:Browser-Extension-Deps": "node build-scripts/build-with-deps.cjs ./src/feature-modules/Furaffinity-Features/rollup.config.cjs && node build-scripts/copy-extension-resources.cjs",
-    "build:Browser-Extension-Deps-Rebuild": "node build-scripts/build-with-deps.cjs ./src/feature-modules/Furaffinity-Features/rollup.config.cjs --rebuild && node build-scripts/copy-extension-resources.cjs",
+    "build:Browser-Extension": "rollup --config ./src/feature-modules/Furaffinity-Features-Browser/rollup.config.cjs",
+    "build:Browser-Extension-Deps": "node build-scripts/build-with-deps.cjs ./src/feature-modules/Furaffinity-Features-Browser/rollup.config.cjs --deps-from ./src/feature-modules/Furaffinity-Features/rollup.config.cjs && node build-scripts/copy-extension-resources.cjs",
+    "build:Browser-Extension-Deps-Rebuild": "node build-scripts/build-with-deps.cjs ./src/feature-modules/Furaffinity-Features-Browser/rollup.config.cjs --deps-from ./src/feature-modules/Furaffinity-Features/rollup.config.cjs --rebuild && node build-scripts/copy-extension-resources.cjs",
     "package:Browser-Extension": "node build-scripts/copy-extension-resources.cjs && node build-scripts/package-extension.cjs",
     "start:firefox": "web-ext run --source-dir=./dist",
     "start:chrome": "start chrome --load-extension=\"./dist\"",

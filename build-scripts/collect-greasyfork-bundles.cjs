@@ -18,6 +18,8 @@ const homepageRegex = /@homepageURL\s+(https:\/\/greasyfork\.org\/scripts\/\S+)/
 
 // The combined entry module — its bundle provides the header; @requires are replaced with the full ordered set
 const COMBINED_MODULE = 'Furaffinity-Features';
+// Browser-only build — not a GreasyFork script, exclude from distribution
+const BROWSER_MODULE = 'Furaffinity-Features-Browser';
 
 const srcRoot = path.resolve(__dirname, '..', 'src');
 const outDir = path.resolve(__dirname, '..', 'greasyfork-dist');
@@ -35,7 +37,7 @@ for (const searchDir of ['library-modules', 'feature-modules']) {
     if (!fs.existsSync(dir)) continue;
 
     for (const moduleName of fs.readdirSync(dir)) {
-        if (moduleName === COMBINED_MODULE) continue;
+        if (moduleName === COMBINED_MODULE || moduleName === BROWSER_MODULE) continue;
 
         const bundlePath = path.join(dir, moduleName, 'dist', 'bundle.user.js');
         if (!fs.existsSync(bundlePath)) continue;
@@ -81,14 +83,22 @@ for (const bundlePath of orderedPaths) {
     }
 }
 
-// Replace all existing @require lines in the banner with the full ordered set
+// Extract only the UserScript banner from the bundle (everything between ==UserScript== tags)
+const bannerMatch = combinedBundleContent.match(/\/\/ ==UserScript==[\s\S]*?\/\/ ==\/UserScript==/);
+if (!bannerMatch) {
+    console.error(`${colors.red}✗ No UserScript banner found in combined bundle${colors.reset}`);
+    process.exit(1);
+}
+
+// Replace @require lines in the extracted banner with the full ordered set
 const requireLines = combinedRequires.map(url => `// @require     ${url}`).join('\n');
-const updatedContent = combinedBundleContent.replace(
+const updatedBanner = bannerMatch[0].replace(
     /^(\/\/ @require\s+\S+\n)+/m,
     requireLines + '\n'
 );
 
-fs.writeFileSync(path.join(outDir, 'Furaffinity-Features.user.js'), updatedContent);
+// Write banner + minimal stub so script loaders recognise the file as having executable content
+fs.writeFileSync(path.join(outDir, 'Furaffinity-Features.user.js'), updatedBanner + "\n\nconsole.log('Furaffinity-Features loaded');\n");
 console.log(`${colors.green}✓ ${colors.blue}Furaffinity-Features.user.js${colors.reset} ${colors.cyan}(combined — ${combinedRequires.length} @requires)${colors.reset}`);
 
 console.log(`\n${colors.green}✓ Collected ${count + 1} bundles into greasyfork-dist/${colors.reset}`);

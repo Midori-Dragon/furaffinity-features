@@ -39,12 +39,24 @@ async function buildModule(rollupConfigPath) {
     return { outputPath: path.dirname(outputFile), outputFile };
 }
 
-// Extract dependencies from the banner of a build file
+// Extract dependencies from the banner of a built output file (used for recursive sub-dep resolution)
 async function extractDependencies(buildFilePath, moduleName = 'bundle.user.js') {
     console.log(`   ${colors.cyan}Extracting dependencies from: ${colors.blue}${moduleName}${colors.reset}`);
     const content = await readFile(buildFilePath, 'utf-8');
     const dependencies = extractRequiresFromBanner(content);
     dependencies.forEach(dep => console.log(`   ${colors.blue}Found dependency: ${dep}${colors.reset}`));
+    return { dependencies };
+}
+
+// Extract dependencies directly from a rollup config's banner string — no build required
+function extractDependenciesFromConfig(rollupConfigPath) {
+    const resolvedPath = path.resolve(rollupConfigPath);
+    delete require.cache[resolvedPath];
+    const rollupConfig = require(resolvedPath);
+    const banner = rollupConfig.output?.banner ?? '';
+    const dependencies = extractRequiresFromBanner(banner);
+    console.log(`${colors.cyan}Dependencies from config banner:${colors.reset}`);
+    dependencies.forEach(dep => console.log(`   ${colors.blue}${dep}${colors.reset}`));
     return { dependencies };
 }
 
@@ -172,61 +184,7 @@ async function resolveDependencies(dependencies, rebuild = false, resolved = new
     return order;
 }
 
-// Regex to extract name and version from banner
-const nameRegex = /@name\s+(.+)/;
-const versionRegex = /@version\s+(.+)/;
-const bannerRegex = /\/\/ ==UserScript==[\s\S]*?\/\/ ==\/UserScript==/;
 
-// Process a single file to extract name, version, and content without banner
-async function processFile(filePath) {
-    console.log(`${colors.cyan}Processing file: ${colors.blue}${path.basename(path.dirname(path.dirname(filePath)))}${colors.reset}`);
-    const content = await readFile(filePath, 'utf-8');
-    const bannerMatch = content.match(bannerRegex);
-
-    if (!bannerMatch) {
-        console.warn(`  ${colors.yellow}⚠ No banner found in ${filePath}${colors.reset}`);
-        return { name: 'Unknown', version: '0.0.0', content };
-    }
-
-    const banner = bannerMatch[0];
-    const nameMatch = banner.match(nameRegex);
-    const versionMatch = banner.match(versionRegex);
-
-    const name = nameMatch ? nameMatch[1].trim() : 'Unknown';
-    const version = versionMatch ? versionMatch[1].trim() : '0.0.0';
-    console.log(`   ${colors.green}✓ Extracted metadata: ${colors.blue}${name} v${version}${colors.reset}`);
-
-    // Remove the banner from the content
-    const cleanedContent = content.replace(bannerRegex, '').trim();
-
-    return { name, version, content: cleanedContent };
-}
-
-// Combine all build files into a single output
-async function combineFiles(filePaths, outputPath) {
-    // Get the original banner from the main build file and remove @require statements
-    const mainFileContent = await readFile(filePaths[filePaths.length - 1], 'utf-8');
-    const bannerMatch = mainFileContent.match(bannerRegex);
-    let originalBanner = '';
-
-    if (bannerMatch) {
-        console.log(`${colors.cyan}Processing main script banner${colors.reset}`);
-        const bannerLines = bannerMatch[0].split('\n').filter(line => !line.trim().startsWith('// @require'));
-        originalBanner = bannerLines.join('\n') + '\n\n';
-    }
-
-    console.log(`${colors.cyan}Processing all files in order:${colors.reset}`);
-    const processedFiles = await Promise.all(filePaths.map(processFile));
-
-    console.log(`\n${colors.cyan}Writing files:${colors.reset}`);
-    processedFiles.forEach(({ name, version }) => {
-        console.log(`   ${colors.blue}Adding: ${name} v${version}${colors.reset}`);
-    });
-
-    const combinedContent = originalBanner + processedFiles.map(({ name, version, content }) => `// ${name} v${version}\n${content}`).join('\n\n');
-
-    await writeFile(outputPath, combinedContent);
-}
 
 async function emptyDir(dir) {
     if (fs.existsSync(dir)) {
@@ -249,29 +207,44 @@ async function main() {
         rebuild = true;
     }
 
+    // Optional --deps-from <path>: read @requires for dep building from a different config.
+    // Used when the main config (e.g. Furaffinity-Features-Browser) has no @requires in its banner.
+    let depsConfigPath;
+    const depsFromIdx = args.indexOf('--deps-from');
+    if (depsFromIdx !== -1 && args[depsFromIdx + 1]) {
+        depsConfigPath = args[depsFromIdx + 1];
+    }
+
     const rollupConfigPath = args[0];
     const distFolder = path.resolve(__dirname, '..', 'dist');
     const outputPath = path.join(distFolder, 'furaffinity-features.user.js');
 
     try {
         const moduleName = path.basename(path.dirname(rollupConfigPath));
-        console.log(`${colors.cyan}Building ${moduleName}...${colors.reset}`);
+
+        // Step 1: Read dependency order — from --deps-from config if provided, otherwise from main config
+        const depsSource = depsConfigPath ?? rollupConfigPath;
+        console.log(`${colors.cyan}Reading dependency order from ${path.basename(path.dirname(depsSource))} config...${colors.reset}`);
+        const { dependencies } = extractDependenciesFromConfig(depsSource);
+
+        // Step 2: Build each dependency individually (hash-cached, bottom-up)
+        // These individual bundles are used for GreasyFork distribution
+        console.log(`\n${colors.cyan}Resolving and building dependencies...${colors.reset}`);
+        await resolveDependencies(dependencies, rebuild);
+
+        // Step 3: Build the main module last — single Rollup pass over all source files
+        // Rollup deduplicates shared code (Logger etc.) automatically since it sees the full import graph
+        console.log(`\n${colors.cyan}Building ${moduleName} (single-pass bundle)...${colors.reset}`);
         const stats = await buildModule(rollupConfigPath);
-
         const mainBuildFilePath = stats.outputFile;
-        console.log(`   ${colors.green}✓ ${moduleName} build successfully${colors.reset}\n`);
+        console.log(`   ${colors.green}✓ ${moduleName} built successfully${colors.reset}\n`);
 
-        console.log(`${colors.cyan}Extracting dependencies from ${moduleName}...${colors.reset}`);
-        const { banner, dependencies } = await extractDependencies(mainBuildFilePath, moduleName);
-
-        console.log(`\n${colors.cyan}Resolving dependencies...${colors.reset}`);
-        const orderedDependencies = await resolveDependencies(dependencies, rebuild);
-
-        console.log(`\n${colors.cyan}Clearing dist Folder...${colors.reset}`);
+        // Step 4: Copy the completed single-pass bundle to the top-level dist folder
+        console.log(`${colors.cyan}Clearing dist folder...${colors.reset}`);
         await emptyDir(distFolder);
 
-        console.log(`\n${colors.cyan}Combining files...${colors.reset}`);
-        await combineFiles([...orderedDependencies, mainBuildFilePath], outputPath);
+        console.log(`${colors.cyan}Copying bundle to dist...${colors.reset}`);
+        fs.copyFileSync(mainBuildFilePath, outputPath);
 
         const statsFinal = fs.statSync(outputPath);
         const fileSize = (statsFinal.size / 1024).toFixed(2) + ' KB';
