@@ -111,7 +111,7 @@ export class SettingOption extends EventTarget implements ISetting<SettingType.O
 
         const settingElem = document.createElement('select');
         settingElem.id = this.id;
-        settingElem.className = 'styled';
+        settingElem.className = 'forminput styled';
         settingElem.addEventListener('change', () => {
             this.value = settingElem.value;
         });
