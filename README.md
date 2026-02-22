@@ -13,7 +13,10 @@ Also find all mentioned Scripts on [GreasyFork](https://greasyfork.org/users/967
 
 <br>
 
-Feel free to visit the [docs](https://midori-dragon.github.io/furaffinity-features/).
+> [!NOTE]
+> Visit docs here: https://midori-dragon.github.io/furaffinity-features/
+
+<br>
 
 | Table of Contents                      |
 | -------------------------------------- |
