@@ -11,20 +11,19 @@ Helper Library to create Custom settings on Furaffinitiy. Also see this Script o
   const customSettings = new FACustomSettings("Midori's Script Settings", "My Script Settings");
   // Multiple Settings Pages can be created with different provider/header combinations
   ```
-  See [Settings](#settings) for more info
 - Create a new Setting:
   ```javascript
-  const setting = CustomSettings.newSetting(SettingType, "Setting Name");
+  const setting = customSettings.newSetting(FASettingType.Boolean, "Setting Name");
   setting.description = "Setting Description";
   setting.defaultValue = DefaultValue;
-  setting.inInput = (target) => { doSomething(); }; // For Action Settings when clicked otherwise every time the Setting is changed
-  setting.addEventListener("input", (target) => { doSomthing(); }); // Alternative to onInput
+  setting.onInput = (target) => { doSomething(); }; // For Action Settings when clicked otherwise every time the Setting is changed
+  setting.addEventListener("input", (target) => { doSomething(); }); // Alternative to onInput
   setting.verifyRegex = /Regex/; // For Text Settings only
   ```
   See [Setting](#setting) for more info
 - Trigger when settings should be loaded:
   ```javascript
-  CustomSettings.loadSettingsMenu(); //loads Navigation Menu & Settings if on Settings Page
+  customSettings.loadSettings(); //loads Navigation Menu & Settings if on Settings Page
   ```
 
 ## Feature Roadmap
@@ -53,7 +52,7 @@ The Setting class contains following Properties:
 - `description` - Description of the Setting.
 - `type` - Type of the Setting. *(See [SettingType](#settingtype) for more info)*
 - `defaultValue` - Default value for the Setting. *(Is ignored on `SettingTypes.Action`)*
-- `action` - Action that is executed when the Setting changes. *(See [Action](#action) for more info)*
+- `onInput` - Function that is executed when the Setting changes. *(See [Input](#input) for more info)*
 - `value` - Current value of the Setting.
 
 - `min` - Minimum value for `SettingType.Number`

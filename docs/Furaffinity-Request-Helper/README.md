@@ -2,11 +2,6 @@
 
 Helper Library (wrapper) for common Requests to Furaffinity. Also see this Script on GreasyFork as [Furaffinity-Request-Helper](https://greasyfork.org/scripts/483952-furaffinity-request-helper)
 
-<br>
-
-> [!NOTE]
-> The Request Helper documentation is still in progress and partly outdated.
-
 ## How to use
 
 - `@require` this script from GreasyFork or (in case of browser extension) import it as a module

@@ -2,6 +2,7 @@
 - [Contributing](/contributing)
 - **Feature Modules**
 - [Furaffinity Features](/Furaffinity-Features/README)
+- [Furaffinity Features Browser](/Furaffinity-Features-Browser/README)
 - [Embedded Image Viewer](/FA-Embedded-Image-Viewer/README)
 - [Infini-Gallery](/FA-Infini-Gallery/README)
 - [Webcomic Auto-Loader](/FA-Webcomic-Auto-Loader/README)

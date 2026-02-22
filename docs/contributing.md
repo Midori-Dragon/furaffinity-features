@@ -13,7 +13,7 @@ Thank you for your interest in contributing to this project! This guide will hel
 2. **Module Independence**: 
    - Each top-level directory represents an independent user script
    - Scripts should be self-contained with minimal dependencies on other modules
-   - If your feature needs functionality from another module, reference it in your webpack config banner
+   - If your feature needs functionality from another module, reference it in your Rollup config banner
    - Dependencies to Third-Party Modules are allowed, but should be kept minimal, in thought of the userscript size
 
 3. **Technology Stack**:

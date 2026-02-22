@@ -297,7 +297,7 @@ npm install
 
 ### Developing
 
-Note that each module has its own webpack configuration. In this webpack config the `banner` for the user script is defined.
+Note that each module has its own Rollup configuration. In this Rollup config the `banner` for the user script is defined.
 
 > [!IMPORTANT]
 > The `banner` is used by the build process to determine the modules dependencies!
@@ -319,7 +319,7 @@ Docs can be edited and then previewed by running `npm run docs`
 
 #### Dependencies
 
-Since dependencies are written in the banner of the webpack config, updating them can be annoying.
+Since dependencies are written in the banner of the Rollup config, updating them can be annoying.
 Using `npm run update-deps` will update all dependency versions in the banners.
 
 > [!NOTE]
