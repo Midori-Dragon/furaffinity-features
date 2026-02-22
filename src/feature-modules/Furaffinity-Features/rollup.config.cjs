@@ -9,7 +9,7 @@ module.exports = {
         name: 'FuraffinityFeatures',
         banner:
             `// ==UserScript==
-// @name        Furaffinity-Features-Browser
+// @name        Furaffinity-Features
 // @namespace   Violentmonkey Scripts
 // @match       *://*.furaffinity.net/*
 // @require     https://greasyfork.org/scripts/525666-furaffinity-prototype-extensions/code/525666-furaffinity-prototype-extensions.js
@@ -21,9 +21,11 @@ module.exports = {
 // @grant       GM_info
 // @version     1.3.0
 // @author      Midori Dragon
-// @description Browser Extension for Furaffinity Features
-// @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
+// @description Combines all Furaffinity Features Scripts into one
+// @icon        https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/logo.png
 // @license     MIT
+// @homepageURL https://greasyfork.org/scripts/543793-furaffinity-features
+// @supportURL  https://greasyfork.org/scripts/543793-furaffinity-features/feedback
 // ==/UserScript==
 // jshint esversion: 11`,
     },
