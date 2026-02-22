@@ -44,7 +44,7 @@
     "@typescript-eslint/parser": "^8.56.0",
     "archiver": "^7.0.1",
     "docsify-cli": "^4.4.4",
-    "eslint": "^10.0.1",
+    "eslint": "^9.0.0",
     "eslint-plugin-import": "^2.32.0",
     "http-server": "^14.1.1",
     "rollup": "^4.59.0",
