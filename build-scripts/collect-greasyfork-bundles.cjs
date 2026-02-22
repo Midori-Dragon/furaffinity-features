@@ -58,16 +58,17 @@ for (const searchDir of ['library-modules', 'feature-modules']) {
 }
 
 // Step 2: Build the combined Furaffinity-Features.user.js with correctly ordered @requires.
-// Read the combined module's bundle to get its feature-module @require URLs, then resolve
-// all transitive dependencies in correct load order (deps before dependents).
-const combinedBundlePath = path.join(srcRoot, 'feature-modules', COMBINED_MODULE, 'dist', 'bundle.user.js');
-if (!fs.existsSync(combinedBundlePath)) {
-    console.error(`${colors.red}✗ Combined module bundle not found: ${combinedBundlePath}${colors.reset}`);
+// Read the banner directly from the rollup config (source of truth) — no build output needed.
+const combinedConfigPath = path.join(srcRoot, 'feature-modules', COMBINED_MODULE, 'rollup.config.cjs');
+if (!fs.existsSync(combinedConfigPath)) {
+    console.error(`${colors.red}✗ Combined module rollup config not found: ${combinedConfigPath}${colors.reset}`);
     process.exit(1);
 }
 
-const combinedBundleContent = fs.readFileSync(combinedBundlePath, 'utf-8');
-const featureRequires = extractRequiresFromBanner(combinedBundleContent);
+delete require.cache[require.resolve(combinedConfigPath)];
+const combinedConfig = require(combinedConfigPath);
+const combinedBannerStr = combinedConfig.output?.banner ?? '';
+const featureRequires = extractRequiresFromBanner(combinedBannerStr);
 
 // Resolve full transitive dep order: libraries first (in dep order), then feature modules
 const orderedPaths = resolveRequireOrder(featureRequires, srcRoot, new Set([COMBINED_MODULE]));
@@ -83,10 +84,10 @@ for (const bundlePath of orderedPaths) {
     }
 }
 
-// Extract only the UserScript banner from the bundle (everything between ==UserScript== tags)
-const bannerMatch = combinedBundleContent.match(/\/\/ ==UserScript==[\s\S]*?\/\/ ==\/UserScript==/);
+// The banner from the config is already the full UserScript header
+const bannerMatch = combinedBannerStr.match(/\/\/ ==UserScript==[\s\S]*?\/\/ ==\/UserScript==/);
 if (!bannerMatch) {
-    console.error(`${colors.red}✗ No UserScript banner found in combined bundle${colors.reset}`);
+    console.error(`${colors.red}✗ No UserScript banner found in combined rollup config${colors.reset}`);
     process.exit(1);
 }
 
