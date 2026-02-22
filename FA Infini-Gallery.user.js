@@ -8,7 +8,7 @@
 // @require     https://greasyfork.org/scripts/485153-furaffinity-loading-animations/code/485153-furaffinity-loading-animations.js
 // @require     https://greasyfork.org/scripts/475041-furaffinity-custom-settings/code/475041-furaffinity-custom-settings.js
 // @grant       GM_info
-// @version     2.2.7
+// @version     2.2.8
 // @author      Midori Dragon
 // @description Automatically loads the next page of the gallery as you reach the bottom
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
