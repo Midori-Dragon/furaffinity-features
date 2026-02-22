@@ -536,6 +536,5 @@ FodyWeavers.xsd
 .windsurfrules
 
 # custom
-package-lock.json
 .vs/
 .todo
