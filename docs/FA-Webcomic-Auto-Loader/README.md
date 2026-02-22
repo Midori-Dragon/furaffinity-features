@@ -29,7 +29,7 @@ A userscript/browser extension that enhances FurAffinity webcomic navigation by 
 - `backwardSearch` - How many pages to search backwards *(default: 3)*
 - `overwriteNavButtons` - Whether to overwrite navigation buttons with comic navigation *(default: true)*
 - `useCustomLightbox` - Enable/disable custom lightbox *(default: true)*
-- `useCustomLightboxNav` - Enable/disable custom lightbox navigation *(default: true)*
+- `Custom Lightbox Show Nav` - Enable/disable custom lightbox navigation *(default: true)*
 
 ## Documentation
 
@@ -39,7 +39,7 @@ The AutoLoader class contains the following properties:
 
 - `submissionImg` - The current comic page image
 - `currComicNav` - Current comic navigation instance *(see [ComicNavigation](#comicnavigation))* 
-- `currComicNavExists` - Whether the current comic navigation instance exists
+- `comicNavExists` - Whether the current comic navigation instance exists
 - `currSid` - The current submission ID
 
 ---

@@ -5,7 +5,7 @@
 Access a class property by using your class instance and call a property using `.`.
 
 ```javascript
-requestHelper.UserRequests.PersonalUserRequests;
+requestHelper.PersonalUserRequests;
 ```
 
 ## Class Properties

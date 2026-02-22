@@ -18,7 +18,7 @@ Helper Script to create Custom pages on Furaffinitiy. Also see this Script on Gr
   *`event.detail` is the [CustomData](#customdata) class*
 - Trigger the check for open pages:
   ```javascript
-  FACustomPages.checkAllPages();
+  FACustomPage.checkAllPages();
   ```
 
 ## Feature Roadmap
@@ -45,8 +45,8 @@ It supports the following Events:
 
 It has following functions:
 
-- `pageOpened(parameterValue, openedPage)` - Triggers the onopen event. Takes the current parameterValue and the openedPage HTML Document
 - `checkPageOpened()` - Checks if the CustomPage is open and triggers the event if it is
+- `static checkAllPages()` - Checks all registered CustomPages and triggers their events if open
 
 ---
 
@@ -54,7 +54,6 @@ It has following functions:
 
 The CustomData class contains following Properties:
 
-- `parameterName` - The parameterName of the current opened Page
 - `parameterValue` - The parameterValue of the current opened Page
 - `document` - The HTML Document of the current opened Page
 

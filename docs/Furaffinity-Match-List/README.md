@@ -50,4 +50,4 @@ The MatchList class contains following Properties:
 It has following functions:
 
 - `addMatch(match)` - Adds a new match to the list
-- `removeMatch()` - Removes the last match from the list
+- `removeMatch(match)` - Removes the specified match from the list

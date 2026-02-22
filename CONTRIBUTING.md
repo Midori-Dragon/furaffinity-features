@@ -57,14 +57,6 @@ Thank you for your interest in contributing to this project! This guide will hel
   </pre>
 </div>
 
-#### Not included in the VSCode Project is:
-<div>
-  <pre>
-  project/
-  └── <span style="color: #d8be7c;">FF-Dependency-Updater/</span>      # Dependency Version Updater Project
-  </pre>
-</div>
-
 ## Development Guidelines
 
 1. **TypeScript**

@@ -5,10 +5,10 @@
 Access a class property by using your class instance and call a property using `.`.
 
 ```javascript
-requestHelper.UserRequests.PersonalUserRequests.AccountInformation;
+requestHelper.PersonalUserRequests.AccountInformation;
 ```
 
-## Statis Class Properties
+## Static Class Properties
 
 - `static hardLinks` - Array that holds the urls to the specific Action. Default Keys are:
   - settings

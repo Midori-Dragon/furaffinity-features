@@ -31,6 +31,8 @@ This project provides various quality-of-life improvements and additional featur
 - As individual userscripts (using Violentmonkey, Tampermonkey, etc.)
 - As a browser extension (Chrome and Firefox)
 
+All feature and library modules are also bundled together as a single combined userscript — [Furaffinity Features](https://greasyfork.org/en/users/967324-midori-tsume) — available on GreasyFork. See the [Furaffinity Features](./Furaffinity-Features/) docs for details.
+
 #### Feature Overview
 
 ✅ [FA Embedded Image Viewer](#fa-embedded-image-viewer)
@@ -182,19 +184,51 @@ Handles API requests and data fetching.
 ---
 
 ### Furaffinity Submission Image Viewer
-Enhanced image viewing capabilities.
+Custom image viewer component used to display submission images with preview support.
 
-| Feature Roadmap                   | Status      |
-| --------------------------------- | ----------- |
-| Full-size image viewing           | ✅ Completed |
-| Keyboard shortcuts                | ✅ Completed |
-| Loading state management          | ✅ Completed |
-| Zooming and panning functionality | ✅ Completed |
+| Feature Roadmap                         | Status      |
+| --------------------------------------- | ----------- |
+| Support preview image                   | ✅ Completed |
+| Loading state management                | ✅ Completed |
+| Have different events for image loading | ✅ Completed |
+| Zooming and panning via panzoom         | ✅ Completed |
 
 ---
 
-### Global Utils Module
-Shared utility functions and components used across other modules.
+### Furaffinity Custom Pages
+Helper library for creating custom pages on FurAffinity via URL parameters.
+
+| Feature Roadmap                    | Status      |
+| ---------------------------------- | ----------- |
+| Have basic Custom Pages            | ✅ Completed |
+| Support for url encoded parameters | ✅ Completed |
+
+---
+
+### Furaffinity Message Box
+Library for showing styled message dialogs that match FurAffinity themes.
+
+| Feature Roadmap                  | Status      |
+| -------------------------------- | ----------- |
+| Have MessageBox                  | ✅ Completed |
+| Support different icon types     | ✅ Completed |
+| Support different button sets    | ✅ Completed |
+| Support FurAffinity color themes | ✅ Completed |
+
+---
+
+### Furaffinity Prototype Extensions
+A collection of prototype extensions for `String` and `Node`.
+
+| Feature Roadmap   | Status      |
+| ----------------- | ----------- |
+| String extensions | ✅ Completed |
+| Node extensions   | ✅ Completed |
+
+---
+
+### GlobalUtils
+Internal shared utility classes and functions used across all modules (Logger, Semaphore, storage wrappers, FA DOM helpers, URL helpers).
 
 | Feature Roadmap                       | Status      |
 | ------------------------------------- | ----------- |
@@ -242,7 +276,7 @@ The project follows a modular architecture:
 #### Technical Stack
 - TypeScript for type-safe development
 - ESLint for code quality
-- Webpack for building and bundling
+- Rollup for building and bundling
 - Support for both userscript and browser extension formats
 
 ### Prerequisites
@@ -296,20 +330,17 @@ Using `npm run update-deps` will update all dependency versions in the banners.
 Building command names can be found in `package.json`
 
 ```bash
-npm run build:<module_name>
+npm run build:Browser-Extension
 ```
 
-Example:
+To do a full rebuild including all dependencies:
 ```bash
-npm run build:Browser-Extension-Deps
+npm run build:Browser-Extension-Rebuild
 ```
-
-> [!NOTE]
-> The `Deps` suffix indicates that the build will also include dependencies
 
 ### Packaging
 
-If you are happy with your changes, you can package the module by running `npm run package:Browser-Extension` to package the browser extension or `npm run package:source` to package the source code.
+If you are happy with your changes, you can package the browser extension by running `npm run package:Browser-Extension`.
 
 ## Contributing
 

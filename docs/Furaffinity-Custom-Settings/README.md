@@ -7,9 +7,9 @@ Helper Library to create Custom settings on Furaffinitiy. Also see this Script o
 - `@require` this script from GreasyFork or (in case of browser extension) import it as a module
 - Create Settings Object:
   ```javascript
-  const customSettings = new FACustomSettings(); // Multiple Settings Pages can be created
-  customSettings.provider = "Midori's Script Settings"; // Change Navigation Settings Name
-  customSettings.headerName = "My Script Settings"; // Change the Settings Header Name
+  // Constructor takes provider name (navigation entry) and header name (settings page title)
+  const customSettings = new FACustomSettings("Midori's Script Settings", "My Script Settings");
+  // Multiple Settings Pages can be created with different provider/header combinations
   ```
   See [Settings](#settings) for more info
 - Create a new Setting:

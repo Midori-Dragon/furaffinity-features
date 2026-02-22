@@ -47,9 +47,9 @@ Helper Library (wrapper) for common Requests to Furaffinity. Also see this Scrip
 
 ---
 
-### Class Functions
+### Static Class Functions
 
-- `async getHTML(url, action, delay)` - Function for getting any websites HTML
+- `static async getHTML(url, action, delay)` - Static function for getting any website's HTML as a Document
   - *`url` - Specifies the url to which the request goes*
   - *`action` - Specifies the action function that gets executed while the Request is going*
   - *`delay` - Specifies the delay in Milliseconds between each execution of the `action` while the Request is* going. Default value is `100`
@@ -58,12 +58,6 @@ Helper Library (wrapper) for common Requests to Furaffinity. Also see this Scrip
 
 ### Static Class Properties
 
-- `logLevel` - Specifies the loglevel: 0 = None, 1 = Messages, 2 = Warnings, 3 = Errors
-- `domain` - Specifies the domain of Furaffinity. By default is `www.furaffinity.net`
-- `useHttps` - Specifies wether to use `https` or `http`
-
----
-
-### Static Class Functions
-
-- `getUrl()` - Returns the url to Furaffinty. Based on the static `domain` and `useHttps` variables.
+- `logLevel` - Specifies the log level. Default is `1`.
+- `useHttps` - Specifies whether to use `https` or `http`
+- `fullUrl` - Returns the full URL to FurAffinity (read-only getter, based on the current protocol and hostname)

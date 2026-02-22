@@ -17,9 +17,9 @@ Library for creating image elements on Furaffinity. Also see this Script on Grea
   faImageViewer.onImageLoadStart(() => doSomething()); // occurs if the image started loading
   faImageViewer.onPreviewImageLoad(() => doSomething()); // occurs if the preview image fully loaded
 
-  faImageViewer.addEventListener("imageLoad", () => doSomething()); // alternative to onImageLoad
-  faImageViewer.addEventListener("imageLoadStart", () => doSomething()); // alternative to onImageLoadStart
-  faImageViewer.addEventListener("previewImageLoad", () => doSomething()); // alternative to onPreviewImageLoad
+  faImageViewer.addEventListener("image-load", () => doSomething()); // alternative to onImageLoad
+  faImageViewer.addEventListener("image-load-start", () => doSomething()); // alternative to onImageLoadStart
+  faImageViewer.addEventListener("preview-image-load", () => doSomething()); // alternative to onPreviewImageLoad
   ```
 
 ## Feature Roadmap
@@ -28,6 +28,7 @@ Library for creating image elements on Furaffinity. Also see this Script on Grea
 | --------------------------------------- | ----------- |
 | Support preview image                   | ✅ Completed |
 | Have different events for image loading | ✅ Completed |
+| Zooming and panning via panzoom         | ✅ Completed |
 
 ## Documentation
 
@@ -37,8 +38,9 @@ The CustomImageViewer class contains following Properties:
 - `imageUrl` - the image url
 - `previewUrl` - the preview image url
 - `parentContainer` - the parent container on which the image will be created
-- `faImage` - the image element
-- `faImagePreview` - the preview image element
+- `faImage` - the main image element (FAImage instance)
+- `faImagePreview` - the preview image element (FAImage instance)
+- `imageLoaded` - whether the main image has fully loaded (read-only)
 - `onImageLoad` - the callback for when the image is fully loaded
 - `onImageLoadStart` - the callback for when the image starts loading
 - `onPreviewImageLoad` - the callback for when the preview image is fully loaded
@@ -46,3 +48,5 @@ The CustomImageViewer class contains following Properties:
 Functions:
 - `load()` - starts loading the image
 - `reset()` - resets the image
+- `destroy()` - destroys both the main and preview image elements
+- `destroyPreview()` - destroys only the preview image element
