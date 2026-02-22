@@ -19,7 +19,7 @@ module.exports = {
 // @require     https://greasyfork.org/scripts/527752-fa-instant-nuker/code/527752-fa-instant-nuker.js
 // @require     https://greasyfork.org/scripts/463464-fa-watches-favorites-viewer/code/463464-fa-watches-favorites-viewer.js
 // @grant       GM_info
-// @version     1.2.13
+// @version     1.3.0
 // @author      Midori Dragon
 // @description Browser Extension for Furaffinity Features
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png

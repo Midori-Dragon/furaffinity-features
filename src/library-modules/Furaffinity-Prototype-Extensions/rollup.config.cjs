@@ -11,7 +11,7 @@ module.exports = {
 // @name        Furaffinity-Prototype-Extensions
 // @namespace   Violentmonkey Scripts
 // @grant       GM_info
-// @version     1.0.1
+// @version     1.0.2
 // @author      Midori Dragon
 // @description Library to hold common prototype extensions for your Furaffinity Script
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
