@@ -97,7 +97,7 @@ class ScriptInfo {
     name = '';
 
     /** @type {string} */
-    webpackPath = '';
+    configPath = '';
 
     /** @type {LibraryUrl[]} */
     dependencies = [];
@@ -150,7 +150,7 @@ const GreasyForkHelper = {
 
 /*──────────────────────────────── regex utils ───────────────────────────────*/
 const rx = {
-    banner: /new\s+webpack\.BannerPlugin\(\s*{\s*banner:\s*`([\s\S]*?)`,/m,
+    banner: /banner:\s*\n`([\s\S]*?)`\s*,/m,
     name: /^\s*\/\/\s*@name\s+(.+)$/m,
     require: /^\s*\/\/\s*@require\s+(.+)$/gm,
     homepage: /^\s*\/\/\s*@homepageURL\s+(.+)$/m,
@@ -178,12 +178,12 @@ async function readFileWithoutLocking(filePath) {
 
 /**
  * 
- * @param {string} webpackPath 
+ * @param {string} configPath 
  * @returns {Promise<string>}
  */
-async function extractBanner(webpackPath) {
-    if (!(await fsExists(webpackPath))) return '';
-    const content = await readFileWithoutLocking(webpackPath);
+async function extractBanner(configPath) {
+    if (!(await fsExists(configPath))) return '';
+    const content = await readFileWithoutLocking(configPath);
     const m = content.match(rx.banner);
     return m ? m[1].trim() : '';
 }
@@ -212,15 +212,15 @@ function buildUpdatedBanner(originalBanner, scriptInfo) {
 
 /**
  * 
- * @param {string} webpackPath 
+ * @param {string} configPath 
  * @param {ScriptInfo} scriptInfo 
  * @returns {Promise<void>}
  */
-async function modifyBanner(webpackPath, scriptInfo) {
-    if (!(await fsExists(webpackPath))) {
+async function modifyBanner(configPath, scriptInfo) {
+    if (!(await fsExists(configPath))) {
         return;
     }
-    const content = await readFileWithoutLocking(webpackPath);
+    const content = await readFileWithoutLocking(configPath);
     const match = content.match(rx.banner);
     if (!match) {
         return;
@@ -228,7 +228,7 @@ async function modifyBanner(webpackPath, scriptInfo) {
 
     const updated = buildUpdatedBanner(match[1].trim(), scriptInfo);
     const newContent = content.replace(match[1], updated);
-    await fs.writeFile(webpackPath, newContent);
+    await fs.writeFile(configPath, newContent);
 }
 
 /*────────────────────────────── misc helpers ───────────────────────────────*/
@@ -266,7 +266,7 @@ async function fsExists(p) {
  * @param {string} fileName 
  * @returns {Promise<string>}
  */
-async function findCommonWebpack(fileName) {
+async function findCommonConfig(fileName) {
     let dir = path.resolve('./');
     for (let i = 0; i < 6; i++) {
         const candidate = path.join(dir, fileName);
@@ -284,18 +284,18 @@ async function findCommonWebpack(fileName) {
     const confirmResultYes = process.argv.includes('-y');
 
     console.log(`${colors.cyan}Loading Project Modules...${colors.reset}\n`);
-    const commonWebpack = await findCommonWebpack('webpack.common.cjs');
-    const projectFolder = path.dirname(commonWebpack);
+    const commonConfig = await findCommonConfig('rollup.common.cjs');
+    const projectFolder = path.dirname(commonConfig);
 
-    const webpackConfigs =
+    const rollupConfigs =
         (await fs.readdir(projectFolder, { recursive: true }))
-            .filter(f => f.endsWith('webpack.config.cjs'))
+            .filter(f => f.endsWith('rollup.config.cjs'))
             .map(f => path.join(projectFolder, f));
 
     /** @type {ScriptInfo[]} */
     const scriptInfos = [];
 
-    for (const config of webpackConfigs) {
+    for (const config of rollupConfigs) {
         const banner = await extractBanner(config);
         if (!banner) continue;
 
@@ -305,7 +305,7 @@ async function findCommonWebpack(fileName) {
         try {
             const info = new ScriptInfo();
             info.name = name;
-            info.webpackPath = config;
+            info.configPath = config;
 
             // dependencies
             info.dependencies = getMatchesAll(banner, rx.require).map(url => new LibraryUrl(url));
@@ -392,7 +392,7 @@ async function findCommonWebpack(fileName) {
     console.log(`\n${colors.cyan}Updating Module Dependencies...${colors.reset}`);
     for (const s of toUpdate) {
         try {
-            await modifyBanner(s.webpackPath, s);
+            await modifyBanner(s.configPath, s);
             console.log(`   ${colors.green}✓ Updated ${colors.blue}${s.name}${colors.reset}`);
         } catch {
             console.log(`   ${colors.red}✗ Failed to update ${colors.blue}${s.name}${colors.reset}`);

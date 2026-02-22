@@ -1,9 +1,8 @@
 {
     "compilerOptions": {
-        "target": "ES6",
+        "target": "esnext",
         "module": "ESNext",
-        "moduleResolution": "Node",
-        "outDir": "./dist",
+        "moduleResolution": "bundler",
         "rootDir": ".",
         "strict": true,
         "esModuleInterop": true,

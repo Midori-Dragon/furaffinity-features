@@ -1,22 +1,17 @@
-const { merge } = require('webpack-merge');
-const webpack = require('webpack');
 const path = require('path');
-const common = require(path.resolve(process.cwd(), 'webpack.common.cjs'));
+const common = require(path.resolve(process.cwd(), 'rollup.common.cjs'));
 
-module.exports = merge(common, {
-    entry: path.resolve(__dirname, 'src/index.ts'),
+module.exports = {
+    input: path.resolve(__dirname, 'src/index.ts'),
     output: {
-        path: path.resolve(__dirname, 'dist'),
-        filename: 'bundle.user.js',
-    },
-    plugins: [
-        new webpack.BannerPlugin({
-            banner: `
-// ==UserScript==
+        file: path.resolve(__dirname, 'dist/bundle.user.js'),
+        format: 'iife',
+        banner:
+            `// ==UserScript==
 // @name        Furaffinity-Custom-Settings
 // @namespace   Violentmonkey Scripts
 // @grant       none
-// @version     4.3.0
+// @version     4.3.1
 // @author      Midori Dragon
 // @description Library to create Custom settings on Furaffinitiy
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
@@ -24,9 +19,7 @@ module.exports = merge(common, {
 // @homepageURL https://greasyfork.org/scripts/475041-furaffinity-custom-settings
 // @supportURL  https://greasyfork.org/scripts/475041-furaffinity-custom-settings/feedback
 // ==/UserScript==
-// jshint esversion: 8
-`,
-            raw: true,
-        }),
-    ],
-});
+// jshint esversion: 8`,
+    },
+    ...common,
+};

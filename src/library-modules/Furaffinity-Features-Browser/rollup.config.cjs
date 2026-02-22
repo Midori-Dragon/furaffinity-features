@@ -1,23 +1,14 @@
-const { merge } = require('webpack-merge');
-const webpack = require('webpack');
 const path = require('path');
-const common = require(path.resolve(process.cwd(), 'webpack.common.cjs'));
+const common = require(path.resolve(process.cwd(), 'rollup.common.cjs'));
 
-module.exports = merge(common, {
-    entry: path.resolve(__dirname, 'src/index.ts'),
+module.exports = {
+    input: path.resolve(__dirname, 'src/index.ts'),
     output: {
-        path: path.resolve(__dirname, 'dist'),
-        filename: 'bundle.user.js',
-        library: {
-            name: 'FuraffinityFeatures',
-            type: 'window',
-            export: 'default'
-        },
-    },
-    plugins: [
-        new webpack.BannerPlugin({
-            banner: `
-// ==UserScript==
+        file: path.resolve(__dirname, 'dist/bundle.user.js'),
+        format: 'iife',
+        name: 'FuraffinityFeatures',
+        banner:
+            `// ==UserScript==
 // @name        Furaffinity-Features-Browser
 // @namespace   Violentmonkey Scripts
 // @match       *://*.furaffinity.net/*
@@ -34,9 +25,7 @@ module.exports = merge(common, {
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
 // @license     MIT
 // ==/UserScript==
-// jshint esversion: 8
-`,
-            raw: true,
-        }),
-    ],
-});
+// jshint esversion: 8`,
+    },
+    ...common,
+};

@@ -1,4 +1,3 @@
-const webpack = require('webpack');
 const fs = require('fs');
 const path = require('path');
 const util = require('util');

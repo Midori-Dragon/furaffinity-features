@@ -28,66 +28,6 @@
         },
         {
             "type": "npm",
-            "script": "build:FA-Webcomic-Auto-Loader-Deps",
-            "group": "build",
-            "problemMatcher": [],
-            "label": "Build: Webcomic Auto Loader (with deps)",
-            "detail": "Build Webcomic Auto Loader including dependencies",
-            "presentation": {
-                "showReuseMessage": false,
-                "clear": true
-            }
-        },
-        {
-            "type": "npm",
-            "script": "build:FA-Infini-Gallery-Deps",
-            "group": "build",
-            "problemMatcher": [],
-            "label": "Build: Infini Gallery (with deps)",
-            "detail": "Build Infini Gallery including dependencies",
-            "presentation": {
-                "showReuseMessage": false,
-                "clear": true
-            }
-        },
-        {
-            "type": "npm",
-            "script": "build:FA-Embedded-Image-Viewer-Deps",
-            "group": "build",
-            "problemMatcher": [],
-            "label": "Build: Embedded Image Viewer (with deps)",
-            "detail": "Build Embedded Image Viewer including dependencies",
-            "presentation": {
-                "showReuseMessage": false,
-                "clear": true
-            }
-        },
-        {
-            "type": "npm",
-            "script": "build:FA-Instant-Nuker-Deps",
-            "group": "build",
-            "problemMatcher": [],
-            "label": "Build: Instant Nuker (with deps)",
-            "detail": "Build Instant Nuker including dependencies",
-            "presentation": {
-                "showReuseMessage": false,
-                "clear": true
-            }
-        },
-        {
-            "type": "npm",
-            "script": "build:FA-Watches-Favorites-Viewer-Deps",
-            "group": "build",
-            "problemMatcher": [],
-            "label": "Build: Watches Favorites Viewer (with deps)",
-            "detail": "Build Watches Favorites Viewer including dependencies",
-            "presentation": {
-                "showReuseMessage": false,
-                "clear": true
-            }
-        },
-        {
-            "type": "npm",
             "script": "build:Browser-Extension",
             "group": "build",
             "problemMatcher": [],

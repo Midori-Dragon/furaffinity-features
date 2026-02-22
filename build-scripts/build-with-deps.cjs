@@ -1,4 +1,4 @@
-const webpack = require('webpack');
+const rollup = require('rollup');
 const fs = require('fs');
 const path = require('path');
 const util = require('util');
@@ -22,20 +22,18 @@ const colors = {
 
 const hashIncludeFileTypes = ['ts', 'tsx', 'js', 'jsx', 'cjs', 'css', 'html'];
 
-// Helper function to build a module using Webpack
-async function buildModule(webpackConfigPath) {
-    const webpackConfig = require(path.resolve(webpackConfigPath));
-    const compiler = webpack(webpackConfig);
-
-    return new Promise((resolve, reject) => {
-        compiler.run((err, stats) => {
-            if (err || stats.hasErrors()) {
-                reject(err || stats.toJson().errors);
-                return;
-            }
-            resolve(stats.toJson());
-        });
-    });
+// Helper function to build a module using Rollup
+async function buildModule(rollupConfigPath) {
+    const resolvedPath = path.resolve(rollupConfigPath);
+    // Clear require cache so rebuilds always pick up the latest config
+    delete require.cache[resolvedPath];
+    const rollupConfig = require(resolvedPath);
+    const { output: outputOptions, ...inputOptions } = rollupConfig;
+    const bundle = await rollup.rollup(inputOptions);
+    await bundle.write(outputOptions);
+    await bundle.close();
+    const outputFile = path.resolve(outputOptions.file);
+    return { outputPath: path.dirname(outputFile), outputFile };
 }
 
 // Extract dependencies from the banner of a build file
@@ -127,11 +125,11 @@ async function resolveDependencies(dependencies, rebuild = false, resolved = new
 
         // Check in library-modules and feature-modules
         const libraryModulePath = `./src/library-modules/${moduleName}`;
-        const libraryConfigPath = path.join(libraryModulePath, 'webpack.config.cjs');
+        const libraryConfigPath = path.join(libraryModulePath, 'rollup.config.cjs');
         const libraryBuildPath = path.join(libraryModulePath, 'dist/bundle.user.js');
 
         const featureModulePath = `./src/feature-modules/${moduleName}`;
-        const featureConfigPath = path.join(featureModulePath, 'webpack.config.cjs');
+        const featureConfigPath = path.join(featureModulePath, 'rollup.config.cjs');
         const featureBuildPath = path.join(featureModulePath, 'dist/bundle.user.js');
 
         if (resolved.has(libraryBuildPath) || resolved.has(featureBuildPath)) {
@@ -194,7 +192,7 @@ async function resolveDependencies(dependencies, rebuild = false, resolved = new
                 console.warn(`  ${colors.yellow}⚠ Warning: Build file not found after building: ${buildPath}${colors.reset}`);
             }
         } else {
-            console.warn(`  ${colors.yellow}⚠ Warning: Webpack config not found for dependency in library-modules or feature-modules: ${moduleName}${colors.reset}`);
+            console.warn(`  ${colors.yellow}⚠ Warning: Rollup config not found for dependency in library-modules or feature-modules: ${moduleName}${colors.reset}`);
         }
     }
 
@@ -269,7 +267,7 @@ async function emptyDir(dir) {
 async function main() {
     const args = process.argv.slice(2);
     if (args.length < 1) {
-        console.error(`${colors.red}✗ Usage: node build-with-deps.cjs <path_to_webpack_config>${colors.reset}`);
+        console.error(`${colors.red}✗ Usage: node build-with-deps.cjs <path_to_rollup_config>${colors.reset}`);
         process.exit(1);
     }
 
@@ -278,16 +276,16 @@ async function main() {
         rebuild = true;
     }
 
-    const webpackConfigPath = args[0];
+    const rollupConfigPath = args[0];
     const distFolder = path.resolve(__dirname, '..', 'dist');
     const outputPath = path.join(distFolder, 'bundle.user.js');
 
     try {
-        const moduleName = path.basename(path.dirname(webpackConfigPath));
+        const moduleName = path.basename(path.dirname(rollupConfigPath));
         console.log(`${colors.cyan}Building ${moduleName}...${colors.reset}`);
-        const stats = await buildModule(webpackConfigPath);
+        const stats = await buildModule(rollupConfigPath);
 
-        const mainBuildFilePath = stats.outputPath + '\\bundle.user.js';
+        const mainBuildFilePath = stats.outputFile;
         console.log(`   ${colors.green}✓ ${moduleName} build successfully${colors.reset}\n`);
 
         console.log(`${colors.cyan}Extracting dependencies from ${moduleName}...${colors.reset}`);

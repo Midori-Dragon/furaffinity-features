@@ -1,18 +1,13 @@
-const { merge } = require('webpack-merge');
-const webpack = require('webpack');
 const path = require('path');
-const common = require(path.resolve(process.cwd(), 'webpack.common.cjs'));
+const common = require(path.resolve(process.cwd(), 'rollup.common.cjs'));
 
-module.exports = merge(common, {
-    entry: path.resolve(__dirname, 'src/index.ts'),
+module.exports = {
+    input: path.resolve(__dirname, 'src/index.ts'),
     output: {
-        path: path.resolve(__dirname, 'dist'),
-        filename: 'bundle.user.js',
-    },
-    plugins: [
-        new webpack.BannerPlugin({
-            banner: `
-// ==UserScript==
+        file: path.resolve(__dirname, 'dist/bundle.user.js'),
+        format: 'iife',
+        banner:
+            `// ==UserScript==
 // @name        Furaffinity-Loading-Animations
 // @namespace   Violentmonkey Scripts
 // @require     https://update.greasyfork.org/scripts/525666/1549449/Furaffinity-Prototype-Extensions.js
@@ -25,9 +20,7 @@ module.exports = merge(common, {
 // @homepageURL https://greasyfork.org/scripts/485153-furaffinity-loading-animations
 // @supportURL  https://greasyfork.org/scripts/485153-furaffinity-loading-animations/feedback
 // ==/UserScript==
-// jshint esversion: 8
-`,
-            raw: true,
-        }),
-    ],
-});
+// jshint esversion: 8`,
+    },
+    ...common,
+};
