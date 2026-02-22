@@ -19,7 +19,7 @@ module.exports = {
 // @homepageURL https://greasyfork.org/scripts/485827-furaffinity-match-list
 // @supportURL  https://greasyfork.org/scripts/485827-furaffinity-match-list/feedback
 // ==/UserScript==
-// jshint esversion: 8`,
+// jshint esversion: 11`,
     },
     ...common,
 };

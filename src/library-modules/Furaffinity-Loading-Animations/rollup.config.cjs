@@ -20,7 +20,7 @@ module.exports = {
 // @homepageURL https://greasyfork.org/scripts/485153-furaffinity-loading-animations
 // @supportURL  https://greasyfork.org/scripts/485153-furaffinity-loading-animations/feedback
 // ==/UserScript==
-// jshint esversion: 8`,
+// jshint esversion: 11`,
     },
     ...common,
 };

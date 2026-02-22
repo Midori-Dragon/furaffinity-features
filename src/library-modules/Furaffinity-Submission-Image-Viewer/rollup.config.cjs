@@ -19,7 +19,7 @@ module.exports = {
 // @homepageURL https://greasyfork.org/scripts/492931-furaffinity-submission-image-viewer
 // @supportURL  https://greasyfork.org/scripts/492931-furaffinity-submission-image-viewer/feedback
 // ==/UserScript==
-// jshint esversion: 8`,
+// jshint esversion: 11`,
     },
     ...common,
 };

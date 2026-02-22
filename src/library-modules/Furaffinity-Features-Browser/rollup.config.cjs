@@ -25,7 +25,7 @@ module.exports = {
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
 // @license     MIT
 // ==/UserScript==
-// jshint esversion: 8`,
+// jshint esversion: 11`,
     },
     ...common,
 };

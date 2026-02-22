@@ -27,7 +27,7 @@ module.exports = {
 // @homepageURL https://greasyfork.org/scripts/463464-fa-watches-favorites-viewer
 // @supportURL  https://greasyfork.org/scripts/463464-fa-watches-favorites-viewer/feedback
 // ==/UserScript==
-// jshint esversion: 8`,
+// jshint esversion: 11`,
     },
     ...common,
 };

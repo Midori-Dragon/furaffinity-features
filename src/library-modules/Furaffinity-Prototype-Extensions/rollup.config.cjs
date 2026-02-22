@@ -19,7 +19,7 @@ module.exports = {
 // @homepageURL https://greasyfork.org/scripts/525666-furaffinity-prototype-extensions
 // @supportURL  https://greasyfork.org/scripts/525666-furaffinity-prototype-extensions/feedback
 // ==/UserScript==
-// jshint esversion: 8`,
+// jshint esversion: 11`,
     },
     ...common,
 };

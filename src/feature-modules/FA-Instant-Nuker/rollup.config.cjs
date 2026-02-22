@@ -24,7 +24,7 @@ module.exports = {
 // @homepageURL https://greasyfork.org/scripts/527752-fa-instant-nuker
 // @supportURL  https://greasyfork.org/scripts/527752-fa-instant-nuker/feedback
 // ==/UserScript==
-// jshint esversion: 8`,
+// jshint esversion: 11`,
     },
     ...common,
 };

@@ -27,7 +27,7 @@ module.exports = {
 // @homepageURL https://greasyfork.org/scripts/458971-fa-embedded-image-viewer
 // @supportURL  https://greasyfork.org/scripts/458971-fa-embedded-image-viewer/feedback
 // ==/UserScript==
-// jshint esversion: 8`,
+// jshint esversion: 11`,
     },
     ...common,
 };

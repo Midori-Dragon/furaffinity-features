@@ -20,7 +20,7 @@ module.exports = {
 // @homepageURL https://greasyfork.org/scripts/528997-furaffinity-message-box
 // @supportURL  https://greasyfork.org/scripts/528997-furaffinity-message-box/feedback
 // ==/UserScript==
-// jshint esversion: 8`,
+// jshint esversion: 11`,
     },
     ...common,
 };

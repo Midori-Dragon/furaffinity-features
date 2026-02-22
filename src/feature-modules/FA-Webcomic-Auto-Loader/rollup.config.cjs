@@ -25,7 +25,7 @@ module.exports = {
 // @homepageURL https://greasyfork.org/scripts/457759-fa-webcomic-auto-loader
 // @supportURL  https://greasyfork.org/scripts/457759-fa-webcomic-auto-loader/feedback
 // ==/UserScript==
-// jshint esversion: 8`,
+// jshint esversion: 11`,
     },
     ...common,
 };

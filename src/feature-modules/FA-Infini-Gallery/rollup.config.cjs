@@ -25,7 +25,7 @@ module.exports = {
 // @homepageURL https://greasyfork.org/scripts/462632-fa-infini-gallery
 // @supportURL  https://greasyfork.org/scripts/462632-fa-infini-gallery/feedback
 // ==/UserScript==
-// jshint esversion: 8`,
+// jshint esversion: 11`,
     },
     ...common,
 };
