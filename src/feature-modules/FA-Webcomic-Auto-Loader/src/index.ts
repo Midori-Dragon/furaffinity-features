@@ -1,8 +1,8 @@
-import { Settings } from '../../../library-modules/Furaffinity-Custom-Settings/src/modules/Settings';
-import { SettingType } from '../../../library-modules/Furaffinity-Custom-Settings/src/utils/SettingType';
-import { LoadingSpinner } from '../../../library-modules/Furaffinity-Loading-Animations/src/components/LoadingSpinner';
-import { MatchList } from '../../../library-modules/Furaffinity-Match-List/src/modules/MatchList';
-import { FuraffinityRequests } from '../../../library-modules/Furaffinity-Request-Helper/src/modules/FuraffinityRequests';
+import type { Settings } from '../../../library-modules/Furaffinity-Custom-Settings/src/modules/Settings';
+import type { SettingType } from '../../../library-modules/Furaffinity-Custom-Settings/src/utils/SettingType';
+import type { LoadingSpinner } from '../../../library-modules/Furaffinity-Loading-Animations/src/components/LoadingSpinner';
+import type { MatchList } from '../../../library-modules/Furaffinity-Match-List/src/modules/MatchList';
+import type { FuraffinityRequests } from '../../../library-modules/Furaffinity-Request-Helper/src/modules/FuraffinityRequests';
 import { AutoLoader } from './modules/AutoLoader';
 
 declare global {

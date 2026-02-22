@@ -1,7 +1,7 @@
-import { Settings } from '../../../library-modules/Furaffinity-Custom-Settings/src/modules/Settings';
-import { SettingType } from '../../../library-modules/Furaffinity-Custom-Settings/src/utils/SettingType';
-import { MatchList } from '../../../library-modules/Furaffinity-Match-List/src/modules/MatchList';
-import { FuraffinityRequests } from '../../../library-modules/Furaffinity-Request-Helper/src/modules/FuraffinityRequests';
+import type { Settings } from '../../../library-modules/Furaffinity-Custom-Settings/src/modules/Settings';
+import type { SettingType } from '../../../library-modules/Furaffinity-Custom-Settings/src/utils/SettingType';
+import type { MatchList } from '../../../library-modules/Furaffinity-Match-List/src/modules/MatchList';
+import type { FuraffinityRequests } from '../../../library-modules/Furaffinity-Request-Helper/src/modules/FuraffinityRequests';
 import { NukeIconOptions } from './utils/NukeIconOptions';
 import { MessageNuker } from './modules/MessageNuker';
 import { SubmissionNuker } from './modules/SubmissionNuker';

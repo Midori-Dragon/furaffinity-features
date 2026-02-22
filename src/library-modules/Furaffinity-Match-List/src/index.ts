@@ -1,5 +1,5 @@
-import { Settings } from '../../Furaffinity-Custom-Settings/src/modules/Settings';
-import { SettingType } from '../../Furaffinity-Custom-Settings/src/utils/SettingType';
+import type { Settings } from '../../Furaffinity-Custom-Settings/src/modules/Settings';
+import type { SettingType } from '../../Furaffinity-Custom-Settings/src/utils/SettingType';
 import { MatchList } from './modules/MatchList';
 
 declare global {

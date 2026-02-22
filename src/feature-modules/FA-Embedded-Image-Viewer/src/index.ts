@@ -1,11 +1,11 @@
-import { CustomPage } from '../../../library-modules/Furaffinity-Custom-Pages/src/modules/CustomPage';
-import { Settings } from '../../../library-modules/Furaffinity-Custom-Settings/src/modules/Settings';
-import { SettingType } from '../../../library-modules/Furaffinity-Custom-Settings/src/utils/SettingType';
-import { LoadingSpinner } from '../../../library-modules/Furaffinity-Loading-Animations/src/components/LoadingSpinner';
-import { LoadingTextSpinner } from '../../../library-modules/Furaffinity-Loading-Animations/src/components/LoadingTextSpinner';
-import { MatchList } from '../../../library-modules/Furaffinity-Match-List/src/modules/MatchList';
-import { FuraffinityRequests } from '../../../library-modules/Furaffinity-Request-Helper/src/modules/FuraffinityRequests';
-import { CustomImageViewer } from '../../../library-modules/Furaffinity-Submission-Image-Viewer/src/modules/CustomImageViewer';
+import type { CustomPage } from '../../../library-modules/Furaffinity-Custom-Pages/src/modules/CustomPage';
+import type { Settings } from '../../../library-modules/Furaffinity-Custom-Settings/src/modules/Settings';
+import type { SettingType } from '../../../library-modules/Furaffinity-Custom-Settings/src/utils/SettingType';
+import type { LoadingSpinner } from '../../../library-modules/Furaffinity-Loading-Animations/src/components/LoadingSpinner';
+import type { LoadingTextSpinner } from '../../../library-modules/Furaffinity-Loading-Animations/src/components/LoadingTextSpinner';
+import type { MatchList } from '../../../library-modules/Furaffinity-Match-List/src/modules/MatchList';
+import type { FuraffinityRequests } from '../../../library-modules/Furaffinity-Request-Helper/src/modules/FuraffinityRequests';
+import type { CustomImageViewer } from '../../../library-modules/Furaffinity-Submission-Image-Viewer/src/modules/CustomImageViewer';
 import { EmbeddedImage } from './modules/EmbeddedImage';
 import { downloadImage } from './utils/Utils';
 

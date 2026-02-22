@@ -1,5 +1,5 @@
 import { backwardSearchSetting, loadingSpinSpeedSetting, overwriteNavButtonsSetting, scriptName, useCustomLightboxSetting } from '..';
-import { LoadingSpinner } from '../../../../library-modules/Furaffinity-Loading-Animations/src/components/LoadingSpinner';
+import type { LoadingSpinner } from '../../../../library-modules/Furaffinity-Loading-Animations/src/components/LoadingSpinner';
 import checkTags from '../../../../library-modules/GlobalUtils/src/FA-Functions/checkTags';
 import { Logger } from '../../../../library-modules/GlobalUtils/src/Logger';
 import { AutoLoaderSearch } from '../components/AutoLoaderSearch';
@@ -16,7 +16,7 @@ export class AutoLoader {
     private _loadingSpinner: LoadingSpinner;
     private _comicNavExists = false;
     private _searchButton: HTMLAnchorElement;
-    
+
     constructor() {
         this.currSid = getCurrViewSid(document);
 
@@ -31,7 +31,7 @@ export class AutoLoader {
         this._searchButton.style.margin = '20px 0 10px 0';
         this.submissionImg.parentNode!.appendChild(document.createElement('br'));
         this.submissionImg.parentNode!.appendChild(this._searchButton);
-        
+
         const descriptionElem = document.getElementById('columnpage')?.querySelector('div[class*="submission-description"]');
         if (descriptionElem != null) {
             this.currComicNav = ComicNavigation.fromElement(descriptionElem as HTMLElement);
@@ -104,7 +104,7 @@ export class AutoLoader {
 
         this.addLoadedSubmissions(submissionsBefore, submissionsAfter);
         if (useCustomLightboxSetting.value) {
-            new Lightbox(this.currSid, {...submissionsBefore, ...submissionsAfter});
+            new Lightbox(this.currSid, { ...submissionsBefore, ...submissionsAfter });
         }
         this._loadingSpinner.visible = false;
     }

@@ -7,18 +7,6 @@
             "group": "build",
             "problemMatcher": [],
             "label": "Build: Browser Extension",
-            "detail": "Build Browser Extension without dependencies",
-            "presentation": {
-                "showReuseMessage": false,
-                "clear": true
-            }
-        },
-        {
-            "type": "npm",
-            "script": "build:Browser-Extension-Deps",
-            "group": "build",
-            "problemMatcher": [],
-            "label": "Build: Browser Extension (with deps)",
             "detail": "Build Browser Extension including all dependencies",
             "presentation": {
                 "showReuseMessage": false,
@@ -27,10 +15,10 @@
         },
         {
             "type": "npm",
-            "script": "build:Browser-Extension-Deps-Rebuild",
+            "script": "build:Browser-Extension-Rebuild",
             "group": "build",
             "problemMatcher": [],
-            "label": "Rebuild: Browser Extension (with deps)",
+            "label": "Rebuild: Browser Extension",
             "detail": "Rebuild Browser Extension including all dependencies",
             "presentation": {
                 "showReuseMessage": false,
@@ -44,18 +32,6 @@
             "problemMatcher": [],
             "label": "Package: Browser Extension",
             "detail": "Package Browser Extension",
-            "presentation": {
-                "showReuseMessage": false,
-                "clear": true
-            }
-        },
-        {
-            "type": "npm",
-            "script": "package:source",
-            "group": "build",
-            "problemMatcher": [],
-            "label": "Package: Source",
-            "detail": "Package all source code",
             "presentation": {
                 "showReuseMessage": false,
                 "clear": true

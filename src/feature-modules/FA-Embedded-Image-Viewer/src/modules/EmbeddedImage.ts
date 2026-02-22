@@ -1,11 +1,11 @@
 import { closeEmbedAfterOpenSetting, loadingSpinSpeedFavSetting, loadingSpinSpeedSetting, openInNewTabSetting, previewQualitySetting, requestHelper, showWatchingInfoSetting } from '..';
-import { LoadingSpinner } from '../../../../library-modules/Furaffinity-Loading-Animations/src/components/LoadingSpinner';
+import type { LoadingSpinner } from '../../../../library-modules/Furaffinity-Loading-Animations/src/components/LoadingSpinner';
 import { EmbeddedHTML } from '../components/EmbeddedHTML';
 import { getByLinkFromFigcaption, getFavKey, getUserFromFigcaption } from '../utils/Utils';
 import '../styles/Style.css';
 import string from '../../../../library-modules/GlobalUtils/src/string';
 import { Logger } from '../../../../library-modules/GlobalUtils/src/Logger';
-import { CustomImageViewer } from '../../../../library-modules/Furaffinity-Submission-Image-Viewer/src/modules/CustomImageViewer';
+import type { CustomImageViewer } from '../../../../library-modules/Furaffinity-Submission-Image-Viewer/src/modules/CustomImageViewer';
 
 const embeddedModes = {
     watchesFavoriteViewer: 'wfv-favorites',
