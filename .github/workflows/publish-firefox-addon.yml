@@ -11,18 +11,22 @@ jobs:
     runs-on: ubuntu-latest
     permissions:
       contents: read
+    env:
+      RELEASE_NOTES: 'new release'
     steps:
       - name: Download extension zip and source archive from release
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           TAG=$(gh release list --repo ${{ github.repository }} --limit 1 --json tagName --jq '.[0].tagName')
+          echo "TAG=$TAG" >> $GITHUB_ENV
           gh release download "$TAG" \
             --repo ${{ github.repository }} \
             --pattern 'furaffinity-features-extension.zip' \
             --dir dist/
           curl -fsSL "https://github.com/${{ github.repository }}/archive/refs/tags/${TAG}.zip" \
             -o dist/furaffinity-features-source.zip
+          echo "RELEASE_NOTES=Updated to $TAG" >> $GITHUB_ENV
 
       - name: Verify zips exist
         run: |
@@ -40,6 +44,7 @@ jobs:
           addon-id: ${{ secrets.FIREFOX_EXTENSION_UUID }}
           addon-path: 'dist/furaffinity-features-extension.zip'
           source-path: 'dist/furaffinity-features-source.zip'
+          release-note: ${{ env.RELEASE_NOTES }}
           approval-note: |
             The source project requires Node.js 20.x and npm.
             To build the extension, run:
