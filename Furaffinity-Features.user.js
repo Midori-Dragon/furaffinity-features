@@ -6,6 +6,7 @@
 // @require     https://greasyfork.org/scripts/483952-furaffinity-request-helper/code/483952-furaffinity-request-helper.js
 // @require     https://greasyfork.org/scripts/492931-furaffinity-submission-image-viewer/code/492931-furaffinity-submission-image-viewer.js
 // @require     https://greasyfork.org/scripts/485827-furaffinity-match-list/code/485827-furaffinity-match-list.js
+// @require     https://greasyfork.org/scripts/528997-furaffinity-message-box/code/528997-furaffinity-message-box.js
 // @require     https://greasyfork.org/scripts/485153-furaffinity-loading-animations/code/485153-furaffinity-loading-animations.js
 // @require     https://greasyfork.org/scripts/476762-furaffinity-custom-pages/code/476762-furaffinity-custom-pages.js
 // @require     https://greasyfork.org/scripts/475041-furaffinity-custom-settings/code/475041-furaffinity-custom-settings.js
@@ -13,10 +14,9 @@
 // @require     https://greasyfork.org/scripts/457759-fa-webcomic-auto-loader/code/457759-fa-webcomic-auto-loader.js
 // @require     https://greasyfork.org/scripts/462632-fa-infini-gallery/code/462632-fa-infini-gallery.js
 // @require     https://greasyfork.org/scripts/527752-fa-instant-nuker/code/527752-fa-instant-nuker.js
-// @require     https://greasyfork.org/scripts/528997-furaffinity-message-box/code/528997-furaffinity-message-box.js
 // @require     https://greasyfork.org/scripts/463464-fa-watches-favorites-viewer/code/463464-fa-watches-favorites-viewer.js
 // @grant       GM_info
-// @version     1.3.2
+// @version     1.3.6
 // @author      Midori Dragon
 // @description Combines all Furaffinity Features Scripts into one
 // @icon        https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/logo.png
@@ -24,50 +24,5 @@
 // @homepageURL https://greasyfork.org/scripts/543793-furaffinity-features
 // @supportURL  https://greasyfork.org/scripts/543793-furaffinity-features/feedback
 // ==/UserScript==
-// jshint esversion: 11
-(function () {
-    'use strict';
 
-    var LogLevel;
-    (function (LogLevel) {
-        LogLevel[LogLevel["Error"] = 1] = "Error";
-        LogLevel[LogLevel["Warning"] = 2] = "Warning";
-        LogLevel[LogLevel["Info"] = 3] = "Info";
-    })(LogLevel || (LogLevel = {}));
-    class Logger {
-        static log(logLevel = LogLevel.Warning, ...args) {
-            if (window.__FF_GLOBAL_LOG_LEVEL__ == null) {
-                window.__FF_GLOBAL_LOG_LEVEL__ = LogLevel.Error;
-            }
-            if (logLevel > window.__FF_GLOBAL_LOG_LEVEL__) {
-                return;
-            }
-            switch (logLevel) {
-                case LogLevel.Error:
-                    console.error(...args);
-                    break;
-                case LogLevel.Warning:
-                    console.warn(...args);
-                    break;
-                case LogLevel.Info:
-                    console.log(...args);
-                    break;
-            }
-        }
-        static setLogLevel(logLevel) {
-            window.__FF_GLOBAL_LOG_LEVEL__ = logLevel;
-        }
-        static logError(...args) {
-            Logger.log(LogLevel.Error, ...args);
-        }
-        static logWarning(...args) {
-            Logger.log(LogLevel.Warning, ...args);
-        }
-        static logInfo(...args) {
-            Logger.log(LogLevel.Info, ...args);
-        }
-    }
-
-    Logger.logInfo('Furaffinity Features Loaded');
-
-})();
+console.log('Furaffinity-Features loaded');

@@ -2,7 +2,7 @@
 // @name        Furaffinity-Custom-Pages
 // @namespace   Violentmonkey Scripts
 // @grant       none
-// @version     1.2.3
+// @version     1.2.4
 // @author      Midori Dragon
 // @description Library to create Custom pages on Furaffinitiy
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png

@@ -3,7 +3,7 @@
 // @namespace   Violentmonkey Scripts
 // @require     https://greasyfork.org/scripts/525666-furaffinity-prototype-extensions/code/525666-furaffinity-prototype-extensions.js
 // @grant       none
-// @version     1.2.2
+// @version     1.2.3
 // @author      Midori Dragon
 // @description Library for creating different loading animations on Furaffinity
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png

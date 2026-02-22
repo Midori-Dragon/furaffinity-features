@@ -10,7 +10,7 @@
 // @require     https://greasyfork.org/scripts/476762-furaffinity-custom-pages/code/476762-furaffinity-custom-pages.js
 // @require     https://greasyfork.org/scripts/475041-furaffinity-custom-settings/code/475041-furaffinity-custom-settings.js
 // @grant       GM_info
-// @version     3.0.16
+// @version     3.0.17
 // @author      Midori Dragon
 // @description Scans the Favorites of your Watches for new Favorites and shows a Button to view these (if any where found). (Works like Submission Page)
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
@@ -241,9 +241,14 @@
 
     
     class SyncedStorage {
+        static warningSentCount = 0;
+        static maxWarningCount = 10;
         static async setItem(key, value) {
             if (!GMInfo.isBrowserEnvironment()) {
-                Logger.logWarning('SyncedStorage is only available in browser extensions.');
+                if (this.warningSentCount < this.maxWarningCount) {
+                    Logger.logWarning('SyncedStorage is only available in browser extensions.');
+                    this.warningSentCount++;
+                }
                 return;
             }
             Logger.logInfo(`Setting item in synced storage: ${key}=${value}`);
@@ -264,7 +269,10 @@
         }
         static async getItem(key) {
             if (!GMInfo.isBrowserEnvironment()) {
-                Logger.logWarning('SyncedStorage is only available in browser extensions.');
+                if (this.warningSentCount < this.maxWarningCount) {
+                    Logger.logWarning('SyncedStorage is only available in browser extensions.');
+                    this.warningSentCount++;
+                }
                 return;
             }
             Logger.logInfo(`Getting item from synced storage: ${key}`);
@@ -285,7 +293,10 @@
         }
         static async getAllItems() {
             if (!GMInfo.isBrowserEnvironment()) {
-                Logger.logWarning('SyncedStorage is only available in browser extensions.');
+                if (this.warningSentCount < this.maxWarningCount) {
+                    Logger.logWarning('SyncedStorage is only available in browser extensions.');
+                    this.warningSentCount++;
+                }
                 return {};
             }
             Logger.logInfo('Getting all items from synced storage');
@@ -307,7 +318,10 @@
         }
         static async removeItem(key) {
             if (!GMInfo.isBrowserEnvironment()) {
-                Logger.logWarning('SyncedStorage is only available in browser extensions.');
+                if (this.warningSentCount < this.maxWarningCount) {
+                    Logger.logWarning('SyncedStorage is only available in browser extensions.');
+                    this.warningSentCount++;
+                }
                 return;
             }
             Logger.logInfo(`Removing item from synced storage: ${key}`);
