@@ -3,9 +3,15 @@ import { Logger } from '../Logger';
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 export class SyncedStorage {
+    static warningSentCount: number = 0;
+    static maxWarningCount: number = 10;
+
     static async setItem(key: any, value: any): Promise<void> {
         if (!GMInfo.isBrowserEnvironment()) {
-            Logger.logWarning('SyncedStorage is only available in browser extensions.');
+            if (this.warningSentCount < this.maxWarningCount) {
+                Logger.logWarning('SyncedStorage is only available in browser extensions.');
+                this.warningSentCount++;
+            }
             return;
         }
         Logger.logInfo(`Setting item in synced storage: ${key}=${value}`);
@@ -27,7 +33,10 @@ export class SyncedStorage {
 
     static async getItem(key: any): Promise<any | null> {
         if (!GMInfo.isBrowserEnvironment()) {
-            Logger.logWarning('SyncedStorage is only available in browser extensions.');
+            if (this.warningSentCount < this.maxWarningCount) {
+                Logger.logWarning('SyncedStorage is only available in browser extensions.');
+                this.warningSentCount++;
+            }
             return;
         }
         Logger.logInfo(`Getting item from synced storage: ${key}`);
@@ -49,7 +58,10 @@ export class SyncedStorage {
 
     static async getAllItems(): Promise<Record<string, any>> {
         if (!GMInfo.isBrowserEnvironment()) {
-            Logger.logWarning('SyncedStorage is only available in browser extensions.');
+            if (this.warningSentCount < this.maxWarningCount) {
+                Logger.logWarning('SyncedStorage is only available in browser extensions.');
+                this.warningSentCount++;
+            }
             return {};
         }
         Logger.logInfo('Getting all items from synced storage');
@@ -72,7 +84,10 @@ export class SyncedStorage {
 
     static async removeItem(key: any): Promise<void> {
         if (!GMInfo.isBrowserEnvironment()) {
-            Logger.logWarning('SyncedStorage is only available in browser extensions.');
+            if (this.warningSentCount < this.maxWarningCount) {
+                Logger.logWarning('SyncedStorage is only available in browser extensions.');
+                this.warningSentCount++;
+            }
             return;
         }
         Logger.logInfo(`Removing item from synced storage: ${key}`);
