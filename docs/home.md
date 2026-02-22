@@ -270,7 +270,7 @@ Note that each module has its own webpack configuration. In this webpack config 
 
 #### UserScript Context
 
-When testing the Project as UserScript you can either manually copy the `bundle.user.js` file from the `dist` folder to the userscript manager or use the `npm run serve` command to host a local http server, where you can copy the link to the `bundle.user.js` file to use for the userscript manager. This method also allows the userscript manager to automatically update the userscript every time you build the project.
+When testing the Project as UserScript you can either manually copy the `furaffinity-features.user.js` file from the `dist` folder to the userscript manager or use the `npm run serve` command to host a local http server, where you can copy the link to the `furaffinity-features.user.js` file to use for the userscript manager. This method also allows the userscript manager to automatically update the userscript every time you build the project.
 
 #### Browser Extension Context
 

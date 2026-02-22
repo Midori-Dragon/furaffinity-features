@@ -287,7 +287,7 @@ async function main() {
 
     const rollupConfigPath = args[0];
     const distFolder = path.resolve(__dirname, '..', 'dist');
-    const outputPath = path.join(distFolder, 'bundle.user.js');
+    const outputPath = path.join(distFolder, 'furaffinity-features.user.js');
 
     try {
         const moduleName = path.basename(path.dirname(rollupConfigPath));

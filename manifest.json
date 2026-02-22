@@ -4,12 +4,20 @@
     "version": "1.3.0",
     "description": "A collection of features and enhancements for Fur Affinity",
     "author": "Midori Dragon",
-    "permissions": [ "storage" ],
-    "host_permissions": [ "*://*.furaffinity.net*" ],
+    "permissions": [
+        "storage"
+    ],
+    "host_permissions": [
+        "*://*.furaffinity.net*"
+    ],
     "content_scripts": [
         {
-            "matches": [ "*://*.furaffinity.net*" ],
-            "js": [ "bundle.user.js" ],
+            "matches": [
+                "*://*.furaffinity.net*"
+            ],
+            "js": [
+                "furaffinity-features.user.js"
+            ],
             "run_at": "document_idle",
             "all_frames": true
         }

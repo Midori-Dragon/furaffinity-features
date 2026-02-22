@@ -90,7 +90,7 @@ Thank you for your interest in contributing to this project! This guide will hel
    - Use `npm run build:<your_module_name>` to build a specific module or use `shift + ctrl + b` to view default build commands and select `Build: Browser Extension (with Deps)` to build the whole project
 
 5. **Testing**
-   - For UserScript: Copy the build `bundle.user.js` file either from the top `dist` folder or from your modules `dist` folder to the userscript manager or use the `npm run serve` command to host a local server (copy link to `bundle.user.js` file to use for the userscript manager) for automatic updates
+   - For UserScript: Copy the build `furaffinity-features.user.js` file from the top `dist` folder (or `bundle.user.js` from your individual module's `dist` folder) to the userscript manager or use the `npm run serve` command to host a local server (copy link to the file to use for the userscript manager) for automatic updates
    - For Browser Extension: Use the `npm run start:firefox` or `npm run start:chrome` command to start the browser extension
 
 6. **Docs**
