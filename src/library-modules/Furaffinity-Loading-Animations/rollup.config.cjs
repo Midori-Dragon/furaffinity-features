@@ -10,7 +10,7 @@ module.exports = {
             `// ==UserScript==
 // @name        Furaffinity-Loading-Animations
 // @namespace   Violentmonkey Scripts
-// @require     https://update.greasyfork.org/scripts/525666/1549449/Furaffinity-Prototype-Extensions.js
+// @require     https://greasyfork.org/scripts/525666-furaffinity-prototype-extensions/code/525666-furaffinity-prototype-extensions.js
 // @grant       none
 // @version     1.2.1
 // @author      Midori Dragon

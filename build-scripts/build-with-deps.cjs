@@ -118,81 +118,90 @@ async function saveBuildHash(modulePath, buildPath) {
     await writeFile(hashFile, hash);
 }
 
+// Extract module slug from a GreasyFork URL.
+// Handles versionless format: https://greasyfork.org/scripts/<id>-<slug>/code/<id>-<slug>.js
+// Handles legacy versioned format: https://update.greasyfork.org/scripts/<id>/<ver>/<ScriptName>.js
+function moduleSlugFromUrl(url) {
+    const base = path.basename(url, '.js');
+    // Versionless: base is "<id>-<slug>" — strip the leading numeric id
+    return base.replace(/^\d+-/, '');
+}
+
+// Find a module directory by case-insensitive slug match across library- and feature-modules
+function findModuleDir(slug) {
+    const baseDirs = [
+        path.resolve('./src/library-modules'),
+        path.resolve('./src/feature-modules'),
+    ];
+    for (const baseDir of baseDirs) {
+        if (!fs.existsSync(baseDir)) continue;
+        const entry = fs.readdirSync(baseDir).find(e => e.toLowerCase() === slug.toLowerCase());
+        if (entry) return path.join(baseDir, entry);
+    }
+    return null;
+}
+
 // Recursively resolve dependencies and ensure correct order
 async function resolveDependencies(dependencies, rebuild = false, resolved = new Set(), order = []) {
     for (const dep of dependencies) {
-        const moduleName = path.basename(dep, '.js');
+        const slug = moduleSlugFromUrl(dep);
+        const moduleDir = findModuleDir(slug);
 
-        // Check in library-modules and feature-modules
-        const libraryModulePath = `./src/library-modules/${moduleName}`;
-        const libraryConfigPath = path.join(libraryModulePath, 'rollup.config.cjs');
-        const libraryBuildPath = path.join(libraryModulePath, 'dist/bundle.user.js');
+        if (!moduleDir) {
+            console.warn(`  ${colors.yellow}⚠ Warning: Rollup config not found for dependency: ${slug}${colors.reset}`);
+            continue;
+        }
 
-        const featureModulePath = `./src/feature-modules/${moduleName}`;
-        const featureConfigPath = path.join(featureModulePath, 'rollup.config.cjs');
-        const featureBuildPath = path.join(featureModulePath, 'dist/bundle.user.js');
+        const moduleName = path.basename(moduleDir);
+        const configPath = path.join(moduleDir, 'rollup.config.cjs');
+        const buildPath = path.join(moduleDir, 'dist/bundle.user.js');
+        const modulePath = moduleDir;
 
-        if (resolved.has(libraryBuildPath) || resolved.has(featureBuildPath)) {
+        if (resolved.has(buildPath)) {
             console.log(`${colors.cyan}Skipping already resolved dependency: ${colors.blue}${moduleName}${colors.reset}\n`);
             continue;
         }
 
-        let configPath = null;
-        let buildPath = null;
-        let modulePath = null;
-
-        // Try library-modules first
-        if (fs.existsSync(libraryConfigPath)) {
-            configPath = libraryConfigPath;
-            buildPath = libraryBuildPath;
-            modulePath = libraryModulePath;
-        }
-        // Then try feature-modules
-        else if (fs.existsSync(featureConfigPath)) {
-            configPath = featureConfigPath;
-            buildPath = featureBuildPath;
-            modulePath = featureModulePath;
+        if (!fs.existsSync(configPath)) {
+            console.warn(`  ${colors.yellow}⚠ Warning: Rollup config not found for dependency: ${moduleName}${colors.reset}`);
+            continue;
         }
 
-        if (configPath && modulePath) {
-            console.log(`${colors.cyan}Resolving dependency: ${colors.blue}${moduleName}${colors.reset}`);
+        console.log(`${colors.cyan}Resolving dependency: ${colors.blue}${moduleName}${colors.reset}`);
 
-            // Check if rebuild is needed
-            let shouldRebuild = true;
+        // Check if rebuild is needed
+        let shouldRebuild = true;
 
-            if (!rebuild) {
-                shouldRebuild = await needsRebuilding(modulePath, buildPath);
-            }
+        if (!rebuild) {
+            shouldRebuild = await needsRebuilding(modulePath, buildPath);
+        }
 
-            if (!shouldRebuild && fs.existsSync(buildPath)) {
-                console.log(`   ${colors.green}✓ Using cached build for ${moduleName}${colors.reset}`);
-            } else {
-                try {
-                    console.log(`   ${colors.cyan}Building ${colors.blue}${moduleName}${colors.reset}`);
-                    await buildModule(configPath);
-                    await saveBuildHash(modulePath, buildPath);
-                    console.log(`   ${colors.green}✓ Successfully built ${moduleName}${colors.reset}`);
-                } catch (error) {
-                    console.error(`${colors.red}✗ Error building ${moduleName}:${colors.reset}`, error);
-                    continue;
-                }
-            }
-
-            if (fs.existsSync(buildPath)) {
-                resolved.add(buildPath);
-                const { dependencies: subDeps } = await extractDependencies(buildPath, moduleName);
-                if (subDeps.length > 0) {
-                    console.log(`  ${colors.cyan}Found nested dependencies for ${colors.blue}${moduleName}:${colors.reset}`);
-                    subDeps.forEach(subDep => console.log(`    ${colors.blue}- ${subDep}${colors.reset}`));
-                }
-                await resolveDependencies(subDeps, rebuild, resolved, order);
-                order.push(buildPath);
-                console.log(`   ${colors.green}✓ Added ${moduleName} to build order${colors.reset}`);
-            } else {
-                console.warn(`  ${colors.yellow}⚠ Warning: Build file not found after building: ${buildPath}${colors.reset}`);
-            }
+        if (!shouldRebuild && fs.existsSync(buildPath)) {
+            console.log(`   ${colors.green}✓ Using cached build for ${moduleName}${colors.reset}`);
         } else {
-            console.warn(`  ${colors.yellow}⚠ Warning: Rollup config not found for dependency in library-modules or feature-modules: ${moduleName}${colors.reset}`);
+            try {
+                console.log(`   ${colors.cyan}Building ${colors.blue}${moduleName}${colors.reset}`);
+                await buildModule(configPath);
+                await saveBuildHash(modulePath, buildPath);
+                console.log(`   ${colors.green}✓ Successfully built ${moduleName}${colors.reset}`);
+            } catch (error) {
+                console.error(`${colors.red}✗ Error building ${moduleName}:${colors.reset}`, error);
+                continue;
+            }
+        }
+
+        if (fs.existsSync(buildPath)) {
+            resolved.add(buildPath);
+            const { dependencies: subDeps } = await extractDependencies(buildPath, moduleName);
+            if (subDeps.length > 0) {
+                console.log(`  ${colors.cyan}Found nested dependencies for ${colors.blue}${moduleName}:${colors.reset}`);
+                subDeps.forEach(subDep => console.log(`    ${colors.blue}- ${subDep}${colors.reset}`));
+            }
+            await resolveDependencies(subDeps, rebuild, resolved, order);
+            order.push(buildPath);
+            console.log(`   ${colors.green}✓ Added ${moduleName} to build order${colors.reset}`);
+        } else {
+            console.warn(`  ${colors.yellow}⚠ Warning: Build file not found after building: ${buildPath}${colors.reset}`);
         }
     }
 

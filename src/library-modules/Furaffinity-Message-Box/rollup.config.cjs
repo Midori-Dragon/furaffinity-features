@@ -10,7 +10,7 @@ module.exports = {
             `// ==UserScript==
 // @name        Furaffinity-Message-Box
 // @namespace   Violentmonkey Scripts
-// @require     https://update.greasyfork.org/scripts/525666/1549449/Furaffinity-Prototype-Extensions.js
+// @require     https://greasyfork.org/scripts/525666-furaffinity-prototype-extensions/code/525666-furaffinity-prototype-extensions.js
 // @grant       GM_info
 // @version     1.0.1
 // @author      Midori Dragon

@@ -11,13 +11,13 @@ module.exports = {
 // @name        FA Watches Favorites Viewer
 // @namespace   Violentmonkey Scripts
 // @match       *://*.furaffinity.net/*
-// @require     https://update.greasyfork.org/scripts/525666/1549449/Furaffinity-Prototype-Extensions.js
-// @require     https://update.greasyfork.org/scripts/483952/1672922/Furaffinity-Request-Helper.js
-// @require     https://update.greasyfork.org/scripts/485827/1549457/Furaffinity-Match-List.js
-// @require     https://update.greasyfork.org/scripts/528997/1549467/Furaffinity-Message-Box.js
-// @require     https://update.greasyfork.org/scripts/485153/1549461/Furaffinity-Loading-Animations.js
-// @require     https://update.greasyfork.org/scripts/476762/1549463/Furaffinity-Custom-Pages.js
-// @require     https://update.greasyfork.org/scripts/475041/1617223/Furaffinity-Custom-Settings.js
+// @require     https://greasyfork.org/scripts/525666-furaffinity-prototype-extensions/code/525666-furaffinity-prototype-extensions.js
+// @require     https://greasyfork.org/scripts/483952-furaffinity-request-helper/code/483952-furaffinity-request-helper.js
+// @require     https://greasyfork.org/scripts/485827-furaffinity-match-list/code/485827-furaffinity-match-list.js
+// @require     https://greasyfork.org/scripts/528997-furaffinity-message-box/code/528997-furaffinity-message-box.js
+// @require     https://greasyfork.org/scripts/485153-furaffinity-loading-animations/code/485153-furaffinity-loading-animations.js
+// @require     https://greasyfork.org/scripts/476762-furaffinity-custom-pages/code/476762-furaffinity-custom-pages.js
+// @require     https://greasyfork.org/scripts/475041-furaffinity-custom-settings/code/475041-furaffinity-custom-settings.js
 // @grant       GM_info
 // @version     3.0.15
 // @author      Midori Dragon

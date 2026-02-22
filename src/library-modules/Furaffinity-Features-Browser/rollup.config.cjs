@@ -12,12 +12,12 @@ module.exports = {
 // @name        Furaffinity-Features-Browser
 // @namespace   Violentmonkey Scripts
 // @match       *://*.furaffinity.net/*
-// @require     https://update.greasyfork.org/scripts/525666/1549449/Furaffinity-Prototype-Extensions.js
-// @require     https://update.greasyfork.org/scripts/458971/0000000/FA-Embedded-Image-Viewer.js
-// @require     https://update.greasyfork.org/scripts/457759/0000000/FA-Webcomic-Auto-Loader.js
-// @require     https://update.greasyfork.org/scripts/462632/0000000/FA-Infini-Gallery.js
-// @require     https://update.greasyfork.org/scripts/527752/0000000/FA-Instant-Nuker.js
-// @require     https://update.greasyfork.org/scripts/463464/0000000/FA-Watches-Favorites-Viewer.js
+// @require     https://greasyfork.org/scripts/525666-furaffinity-prototype-extensions/code/525666-furaffinity-prototype-extensions.js
+// @require     https://greasyfork.org/scripts/458971-fa-embedded-image-viewer/code/458971-fa-embedded-image-viewer.js
+// @require     https://greasyfork.org/scripts/457759-fa-webcomic-auto-loader/code/457759-fa-webcomic-auto-loader.js
+// @require     https://greasyfork.org/scripts/462632-fa-infini-gallery/code/462632-fa-infini-gallery.js
+// @require     https://greasyfork.org/scripts/527752-fa-instant-nuker/code/527752-fa-instant-nuker.js
+// @require     https://greasyfork.org/scripts/463464-fa-watches-favorites-viewer/code/463464-fa-watches-favorites-viewer.js
 // @grant       GM_info
 // @version     1.2.13
 // @author      Midori Dragon
