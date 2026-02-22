@@ -49,6 +49,7 @@ jobs:
           addon-id: ${{ secrets.FIREFOX_EXTENSION_UUID }}
           addon-path: 'dist/furaffinity-features-extension.zip'
           source-path: 'dist/furaffinity-features-source.zip'
+          license: 'MIT'
           release-note: ${{ env.RELEASE_NOTES }}
           approval-note: |
             The source project requires Node.js 20.x and npm.
