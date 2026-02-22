@@ -229,6 +229,8 @@ Shared utility functions and components used across other modules.
 
 ## Usage
 
+Visit the [docs](https://midori-dragon.github.io/furaffinity-features/) for a more detailed description.
+
 By default all features are enabled. You can disable features by going to the Settings page and deactivating the desired features.
 
 Settings can be found on Fur Affinity itself.
