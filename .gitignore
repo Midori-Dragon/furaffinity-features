@@ -90,6 +90,7 @@ out
 # Nuxt.js build / generate output
 .nuxt
 dist
+greasyfork-dist
 
 # Gatsby files
 .cache/
@@ -538,4 +539,3 @@ FodyWeavers.xsd
 package-lock.json
 .vs/
 .todo
-.github/

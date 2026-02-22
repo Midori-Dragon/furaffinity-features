@@ -1,0 +1,66 @@
+name: GreasyFork Release
+
+on:
+  workflow_run:
+    workflows: ["Build Release"]
+    types: [completed]
+
+jobs:
+  release:
+    if: github.event.workflow_run.conclusion == 'success'
+    runs-on: ubuntu-latest
+    permissions:
+      contents: write
+
+    steps:
+      - name: Checkout repository at release tag
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha }}
+          fetch-depth: 0
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Build all modules
+        run: npm run build:Browser-Extension-Deps-Rebuild
+
+      - name: Collect and rename bundles for GreasyFork
+        run: node build-scripts/collect-greasyfork-bundles.cjs
+
+      - name: Publish bundles to greasyfork-releases branch
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git config user.name "github-actions[bot]"
+          git config user.email "github-actions[bot]@users.noreply.github.com"
+          git remote set-url origin "https://x-access-token:${GITHUB_TOKEN}@github.com/${{ github.repository }}.git"
+
+          # Check out the greasyfork branch into a separate worktree
+          if git fetch origin greasyfork-releases 2>/dev/null; then
+            # Branch exists remotely — create a local tracking branch
+            git worktree add -b greasyfork-releases /tmp/greasyfork-branch origin/greasyfork-releases
+          else
+            # Branch doesn't exist yet — create an orphan
+            git worktree add /tmp/greasyfork-branch --detach HEAD
+            cd /tmp/greasyfork-branch
+            git checkout --orphan greasyfork-releases
+            git rm -rf . --quiet 2>/dev/null || true
+            cd -
+          fi
+
+          # Replace all .user.js files with the freshly built ones
+          rm -f /tmp/greasyfork-branch/*.user.js
+          cp greasyfork-dist/*.user.js /tmp/greasyfork-branch/
+
+          cd /tmp/greasyfork-branch
+          git add -A
+          # Only commit if there are actual changes
+          git diff --staged --quiet && echo "No changes to publish." || \
+            git commit -m "Release $(gh api /repos/${{ github.repository }}/releases/latest --jq '.tag_name')"
+          git push origin greasyfork-releases

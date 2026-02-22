@@ -31,7 +31,7 @@ async function createSourceZip(distPath, outputFile) {
     console.log(`${colors.cyan}Starting source code packaging process...${colors.reset}`);
     console.log(`${colors.blue}Target directory: ${colors.reset}${distPath}`);
     console.log(`${colors.blue}Output file: ${colors.reset}${outputFile}\n`);
-    
+
     const rootDir = path.resolve(__dirname, '..');
 
     // Ensure dist directory exists
@@ -92,9 +92,11 @@ async function main() {
         const distPath = path.resolve(__dirname, '..', 'dist');
         const outputFile = path.join(distPath, 'furaffinity-features-source.zip');
 
-        console.log(`${colors.cyan}Clearing dist Folder...${colors.reset}`);
-        await emptyDir(distPath);
-        console.log();
+        // Ensure dist exists (may not exist in a clean CI environment)
+        if (!fs.existsSync(distPath)) {
+            fs.mkdirSync(distPath, { recursive: true });
+        }
+
         await createSourceZip(distPath, outputFile);
     } catch (error) {
         console.error(`${colors.red}✗ Failed to package source: ${error}${colors.reset}`);

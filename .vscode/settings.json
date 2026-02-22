@@ -150,7 +150,6 @@
         "**/.git": true,
         "**/build": true,
         "**/.vs": true,
-        "**/.github": true,
         "**/bin": true,
         "**/obj": true,
         "**/Properties": true,
@@ -159,7 +158,6 @@
     "search.exclude": {
         "**/node_modules": true,
         "**/.git": true,
-        "**/.github": true,
         "**/bin": true,
         "**/obj": true,
         "**/Properties": true,
