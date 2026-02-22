@@ -4,10 +4,16 @@ on:
   workflow_run:
     workflows: ["Build Release"]
     types: [completed]
+  workflow_dispatch:
+    inputs:
+      tag:
+        description: 'Release tag to publish (e.g. v1.2.3)'
+        required: true
+        type: string
 
 jobs:
   release:
-    if: github.event.workflow_run.conclusion == 'success'
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     permissions:
       contents: write
@@ -16,7 +22,7 @@ jobs:
       - name: Checkout repository at release tag
         uses: actions/checkout@v4
         with:
-          ref: ${{ github.event.workflow_run.head_sha }}
+          ref: ${{ github.event_name == 'workflow_dispatch' && inputs.tag || github.event.workflow_run.head_sha }}
           fetch-depth: 0
 
       - name: Setup Node.js
@@ -62,6 +68,10 @@ jobs:
           cd /tmp/greasyfork-branch
           git add -A
           # Only commit if there are actual changes
+          RELEASE_TAG=${{ github.event_name == 'workflow_dispatch' && inputs.tag || '' }}
+          if [ -z "$RELEASE_TAG" ]; then
+            RELEASE_TAG=$(gh release list --repo ${{ github.repository }} --limit 1 --json tagName --jq '.[0].tagName')
+          fi
           git diff --staged --quiet && echo "No changes to publish." || \
-            git commit -m "Release $(gh release list --repo ${{ github.repository }} --limit 1 --json tagName --jq '.[0].tagName')"
+            git commit -m "Release $RELEASE_TAG"
           git push origin greasyfork-releases
