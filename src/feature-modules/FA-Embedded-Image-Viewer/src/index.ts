@@ -43,18 +43,18 @@ closeEmbedAfterOpenSetting.description = 'Wether to close the current embedded S
 closeEmbedAfterOpenSetting.defaultValue = true;
 
 export const previewQualitySetting = customSettings.newSetting(window.FASettingType.Option, 'Preview Quality');
-previewQualitySetting.description = 'The quality of the preview image. Value range is 2-6. (Higher values can be slower)';
+previewQualitySetting.description = 'The quality of the preview image. (Higher values will be slower)';
 previewQualitySetting.defaultValue = 400;
 previewQualitySetting.options = {
-    200: 'Very Low',
-    300: 'Low',
-    400: 'Medium',
-    500: 'High',
-    600: 'Very High'
+    200: 'Very Low (200px)',
+    300: 'Low (300px)',
+    400: 'Medium (400px)',
+    500: 'High (500px)',
+    600: 'Very High (600px)'
 };
 
 export const showWatchingInfoSetting = customSettings.newSetting(window.FASettingType.Boolean, 'Show Watching Info');
-showWatchingInfoSetting.description = 'Wether to show if the user is watching the Submissions Author.';
+showWatchingInfoSetting.description = 'Wether to show if the user is watching the Submissions Author. (Will be slower)';
 showWatchingInfoSetting.defaultValue = false;
 
 customSettings.loadSettings();
