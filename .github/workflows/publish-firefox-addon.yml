@@ -34,17 +34,17 @@ jobs:
             fi
           done
 
-      # - name: Upload to Firefox Add-on Store
-      #   uses: browser-actions/release-firefox-addon@latest
-      #   with:
-      #     addon-id: ${{ secrets.FIREFOX_EXTENSION_UUID }}
-      #     addon-path: 'dist/furaffinity-features-extension.zip'
-      #     source-path: 'dist/furaffinity-features-source.zip'
-      #     approval-note: |
-      #       The source project requires Node.js 20.x and npm.
-      #       To build the extension, run:
-      #         npm ci
-      #         npm run build:Browser-Extension-Deps-Rebuild
-      #         npm run package:Browser-Extension
-      #     auth-api-issuer: ${{ secrets.FIREFOX_AUTH_API_ISSUER }}
-      #     auth-api-secret: ${{ secrets.FIREFOX_AUTH_API_SECRET }}
+      - name: Upload to Firefox Add-on Store
+        uses: browser-actions/release-firefox-addon@latest
+        with:
+          addon-id: ${{ secrets.FIREFOX_EXTENSION_UUID }}
+          addon-path: 'dist/furaffinity-features-extension.zip'
+          source-path: 'dist/furaffinity-features-source.zip'
+          approval-note: |
+            The source project requires Node.js 20.x and npm.
+            To build the extension, run:
+              npm ci
+              npm run build:Browser-Extension-Deps-Rebuild
+              npm run package:Browser-Extension
+          auth-api-issuer: ${{ secrets.FIREFOX_AUTH_API_ISSUER }}
+          auth-api-secret: ${{ secrets.FIREFOX_AUTH_API_SECRET }}
