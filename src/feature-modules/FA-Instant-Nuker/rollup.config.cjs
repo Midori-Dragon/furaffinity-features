@@ -16,7 +16,7 @@ module.exports = {
 // @require     https://greasyfork.org/scripts/485827-furaffinity-match-list/code/485827-furaffinity-match-list.js
 // @require     https://greasyfork.org/scripts/475041-furaffinity-custom-settings/code/475041-furaffinity-custom-settings.js
 // @grant       GM_info
-// @version     1.0.9
+// @version     1.0.10
 // @author      Midori Dragon
 // @description Adds nuke buttons to instantly nuke all submissions or messages
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png

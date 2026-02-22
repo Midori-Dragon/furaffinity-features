@@ -12,7 +12,7 @@ module.exports = {
 // @namespace   Violentmonkey Scripts
 // @require     https://greasyfork.org/scripts/525666-furaffinity-prototype-extensions/code/525666-furaffinity-prototype-extensions.js
 // @grant       GM_info
-// @version     1.0.2
+// @version     1.0.3
 // @author      Midori Dragon
 // @description Library to hold MessageBox functions for Furaffinity
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
