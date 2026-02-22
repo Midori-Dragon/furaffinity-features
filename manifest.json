@@ -8,12 +8,12 @@
         "storage"
     ],
     "host_permissions": [
-        "*://*.furaffinity.net*"
+        "*://*.furaffinity.net/*"
     ],
     "content_scripts": [
         {
             "matches": [
-                "*://*.furaffinity.net*"
+                "*://*.furaffinity.net/*"
             ],
             "js": [
                 "furaffinity-features.user.js"

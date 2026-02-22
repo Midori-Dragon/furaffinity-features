@@ -30,34 +30,12 @@ jobs:
             echo "✗ dist/furaffinity-features-extension.zip NOT FOUND" && exit 1
           fi
 
-      - name: Publish to Chrome Web Store
-        env:
-          CHROME_CLIENT_ID: ${{ secrets.CHROME_CLIENT_ID }}
-          CHROME_CLIENT_SECRET: ${{ secrets.CHROME_SECRET }}
-          CHROME_REFRESH_TOKEN: ${{ secrets.CHROME_REFRESH_TOKEN }}
-          CHROME_EXTENSION_ID: ${{ secrets.CHROME_EXTENSION_ID }}
-        run: |
-          ACCESS_TOKEN=$(curl -s -X POST \
-            -d "client_id=${CHROME_CLIENT_ID}&client_secret=${CHROME_CLIENT_SECRET}&refresh_token=${CHROME_REFRESH_TOKEN}&grant_type=refresh_token" \
-            "https://oauth2.googleapis.com/token" | jq -r .access_token)
-          if [ -z "$ACCESS_TOKEN" ] || [ "$ACCESS_TOKEN" = "null" ]; then
-            echo "Failed to obtain access token" && exit 1
-          fi
-
-          UPLOAD_RESPONSE=$(curl -s -X PUT \
-            -H "Authorization: Bearer ${ACCESS_TOKEN}" \
-            -H "x-goog-api-version: 2" \
-            -T dist/furaffinity-features-extension.zip \
-            "https://www.googleapis.com/upload/chromewebstore/v1.1/items/${CHROME_EXTENSION_ID}")
-          echo "Upload response: $UPLOAD_RESPONSE"
-          echo "$UPLOAD_RESPONSE" | jq -e '.uploadState == "SUCCESS" or .uploadState == "IN_PROGRESS"' \
-            || { echo "Upload failed"; exit 1; }
-
-          PUBLISH_RESPONSE=$(curl -s -X POST \
-            -H "Authorization: Bearer ${ACCESS_TOKEN}" \
-            -H "x-goog-api-version: 2" \
-            -H "Content-Length: 0" \
-            "https://www.googleapis.com/chromewebstore/v1.1/items/${CHROME_EXTENSION_ID}/publish")
-          echo "Publish response: $PUBLISH_RESPONSE"
-          echo "$PUBLISH_RESPONSE" | jq -e '.status | map(. == "OK" or . == "ITEM_PENDING_REVIEW") | any' \
-            || { echo "Publish failed"; exit 1; }
+      - name: Upload to Chrome Web Store
+        uses: mobilefirstllc/cws-publish@latest
+        with:
+          action: 'upload'
+          client_id: ${{ secrets.CHROME_CLIENT_ID }}
+          client_secret: ${{ secrets.CHROME_CLIENT_SECRET }}
+          refresh_token: ${{ secrets.CHROME_REFRESH_TOKEN }}
+          extension_id: ${{ secrets.CHROME_EXTENSION_ID }}
+          zip_file: 'dist/furaffinity-features-extension.zip'

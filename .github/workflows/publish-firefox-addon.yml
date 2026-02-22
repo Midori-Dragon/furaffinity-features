@@ -38,6 +38,11 @@ jobs:
             fi
           done
 
+      - name: Lint extension with web-ext
+        run: |
+          unzip -q dist/furaffinity-features-extension.zip -d dist/extension-unpacked
+          npx web-ext lint --source-dir=dist/extension-unpacked
+
       - name: Upload to Firefox Add-on Store
         uses: browser-actions/release-firefox-addon@latest
         with:
