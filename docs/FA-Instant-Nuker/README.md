@@ -9,6 +9,8 @@ A userscript/browser extension that enhances FurAffinity gallery browsing by pro
   - Show a new Nuke button without any Text
   - Nuke the corresponding messages or submissions when the button is pressed instantly without any confirmation
 
+<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-in.png" width="100%">
+
 ## Feature Roadmap
 
 | Feature              | Status      |

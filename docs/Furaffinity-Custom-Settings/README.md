@@ -26,6 +26,8 @@ Helper Library to create Custom settings on Furaffinitiy. Also see this Script o
   customSettings.loadSettings(); //loads Navigation Menu & Settings if on Settings Page
   ```
 
+<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-cs.png" width="100%">
+
 ## Feature Roadmap
 
 | Feature                                               | Status      |

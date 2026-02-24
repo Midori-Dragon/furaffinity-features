@@ -10,6 +10,8 @@ A userscript/browser extension that enhances FurAffinity gallery browsing by aut
   - Load and append the next page's content
   - Resume scroll detection for continuous loading
 
+<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-ig.png" width="100%">
+
 ## Feature Roadmap
 
 | Feature                                                                      | Status      |

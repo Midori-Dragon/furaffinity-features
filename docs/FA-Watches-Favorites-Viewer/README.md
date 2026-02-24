@@ -11,6 +11,9 @@ A userscript/browser extension that adds a new function to scan for favorites of
   - When clicked, the script will show the new favorites in a new page
 - To view the results of the last scan a new Option "Watches Favorites" is shown in the "Manage My Content" FA Section
 
+<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-wfv-1.png" width="100%">
+<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-wfv-2.png" width="100%">
+
 ## Feature Roadmap
 
 | Feature                                                                      | Status      |
