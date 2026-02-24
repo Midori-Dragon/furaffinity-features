@@ -30,9 +30,6 @@ jobs:
         run: npm run package:Browser-Extension
 
       - name: Upload extension zip to release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          gh release upload "${{ github.event.release.tag_name }}" \
-            dist/furaffinity-features-extension.zip \
-            --clobber
+        uses: softprops/action-gh-release@v2
+        with:
+          files: dist/furaffinity-features-extension.zip

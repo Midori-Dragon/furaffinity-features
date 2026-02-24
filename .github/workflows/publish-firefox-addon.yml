@@ -4,53 +4,82 @@ on:
   workflow_run:
     workflows: ["Build Release"]
     types: [completed]
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Release tag to publish (e.g. v1.2.3)'
+        required: true
 
 jobs:
   publish:
-    if: github.event.workflow_run.conclusion == 'success'
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     permissions:
       contents: read
-    env:
-      RELEASE_NOTES: 'new release'
+
     steps:
-      - name: Download extension zip and source archive from release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-        run: |
-          TAG=$(gh release list --repo ${{ github.repository }} --limit 1 --json tagName --jq '.[0].tagName')
-          echo "TAG=$TAG" >> $GITHUB_ENV
-          gh release download "$TAG" \
-            --repo ${{ github.repository }} \
-            --pattern 'furaffinity-features-extension.zip' \
-            --dir dist/
-          curl -fsSL "https://github.com/${{ github.repository }}/archive/refs/tags/${TAG}.zip" \
-            -o dist/furaffinity-features-source.zip
-          echo "RELEASE_NOTES=Updated to $TAG" >> $GITHUB_ENV
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.ref }}
+          fetch-depth: 0
+          fetch-tags: true
 
-      - name: Verify zips exist
+      - name: Get release tag
+        id: tag
         run: |
-          for f in dist/furaffinity-features-extension.zip dist/furaffinity-features-source.zip; do
-            if [ -f "$f" ]; then
-              echo "✓ $f exists ($(du -h $f | cut -f1))"
-            else
-              echo "✗ $f NOT FOUND" && exit 1
-            fi
-          done
+          if [ -n "${{ inputs.release_tag }}" ]; then
+            echo "tag=${{ inputs.release_tag }}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=$(git describe --tags --exact-match HEAD)" >> $GITHUB_OUTPUT
+          fi
 
-      - name: Lint extension with web-ext
+      - name: Download extension zip from release
+        uses: robinraju/release-downloader@v1
+        with:
+          tag: ${{ steps.tag.outputs.tag }}
+          fileName: "furaffinity-features-extension.zip"
+          zipBall: true
+          out-file-path: "."
+
+      - name: Verify extension and source zips exist
+        id: verify
         run: |
-          unzip -q dist/furaffinity-features-extension.zip -d dist/extension-unpacked
-          npx web-ext lint --source-dir=dist/extension-unpacked
+          tag="${{ steps.tag.outputs.tag }}"
+          repo="${{ github.event.repository.name }}"
+          ext_zip="furaffinity-features-extension.zip"
+          src_zip="${repo}-${tag}.zip"
+
+          if [ ! -f "$ext_zip" ]; then
+            echo "✗ $ext_zip NOT FOUND" && exit 1
+          fi
+
+          if [ ! -f "$src_zip" ]; then
+            echo "✗ $src_zip NOT FOUND (expected GitHub source zip)" && exit 1
+          fi
+
+          echo "✓ $ext_zip exists ($(du -h "$ext_zip" | cut -f1))"
+          echo "✓ $src_zip exists ($(du -h "$src_zip" | cut -f1))"
+
+          echo "extension_zip=$ext_zip" >> "$GITHUB_OUTPUT"
+          echo "source_zip=$src_zip" >> "$GITHUB_OUTPUT"
+
+      - name: Build release notes
+        id: notes
+        run: |
+          url="https://github.com/${{ github.repository }}/releases/tag/${{ steps.tag.outputs.tag }}"
+          release_notes="View release notes on GitHub: ${url}"
+          echo "release_notes=$release_notes" >> "$GITHUB_OUTPUT"
+          echo "Release notes: $release_notes"
 
       - name: Upload to Firefox Add-on Store
         uses: browser-actions/release-firefox-addon@latest
         with:
           addon-id: ${{ secrets.FIREFOX_EXTENSION_UUID }}
-          addon-path: 'dist/furaffinity-features-extension.zip'
-          source-path: 'dist/furaffinity-features-source.zip'
+          addon-path: ${{ steps.verify.outputs.extension_zip }}
+          source-path: ${{ steps.verify.outputs.source_zip }}
           license: 'MIT'
-          release-note: ${{ env.RELEASE_NOTES }}
+          release-note: ${{ steps.notes.outputs.release_notes }}
           approval-note: |
             The source project requires Node.js 20.x and npm.
             To build the extension, run:

@@ -4,30 +4,49 @@ on:
   workflow_run:
     workflows: ["Build Release"]
     types: [completed]
+  workflow_dispatch:
+    inputs:
+      release_tag:
+        description: 'Release tag to publish (e.g. v1.2.3)'
+        required: true
 
 jobs:
   publish:
-    if: github.event.workflow_run.conclusion == 'success'
+    if: github.event_name == 'workflow_dispatch' || github.event.workflow_run.conclusion == 'success'
     runs-on: ubuntu-latest
     permissions:
       contents: read
+
     steps:
-      - name: Download extension zip from release
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.workflow_run.head_sha || github.ref }}
+          fetch-depth: 0
+          fetch-tags: true
+
+      - name: Get release tag
+        id: tag
         run: |
-          TAG=$(gh release list --repo ${{ github.repository }} --limit 1 --json tagName --jq '.[0].tagName')
-          gh release download "$TAG" \
-            --repo ${{ github.repository }} \
-            --pattern 'furaffinity-features-extension.zip' \
-            --dir dist/
+          if [ -n "${{ inputs.release_tag }}" ]; then
+            echo "tag=${{ inputs.release_tag }}" >> $GITHUB_OUTPUT
+          else
+            echo "tag=$(git describe --tags --exact-match HEAD)" >> $GITHUB_OUTPUT
+          fi
+
+      - name: Download extension zip from release
+        uses: robinraju/release-downloader@v1
+        with:
+          tag: ${{ steps.tag.outputs.tag }}
+          fileName: "furaffinity-features-extension.zip"
+          out-file-path: "."
 
       - name: Verify zip exists
         run: |
-          if [ -f dist/furaffinity-features-extension.zip ]; then
-            echo "✓ dist/furaffinity-features-extension.zip exists ($(du -h dist/furaffinity-features-extension.zip | cut -f1))"
+          if [ -f furaffinity-features-extension.zip ]; then
+            echo "✓ furaffinity-features-extension.zip exists ($(du -h furaffinity-features-extension.zip | cut -f1))"
           else
-            echo "✗ dist/furaffinity-features-extension.zip NOT FOUND" && exit 1
+            echo "✗ furaffinity-features-extension.zip NOT FOUND" && exit 1
           fi
 
       - name: Upload to Chrome Web Store
@@ -38,4 +57,4 @@ jobs:
           client_secret: ${{ secrets.CHROME_CLIENT_SECRET }}
           refresh_token: ${{ secrets.CHROME_REFRESH_TOKEN }}
           extension_id: ${{ secrets.CHROME_EXTENSION_ID }}
-          zip_file: 'dist/furaffinity-features-extension.zip'
+          zip_file: 'furaffinity-features-extension.zip'
