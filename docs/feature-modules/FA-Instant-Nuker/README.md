@@ -2,14 +2,14 @@
 
 A userscript/browser extension that enhances FurAffinity gallery browsing by providing a nuke button, that when pressed instantly nukes the current page without asking for confirmation. Also available on GreasyFork as [FA-Instant-Nuker](https://greasyfork.org/scripts/527752-fa-instant-nuker).
 
+<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-in.png" width="100%">
+
 ## How to use
 
 - Load this script from GreasyFork or use it inside the browser extensions
 - Messages and New Submission Page will automatically:
   - Show a new Nuke button without any Text
   - Nuke the corresponding messages or submissions when the button is pressed instantly without any confirmation
-
-<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-in.png" width="100%">
 
 ## Feature Roadmap
 

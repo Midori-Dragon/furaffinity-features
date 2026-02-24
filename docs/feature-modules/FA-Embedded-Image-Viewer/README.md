@@ -2,6 +2,8 @@
 
 A userscript/browser extension that enhances image viewing on FurAffinity by providing an embedded image viewer. When any submission is clicked, instead of opening the page this script will embedd the clicked image on the current site. Also available on GreasyFork as [FA-Embedded-Image-Viewer](https://greasyfork.org/scripts/458971-fa-embedded-image-viewer).
 
+<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-eiv.png" width="100%">
+
 ## How to use
 
 - Load this script from GreasyFork or use it inside the browser extensions
@@ -11,8 +13,6 @@ A userscript/browser extension that enhances image viewing on FurAffinity by pro
   - Quality settings
   - various buttons and options on the embedded page
 - To use just click on any submission and it will be embedded on the current page
-
-<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-eiv.png" width="100%">
 
 ## Feature Roadmap
 

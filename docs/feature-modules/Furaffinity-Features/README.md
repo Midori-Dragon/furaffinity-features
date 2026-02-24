@@ -1,8 +1,10 @@
-# Furaffinity Features Browser
+# Furaffinity Features
 
-The browser extension entry point that bundles all feature and library modules into a single self-contained script for the Chrome and Firefox extension. Unlike the GreasyFork [Furaffinity Features](../Furaffinity-Features/README) userscript (which uses `@require` to load each module separately), this module imports and compiles everything together at build time.
+The combined bundle that brings together all feature and library modules. Available as a GreasyFork userscript and as a browser extension for Chrome and Firefox.
 
-## How to use
+## How to use as Browser Extension
+
+The browser extension bundles all feature and library modules into a single self-contained script at build time, without relying on `@require`.
 
 Install the browser extension directly from the store:
 
@@ -10,6 +12,14 @@ Install the browser extension directly from the store:
 - [Firefox Add-ons](https://addons.mozilla.org/firefox/addon/furaffinity-features/)
 
 All features and libraries are included automatically — no further setup is required.
+
+## How to use as UserScript
+
+The main GreasyFork script that loads all feature and library modules into a single userscript via `@require` directives. Also available on GreasyFork as [Furaffinity-Features](https://greasyfork.org/en/users/967324-midori-tsume).
+
+- Install via GreasyFork or a userscript manager (e.g. Violentmonkey, Tampermonkey)
+- All feature modules and their library dependencies are loaded automatically via `@require` directives in the script header
+- No further setup is required — each feature activates based on the current FurAffinity page
 
 ## Included Feature Modules
 
@@ -36,6 +46,6 @@ All features and libraries are included automatically — no further setup is re
 
 ## Notes
 
-- This module is the compiled browser extension bundle — it is not published to GreasyFork
-- All modules are imported directly via TypeScript at build time, producing a single bundled script
-- For the userscript equivalent (using `@require`), see [Furaffinity Features](../Furaffinity-Features/README)
+- The UserScript acts only as the banner/header — actual code is delivered via `@require`, loading each module as a separate script
+- The Browser Extension imports all modules directly at build time, producing a single bundled script
+- Individual modules can also be used standalone via GreasyFork

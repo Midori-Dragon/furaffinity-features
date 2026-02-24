@@ -4,6 +4,8 @@ A userscript/browser extension that enhances FurAffinity webcomic navigation by 
 
 See documentation on [FA-Webcomic-Auto-Loader](https://midori-dragon.github.io/furaffinity-features/#/FA-Webcomic-Auto-Loader/README).
 
+<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-wal.png" width="100%">
+
 ## How to use
 
 - Load this script from GreasyFork or use it inside the browser extensions
@@ -13,8 +15,6 @@ See documentation on [FA-Webcomic-Auto-Loader](https://midori-dragon.github.io/f
   - Enable forward/backward navigation using the actual comic navigation
   - Handle lightbox integration if enabled
 - When no comic navigation is found, the loader will search for similar pages
-
-<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-wal.png" width="100%">
 
 ## Feature Roadmap
 

@@ -2,6 +2,8 @@
 
 A userscript/browser extension that enhances FurAffinity webcomic navigation by automatically detecting and loading comic pages. Also available on GreasyFork as [FA-Webcomic-Auto-Loader](https://greasyfork.org/scripts/457759-fa-webcomic-autoloader).
 
+<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-wal.png" width="100%">
+
 ## How to use
 
 - Load this script from GreasyFork or use it inside the browser extensions
@@ -11,8 +13,6 @@ A userscript/browser extension that enhances FurAffinity webcomic navigation by 
   - Enable forward/backward navigation using the actual comic navigation
   - Handle lightbox integration if enabled
 - When no comic navigation is found, the loader will search for similar pages
-
-<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-wal.png" width="100%">
 
 ## Feature Roadmap
 

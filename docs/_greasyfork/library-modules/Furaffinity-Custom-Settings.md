@@ -4,6 +4,8 @@ Helper Library to create Custom settings on FurAffinity.
 
 See documentation on [Furaffinity-Custom-Settings](https://midori-dragon.github.io/furaffinity-features/#/Furaffinity-Custom-Settings/README).
 
+<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-cs.png" width="100%">
+
 ## How to use
 
 - `@require` this script
@@ -33,8 +35,6 @@ See documentation on [Furaffinity-Custom-Settings](https://midori-dragon.github.
   ```javascript
   customSettings.loadSettings(); // loads Navigation Menu & Settings if on Settings Page
   ```
-
-<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-cs.png" width="100%">
 
 ## Feature Roadmap
 

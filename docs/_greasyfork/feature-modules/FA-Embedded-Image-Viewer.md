@@ -4,6 +4,8 @@ A userscript/browser extension that enhances image viewing on FurAffinity by pro
 
 See documentation on [FA-Embedded-Image-Viewer](https://midori-dragon.github.io/furaffinity-features/#/FA-Embedded-Image-Viewer/README).
 
+<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-eiv.png" width="100%">
+
 ## How to use
 
 - Load this script from GreasyFork or use it inside the browser extensions
@@ -13,8 +15,6 @@ See documentation on [FA-Embedded-Image-Viewer](https://midori-dragon.github.io/
   - Quality settings
   - various buttons and options on the embedded page
 - To use just click on any submission and it will be embedded on the current page
-
-<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-eiv.png" width="100%">
 
 ## Feature Roadmap
 

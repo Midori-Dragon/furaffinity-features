@@ -2,6 +2,8 @@
 
 Helper Library to create Custom settings on Furaffinitiy. Also see this Script on GreasyFork as [Furaffinity-Custom-Settings](https://greasyfork.org/scripts/475041-furaffinity-custom-settings)
 
+<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-cs.png" width="100%">
+
 ## How to use
 
 - `@require` this script from GreasyFork or (in case of browser extension) import it as a module
@@ -25,8 +27,6 @@ Helper Library to create Custom settings on Furaffinitiy. Also see this Script o
   ```javascript
   customSettings.loadSettings(); //loads Navigation Menu & Settings if on Settings Page
   ```
-
-<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-cs.png" width="100%">
 
 ## Feature Roadmap
 

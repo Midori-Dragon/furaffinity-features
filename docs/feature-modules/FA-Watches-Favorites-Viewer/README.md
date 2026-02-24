@@ -2,6 +2,9 @@
 
 A userscript/browser extension that adds a new function to scan for favorites of your watched users and display them in a new page. Also available on GreasyFork as [FA-Watches-Favorites-Viewer](https://greasyfork.org/scripts/463464-fa-watches-favorites-viewer).
 
+<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-wfv-1.png" width="100%">
+<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-wfv-2.png" width="100%">
+
 ## How to use
 
 - Load this script from GreasyFork or use it inside the browser extensions
@@ -10,9 +13,6 @@ A userscript/browser extension that adds a new function to scan for favorites of
   - When the scan is done, a new "WF" message will be added to the message bar showing the number of new favorites
   - When clicked, the script will show the new favorites in a new page
 - To view the results of the last scan a new Option "Watches Favorites" is shown in the "Manage My Content" FA Section
-
-<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-wfv-1.png" width="100%">
-<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-wfv-2.png" width="100%">
 
 ## Feature Roadmap
 

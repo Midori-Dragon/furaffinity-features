@@ -4,6 +4,8 @@ A userscript/browser extension that enhances FurAffinity gallery browsing by aut
 
 See documentation on [FA-Infini-Gallery](https://midori-dragon.github.io/furaffinity-features/#/FA-Infini-Gallery/README).
 
+<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-ig.png" width="100%">
+
 ## How to use
 
 - Load this script from GreasyFork or use it inside the browser extensions
@@ -11,8 +13,6 @@ See documentation on [FA-Infini-Gallery](https://midori-dragon.github.io/furaffi
   - Detect when you reach the bottom of the page
   - Load and append the next page's content
   - Resume scroll detection for continuous loading
-
-<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-ig.png" width="100%">
 
 ## Feature Roadmap
 
