@@ -2,8 +2,9 @@
 
 A userscript/browser extension that adds a new function to scan for favorites of your watched users and display them in a new page. Also available on GreasyFork as [FA-Watches-Favorites-Viewer](https://greasyfork.org/scripts/463464-fa-watches-favorites-viewer).
 
-<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-wfv-1.png" width="100%">
-<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-wfv-2.png" width="100%">
+<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-wfv-1.png">
+<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-wfv-2.png">
+<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-wfv-3.png">
 
 ## How to use
 

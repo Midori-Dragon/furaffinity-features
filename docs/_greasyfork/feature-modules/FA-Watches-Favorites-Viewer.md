@@ -4,8 +4,9 @@ A userscript/browser extension that adds a new function to scan for favorites of
 
 See documentation on [FA-Watches-Favorites-Viewer](https://midori-dragon.github.io/furaffinity-features/#/FA-Watches-Favorites-Viewer/README).
 
-<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-wfv-1.png" width="100%">
-<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-wfv-2.png" width="100%">
+<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-wfv-1.png">
+<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-wfv-2.png">
+<img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/screenshot-furaffinity-features-wfv-3.png">
 
 ## How to use
 
