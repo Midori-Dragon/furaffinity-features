@@ -28,7 +28,7 @@ See documentation on [Furaffinity-Match-List](https://midori-dragon.github.io/fu
 - Check for matches:
   ```javascript
   if (matchlist.hasMatch) {
-    doSomething();
+  ⠀⠀doSomething();
   }
   ```
 

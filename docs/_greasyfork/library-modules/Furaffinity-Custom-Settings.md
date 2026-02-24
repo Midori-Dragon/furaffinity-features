@@ -17,7 +17,6 @@ See documentation on [Furaffinity-Custom-Settings](https://midori-dragon.github.
   const customSettings = new FACustomSettings("Midori's Script Settings", "My Script Settings");
   // Multiple Settings Pages can be created with different provider/header combinations
   ```
-  <br>
 
 - Create a new Setting:
   ```javascript

@@ -13,7 +13,6 @@ See documentation on [Furaffinity-Request-Helper](https://midori-dragon.github.i
   ```javascript
   const requestHelper = new FARequestHelper(2); // Where 2 is the max amount of simultaneous Requests for this instance.
   ```
-  <br>
 
 - Make a request using the created instance:
   ```javascript

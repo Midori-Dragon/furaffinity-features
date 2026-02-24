@@ -14,7 +14,7 @@ See documentation on [Furaffinity-Loading-Animations](https://midori-dragon.gith
   const baseElem = document.getElementById('spinner-container');
   const spinner = new FALoadingSpinner(baseElem); // always give the baseElem as parameter
   spinner.visible = true;
-
+  ⠀
   const textSpinner = new FALoadingTextSpinner(baseElem);
   const imageSpinner = new FALoadingImage(baseElem);
   const barSpinner = new FALoadingBar(baseElem);

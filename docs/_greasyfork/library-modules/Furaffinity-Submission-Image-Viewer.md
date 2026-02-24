@@ -15,14 +15,13 @@ See documentation on [Furaffinity-Submission-Image-Viewer](https://midori-dragon
   const faImageViewer = new FAImageViewer(baseElem, imgSrc, prevSrc);
   faImageViewer.load(); // starts loading the image
   ```
-  <br>
 
 - *Optional:* Subscribe to Events:
   ```javascript
   faImageViewer.onImageLoad(() => doSomething()); // occurs if the image is fully loaded
   faImageViewer.onImageLoadStart(() => doSomething()); // occurs if the image started loading
   faImageViewer.onPreviewImageLoad(() => doSomething()); // occurs if the preview image fully loaded
-
+  ⠀
   faImageViewer.addEventListener("image-load", () => doSomething()); // alternative to onImageLoad
   faImageViewer.addEventListener("image-load-start", () => doSomething()); // alternative to onImageLoadStart
   faImageViewer.addEventListener("preview-image-load", () => doSomething()); // alternative to onPreviewImageLoad
