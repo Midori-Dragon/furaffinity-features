@@ -10,7 +10,7 @@
 // @require     https://greasyfork.org/scripts/476762-furaffinity-custom-pages/code/476762-furaffinity-custom-pages.js
 // @require     https://greasyfork.org/scripts/475041-furaffinity-custom-settings/code/475041-furaffinity-custom-settings.js
 // @grant       GM_info
-// @version     2.5.6
+// @version     2.5.7
 // @author      Midori Dragon
 // @description Embeds the clicked Image on the Current Site, so you can view it without loading the submission Page
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
@@ -121,6 +121,20 @@
         document.body.removeChild(download);
         window.close();
     }
+    function getFigureId(figure) {
+        if (figure.id.includes('-')) {
+            return figure.id.split('-').pop();
+        }
+        else if (figure.id.includes('_')) {
+            return figure.id.split('_').pop();
+        }
+        return figure.id;
+    }
+    function getPreviewQuality(figure) {
+        const img = figure.querySelector('img[src]');
+        const match = img?.src.match(/@(\d+)/);
+        return match ? match[1] : null;
+    }
 
     function styleInject(css, ref) {
       if ( ref === void 0 ) ref = {};
@@ -168,36 +182,21 @@
         LogLevel[LogLevel["Info"] = 3] = "Info";
     })(LogLevel || (LogLevel = {}));
     class Logger {
-        static log(logLevel = LogLevel.Warning, ...args) {
-            if (window.__FF_GLOBAL_LOG_LEVEL__ == null) {
-                window.__FF_GLOBAL_LOG_LEVEL__ = LogLevel.Error;
-            }
-            if (logLevel > window.__FF_GLOBAL_LOG_LEVEL__) {
-                return;
-            }
-            switch (logLevel) {
-                case LogLevel.Error:
-                    console.error(...args);
-                    break;
-                case LogLevel.Warning:
-                    console.warn(...args);
-                    break;
-                case LogLevel.Info:
-                    console.log(...args);
-                    break;
-            }
+        static get _logLevel() {
+            window.__FF_GLOBAL_LOG_LEVEL__ ??= LogLevel.Error;
+            return window.__FF_GLOBAL_LOG_LEVEL__;
         }
         static setLogLevel(logLevel) {
             window.__FF_GLOBAL_LOG_LEVEL__ = logLevel;
         }
-        static logError(...args) {
-            Logger.log(LogLevel.Error, ...args);
+        static get logError() {
+            return LogLevel.Error <= Logger._logLevel ? console.error.bind(console) : () => { };
         }
-        static logWarning(...args) {
-            Logger.log(LogLevel.Warning, ...args);
+        static get logWarning() {
+            return LogLevel.Warning <= Logger._logLevel ? console.warn.bind(console) : () => { };
         }
-        static logInfo(...args) {
-            Logger.log(LogLevel.Info, ...args);
+        static get logInfo() {
+            return LogLevel.Info <= Logger._logLevel ? console.log.bind(console) : () => { };
         }
     }
 
@@ -328,23 +327,41 @@
                 additionalInfo.textContent = `${byElem.textContent}`;
                 additionalInfo.setAttribute('href', byElem.getAttribute('href') ?? '');
             }
+            else {
+                try {
+                    additionalInfo.parentElement.style.display = 'none';
+                }
+                catch { }
+            }
             const previewLoadingSpinnerContainer = document.getElementById('eiv-preview-spinner-container');
             previewLoadingSpinnerContainer.addEventListener('click', () => {
                 this.previewLoadingSpinner.visible = false;
             });
         }
         async fillSubDocInfos(figure) {
-            const sid = figure.id.split('-')[1];
+            const sid = getFigureId(figure);
+            if (sid == null) {
+                Logger.logError('Could not extract SID from figure with id ' + figure.id);
+                return;
+            }
             const ddmenu = document.getElementById('ddmenu');
             const doc = await requestHelper.SubmissionRequests.getSubmissionPage(sid);
             if (doc != null) {
                 this.submissionImg = doc.getElementById('submissionImg');
                 const imgSrc = this.submissionImg.src;
-                let prevSrc = this.submissionImg.getAttribute('data-preview-src') ?? undefined;
-                if (!string.isNullOrWhitespace(prevSrc)) {
-                    Logger.logInfo('Preview quality @' + previewQualitySetting.value);
-                    prevSrc = prevSrc?.replace('@600', '@' + previewQualitySetting.value);
+                let prevSrc;
+                let prevQuality;
+                if (previewQualitySetting.value === 0) {
+                    prevQuality = getPreviewQuality(figure);
+                    if (prevQuality != null) {
+                        prevSrc = this.submissionImg.getAttribute('data-preview-src')?.replace('@600', '@' + prevQuality);
+                    }
                 }
+                else {
+                    prevQuality = previewQualitySetting.value.toString();
+                    prevSrc = this.submissionImg.getAttribute('data-preview-src')?.replace('@600', '@' + prevQuality);
+                }
+                Logger.logInfo('Preview quality @' + prevQuality);
                 const submissionContainer = document.getElementById('eiv-submission-container');
                 this.faImageViewer = new window.FAImageViewer(submissionContainer, imgSrc, prevSrc);
                 this.faImageViewer.faImage.imgElem.id = 'eiv-submission-img';
@@ -529,15 +546,19 @@
     closeEmbedAfterOpenSetting.description = 'Wether to close the current embedded Submission after it is opened in a new Tab (also for open Gallery).';
     closeEmbedAfterOpenSetting.defaultValue = true;
     const previewQualitySetting = customSettings.newSetting(window.FASettingType.Option, 'Preview Quality');
-    previewQualitySetting.description = 'The quality of the preview image. (Higher values will be slower)';
-    previewQualitySetting.defaultValue = 400;
+    previewQualitySetting.description = 'The quality of the preview image. (Higher values will be slower, Auto will pick the quality that is already used by the gallery and therefore should be the fastest)';
+    previewQualitySetting.defaultValue = 0;
     previewQualitySetting.options = {
-        200: 'Very Low (200px)',
+        0: 'Auto detect',
+        200: 'Lower (200px)',
         300: 'Low (300px)',
         400: 'Medium (400px)',
         500: 'High (500px)',
-        600: 'Very High (600px)'
+        600: 'Higher (600px)',
     };
+    const enableInMinigallerySetting = customSettings.newSetting(window.FASettingType.Boolean, 'Enable in Minigallery');
+    enableInMinigallerySetting.description = 'Wether to enable the Embedded Image Viewer in the Mini-Gallery on the Submission page.';
+    enableInMinigallerySetting.defaultValue = true;
     const showWatchingInfoSetting = customSettings.newSetting(window.FASettingType.Boolean, 'Show Watching Info');
     showWatchingInfoSetting.description = 'Wether to show if the user is watching the Submissions Author. (Will be slower)';
     showWatchingInfoSetting.defaultValue = false;
@@ -546,6 +567,9 @@
     if (customSettings.isFeatureEnabled) {
         const matchList = new window.FAMatchList(customSettings);
         matchList.matches = ['net/browse', 'net/user', 'net/gallery', 'net/search', 'net/favorites', 'net/scraps', 'net/controls/favorites', 'net/controls/submissions', 'net/msg/submissions', 'd.furaffinity.net'];
+        if (enableInMinigallerySetting.value) {
+            matchList.matches.push('net/view');
+        }
         matchList.runInIFrame = true;
         if (matchList.hasMatch) {
             const page = new window.FACustomPage('d.furaffinity.net', 'eiv-download');
@@ -565,6 +589,7 @@
     }
 
     exports.closeEmbedAfterOpenSetting = closeEmbedAfterOpenSetting;
+    exports.enableInMinigallerySetting = enableInMinigallerySetting;
     exports.loadingSpinSpeedFavSetting = loadingSpinSpeedFavSetting;
     exports.loadingSpinSpeedSetting = loadingSpinSpeedSetting;
     exports.openInNewTabSetting = openInNewTabSetting;

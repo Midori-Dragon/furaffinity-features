@@ -68,36 +68,21 @@
         LogLevel[LogLevel["Info"] = 3] = "Info";
     })(LogLevel || (LogLevel = {}));
     class Logger {
-        static log(logLevel = LogLevel.Warning, ...args) {
-            if (window.__FF_GLOBAL_LOG_LEVEL__ == null) {
-                window.__FF_GLOBAL_LOG_LEVEL__ = LogLevel.Error;
-            }
-            if (logLevel > window.__FF_GLOBAL_LOG_LEVEL__) {
-                return;
-            }
-            switch (logLevel) {
-                case LogLevel.Error:
-                    console.error(...args);
-                    break;
-                case LogLevel.Warning:
-                    console.warn(...args);
-                    break;
-                case LogLevel.Info:
-                    console.log(...args);
-                    break;
-            }
+        static get _logLevel() {
+            window.__FF_GLOBAL_LOG_LEVEL__ ??= LogLevel.Error;
+            return window.__FF_GLOBAL_LOG_LEVEL__;
         }
         static setLogLevel(logLevel) {
             window.__FF_GLOBAL_LOG_LEVEL__ = logLevel;
         }
-        static logError(...args) {
-            Logger.log(LogLevel.Error, ...args);
+        static get logError() {
+            return LogLevel.Error <= Logger._logLevel ? console.error.bind(console) : () => { };
         }
-        static logWarning(...args) {
-            Logger.log(LogLevel.Warning, ...args);
+        static get logWarning() {
+            return LogLevel.Warning <= Logger._logLevel ? console.warn.bind(console) : () => { };
         }
-        static logInfo(...args) {
-            Logger.log(LogLevel.Info, ...args);
+        static get logInfo() {
+            return LogLevel.Info <= Logger._logLevel ? console.log.bind(console) : () => { };
         }
     }
 

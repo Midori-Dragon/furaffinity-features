@@ -2,7 +2,7 @@
 // @name        Furaffinity-Submission-Image-Viewer
 // @namespace   Violentmonkey Scripts
 // @grant       GM_info
-// @version     1.2.2
+// @version     1.3.0
 // @author      Midori Dragon
 // @description Library for creating custom image elements on Furaffinity
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
@@ -1085,7 +1085,7 @@
     }
   }
 
-  var css_248z = ".siv-image-main {\n    object-fit: cover;\n}\n\n.siv-image-preview {\n    object-fit: cover;\n    image-rendering: pixelated;\n}\n\n.siv-image-container {\n    width: 0px;\n    height: 0px;\n    overflow: hidden;\n}\n\n.siv-parent-container {\n    overflow: hidden;\n}\n\n.zoomable-image {\n    transition: transform 0.3s;\n    transform-origin: center;\n}\n";
+  var css_248z = ".siv-image-main {\n    object-fit: cover;\n    grid-column: 1;\n    grid-row: 1;\n}\n\n.siv-image-preview {\n    object-fit: cover;\n    image-rendering: pixelated;\n    grid-column: 1;\n    grid-row: 1;\n}\n\n.siv-image-container {\n    width: 0px;\n    height: 0px;\n    overflow: hidden;\n}\n\n.siv-parent-container {\n    display: grid;\n    overflow: hidden;\n}\n\n.zoomable-image {\n    transition: transform 0.3s;\n    transform-origin: center;\n}";
   styleInject(css_248z);
 
   var LogLevel;
@@ -1095,36 +1095,21 @@
       LogLevel[LogLevel["Info"] = 3] = "Info";
   })(LogLevel || (LogLevel = {}));
   class Logger {
-      static log(logLevel = LogLevel.Warning, ...args) {
-          if (window.__FF_GLOBAL_LOG_LEVEL__ == null) {
-              window.__FF_GLOBAL_LOG_LEVEL__ = LogLevel.Error;
-          }
-          if (logLevel > window.__FF_GLOBAL_LOG_LEVEL__) {
-              return;
-          }
-          switch (logLevel) {
-              case LogLevel.Error:
-                  console.error(...args);
-                  break;
-              case LogLevel.Warning:
-                  console.warn(...args);
-                  break;
-              case LogLevel.Info:
-                  console.log(...args);
-                  break;
-          }
+      static get _logLevel() {
+          window.__FF_GLOBAL_LOG_LEVEL__ ??= LogLevel.Error;
+          return window.__FF_GLOBAL_LOG_LEVEL__;
       }
       static setLogLevel(logLevel) {
           window.__FF_GLOBAL_LOG_LEVEL__ = logLevel;
       }
-      static logError(...args) {
-          Logger.log(LogLevel.Error, ...args);
+      static get logError() {
+          return LogLevel.Error <= Logger._logLevel ? console.error.bind(console) : () => { };
       }
-      static logWarning(...args) {
-          Logger.log(LogLevel.Warning, ...args);
+      static get logWarning() {
+          return LogLevel.Warning <= Logger._logLevel ? console.warn.bind(console) : () => { };
       }
-      static logInfo(...args) {
-          Logger.log(LogLevel.Info, ...args);
+      static get logInfo() {
+          return LogLevel.Info <= Logger._logLevel ? console.log.bind(console) : () => { };
       }
   }
 
@@ -1287,13 +1272,19 @@
               this.parentContainer.appendChild(this.faImagePreview.imgElem);
               const previewCondition = () => this.faImagePreview.imgElem.offsetWidth !== 0;
               await waitForCondition(previewCondition);
+              if (!this.imageLoaded) {
+                  this.parentContainer.appendChild(this.faImage.imgElem);
+                  this._invisibleContainer.parentNode?.removeChild(this._invisibleContainer);
+              }
               this.invokeImageLoadStart();
           }
       }
       faImageLoaded() {
           this.faImagePreview.imgElem.parentNode?.removeChild(this.faImagePreview.imgElem);
-          this.parentContainer.appendChild(this.faImage.imgElem);
-          this._invisibleContainer.parentNode?.removeChild(this._invisibleContainer);
+          if (this._invisibleContainer.contains(this.faImage.imgElem)) {
+              this.parentContainer.appendChild(this.faImage.imgElem);
+              this._invisibleContainer.parentNode?.removeChild(this._invisibleContainer);
+          }
           this.imageLoaded = true;
       }
       invokeImageLoad() {

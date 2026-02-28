@@ -46,36 +46,21 @@
         LogLevel[LogLevel["Info"] = 3] = "Info";
     })(LogLevel || (LogLevel = {}));
     class Logger {
-        static log(logLevel = LogLevel.Warning, ...args) {
-            if (window.__FF_GLOBAL_LOG_LEVEL__ == null) {
-                window.__FF_GLOBAL_LOG_LEVEL__ = LogLevel.Error;
-            }
-            if (logLevel > window.__FF_GLOBAL_LOG_LEVEL__) {
-                return;
-            }
-            switch (logLevel) {
-                case LogLevel.Error:
-                    console.error(...args);
-                    break;
-                case LogLevel.Warning:
-                    console.warn(...args);
-                    break;
-                case LogLevel.Info:
-                    console.log(...args);
-                    break;
-            }
+        static get _logLevel() {
+            window.__FF_GLOBAL_LOG_LEVEL__ ??= LogLevel.Error;
+            return window.__FF_GLOBAL_LOG_LEVEL__;
         }
         static setLogLevel(logLevel) {
             window.__FF_GLOBAL_LOG_LEVEL__ = logLevel;
         }
-        static logError(...args) {
-            Logger.log(LogLevel.Error, ...args);
+        static get logError() {
+            return LogLevel.Error <= Logger._logLevel ? console.error.bind(console) : () => { };
         }
-        static logWarning(...args) {
-            Logger.log(LogLevel.Warning, ...args);
+        static get logWarning() {
+            return LogLevel.Warning <= Logger._logLevel ? console.warn.bind(console) : () => { };
         }
-        static logInfo(...args) {
-            Logger.log(LogLevel.Info, ...args);
+        static get logInfo() {
+            return LogLevel.Info <= Logger._logLevel ? console.log.bind(console) : () => { };
         }
     }
 
@@ -744,6 +729,7 @@
     /* Public constants ==========================================================*/
     /* ===========================================================================*/
 
+
     //const Z_FILTERED          = 1;
     //const Z_HUFFMAN_ONLY      = 2;
     //const Z_RLE               = 3;
@@ -757,6 +743,7 @@
     const Z_UNKNOWN$1             = 2;
 
     /*============================================================================*/
+
 
     function zero$1(buf) { let len = buf.length; while (--len >= 0) { buf[len] = 0; } }
 
@@ -799,6 +786,7 @@
 
     const Buf_size      = 16;
     /* size of bit buffer in bi_buf */
+
 
     /* ===========================================================================
      * Constants
@@ -879,6 +867,7 @@
     zero$1(base_dist);
     /* First normalized distance for each code (0 = distance of 1) */
 
+
     function StaticTreeDesc(static_tree, extra_bits, extra_base, elems, max_length) {
 
       this.static_tree  = static_tree;  /* static tree or NULL */
@@ -891,9 +880,11 @@
       this.has_stree    = static_tree && static_tree.length;
     }
 
+
     let static_l_desc;
     let static_d_desc;
     let static_bl_desc;
+
 
     function TreeDesc(dyn_tree, stat_desc) {
       this.dyn_tree = dyn_tree;     /* the dynamic tree */
@@ -901,10 +892,13 @@
       this.stat_desc = stat_desc;   /* the corresponding static tree */
     }
 
+
+
     const d_code = (dist) => {
 
       return dist < 256 ? _dist_code[dist] : _dist_code[256 + (dist >>> 7)];
     };
+
 
     /* ===========================================================================
      * Output a short LSB first on the stream.
@@ -916,6 +910,7 @@
       s.pending_buf[s.pending++] = (w) & 0xff;
       s.pending_buf[s.pending++] = (w >>> 8) & 0xff;
     };
+
 
     /* ===========================================================================
      * Send a value on a given number of bits.
@@ -934,10 +929,12 @@
       }
     };
 
+
     const send_code = (s, c, tree) => {
 
       send_bits(s, tree[c * 2]/*.Code*/, tree[c * 2 + 1]/*.Len*/);
     };
+
 
     /* ===========================================================================
      * Reverse the first len bits of a code, using straightforward code (a faster
@@ -955,6 +952,7 @@
       return res >>> 1;
     };
 
+
     /* ===========================================================================
      * Flush the bit buffer, keeping at most 7 bits in it.
      */
@@ -971,6 +969,7 @@
         s.bi_valid -= 8;
       }
     };
+
 
     /* ===========================================================================
      * Compute the optimal bit lengths for a tree and update the total bit length
@@ -1070,6 +1069,7 @@
       }
     };
 
+
     /* ===========================================================================
      * Generate the codes for a given tree and bit counts (which need not be
      * optimal).
@@ -1112,6 +1112,7 @@
         //     n, (isgraph(n) ? n : ' '), len, tree[n].Code, next_code[len]-1));
       }
     };
+
 
     /* ===========================================================================
      * Initialize the various 'constant' tables.
@@ -1217,6 +1218,7 @@
       //static_init_done = true;
     };
 
+
     /* ===========================================================================
      * Initialize a new block.
      */
@@ -1233,6 +1235,7 @@
       s.opt_len = s.static_len = 0;
       s.sym_next = s.matches = 0;
     };
+
 
     /* ===========================================================================
      * Flush the bit buffer and align the output on a byte boundary
@@ -1293,6 +1296,7 @@
       s.heap[k] = v;
     };
 
+
     // inlined manually
     // const SMALLEST = 1;
 
@@ -1347,6 +1351,7 @@
 
       send_code(s, END_BLOCK, ltree);
     };
+
 
     /* ===========================================================================
      * Construct one Huffman tree and assigns the code bit strings and lengths.
@@ -1447,6 +1452,7 @@
       gen_codes(tree, max_code, s.bl_count);
     };
 
+
     /* ===========================================================================
      * Scan a literal or distance tree to determine the frequencies of the codes
      * in the bit length tree.
@@ -1511,6 +1517,7 @@
         }
       }
     };
+
 
     /* ===========================================================================
      * Send a literal or distance tree in compressed form, using the codes in
@@ -1582,6 +1589,7 @@
       }
     };
 
+
     /* ===========================================================================
      * Construct the Huffman tree for the bit lengths and return the index in
      * bl_order of the last bit length code to send.
@@ -1617,6 +1625,7 @@
       return max_blindex;
     };
 
+
     /* ===========================================================================
      * Send the header for a block using dynamic Huffman trees: the counts, the
      * lengths of the bit length codes, the literal tree and the distance tree.
@@ -1647,6 +1656,7 @@
       send_tree(s, s.dyn_dtree, dcodes - 1); /* distance tree */
       //Tracev((stderr, "\ndist tree: sent %ld", s->bits_sent));
     };
+
 
     /* ===========================================================================
      * Check if the data type is TEXT or BINARY, using the following algorithm:
@@ -1693,6 +1703,7 @@
       return Z_BINARY;
     };
 
+
     let static_init_done = false;
 
     /* ===========================================================================
@@ -1717,6 +1728,7 @@
       init_block(s);
     };
 
+
     /* ===========================================================================
      * Send a stored block
      */
@@ -1736,6 +1748,7 @@
       s.pending += stored_len;
     };
 
+
     /* ===========================================================================
      * Send one empty static block to give enough lookahead for inflate.
      * This takes 10 bits, of which 7 may remain in the bit buffer.
@@ -1745,6 +1758,7 @@
       send_code(s, END_BLOCK, static_ltree);
       bi_flush(s);
     };
+
 
     /* ===========================================================================
      * Determine the best encoding for the current block: dynamic trees, static
@@ -1924,6 +1938,7 @@
       return (s1 | (s2 << 16)) |0;
     };
 
+
     var adler32_1 = adler32;
 
     // Note: we can't get significant speed boost here.
@@ -1967,6 +1982,7 @@
     // Create table on load. Just 255 signed longs. Not a problem.
     const crcTable = new Uint32Array(makeTable());
 
+
     const crc32 = (crc, buf, len, pos) => {
       const t = crcTable;
       const end = pos + len;
@@ -1979,6 +1995,7 @@
 
       return (crc ^ (-1)); // >>> 0;
     };
+
 
     var crc32_1 = crc32;
 
@@ -2062,6 +2079,7 @@
       Z_BEST_COMPRESSION:       9,
       Z_DEFAULT_COMPRESSION:   -1,
 
+
       Z_FILTERED:               1,
       Z_HUFFMAN_ONLY:           2,
       Z_RLE:                    3,
@@ -2100,6 +2118,9 @@
 
     const { _tr_init, _tr_stored_block, _tr_flush_block, _tr_tally, _tr_align } = trees;
 
+
+
+
     /* Public constants ==========================================================*/
     /* ===========================================================================*/
 
@@ -2114,11 +2135,13 @@
 
     /*============================================================================*/
 
+
     const MAX_MEM_LEVEL = 9;
     /* Maximum value for memLevel in deflateInit2 */
     const MAX_WBITS$1 = 15;
     /* 32K LZ77 window */
     const DEF_MEM_LEVEL = 8;
+
 
     const LENGTH_CODES  = 29;
     /* number of length codes, not counting the special END_BLOCK code */
@@ -2208,6 +2231,7 @@
     //let HASH_FAST = (s, prev, data) => ((prev << 8) + (prev >> 8) + (data << 4)) & s.hash_mask;
     let HASH = HASH_ZLIB;
 
+
     /* =========================================================================
      * Flush as much pending output as possible. All deflate() output, except for
      * some deflate_stored() output, goes through this function so some
@@ -2235,15 +2259,18 @@
       }
     };
 
+
     const flush_block_only = (s, last) => {
       _tr_flush_block(s, (s.block_start >= 0 ? s.block_start : -1), s.strstart - s.block_start, last);
       s.block_start = s.strstart;
       flush_pending(s.strm);
     };
 
+
     const put_byte = (s, b) => {
       s.pending_buf[s.pending++] = b;
     };
+
 
     /* =========================================================================
      * Put a short in the pending buffer. The 16-bit value is put in MSB order.
@@ -2257,6 +2284,7 @@
       s.pending_buf[s.pending++] = (b >>> 8) & 0xff;
       s.pending_buf[s.pending++] = b & 0xff;
     };
+
 
     /* ===========================================================================
      * Read a new buffer from the current input stream, update the adler32
@@ -2289,6 +2317,7 @@
 
       return len;
     };
+
 
     /* ===========================================================================
      * Set match_start to the longest match starting at the given string and
@@ -2402,6 +2431,7 @@
       return s.lookahead;
     };
 
+
     /* ===========================================================================
      * Fill the window when the lookahead becomes insufficient.
      * Updates strstart and lookahead.
@@ -2435,6 +2465,7 @@
         //        more--;
         //    }
         //}
+
 
         /* If the window is almost full and there is insufficient lookahead,
          * move the upper half to the lower one to make room in the upper half.
@@ -2750,6 +2781,7 @@
       return last ? BS_FINISH_STARTED : BS_NEED_MORE;
     };
 
+
     /* ===========================================================================
      * Compress as much as possible from the input stream, return the current
      * block state.
@@ -3043,6 +3075,7 @@
       return BS_BLOCK_DONE;
     };
 
+
     /* ===========================================================================
      * For Z_RLE, simply look for runs of bytes, generate matches only of distance
      * one.  Do not maintain a hash table.  (It will be regenerated if this run of
@@ -3226,6 +3259,7 @@
       new Config(32, 258, 258, 4096, deflate_slow)     /* 9 max compression */
     ];
 
+
     /* ===========================================================================
      * Initialize the "longest match" routines for a new zlib stream
      */
@@ -3251,6 +3285,7 @@
       s.match_available = 0;
       s.ins_h = 0;
     };
+
 
     function DeflateState() {
       this.strm = null;            /* pointer back to this zlib stream */
@@ -3415,6 +3450,7 @@
       this.matches = 0;       /* number of string matches in current block */
       this.insert = 0;        /* bytes at end of window left to insert */
 
+
       this.bi_buf = 0;
       /* Output buffer. bits are inserted starting at the bottom (least
        * significant bits).
@@ -3433,6 +3469,7 @@
        * updated to the new high water mark.
        */
     }
+
 
     /* =========================================================================
      * Check for a valid deflate stream state. Return 0 if ok, 1 if not.
@@ -3457,6 +3494,7 @@
       }
       return 0;
     };
+
 
     const deflateResetKeep = (strm) => {
 
@@ -3489,6 +3527,7 @@
       return Z_OK$3;
     };
 
+
     const deflateReset = (strm) => {
 
       const ret = deflateResetKeep(strm);
@@ -3498,6 +3537,7 @@
       return ret;
     };
 
+
     const deflateSetHeader = (strm, head) => {
 
       if (deflateStateCheck(strm) || strm.state.wrap !== 2) {
@@ -3506,6 +3546,7 @@
       strm.state.gzhead = head;
       return Z_OK$3;
     };
+
 
     const deflateInit2 = (strm, level, method, windowBits, memLevel, strategy) => {
 
@@ -3528,11 +3569,13 @@
         windowBits -= 16;
       }
 
+
       if (memLevel < 1 || memLevel > MAX_MEM_LEVEL || method !== Z_DEFLATED$2 ||
         windowBits < 8 || windowBits > 15 || level < 0 || level > 9 ||
         strategy < 0 || strategy > Z_FIXED || (windowBits === 8 && wrap !== 1)) {
         return err(strm, Z_STREAM_ERROR$2);
       }
+
 
       if (windowBits === 8) {
         windowBits = 9;
@@ -3629,6 +3672,7 @@
 
       return deflateInit2(strm, level, Z_DEFLATED$2, MAX_WBITS$1, DEF_MEM_LEVEL, Z_DEFAULT_STRATEGY$1);
     };
+
 
     /* ========================================================================= */
     const deflate$2 = (strm, flush) => {
@@ -3984,6 +4028,7 @@
       return s.pending !== 0 ? Z_OK$3 : Z_STREAM_END$3;
     };
 
+
     const deflateEnd = (strm) => {
 
       if (deflateStateCheck(strm)) {
@@ -3996,6 +4041,7 @@
 
       return status === BUSY_STATE ? err(strm, Z_DATA_ERROR$2) : Z_OK$3;
     };
+
 
     /* =========================================================================
      * Initializes the compression dictionary from the given byte
@@ -4077,6 +4123,7 @@
       return Z_OK$3;
     };
 
+
     var deflateInit_1 = deflateInit;
     var deflateInit2_1 = deflateInit2;
     var deflateReset_1 = deflateReset;
@@ -4133,6 +4180,7 @@
       return obj;
     };
 
+
     // Join array of chunks to single array.
     var flattenChunks = (chunks) => {
       // calculate data length
@@ -4161,6 +4209,7 @@
 
     // String encode/decode helpers
 
+
     // Quick check if we can use fast array to bin string conversion
     //
     // - apply(Array) can fail on Android 2.2
@@ -4170,6 +4219,7 @@
 
     try { String.fromCharCode.apply(null, new Uint8Array(1)); } catch (__) { STR_APPLY_UIA_OK = false; }
 
+
     // Table with utf8 lengths (calculated by first byte of sequence)
     // Note, that 5 & 6-byte values and some 4-byte values can not be represented in JS,
     // because max possible codepoint is 0x10ffff
@@ -4178,6 +4228,7 @@
       _utf8len[q] = (q >= 252 ? 6 : q >= 248 ? 5 : q >= 240 ? 4 : q >= 224 ? 3 : q >= 192 ? 2 : 1);
     }
     _utf8len[254] = _utf8len[254] = 1; // Invalid sequence start
+
 
     // convert string to array (typed, when possible)
     var string2buf = (str) => {
@@ -4255,6 +4306,7 @@
       return result;
     };
 
+
     // convert array to string
     var buf2string = (buf, max) => {
       const len = max || buf.length;
@@ -4301,6 +4353,7 @@
 
       return buf2binstring(utf16buf, out);
     };
+
 
     // Calculate max possible position in utf8 buffer,
     // that will not break sequence. If that's not possible
@@ -4395,6 +4448,7 @@
 
     /* ===========================================================================*/
 
+
     /**
      * class Deflate
      *
@@ -4431,6 +4485,7 @@
      *
      * Error message, if [[Deflate.err]] != 0
      **/
+
 
     /**
      * new Deflate(options)
@@ -4637,6 +4692,7 @@
       return true;
     };
 
+
     /**
      * Deflate#onData(chunk) -> Void
      * - chunk (Uint8Array): output data.
@@ -4647,6 +4703,7 @@
     Deflate$1.prototype.onData = function (chunk) {
       this.chunks.push(chunk);
     };
+
 
     /**
      * Deflate#onEnd(status) -> Void
@@ -4666,6 +4723,7 @@
       this.err = status;
       this.msg = this.strm.msg;
     };
+
 
     /**
      * deflate(data[, options]) -> Uint8Array
@@ -4710,6 +4768,7 @@
       return deflator.result;
     }
 
+
     /**
      * deflateRaw(data[, options]) -> Uint8Array
      * - data (Uint8Array|ArrayBuffer|String): input data to compress.
@@ -4724,6 +4783,7 @@
       return deflate$1(input, options);
     }
 
+
     /**
      * gzip(data[, options]) -> Uint8Array
      * - data (Uint8Array|ArrayBuffer|String): input data to compress.
@@ -4737,6 +4797,7 @@
       options.gzip = true;
       return deflate$1(input, options);
     }
+
 
     var Deflate_1$1 = Deflate$1;
     var deflate_2 = deflate$1;
@@ -4835,6 +4896,7 @@
       let from;                   /* where to copy match from */
       let from_source;
 
+
       let input, output; // JS specific, because we have no pointers
 
       /* copy state to local variables */
@@ -4860,6 +4922,7 @@
       dcode = state.distcode;
       lmask = (1 << state.lenbits) - 1;
       dmask = (1 << state.distbits) - 1;
+
 
       /* decode literals and length/distances until end-of-block or not enough
          input data or output space */
@@ -5221,6 +5284,7 @@
         //table.val[opts.table_index++] = 0;   //here.val = (var short)0;
         table[table_index++] = (1 << 24) | (64 << 16) | 0;
 
+
         //table.op[opts.table_index] = 64;
         //table.bits[opts.table_index] = 1;
         //table.val[opts.table_index++] = 0;
@@ -5425,6 +5489,7 @@
       return 0;
     };
 
+
     var inftrees = inflate_table;
 
     // (C) 1995-2013 Jean-loup Gailly and Mark Adler
@@ -5446,6 +5511,11 @@
     //   misrepresented as being the original software.
     // 3. This notice may not be removed or altered from any source distribution.
 
+
+
+
+
+
     const CODES = 0;
     const LENS = 1;
     const DISTS = 2;
@@ -5459,8 +5529,10 @@
       Z_DEFLATED
     } = constants$2;
 
+
     /* STATES ====================================================================*/
     /* ===========================================================================*/
+
 
     const    HEAD = 16180;       /* i: waiting for magic header */
     const    FLAGS = 16181;      /* i: waiting for method and flags (gzip) */
@@ -5497,6 +5569,8 @@
 
     /* ===========================================================================*/
 
+
+
     const ENOUGH_LENS = 852;
     const ENOUGH_DISTS = 592;
     //const ENOUGH =  (ENOUGH_LENS+ENOUGH_DISTS);
@@ -5505,6 +5579,7 @@
     /* 32K LZ77 window */
     const DEF_WBITS = MAX_WBITS;
 
+
     const zswap32 = (q) => {
 
       return  (((q >>> 24) & 0xff) +
@@ -5512,6 +5587,7 @@
               ((q & 0xff00) << 8) +
               ((q & 0xff) << 24));
     };
+
 
     function InflateState() {
       this.strm = null;           /* pointer back to this zlib stream */
@@ -5574,6 +5650,7 @@
       this.was = 0;                    /* initial length of match */
     }
 
+
     const inflateStateCheck = (strm) => {
 
       if (!strm) {
@@ -5586,6 +5663,7 @@
       }
       return 0;
     };
+
 
     const inflateResetKeep = (strm) => {
 
@@ -5614,6 +5692,7 @@
       return Z_OK$1;
     };
 
+
     const inflateReset = (strm) => {
 
       if (inflateStateCheck(strm)) { return Z_STREAM_ERROR$1; }
@@ -5624,6 +5703,7 @@
       return inflateResetKeep(strm);
 
     };
+
 
     const inflateReset2 = (strm, windowBits) => {
       let wrap;
@@ -5658,6 +5738,7 @@
       return inflateReset(strm);
     };
 
+
     const inflateInit2 = (strm, windowBits) => {
 
       if (!strm) { return Z_STREAM_ERROR$1; }
@@ -5678,10 +5759,12 @@
       return ret;
     };
 
+
     const inflateInit = (strm) => {
 
       return inflateInit2(strm, DEF_WBITS);
     };
+
 
     /*
      Return state with length and distance decoding tables and index sizes set to
@@ -5696,6 +5779,7 @@
     let virgin = true;
 
     let lenfix, distfix; // We have no pointers in JS, so keep tables separate
+
 
     const fixedtables = (state) => {
 
@@ -5728,6 +5812,7 @@
       state.distcode = distfix;
       state.distbits = 5;
     };
+
 
     /*
      Update the window with the last wsize (normally 32K) bytes written before
@@ -5786,6 +5871,7 @@
       return 0;
     };
 
+
     const inflate$2 = (strm, flush) => {
 
       let state;
@@ -5813,6 +5899,7 @@
       const order = /* permutation of code lengths */
         new Uint8Array([ 16, 17, 18, 0, 8, 7, 9, 6, 10, 5, 11, 4, 12, 3, 13, 2, 14, 1, 15 ]);
 
+
       if (inflateStateCheck(strm) || !strm.output ||
           (!strm.input && strm.avail_in !== 0)) {
         return Z_STREAM_ERROR$1;
@@ -5820,6 +5907,7 @@
 
       state = strm.state;
       if (state.mode === TYPE) { state.mode = TYPEDO; }    /* skip check */
+
 
       //--- LOAD() ---
       put = strm.next_out;
@@ -6882,6 +6970,7 @@
       return ret;
     };
 
+
     const inflateEnd = (strm) => {
 
       if (inflateStateCheck(strm)) {
@@ -6896,6 +6985,7 @@
       return Z_OK$1;
     };
 
+
     const inflateGetHeader = (strm, head) => {
 
       /* check state */
@@ -6908,6 +6998,7 @@
       head.done = false;
       return Z_OK$1;
     };
+
 
     const inflateSetDictionary = (strm, dictionary) => {
       const dictLength = dictionary.length;
@@ -6944,6 +7035,7 @@
       // Tracev((stderr, "inflate:   dictionary set\n"));
       return Z_OK$1;
     };
+
 
     var inflateReset_1 = inflateReset;
     var inflateReset2_1 = inflateReset2;
@@ -7050,6 +7142,7 @@
 
     /* ===========================================================================*/
 
+
     /**
      * class Inflate
      *
@@ -7084,6 +7177,7 @@
      *
      * Error message, if [[Inflate.err]] != 0
      **/
+
 
     /**
      * new Inflate(options)
@@ -7326,6 +7420,7 @@
       return true;
     };
 
+
     /**
      * Inflate#onData(chunk) -> Void
      * - chunk (Uint8Array|String): output data. When string output requested,
@@ -7337,6 +7432,7 @@
     Inflate$1.prototype.onData = function (chunk) {
       this.chunks.push(chunk);
     };
+
 
     /**
      * Inflate#onEnd(status) -> Void
@@ -7360,6 +7456,7 @@
       this.err = status;
       this.msg = this.strm.msg;
     };
+
 
     /**
      * inflate(data[, options]) -> Uint8Array|String
@@ -7411,6 +7508,7 @@
       return inflator.result;
     }
 
+
     /**
      * inflateRaw(data[, options]) -> Uint8Array|String
      * - data (Uint8Array|ArrayBuffer): input data to decompress.
@@ -7425,6 +7523,7 @@
       return inflate$1(input, options);
     }
 
+
     /**
      * ungzip(data[, options]) -> Uint8Array|String
      * - data (Uint8Array|ArrayBuffer): input data to decompress.
@@ -7433,6 +7532,7 @@
      * Just shortcut to [[inflate]], because it autodetects format
      * by header.content. Done for convenience.
      **/
+
 
     var Inflate_1$1 = Inflate$1;
     var inflate_2 = inflate$1;
@@ -7448,6 +7548,8 @@
     const { Deflate, deflate, deflateRaw, gzip } = deflate_1$1;
 
     const { Inflate, inflate, inflateRaw, ungzip } = inflate_1$1;
+
+
 
     var Deflate_1 = Deflate;
     var deflate_1 = deflate;
