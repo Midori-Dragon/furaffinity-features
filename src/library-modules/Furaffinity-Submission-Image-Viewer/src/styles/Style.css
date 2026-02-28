@@ -1,10 +1,14 @@
 .siv-image-main {
     object-fit: cover;
+    grid-column: 1;
+    grid-row: 1;
 }
 
 .siv-image-preview {
     object-fit: cover;
     image-rendering: pixelated;
+    grid-column: 1;
+    grid-row: 1;
 }
 
 .siv-image-container {
@@ -14,6 +18,7 @@
 }
 
 .siv-parent-container {
+    display: grid;
     overflow: hidden;
 }
 

@@ -85,7 +85,7 @@ export class CustomImageViewer extends EventTarget {
         this.faImage.dataPreviewSrc = this.previewUrl;
 
         if (this.previewUrl == null) {
-            this.faImagePreview.src = ''; 
+            this.faImagePreview.src = '';
         } else {
             this.faImagePreview.src = this.previewUrl;
             this.faImagePreview.imgElem.addEventListener('load', this.invokePreviewImageLoad.bind(this));
@@ -123,14 +123,20 @@ export class CustomImageViewer extends EventTarget {
             this.parentContainer.appendChild(this.faImagePreview.imgElem);
             const previewCondition = (): boolean => this.faImagePreview.imgElem.offsetWidth !== 0;
             await waitForCondition(previewCondition);
+            if (!this.imageLoaded) {
+                this.parentContainer.appendChild(this.faImage.imgElem);
+                this._invisibleContainer.parentNode?.removeChild(this._invisibleContainer);
+            }
             this.invokeImageLoadStart();
         }
     }
 
     private faImageLoaded(): void {
         this.faImagePreview.imgElem.parentNode?.removeChild(this.faImagePreview.imgElem);
-        this.parentContainer.appendChild(this.faImage.imgElem);
-        this._invisibleContainer.parentNode?.removeChild(this._invisibleContainer);
+        if (this._invisibleContainer.contains(this.faImage.imgElem)) {
+            this.parentContainer.appendChild(this.faImage.imgElem);
+            this._invisibleContainer.parentNode?.removeChild(this._invisibleContainer);
+        }
         this.imageLoaded = true;
     }
 
