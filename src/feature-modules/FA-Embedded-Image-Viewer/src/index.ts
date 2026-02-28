@@ -43,15 +43,20 @@ closeEmbedAfterOpenSetting.description = 'Wether to close the current embedded S
 closeEmbedAfterOpenSetting.defaultValue = true;
 
 export const previewQualitySetting = customSettings.newSetting(window.FASettingType.Option, 'Preview Quality');
-previewQualitySetting.description = 'The quality of the preview image. (Higher values will be slower)';
-previewQualitySetting.defaultValue = 400;
+previewQualitySetting.description = 'The quality of the preview image. (Higher values will be slower, Auto will pick the quality that is already used by the gallery and therefore should be the fastest)';
+previewQualitySetting.defaultValue = 0;
 previewQualitySetting.options = {
-    200: 'Very Low (200px)',
+    0: 'Auto detect',
+    200: 'Lower (200px)',
     300: 'Low (300px)',
     400: 'Medium (400px)',
     500: 'High (500px)',
-    600: 'Very High (600px)'
+    600: 'Higher (600px)',
 };
+
+export const enableInMinigallerySetting = customSettings.newSetting(window.FASettingType.Boolean, 'Enable in Minigallery');
+enableInMinigallerySetting.description = 'Wether to enable the Embedded Image Viewer in the Mini-Gallery on the Submission page.';
+enableInMinigallerySetting.defaultValue = true;
 
 export const showWatchingInfoSetting = customSettings.newSetting(window.FASettingType.Boolean, 'Show Watching Info');
 showWatchingInfoSetting.description = 'Wether to show if the user is watching the Submissions Author. (Will be slower)';
@@ -64,6 +69,9 @@ export const requestHelper = new window.FARequestHelper(2);
 if (customSettings.isFeatureEnabled) {
     const matchList = new window.FAMatchList(customSettings);
     matchList.matches = ['net/browse', 'net/user', 'net/gallery', 'net/search', 'net/favorites', 'net/scraps', 'net/controls/favorites', 'net/controls/submissions', 'net/msg/submissions', 'd.furaffinity.net'];
+    if (enableInMinigallerySetting.value) {
+        matchList.matches.push('net/view');
+    }
     matchList.runInIFrame = true;
     if (matchList.hasMatch) {
         const page = new window.FACustomPage('d.furaffinity.net', 'eiv-download');

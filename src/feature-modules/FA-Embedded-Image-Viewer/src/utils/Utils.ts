@@ -84,3 +84,18 @@ export function downloadImage(): void {
 
     window.close();
 }
+
+export function getFigureId(figure: HTMLElement): string | undefined {
+    if (figure.id.includes('-')) {
+        return figure.id.split('-').pop();
+    } else if (figure.id.includes('_')) {
+        return figure.id.split('_').pop();
+    }
+    return figure.id;
+}
+
+export function getPreviewQuality(figure: HTMLElement): string | null {
+    const img = figure.querySelector('img[src]') as HTMLImageElement | null;
+    const match = img?.src.match(/@(\d+)/);
+    return match ? match[1] : null;
+}

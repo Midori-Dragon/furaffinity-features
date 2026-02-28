@@ -1,7 +1,7 @@
 import { closeEmbedAfterOpenSetting, loadingSpinSpeedFavSetting, loadingSpinSpeedSetting, openInNewTabSetting, previewQualitySetting, requestHelper, showWatchingInfoSetting } from '..';
 import type { LoadingSpinner } from '../../../../library-modules/Furaffinity-Loading-Animations/src/components/LoadingSpinner';
 import { EmbeddedHTML } from '../components/EmbeddedHTML';
-import { getByLinkFromFigcaption, getFavKey, getUserFromFigcaption } from '../utils/Utils';
+import { getByLinkFromFigcaption, getFavKey, getFigureId, getPreviewQuality, getUserFromFigcaption } from '../utils/Utils';
 import '../styles/Style.css';
 import string from '../../../../library-modules/GlobalUtils/src/string';
 import { Logger } from '../../../../library-modules/GlobalUtils/src/Logger';
@@ -159,6 +159,10 @@ export class EmbeddedImage extends EventTarget {
         if (byElem != null && additionalInfo != null) {
             additionalInfo.textContent = `${byElem.textContent}`;
             additionalInfo.setAttribute('href', byElem.getAttribute('href') ?? '');
+        } else {
+            try {
+                additionalInfo!.parentElement!.style.display = 'none';
+            } catch { }
         }
 
         const previewLoadingSpinnerContainer = document.getElementById('eiv-preview-spinner-container')!;
@@ -168,17 +172,30 @@ export class EmbeddedImage extends EventTarget {
     }
 
     async fillSubDocInfos(figure: HTMLElement): Promise<void> {
-        const sid = figure.id.split('-')[1];
+        const sid = getFigureId(figure);
+        if (sid == null) {
+            Logger.logError('Could not extract SID from figure with id ' + figure.id);
+            return;
+        }
+
         const ddmenu = document.getElementById('ddmenu')!;
         const doc = await requestHelper.SubmissionRequests.getSubmissionPage(sid);
         if (doc != null) {
             this.submissionImg = doc.getElementById('submissionImg') as HTMLImageElement;
             const imgSrc = this.submissionImg.src;
-            let prevSrc = this.submissionImg.getAttribute('data-preview-src') ?? undefined;
-            if (!string.isNullOrWhitespace(prevSrc)) {
-                Logger.logInfo('Preview quality @' + previewQualitySetting.value);
-                prevSrc = prevSrc?.replace('@600', '@' + previewQualitySetting.value);
+            let prevSrc: string | undefined;
+            let prevQuality: string | null;
+
+            if (previewQualitySetting.value === 0) {
+                prevQuality = getPreviewQuality(figure);
+                if (prevQuality != null) {
+                    prevSrc = this.submissionImg.getAttribute('data-preview-src')?.replace('@600', '@' + prevQuality);
+                }
+            } else {
+                prevQuality = previewQualitySetting.value.toString();
+                prevSrc = this.submissionImg.getAttribute('data-preview-src')?.replace('@600', '@' + prevQuality);
             }
+            Logger.logInfo('Preview quality @' + prevQuality);
 
             const submissionContainer = document.getElementById('eiv-submission-container')!;
             this.faImageViewer = new window.FAImageViewer(submissionContainer, imgSrc, prevSrc);
