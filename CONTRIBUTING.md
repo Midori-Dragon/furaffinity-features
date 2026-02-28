@@ -77,7 +77,20 @@ Thank you for your interest in contributing to this project! This guide will hel
 4. **Building**
    - Create a new build command entry in `package.json`. You can look at the existing build commands for reference
    - If possible use `build-scripts/build-with-deps.cjs` for your build process as it will handle the module dependencies for you
-   - Use `npm run build:<your_module_name>` to build a specific module or use `shift + ctrl + b` to view default build commands and select `Build: Browser Extension` to build the whole project
+   - Use `shift + ctrl + b` to view the available build tasks, or run the npm scripts directly
+
+   The project has two build modes:
+
+   | Mode        | VS Code Task                       | npm script                      | Sourcemaps | Use when                      |
+   | ----------- | ---------------------------------- | ------------------------------- | ---------- | ----------------------------- |
+   | **Release** | `Build: Browser Extension`         | `build:Browser-Extension`       | None       | Submitting PRs, CI, packaging |
+   | **Debug**   | `Build: Browser Extension (Debug)` | `build:Browser-Extension-Debug` | Inline     | Local debugging in DevTools   |
+
+   Both modes also have a `Rebuild` variant (e.g. `Rebuild: Browser Extension (Debug)`) that forces all dependency modules to be rebuilt from source, bypassing the hash cache.  
+   The CI pipeline always uses the release build. Never commit a debug build to a release branch.
+
+   > **Why two modes?**  
+   > Debug builds embed inline sourcemaps so DevTools maps minified bundle code back to the original TypeScript sources. Release builds omit sourcemaps entirely — the combined browser extension bundle with sourcemaps is several hundred KB larger, which is unnecessary overhead for end users.
 
 5. **Testing**
    - For UserScript: Copy the build `furaffinity-features.user.js` file from the top `dist` folder (or `bundle.user.js` from your individual module's `dist` folder) to the userscript manager or use the `npm run serve` command to host a local server (copy link to the file to use for the userscript manager) for automatic updates

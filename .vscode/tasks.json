@@ -7,7 +7,19 @@
             "group": "build",
             "problemMatcher": [],
             "label": "Build: Browser Extension",
-            "detail": "Build Browser Extension including all dependencies",
+            "detail": "Build Browser Extension including all dependencies (release, no sourcemaps)",
+            "presentation": {
+                "showReuseMessage": false,
+                "clear": true
+            }
+        },
+        {
+            "type": "npm",
+            "script": "build:Browser-Extension-Debug",
+            "group": "build",
+            "problemMatcher": [],
+            "label": "Build: Browser Extension (Debug)",
+            "detail": "Build Browser Extension with inline sourcemaps for debugging",
             "presentation": {
                 "showReuseMessage": false,
                 "clear": true
@@ -19,7 +31,19 @@
             "group": "build",
             "problemMatcher": [],
             "label": "Rebuild: Browser Extension",
-            "detail": "Rebuild Browser Extension including all dependencies",
+            "detail": "Rebuild Browser Extension including all dependencies (release, no sourcemaps)",
+            "presentation": {
+                "showReuseMessage": false,
+                "clear": true
+            }
+        },
+        {
+            "type": "npm",
+            "script": "build:Browser-Extension-Debug-Rebuild",
+            "group": "build",
+            "problemMatcher": [],
+            "label": "Rebuild: Browser Extension (Debug)",
+            "detail": "Rebuild Browser Extension with inline sourcemaps for debugging",
             "presentation": {
                 "showReuseMessage": false,
                 "clear": true

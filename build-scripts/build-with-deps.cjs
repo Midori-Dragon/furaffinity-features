@@ -26,14 +26,14 @@ const colors = {
 const hashIncludeFileTypes = ['ts', 'tsx', 'js', 'jsx', 'cjs', 'css', 'html'];
 
 // Helper function to build a module using Rollup
-async function buildModule(rollupConfigPath) {
+async function buildModule(rollupConfigPath, debug = false) {
     const resolvedPath = path.resolve(rollupConfigPath);
     // Clear require cache so rebuilds always pick up the latest config
     delete require.cache[resolvedPath];
     const rollupConfig = require(resolvedPath);
     const { output: outputOptions, ...inputOptions } = rollupConfig;
     const bundle = await rollup.rollup(inputOptions);
-    await bundle.write(outputOptions);
+    await bundle.write(debug ? { sourcemap: 'inline', ...outputOptions } : outputOptions);
     await bundle.close();
     const outputFile = path.resolve(outputOptions.file);
     return { outputPath: path.dirname(outputFile), outputFile };
@@ -92,8 +92,8 @@ async function calculateDirectoryHash(directory) {
 }
 
 // Check if dependency needs rebuilding
-async function needsRebuilding(modulePath, buildPath) {
-    const hashFile = path.join(path.dirname(buildPath), '.build-hash');
+async function needsRebuilding(modulePath, buildPath, debug = false) {
+    const hashFile = path.join(path.dirname(buildPath), debug ? '.build-hash-debug' : '.build-hash');
 
     // Get current hash
     const currentHash = await calculateDirectoryHash(modulePath);
@@ -111,14 +111,14 @@ async function needsRebuilding(modulePath, buildPath) {
 }
 
 // Save build hash
-async function saveBuildHash(modulePath, buildPath) {
+async function saveBuildHash(modulePath, buildPath, debug = false) {
     const hash = await calculateDirectoryHash(modulePath);
-    const hashFile = path.join(path.dirname(buildPath), '.build-hash');
+    const hashFile = path.join(path.dirname(buildPath), debug ? '.build-hash-debug' : '.build-hash');
     await writeFile(hashFile, hash);
 }
 
 // Recursively resolve dependencies and ensure correct order
-async function resolveDependencies(dependencies, rebuild = false, resolved = new Set(), order = []) {
+async function resolveDependencies(dependencies, rebuild = false, debug = false, resolved = new Set(), order = []) {
     for (const dep of dependencies) {
         const slug = moduleSlugFromUrl(dep);
         const moduleDir = findModuleDir(slug, srcRoot);
@@ -149,7 +149,7 @@ async function resolveDependencies(dependencies, rebuild = false, resolved = new
         let shouldRebuild = true;
 
         if (!rebuild) {
-            shouldRebuild = await needsRebuilding(modulePath, buildPath);
+            shouldRebuild = await needsRebuilding(modulePath, buildPath, debug);
         }
 
         if (!shouldRebuild && fs.existsSync(buildPath)) {
@@ -157,8 +157,8 @@ async function resolveDependencies(dependencies, rebuild = false, resolved = new
         } else {
             try {
                 console.log(`   ${colors.cyan}Building ${colors.blue}${moduleName}${colors.reset}`);
-                await buildModule(configPath);
-                await saveBuildHash(modulePath, buildPath);
+                await buildModule(configPath, debug);
+                await saveBuildHash(modulePath, buildPath, debug);
                 console.log(`   ${colors.green}✓ Successfully built ${moduleName}${colors.reset}`);
             } catch (error) {
                 console.error(`${colors.red}✗ Error building ${moduleName}:${colors.reset}`, error);
@@ -173,7 +173,7 @@ async function resolveDependencies(dependencies, rebuild = false, resolved = new
                 console.log(`  ${colors.cyan}Found nested dependencies for ${colors.blue}${moduleName}:${colors.reset}`);
                 subDeps.forEach(subDep => console.log(`    ${colors.blue}- ${subDep}${colors.reset}`));
             }
-            await resolveDependencies(subDeps, rebuild, resolved, order);
+            await resolveDependencies(subDeps, rebuild, debug, resolved, order);
             order.push(buildPath);
             console.log(`   ${colors.green}✓ Added ${moduleName} to build order${colors.reset}`);
         } else {
@@ -188,7 +188,11 @@ async function resolveDependencies(dependencies, rebuild = false, resolved = new
 
 async function emptyDir(dir) {
     if (fs.existsSync(dir)) {
-        fs.rmSync(dir, { recursive: true, force: true });
+        // Delete the contents rather than the directory itself.
+        // Removing the directory node causes EPERM on Windows when VS Code has it open in the explorer.
+        for (const entry of fs.readdirSync(dir)) {
+            fs.rmSync(path.join(dir, entry), { recursive: true, force: true });
+        }
     }
     fs.mkdirSync(dir, { recursive: true });
     console.log(`   ${colors.green}✓ Cleared '${path.basename(dir)}' folder successfully${colors.reset}\n`);
@@ -205,6 +209,12 @@ async function main() {
     let rebuild = false;
     if (args.includes('--rebuild') || args.includes('-r')) {
         rebuild = true;
+    }
+
+    // --debug: include inline sourcemaps (for local development). Omit for release builds.
+    const debug = args.includes('--debug');
+    if (debug) {
+        console.log(`${colors.yellow}Debug mode: inline sourcemaps enabled${colors.reset}`);
     }
 
     // Optional --deps-from <path>: read @requires for dep building from a different config.
@@ -230,12 +240,12 @@ async function main() {
         // Step 2: Build each dependency individually (hash-cached, bottom-up)
         // These individual bundles are used for GreasyFork distribution
         console.log(`\n${colors.cyan}Resolving and building dependencies...${colors.reset}`);
-        await resolveDependencies(dependencies, rebuild);
+        await resolveDependencies(dependencies, rebuild, debug);
 
         // Step 3: Build the main module last — single Rollup pass over all source files
         // Rollup deduplicates shared code (Logger etc.) automatically since it sees the full import graph
         console.log(`\n${colors.cyan}Building ${moduleName} (single-pass bundle)...${colors.reset}`);
-        const stats = await buildModule(rollupConfigPath);
+        const stats = await buildModule(rollupConfigPath, debug);
         const mainBuildFilePath = stats.outputFile;
         console.log(`   ${colors.green}✓ ${moduleName} built successfully${colors.reset}\n`);
 
