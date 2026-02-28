@@ -11,41 +11,24 @@ export enum LogLevel {
 }
 
 export class Logger {
-    private static log(logLevel = LogLevel.Warning, ...args: any[]): void {
-        if (window.__FF_GLOBAL_LOG_LEVEL__ == null) {
-            window.__FF_GLOBAL_LOG_LEVEL__ = LogLevel.Error;
-        }
-        
-        if (logLevel > window.__FF_GLOBAL_LOG_LEVEL__) {
-            return;
-        }
-
-        switch (logLevel) {
-        case LogLevel.Error:
-            console.error(...args);
-            break;
-        case LogLevel.Warning:
-            console.warn(...args);
-            break;
-        case LogLevel.Info:
-            console.log(...args);
-            break;
-        }
+    private static get _logLevel(): LogLevel {
+        window.__FF_GLOBAL_LOG_LEVEL__ ??= LogLevel.Error;
+        return window.__FF_GLOBAL_LOG_LEVEL__;
     }
 
     static setLogLevel(logLevel: LogLevel | number): void {
         window.__FF_GLOBAL_LOG_LEVEL__ = logLevel;
     }
 
-    static logError(...args: any[]): void {
-        Logger.log(LogLevel.Error, ...args);
+    static get logError(): (...args: any[]) => void {
+        return LogLevel.Error <= Logger._logLevel ? console.error.bind(console) : (): void => { /* noop */ };
     }
 
-    static logWarning(...args: any[]): void {
-        Logger.log(LogLevel.Warning, ...args);
+    static get logWarning(): (...args: any[]) => void {
+        return LogLevel.Warning <= Logger._logLevel ? console.warn.bind(console) : (): void => { /* noop */ };
     }
 
-    static logInfo(...args: any[]): void {
-        Logger.log(LogLevel.Info, ...args);
+    static get logInfo(): (...args: any[]) => void {
+        return LogLevel.Info <= Logger._logLevel ? console.log.bind(console) : (): void => { /* noop */ };
     }
 }
