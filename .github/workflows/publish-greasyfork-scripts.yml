@@ -58,4 +58,4 @@ jobs:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SKIP_EMPTY_COMMITS: true
           MESSAGE: "Release ${{ steps.tag.outputs.tag }}"
-          CLEAR_GLOBS_FILE: ".clear-target-files"
+          CLEAR_GLOBS_FILE: "greasyfork-dist/.clear-target-files"

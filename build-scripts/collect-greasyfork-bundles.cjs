@@ -102,4 +102,10 @@ const updatedBanner = bannerMatch[0].replace(
 fs.writeFileSync(path.join(outDir, 'Furaffinity-Features.user.js'), updatedBanner + "\n\nconsole.log('Furaffinity-Features loaded');\n");
 console.log(`${colors.green}✓ ${colors.blue}Furaffinity-Features.user.js${colors.reset} ${colors.cyan}(combined — ${combinedRequires.length} @requires)${colors.reset}`);
 
+// Write the glob file consumed by s0/git-publish-subdir-action (CLEAR_GLOBS_FILE).
+// The action resolves this path relative to the published folder, so it must live inside greasyfork-dist/.
+// It tells the action to delete all *.user.js files from the target branch before copying the new ones,
+// ensuring renamed or removed scripts don't linger.
+fs.writeFileSync(path.join(outDir, '.clear-target-files'), '*.user.js\n');
+
 console.log(`\n${colors.green}✓ Collected ${count + 1} bundles into greasyfork-dist/${colors.reset}`);
