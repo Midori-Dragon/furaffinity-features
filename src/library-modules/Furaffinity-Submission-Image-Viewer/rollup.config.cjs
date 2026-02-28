@@ -11,7 +11,7 @@ module.exports = {
 // @name        Furaffinity-Submission-Image-Viewer
 // @namespace   Violentmonkey Scripts
 // @grant       GM_info
-// @version     1.2.2
+// @version     1.3.0
 // @author      Midori Dragon
 // @description Library for creating custom image elements on Furaffinity
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
