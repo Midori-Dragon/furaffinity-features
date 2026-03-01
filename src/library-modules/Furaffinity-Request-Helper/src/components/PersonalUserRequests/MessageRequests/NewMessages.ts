@@ -23,7 +23,7 @@ export class NewMessages {
         this.JournalComments = new MessageTypeRequests(semaphore,
             ['remove-journal-comments', 'Remove Selected Comments'],
             ['nuke-journal-comments', 'Nuke Journal Comments'],
-            'journalcomments[]'
+            'comments-journals[]'
         );
         this.Shouts = new MessageTypeRequests(semaphore,
             ['remove-shouts', 'Remove Selected Shouts'],
