@@ -1,4 +1,5 @@
 import { Logger } from '../../../../library-modules/GlobalUtils/src/Logger';
+import getCurrGalleryFolder from '../../../../library-modules/GlobalUtils/src/URL-Functions/getCurrGalleryFolder';
 import { requestHelper, showPageSeparatorSetting } from '../index';
 import { IGalleryPage } from '../modules/IGalleryPage';
 import { createSeparatorElem, getFiguresFromPage, getUserNameFromUrl } from '../utils/Utils';
@@ -19,8 +20,8 @@ export class GalleryPage implements IGalleryPage {
         const username = getUserNameFromUrl(window.location.toString());
         let page;
         if (this.isInFolder === true) {
-            let folderId;
-            page = await requestHelper.UserRequests.GalleryRequests.Gallery.getPageInFolder(username, folderId, this.pageNo);
+            const [folderId, folderName] = getCurrGalleryFolder() ?? [undefined, undefined];
+            page = await requestHelper.UserRequests.GalleryRequests.Gallery.getPageInFolder(username, folderId, folderName, this.pageNo);
         } else {
             page = await requestHelper.UserRequests.GalleryRequests.Gallery.getPage(username, this.pageNo);
         }
@@ -32,7 +33,7 @@ export class GalleryPage implements IGalleryPage {
         if (page == null) {
             throw new Error('No page found');
         }
-        
+
         prevFigures ??= [];
         const prevSids = prevFigures.map(figure => figure.id);
 

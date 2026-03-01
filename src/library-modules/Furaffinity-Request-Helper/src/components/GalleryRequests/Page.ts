@@ -11,7 +11,7 @@ import checkTagsAll from '../../../../GlobalUtils/src/FA-Functions/checkTagsAll'
 import { Logger } from '../../../../GlobalUtils/src/Logger';
 
 export class Page {
-    static async getGalleryPage(username: string | undefined, folderId: number | undefined, pageNumber: number | undefined, galleryType: GalleryType, semaphore: Semaphore): Promise<Document | undefined> {
+    static async getGalleryPage(username: string | undefined, folderId: number | undefined, folderName: string | undefined, pageNumber: number | undefined, galleryType: GalleryType, semaphore: Semaphore): Promise<Document | undefined> {
         if (galleryType === GalleryType.FAVORITES) {
             const dataFavId = folderId ?? pageNumber;
             return await Page.getFavoritesPage(username, dataFavId, pageNumber, semaphore);
@@ -37,16 +37,19 @@ export class Page {
             username += '/';
         }
         switch (galleryType) {
-        case GalleryType.GALLERY:
-            url = Gallery.hardLink + username;
-            break;
-        case GalleryType.SCRAPS:
-            url = Scraps.hardLink + username;
-            break;
+            case GalleryType.GALLERY:
+                url = Gallery.hardLink + username;
+                break;
+            case GalleryType.SCRAPS:
+                url = Scraps.hardLink + username;
+                break;
         }
 
         if (folderId != null && folderId !== -1) {
             url += `folder/${folderId}/`;
+            if (folderName != null) {
+                url += `${folderName}/`;
+            }
         }
         const page = await FuraffinityRequests.getHTML(url + pageNumber, semaphore);
         checkTagsAll(page);
@@ -169,7 +172,7 @@ export class Page {
             'type-poetry': searchOptions.typePoetry ? 1 : 0,
             'mode': searchOptions.matching
         };
-        
+
         if (searchOptions.rangeFrom instanceof Date && searchOptions.rangeFrom != null) {
             const year = searchOptions.rangeFrom.getFullYear();
             const month = (searchOptions.rangeFrom.getMonth() + 1).toString().padStart(2, '0');

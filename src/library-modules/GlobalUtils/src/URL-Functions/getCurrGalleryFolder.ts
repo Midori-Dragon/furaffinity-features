@@ -1,14 +1,24 @@
-export default function (): number | undefined {
+export default function (): [number, string] | null {
     const url = window.location.toString().toLowerCase();
-    if (!url.includes('gallery') || !url.includes('folder')) {
-        return;
+    if (!url.includes('/gallery/') || !url.includes('/folder/')) {
+        return null;
     }
 
-    const parts = url.split('/');
-    const folderIdIndex = parts.indexOf('folder') + 1;
-    if (folderIdIndex >= parts.length) {
-        return;
+    const folderId = getFolderIdFromUrl(url);
+    const folderName = getFolderNameFromUrl(url);
+    if (folderId == null || folderName == null) {
+        return null;
     }
-    const folderId = parts[folderIdIndex];
-    return parseInt(folderId);
+
+    return [parseInt(folderId), folderName];
+}
+
+function getFolderIdFromUrl(url: string): string | null {
+    const match = url.match(/\/folder\/(\d+)(?=\/|$)/);
+    return match ? match[1] : null;
+}
+
+function getFolderNameFromUrl(url: string): string | null {
+    const match = url.match(/\/folder\/\d+\/([^\/\?]+)(?=\/|$)/);
+    return match ? match[1] : null;
 }

@@ -37,16 +37,21 @@ export function getUserNameFromUrl(url: string): string {
         url = url.substring(0, url.indexOf('?'));
     }
     url = url.trimEnd('/');
+
+    if (url.includes('/folder/')) {
+        url = url.substring(0, url.indexOf('/folder/'));
+    }
+
     return url.substring(url.lastIndexOf('/') + 1);
 }
 
 export function isElementOnScreen(element: Element): boolean {
     // Get the bounding rectangle of the element
     const rect = element.getBoundingClientRect();
-    
+
     // Calculate the window height, considering both window and document height
     const windowHeight = (window.innerHeight || document.documentElement.clientHeight) * 2;
-    
+
     // Check if the element is within the visible area of the screen
     return (rect.top <= windowHeight) && ((rect.top + rect.height) >= 0);
 }

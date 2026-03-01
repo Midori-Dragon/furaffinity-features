@@ -37,12 +37,12 @@ export class ForwardSearch implements IAutoLoaderSearchable {
         }
 
         const currUsername = getDocUsername(document)!;
-        const folderId = getCurrGalleryFolder();
+        const [folderId, folderName] = getCurrGalleryFolder() ?? [undefined, undefined];
 
         Logger.logInfo(`${scriptName}: finding submission page...`);
         if (this.currSubmissionPageNo == null || this.currSubmissionPageNo < 1) {
             if (isInGallery) {
-                this.currSubmissionPageNo = await requestHelper.UserRequests.GalleryRequests.Gallery.getSubmissionPageNo(currUsername, this._currSid, folderId, -1, -1);
+                this.currSubmissionPageNo = await requestHelper.UserRequests.GalleryRequests.Gallery.getSubmissionPageNo(currUsername, this._currSid, folderId, folderName, -1, -1);
             } else if (isInScraps) {
                 this.currSubmissionPageNo = await requestHelper.UserRequests.GalleryRequests.Scraps.getSubmissionPageNo(currUsername, this._currSid, -1, -1);
             }
@@ -52,7 +52,7 @@ export class ForwardSearch implements IAutoLoaderSearchable {
         Logger.logInfo(`${scriptName}: searching figures forward...`);
         let figures: HTMLElement[][] = [];
         if (isInGallery) {
-            figures = await requestHelper.UserRequests.GalleryRequests.Gallery.getFiguresInFolderBetweenIds(currUsername, folderId, undefined, this._currSid);
+            figures = await requestHelper.UserRequests.GalleryRequests.Gallery.getFiguresInFolderBetweenIds(currUsername, folderId, folderName, undefined, this._currSid);
         } else if (isInScraps) {
             figures = await requestHelper.UserRequests.GalleryRequests.Scraps.getFiguresBetweenIds(currUsername, undefined, this._currSid);
         }

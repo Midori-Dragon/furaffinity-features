@@ -24,7 +24,7 @@ export class GalleryRequests {
         this.Journals = new Journals(this._semaphore);
     }
 
-    static async getSubmissionPageNo(username: string, submissionId: number | undefined, folderId: number | undefined, fromPageNumber: number | undefined, toPageNumber: number | undefined, galleryType: GalleryType, semaphore: Semaphore, percentId?: string | number): Promise<number> {
+    static async getSubmissionPageNo(username: string, submissionId: number | undefined, folderId: number | undefined, folderName: string | undefined, fromPageNumber: number | undefined, toPageNumber: number | undefined, galleryType: GalleryType, semaphore: Semaphore, percentId?: string | number): Promise<number> {
         if (submissionId == null || submissionId <= 0) {
             Logger.logError('No submissionId given');
             return -1;
@@ -44,7 +44,7 @@ export class GalleryRequests {
         const totalPages = Math.abs(toPageNumber - fromPageNumber) + 1;
         let completedPages = 0;
         for (let i = fromPageNumber; i <= toPageNumber; i += direction) {
-            const figures = await GalleryRequests.getGalleryFigures(username, folderId, i, galleryType, semaphore);
+            const figures = await GalleryRequests.getGalleryFigures(username, folderId, folderName, i, galleryType, semaphore);
             if (figures.length === 0) {
                 i = toPageNumber;
             } else {
@@ -53,7 +53,7 @@ export class GalleryRequests {
                     return i;
                 }
             }
-            
+
             completedPages++;
             PercentHelper.updatePercentValue(percentId, completedPages, totalPages);
         }
@@ -61,7 +61,7 @@ export class GalleryRequests {
         return -1;
     }
 
-    static async getGalleryFiguresTillId(username: string, folderId: number | undefined, toId: number | undefined, fromPage: number | undefined, galleryType: GalleryType, semaphore: Semaphore): Promise<HTMLElement[][]> {
+    static async getGalleryFiguresTillId(username: string, folderId: number | undefined, folderName: string | undefined, toId: number | undefined, fromPage: number | undefined, galleryType: GalleryType, semaphore: Semaphore): Promise<HTMLElement[][]> {
         if (toId == null || toId <= 0) {
             Logger.logError('No toId given');
             return [];
@@ -75,7 +75,7 @@ export class GalleryRequests {
             i = fromPage;
         }
         while (running) {
-            const figures = await GalleryRequests.getGalleryFigures(username, folderId, i, galleryType, semaphore);
+            const figures = await GalleryRequests.getGalleryFigures(username, folderId, folderName, i, galleryType, semaphore);
             let currFigureId = lastFigureId;
             if (figures.length !== 0) {
                 currFigureId = figures[0].id;
@@ -96,7 +96,7 @@ export class GalleryRequests {
         return allFigures;
     }
 
-    static async getGalleryFiguresSinceId(username: string, folderId: number | undefined, fromId: number | undefined, toPage: number | undefined, galleryType: GalleryType, semaphore: Semaphore): Promise<HTMLElement[][]> {
+    static async getGalleryFiguresSinceId(username: string, folderId: number | undefined, folderName: string | undefined, fromId: number | undefined, toPage: number | undefined, galleryType: GalleryType, semaphore: Semaphore): Promise<HTMLElement[][]> {
         if (fromId == null || fromId <= 0) {
             Logger.logError('No fromId given');
             return [];
@@ -109,7 +109,7 @@ export class GalleryRequests {
         let i = toPage == null || toPage <= 0 ? 1 : toPage;
         if (toPage == null || toPage <= 0) {
             while (running) {
-                const figures = await GalleryRequests.getGalleryFigures(username, folderId, i, galleryType, semaphore);
+                const figures = await GalleryRequests.getGalleryFigures(username, folderId, folderName, i, galleryType, semaphore);
                 let currFigureId = lastFigureId;
                 if (figures.length !== 0) {
                     currFigureId = figures[0].id;
@@ -130,7 +130,7 @@ export class GalleryRequests {
         lastFigureId = undefined;
         running = true;
         while (running) {
-            const figures = await GalleryRequests.getGalleryFigures(username, folderId, i, galleryType, semaphore);
+            const figures = await GalleryRequests.getGalleryFigures(username, folderId, folderName, i, galleryType, semaphore);
             let currFigureId: string | undefined = lastFigureId;
             if (figures.length !== 0) {
                 currFigureId = figures[0].id;
@@ -161,7 +161,7 @@ export class GalleryRequests {
         return allFigures;
     }
 
-    static async getGalleryFiguresBetweenIds(username: string, folderId: number | undefined, fromId: number | undefined, toId: number | undefined, fromPage: number | undefined, toPage: number | undefined, galleryType: GalleryType, semaphore: Semaphore, percentId?: string | number): Promise<HTMLElement[][]> {
+    static async getGalleryFiguresBetweenIds(username: string, folderId: number | undefined, folderName: string | undefined, fromId: number | undefined, toId: number | undefined, fromPage: number | undefined, toPage: number | undefined, galleryType: GalleryType, semaphore: Semaphore, percentId?: string | number): Promise<HTMLElement[][]> {
         if (fromId == null || fromId <= 0) {
             Logger.logError('No fromId given');
             return [];
@@ -188,7 +188,7 @@ export class GalleryRequests {
             if (toPage != null && toPage >= 1 && i >= toPage) {
                 running = false;
             }
-            const figures = await GalleryRequests.getGalleryFigures(username, folderId, i, galleryType, semaphore);
+            const figures = await GalleryRequests.getGalleryFigures(username, folderId, folderName, i, galleryType, semaphore);
             let currFigureId = lastFigureId;
             if (figures.length !== 0) {
                 currFigureId = figures[0].id;
@@ -217,7 +217,7 @@ export class GalleryRequests {
         return allFigures;
     }
 
-    static async getGalleryFiguresTillPage(username: string, folderId: number | undefined, toPageNumber: number | undefined, galleryType: GalleryType, semaphore: Semaphore, percentId?: string | number): Promise<HTMLElement[][]> {
+    static async getGalleryFiguresTillPage(username: string, folderId: number | undefined, folderName: string | undefined, toPageNumber: number | undefined, galleryType: GalleryType, semaphore: Semaphore, percentId?: string | number): Promise<HTMLElement[][]> {
         if (toPageNumber == null || toPageNumber === 0) {
             Logger.logWarning('toPageNumber must be greater than 0. Using default 1 instead.');
             toPageNumber = 1;
@@ -228,7 +228,7 @@ export class GalleryRequests {
         const allFigures = [];
         let completedPages = 0;
         for (let i = 1; i <= toPageNumber; i++) {
-            const figures = await GalleryRequests.getGalleryFigures(username, folderId, i, galleryType, semaphore);
+            const figures = await GalleryRequests.getGalleryFigures(username, folderId, folderName, i, galleryType, semaphore);
             if (figures.length === 0) {
                 i = toPageNumber;
             } else {
@@ -242,8 +242,8 @@ export class GalleryRequests {
         return allFigures;
     }
 
-    static async getGalleryFiguresSincePage(username: string, folderId: number | undefined, fromPageNumber: number | undefined, galleryType: GalleryType, semaphore: Semaphore): Promise<HTMLElement[][]> {
-        if (fromPageNumber == null ||  fromPageNumber <= 0) {
+    static async getGalleryFiguresSincePage(username: string, folderId: number | undefined, folderName: string | undefined, fromPageNumber: number | undefined, galleryType: GalleryType, semaphore: Semaphore): Promise<HTMLElement[][]> {
+        if (fromPageNumber == null || fromPageNumber <= 0) {
             Logger.logWarning('fromPageNumber must be greater than 0. Using default 1 instead.');
             fromPageNumber = 1;
         }
@@ -253,7 +253,7 @@ export class GalleryRequests {
         let running = true;
         let i = fromPageNumber;
         while (running) {
-            const figures = await GalleryRequests.getGalleryFigures(username, folderId, i, galleryType, semaphore);
+            const figures = await GalleryRequests.getGalleryFigures(username, folderId, folderName, i, galleryType, semaphore);
             let currFigureId = lastFigureId;
             if (figures.length !== 0) {
                 currFigureId = figures[0].id;
@@ -269,7 +269,7 @@ export class GalleryRequests {
         return allFigures;
     }
 
-    static async getGalleryFiguresBetweenPages(username: string, folderId: number | undefined, fromPageNumber: number | undefined, toPageNumber: number | undefined, galleryType: GalleryType, semaphore: Semaphore, percentId?: string | number): Promise<HTMLElement[][]> {
+    static async getGalleryFiguresBetweenPages(username: string, folderId: number | undefined, folderName: string | undefined, fromPageNumber: number | undefined, toPageNumber: number | undefined, galleryType: GalleryType, semaphore: Semaphore, percentId?: string | number): Promise<HTMLElement[][]> {
         if (fromPageNumber == null || fromPageNumber <= 0) {
             Logger.logWarning('fromPageNumber must be greater than 0. Using default 1 instead.');
             fromPageNumber = 1;
@@ -286,7 +286,7 @@ export class GalleryRequests {
         const totalPages = Math.abs(toPageNumber - fromPageNumber) + 1;
         let completedPages = 0;
         for (let i = fromPageNumber; i <= toPageNumber; i += direction) {
-            const figures = await GalleryRequests.getGalleryFigures(username, folderId, i, galleryType, semaphore);
+            const figures = await GalleryRequests.getGalleryFigures(username, folderId, folderName, i, galleryType, semaphore);
             if (figures.length === 0) {
                 i = toPageNumber;
             } else {
@@ -300,7 +300,7 @@ export class GalleryRequests {
         return allFigures;
     }
 
-    static async getGalleryFigures(username: string, folderId: number | undefined, pageNumber: number | undefined, galleryType: GalleryType, semaphore: Semaphore): Promise<HTMLElement[]> {
+    static async getGalleryFigures(username: string, folderId: number | undefined, folderName: string | undefined, pageNumber: number | undefined, galleryType: GalleryType, semaphore: Semaphore): Promise<HTMLElement[]> {
         if (pageNumber == null || pageNumber <= 0) {
             Logger.logWarning('No pageNumber given. Using default value of 1.');
             pageNumber = 1;
@@ -309,10 +309,10 @@ export class GalleryRequests {
         if (folderId == null || folderId <= 0) {
             Logger.logInfo(`Getting ${galleryType} of "${username}" on page "${pageNumber}".`);
         } else {
-            Logger.logInfo(`Getting ${galleryType} of "${username}" in folder "${folderId}" on page "${pageNumber}".`);
+            Logger.logInfo(`Getting ${galleryType} of "${username}" in folder "${folderId}"${folderName != null ? ` (${folderName})` : ''} on page "${pageNumber}".`);
         }
-        
-        const galleryDoc = await Page.getGalleryPage(username, folderId, pageNumber, galleryType, semaphore);
+
+        const galleryDoc = await Page.getGalleryPage(username, folderId, folderName, pageNumber, galleryType, semaphore);
         if (!galleryDoc || !(galleryDoc instanceof Document) || galleryDoc.getElementById('no-images')) {
             Logger.logInfo(`No images found at ${galleryType} of "${username}" on page "${pageNumber}".`);
             return [];
