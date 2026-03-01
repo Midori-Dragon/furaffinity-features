@@ -1,5 +1,5 @@
 import { Semaphore } from '../../../../GlobalUtils/src/Semaphore';
-import { WaitAndCallAction } from '../../utils/WaitAndCallAction';
+import { WaitAndCallAction, DEFAULT_ACTION_DELAY } from '../../utils/WaitAndCallAction';
 import { FuraffinityRequests } from '../../modules/FuraffinityRequests';
 
 export class UserProfile {
@@ -18,19 +18,19 @@ export class UserProfile {
         };
     }
 
-    async getProfilePage(action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
+    async getProfilePage(action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(UserProfile.hardLinks['profile'], this._semaphore), action, delay);
     }
 
-    async getProfilebannerPage(action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
+    async getProfilebannerPage(action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(UserProfile.hardLinks['profilebanner'], this._semaphore), action, delay);
     }
 
-    async getContactsPage(action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
+    async getContactsPage(action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(UserProfile.hardLinks['contacts'], this._semaphore), action, delay);
     }
 
-    async getAvatarPage(action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
+    async getAvatarPage(action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(UserProfile.hardLinks['avatar'], this._semaphore), action, delay);
     }
 }

@@ -1,9 +1,10 @@
-import { WaitAndCallAction } from '../../utils/WaitAndCallAction';
+import { WaitAndCallAction, DEFAULT_ACTION_DELAY } from '../../utils/WaitAndCallAction';
 import { Semaphore } from '../../../../GlobalUtils/src/Semaphore';
-import { Page } from '../GalleryRequests/Page';
 import { FuraffinityRequests } from '../../modules/FuraffinityRequests';
 import { SearchRequests } from '../../modules/SearchRequests';
 import { convertToNumber } from '../../utils/GeneralUtils';
+import checkTagsAll from '../../../../GlobalUtils/src/FA-Functions/checkTagsAll';
+import { Logger } from '../../../../GlobalUtils/src/Logger';
 
 export class Browse {
     private readonly _semaphore: Semaphore;
@@ -14,6 +15,38 @@ export class Browse {
 
     static get hardLink(): string {
         return FuraffinityRequests.fullUrl + '/browse/';
+    }
+
+    static async fetchPage(pageNumber: number | undefined, browseOptions: BrowseOptions | undefined, semaphore: Semaphore): Promise<Document | undefined> {
+        if (pageNumber == null || pageNumber <= 0) {
+            Logger.logWarning('Page number must be greater than 0. Using default 1 instead.');
+            pageNumber = 1;
+        }
+
+        browseOptions ??= new BrowseOptions();
+
+        const payload: { [key: string]: string | number | undefined } = {
+            'cat': browseOptions.category,
+            'atype': browseOptions.type,
+            'species': browseOptions.species,
+            'gender': browseOptions.gender,
+            'perpage': browseOptions.perPage,
+            'page': pageNumber,
+            'rating_general': browseOptions.ratingGeneral ? 'on' : 'off',
+            'rating_mature': browseOptions.ratingMature ? 'on' : 'off',
+            'rating_adult': browseOptions.ratingAdult ? 'on' : 'off',
+        };
+        for (const key in payload) {
+            if (payload[key] == null || payload[key] === 0 || payload[key] === 'off') {
+                delete payload[key];
+            }
+        }
+        const payloadArray = Object.entries(payload).map(([key, value]) => [key, value?.toString() ?? '']);
+
+        const url = Browse.hardLink;
+        const page = await FuraffinityRequests.postHTML(url, payloadArray, semaphore);
+        checkTagsAll(page);
+        return page;
     }
 
     get newBrowseOptions(): BrowseOptions {
@@ -30,7 +63,7 @@ export class Browse {
         return BrowseOptions;
     }
 
-    async getFiguresBetweenIds(fromId?: string | number, toId?: string | number, browseOptions?: BrowseOptions, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
+    async getFiguresBetweenIds(fromId?: string | number, toId?: string | number, browseOptions?: BrowseOptions, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
         fromId = convertToNumber(fromId);
         toId = convertToNumber(toId);
 
@@ -52,7 +85,7 @@ export class Browse {
         }
     }
 
-    async getFiguresBetweenIdsBetweenPages(fromId?: string | number, toId?: string | number, fromPageNumber?: string | number, toPageNumber?: string | number, browseOptions?: BrowseOptions, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
+    async getFiguresBetweenIdsBetweenPages(fromId?: string | number, toId?: string | number, fromPageNumber?: string | number, toPageNumber?: string | number, browseOptions?: BrowseOptions, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
         fromId = convertToNumber(fromId);
         toId = convertToNumber(toId);
         fromPageNumber = convertToNumber(fromPageNumber);
@@ -76,7 +109,7 @@ export class Browse {
         }
     }
 
-    async getFiguresBetweenPages(fromPageNumber?: string | number, toPageNumber?: string | number, browseOptions?: BrowseOptions, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
+    async getFiguresBetweenPages(fromPageNumber?: string | number, toPageNumber?: string | number, browseOptions?: BrowseOptions, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
         fromPageNumber = convertToNumber(fromPageNumber);
         toPageNumber = convertToNumber(toPageNumber);
 
@@ -98,7 +131,7 @@ export class Browse {
         }
     }
 
-    async getFigures(pageNumber?: string | number, browseOptions?: BrowseOptions, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[]> {
+    async getFigures(pageNumber?: string | number, browseOptions?: BrowseOptions, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[]> {
         pageNumber = convertToNumber(pageNumber);
 
         return await WaitAndCallAction.callFunctionAsync(
@@ -107,11 +140,11 @@ export class Browse {
         );
     }
 
-    async getPage(pageNumber?: string | number, browseOptions?: BrowseOptions, action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
+    async getPage(pageNumber?: string | number, browseOptions?: BrowseOptions, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         pageNumber = convertToNumber(pageNumber);
 
         return await WaitAndCallAction.callFunctionAsync(
-            () => Page.getBrowsePage(pageNumber as number | undefined, browseOptions, this._semaphore),
+            () => Browse.fetchPage(pageNumber as number | undefined, browseOptions, this._semaphore),
             action, delay
         );
     }

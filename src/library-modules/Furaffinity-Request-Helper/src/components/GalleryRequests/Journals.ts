@@ -1,6 +1,5 @@
-import { WaitAndCallAction } from '../../utils/WaitAndCallAction';
+import { WaitAndCallAction, DEFAULT_ACTION_DELAY } from '../../utils/WaitAndCallAction';
 import { Semaphore } from '../../../../GlobalUtils/src/Semaphore';
-import { Page } from './Page';
 import { FuraffinityRequests } from '../../modules/FuraffinityRequests';
 import { convertToNumber } from '../../utils/GeneralUtils';
 import { Logger } from '../../../../GlobalUtils/src/Logger';
@@ -17,7 +16,23 @@ export class Journals {
         return FuraffinityRequests.fullUrl + '/journals/';
     }
 
-    async getJournalPageNo(username: string, journalId?: string | number, fromPageNumber?: string | number, toPageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<number> {
+    static async fetchPage(username: string | undefined, pageNumber: number | undefined, semaphore: Semaphore): Promise<Document | undefined> {
+        if (username == null) {
+            Logger.logError('No username given');
+            return;
+        }
+        if (pageNumber == null || pageNumber <= 0) {
+            Logger.logWarning('Page number must be greater than 0. Using default 1 instead.');
+            pageNumber = 1;
+        }
+        if (!username.endsWith('/')) {
+            username += '/';
+        }
+        const url = Journals.hardLink + username;
+        return await FuraffinityRequests.getHTML(url + pageNumber, semaphore);
+    }
+
+    async getJournalPageNo(username: string, journalId?: string | number, fromPageNumber?: string | number, toPageNumber?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<number> {
         journalId = convertToNumber(journalId);
         fromPageNumber = convertToNumber(fromPageNumber);
         toPageNumber = convertToNumber(toPageNumber);
@@ -28,7 +43,7 @@ export class Journals {
         );
     }
 
-    async getFiguresBetweenIds(username: string, fromId?: string | number, toId?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
+    async getFiguresBetweenIds(username: string, fromId?: string | number, toId?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
         fromId = convertToNumber(fromId);
         toId = convertToNumber(toId);
 
@@ -50,7 +65,7 @@ export class Journals {
         }
     }
 
-    async getFiguresBetweenIdsBetweenPages(username: string, fromId?: string | number, toId?: string | number, fromPageNumber?: string | number, toPageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
+    async getFiguresBetweenIdsBetweenPages(username: string, fromId?: string | number, toId?: string | number, fromPageNumber?: string | number, toPageNumber?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
         fromId = convertToNumber(fromId);
         toId = convertToNumber(toId);
         fromPageNumber = convertToNumber(fromPageNumber);
@@ -74,7 +89,7 @@ export class Journals {
         }
     }
 
-    async getSectionsBetweenPages(username: string, fromPageNumber?: string | number, toPageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
+    async getSectionsBetweenPages(username: string, fromPageNumber?: string | number, toPageNumber?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
         fromPageNumber = convertToNumber(fromPageNumber);
         toPageNumber = convertToNumber(toPageNumber);
 
@@ -96,7 +111,7 @@ export class Journals {
         }
     }
 
-    async getSections(username: string, pageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[]> {
+    async getSections(username: string, pageNumber?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[]> {
         pageNumber = convertToNumber(pageNumber);
 
         return await WaitAndCallAction.callFunctionAsync(
@@ -105,11 +120,11 @@ export class Journals {
         );
     }
 
-    async getPage(username: string, pageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
+    async getPage(username: string, pageNumber?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         pageNumber = convertToNumber(pageNumber);
 
         return await WaitAndCallAction.callFunctionAsync(
-            () => Page.getJournalsPage(username, pageNumber as number | undefined, this._semaphore),
+            () => Journals.fetchPage(username, pageNumber as number | undefined, this._semaphore),
             action, delay
         );
     }
@@ -122,7 +137,7 @@ export class Journals {
 
         Logger.logInfo(`Getting Journals of "${username}" on page "${pageNumber}".`);
 
-        const galleryDoc = await Page.getJournalsPage(username, pageNumber, this._semaphore);
+        const galleryDoc = await Journals.fetchPage(username, pageNumber, this._semaphore);
         if (!galleryDoc) {
             Logger.logWarning(`No journals found at "${username}" on page "${pageNumber}".`);
             return [];

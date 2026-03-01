@@ -1,6 +1,6 @@
 import { Logger } from '../../../GlobalUtils/src/Logger';
 import { Semaphore } from '../../../GlobalUtils/src/Semaphore';
-import { WaitAndCallAction } from '../utils/WaitAndCallAction';
+import { WaitAndCallAction, DEFAULT_ACTION_DELAY } from '../utils/WaitAndCallAction';
 import { FuraffinityRequests } from './FuraffinityRequests';
 
 export class SubmissionRequests {
@@ -19,19 +19,19 @@ export class SubmissionRequests {
         };
     }
 
-    async getSubmissionPage(submissionId?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
+    async getSubmissionPage(submissionId?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         return await WaitAndCallAction.callFunctionAsync(() => this._getSubmissionPage(submissionId), action, delay);
     }
 
-    async favSubmission(submissionId?: string | number, favKey?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<string | undefined> {
+    async favSubmission(submissionId?: string | number, favKey?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<string | undefined> {
         return await WaitAndCallAction.callFunctionAsync(() => this._favSubmission(submissionId, favKey), action, delay);
     }
 
-    async unfavSubmission(submissionId?: string | number, unfavKey?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<string | undefined> {
+    async unfavSubmission(submissionId?: string | number, unfavKey?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<string | undefined> {
         return await WaitAndCallAction.callFunctionAsync(() => this._unfavSubmission(submissionId, unfavKey), action, delay);
     }
 
-    async getJournalPage(journalId?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
+    async getJournalPage(journalId?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         return await WaitAndCallAction.callFunctionAsync(() => this._getJournalPage(journalId), action, delay);
     }
 

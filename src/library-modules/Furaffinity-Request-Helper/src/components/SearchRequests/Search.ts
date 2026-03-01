@@ -1,10 +1,11 @@
-import { WaitAndCallAction } from '../../utils/WaitAndCallAction';
+import { WaitAndCallAction, DEFAULT_ACTION_DELAY } from '../../utils/WaitAndCallAction';
 import { Semaphore } from '../../../../GlobalUtils/src/Semaphore';
-import { Page } from '../GalleryRequests/Page';
 import { FuraffinityRequests } from '../../modules/FuraffinityRequests';
 import { SearchRequests } from '../../modules/SearchRequests';
 import { convertToNumber } from '../../utils/GeneralUtils';
 import { BrowseOptions } from './Browse';
+import checkTagsAll from '../../../../GlobalUtils/src/FA-Functions/checkTagsAll';
+import { Logger } from '../../../../GlobalUtils/src/Logger';
 
 export class Search {
     private readonly _semaphore: Semaphore;
@@ -15,6 +16,71 @@ export class Search {
 
     static get hardLink(): string {
         return FuraffinityRequests.fullUrl + '/search/';
+    }
+
+    static async fetchPage(pageNumber: number | undefined, searchOptions: SearchOptions | undefined, semaphore: Semaphore): Promise<Document | undefined> {
+        if (pageNumber == null || pageNumber <= 0) {
+            Logger.logWarning('Page number must be greater than 0. Using default 1 instead.');
+            pageNumber = 1;
+        }
+
+        searchOptions ??= new SearchOptions();
+
+        const payload: { [key: string]: string | number | undefined } = {
+            'page': pageNumber,
+            'q': searchOptions.input,
+            'perpage': searchOptions.perPage,
+            'order-by': searchOptions.orderBy,
+            'order-direction': searchOptions.orderDirection,
+            'category': searchOptions.category,
+            'arttype': searchOptions.type,
+            'species': searchOptions.species,
+            'range': searchOptions.range,
+            'range_from': undefined,
+            'range_to': undefined,
+            'rating-general': searchOptions.ratingGeneral ? 1 : 0,
+            'rating-mature': searchOptions.ratingMature ? 1 : 0,
+            'rating-adult': searchOptions.ratingAdult ? 1 : 0,
+            'type-art': searchOptions.typeArt ? 1 : 0,
+            'type-music': searchOptions.typeMusic ? 1 : 0,
+            'type-flash': searchOptions.typeFlash ? 1 : 0,
+            'type-story': searchOptions.typeStory ? 1 : 0,
+            'type-photos': searchOptions.typePhotos ? 1 : 0,
+            'type-poetry': searchOptions.typePoetry ? 1 : 0,
+            'mode': searchOptions.matching
+        };
+
+        if (searchOptions.rangeFrom instanceof Date && searchOptions.rangeFrom != null) {
+            const year = searchOptions.rangeFrom.getFullYear();
+            const month = (searchOptions.rangeFrom.getMonth() + 1).toString().padStart(2, '0');
+            const day = searchOptions.rangeFrom.getDate().toString().padStart(2, '0');
+            const formattedDate = `${year}-${month}-${day}`;
+            payload['range_from'] = formattedDate;
+        } else if (typeof searchOptions.rangeFrom == 'string' && searchOptions.rangeFrom) {
+            payload['range_from'] = searchOptions.rangeFrom;
+        }
+
+        if (searchOptions.rangeTo instanceof Date && searchOptions.rangeTo != null) {
+            const year = searchOptions.rangeTo.getFullYear();
+            const month = (searchOptions.rangeTo.getMonth() + 1).toString().padStart(2, '0');
+            const day = searchOptions.rangeTo.getDate().toString().padStart(2, '0');
+            const formattedDate = `${year}-${month}-${day}`;
+            payload['range_to'] = formattedDate;
+        } else if (typeof searchOptions.rangeTo == 'string' && searchOptions.rangeTo) {
+            payload['range_to'] = searchOptions.rangeTo;
+        }
+
+        for (const key in payload) {
+            if (payload[key] == null || payload[key] === 0 || payload[key] === 'off') {
+                delete payload[key];
+            }
+        }
+        const payloadArray = Object.entries(payload).map(([key, value]) => [key, value?.toString() ?? '']);
+
+        const url = Search.hardLink;
+        const page = await FuraffinityRequests.postHTML(url, payloadArray, semaphore);
+        checkTagsAll(page);
+        return page;
     }
 
     get newSearchOptions(): SearchOptions {
@@ -31,7 +97,7 @@ export class Search {
         return SearchOptions;
     }
 
-    async getFiguresBetweenIds(fromId?: string | number, toId?: string | number, searchOptions?: SearchOptions, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
+    async getFiguresBetweenIds(fromId?: string | number, toId?: string | number, searchOptions?: SearchOptions, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
         fromId = convertToNumber(fromId);
         toId = convertToNumber(toId);
 
@@ -53,7 +119,7 @@ export class Search {
         }
     }
 
-    async getFiguresBetweenIdsBetweenPages(fromId?: string | number, toId?: string | number, fromPageNumber?: string | number, toPageNumber?: string | number, searchOptions?: SearchOptions, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
+    async getFiguresBetweenIdsBetweenPages(fromId?: string | number, toId?: string | number, fromPageNumber?: string | number, toPageNumber?: string | number, searchOptions?: SearchOptions, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
         fromId = convertToNumber(fromId);
         toId = convertToNumber(toId);
         fromPageNumber = convertToNumber(fromPageNumber);
@@ -77,7 +143,7 @@ export class Search {
         }
     }
 
-    async getFiguresBetweenPages(fromPageNumber?: string | number, toPageNumber?: string | number, searchOptions?: SearchOptions, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
+    async getFiguresBetweenPages(fromPageNumber?: string | number, toPageNumber?: string | number, searchOptions?: SearchOptions, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
         fromPageNumber = convertToNumber(fromPageNumber);
         toPageNumber = convertToNumber(toPageNumber);
 
@@ -99,7 +165,7 @@ export class Search {
         }
     }
 
-    async getFigures(pageNumber?: string | number, searchOptions?: SearchOptions, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[]> {
+    async getFigures(pageNumber?: string | number, searchOptions?: SearchOptions, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[]> {
         pageNumber = convertToNumber(pageNumber);
 
         return await WaitAndCallAction.callFunctionAsync(
@@ -108,11 +174,11 @@ export class Search {
         );
     }
 
-    async getPage(pageNumber?: string | number, searchOptions?: SearchOptions, action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
+    async getPage(pageNumber?: string | number, searchOptions?: SearchOptions, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         pageNumber = convertToNumber(pageNumber);
 
         return await WaitAndCallAction.callFunctionAsync(
-            () => Page.getSearchPage(pageNumber as number | undefined, searchOptions, this._semaphore),
+            () => Search.fetchPage(pageNumber as number | undefined, searchOptions, this._semaphore),
             action, delay
         );
     }

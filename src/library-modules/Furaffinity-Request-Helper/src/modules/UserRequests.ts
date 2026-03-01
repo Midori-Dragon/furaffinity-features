@@ -1,4 +1,4 @@
-import { WaitAndCallAction } from '../utils/WaitAndCallAction';
+import { WaitAndCallAction, DEFAULT_ACTION_DELAY } from '../utils/WaitAndCallAction';
 import { Semaphore } from '../../../GlobalUtils/src/Semaphore';
 import { FuraffinityRequests } from './FuraffinityRequests';
 import { GalleryRequests } from './GalleryRequests';
@@ -27,23 +27,23 @@ export class UserRequests {
         };
     }
 
-    async getUserPage(username?: string, action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
+    async getUserPage(username?: string, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         return await WaitAndCallAction.callFunctionAsync(() => this._getUserPage(username), action, delay);
     }
 
-    async watchUser(username?: string, watchKey?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<boolean> {
+    async watchUser(username?: string, watchKey?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<boolean> {
         return await WaitAndCallAction.callFunctionAsync(() => this._watchUser(username, watchKey), action, delay);
     }
 
-    async unwatchUser(username?: string, unwatchKey?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<boolean> {
+    async unwatchUser(username?: string, unwatchKey?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<boolean> {
         return await WaitAndCallAction.callFunctionAsync(() => this._unwatchUser(username, unwatchKey), action, delay);
     }
 
-    async blockUser(username?: string, blockKey?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<boolean> {
+    async blockUser(username?: string, blockKey?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<boolean> {
         return await WaitAndCallAction.callFunctionAsync(() => this._blockUser(username, blockKey), action, delay);
     }
 
-    async unblockUser(username?: string, unblockKey?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<boolean> {
+    async unblockUser(username?: string, unblockKey?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<boolean> {
         return await WaitAndCallAction.callFunctionAsync(() => this._unblockUser(username, unblockKey), action, delay);
     }
 

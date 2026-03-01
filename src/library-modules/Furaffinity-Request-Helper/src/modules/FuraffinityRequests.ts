@@ -1,5 +1,5 @@
 import { Semaphore } from '../../../GlobalUtils/src/Semaphore';
-import { WaitAndCallAction } from '../utils/WaitAndCallAction';
+import { WaitAndCallAction, DEFAULT_ACTION_DELAY } from '../utils/WaitAndCallAction';
 import { UserRequests } from './UserRequests';
 import { PersonalUserRequests } from './PersonalUserRequests';
 import { SubmissionRequests } from './SubmissionRequests';
@@ -58,7 +58,7 @@ export class FuraffinityRequests {
         return FuraffinityRequests._httpsString + FuraffinityRequests._domain;
     }
 
-    static async getHTML(url: string, semaphore: Semaphore, action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
+    static async getHTML(url: string, semaphore: Semaphore, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         if (url == null || url === '') {
             Logger.logError('No url given');
             return;
@@ -66,7 +66,7 @@ export class FuraffinityRequests {
         return await WaitAndCallAction.callFunctionAsync(() => getHTMLLocal(url, semaphore), action, delay);
     }
 
-    static async postHTML(url: string, payload: string[][] | Record<string, string> | string | URLSearchParams, semaphore: Semaphore, action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
+    static async postHTML(url: string, payload: string[][] | Record<string, string> | string | URLSearchParams, semaphore: Semaphore, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         if (url == null || url === '') {
             Logger.logError('No url given');
             return;

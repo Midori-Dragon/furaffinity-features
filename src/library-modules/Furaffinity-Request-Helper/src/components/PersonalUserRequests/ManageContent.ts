@@ -1,5 +1,5 @@
 import { Semaphore } from '../../../../GlobalUtils/src/Semaphore';
-import { WaitAndCallAction } from '../../utils/WaitAndCallAction';
+import { WaitAndCallAction, DEFAULT_ACTION_DELAY } from '../../utils/WaitAndCallAction';
 import { FuraffinityRequests } from '../../modules/FuraffinityRequests';
 import { convertToNumber } from '../../utils/GeneralUtils';
 import { Logger } from '../../../../GlobalUtils/src/Logger';
@@ -23,15 +23,15 @@ export class ManageContent {
         };
     }
 
-    async getFoldersPages(action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
+    async getFoldersPages(action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(ManageContent.hardLinks['folders'], this._semaphore), action, delay);
     }
 
-    async getAllWatchesPages(action?: (percentId?: string | number) => void, delay = 100): Promise<Document[]> {
+    async getAllWatchesPages(action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document[]> {
         return await WaitAndCallAction.callFunctionAsync(() => this._getAllWatchesPages(), action, delay);
     }
 
-    async getWatchesPage(pageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
+    async getWatchesPage(pageNumber?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         pageNumber = convertToNumber(pageNumber);
         return await WaitAndCallAction.callFunctionAsync(() => this._getWatchesPage(pageNumber as number | undefined), action, delay);
     }

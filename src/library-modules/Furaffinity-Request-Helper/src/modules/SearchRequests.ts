@@ -1,5 +1,4 @@
 import { Semaphore } from '../../../GlobalUtils/src/Semaphore';
-import { Page } from '../components/GalleryRequests/Page';
 import { Browse, BrowseOptions } from '../components/SearchRequests/Browse';
 import { Search, SearchOptions } from '../components/SearchRequests/Search';
 import { Logger } from '../../../GlobalUtils/src/Logger';
@@ -65,8 +64,8 @@ export class SearchRequests {
             Logger.logWarning('No pageNumber given. Using default value of 1.');
             pageNumber = 1;
         }
-        const galleryDoc = await Page.getBrowsePage(pageNumber, browseOptions, semaphore);
-        if (!galleryDoc || !(galleryDoc instanceof Document) || galleryDoc.getElementById('no-images')) {
+        const galleryDoc = await Browse.fetchPage(pageNumber, browseOptions, semaphore);
+        if (galleryDoc == null || !(galleryDoc instanceof Document) || galleryDoc.getElementById('no-images')) {
             Logger.logInfo(`No images found at browse on page "${pageNumber}".`);
             return [];
         }
@@ -129,8 +128,8 @@ export class SearchRequests {
             Logger.logWarning('No pageNumber given. Using default value of 1.');
             pageNumber = 1;
         }
-        const galleryDoc = await Page.getSearchPage(pageNumber, searchOptions, semaphore);
-        if (!galleryDoc || !(galleryDoc instanceof Document) || galleryDoc.getElementById('no-images')) {
+        const galleryDoc = await Search.fetchPage(pageNumber, searchOptions, semaphore);
+        if (galleryDoc == null || !(galleryDoc instanceof Document) || galleryDoc.getElementById('no-images')) {
             Logger.logInfo(`No images found at search on page "${pageNumber}".`);
             return [];
         }

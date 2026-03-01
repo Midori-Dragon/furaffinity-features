@@ -1,5 +1,5 @@
 import { Semaphore } from '../../../../GlobalUtils/src/Semaphore';
-import { WaitAndCallAction } from '../../utils/WaitAndCallAction';
+import { WaitAndCallAction, DEFAULT_ACTION_DELAY } from '../../utils/WaitAndCallAction';
 import { FuraffinityRequests } from '../../modules/FuraffinityRequests';
 
 export class Security {
@@ -17,15 +17,15 @@ export class Security {
         };
     }
 
-    async getSessionsPage(action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
+    async getSessionsPage(action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(Security.hardLinks['sessions'], this._semaphore), action, delay);
     }
 
-    async getLogsPage(action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
+    async getLogsPage(action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(Security.hardLinks['logs'], this._semaphore), action, delay);
     }
 
-    async getLabelsPage(action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
+    async getLabelsPage(action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(Security.hardLinks['labels'], this._semaphore), action, delay);
     }
 }

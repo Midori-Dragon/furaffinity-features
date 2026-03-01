@@ -1,5 +1,7 @@
 import { PercentHelper } from './PercentHelper';
 
+export const DEFAULT_ACTION_DELAY = 100;
+
 export class WaitAndCallAction {
     delay = 10;
 

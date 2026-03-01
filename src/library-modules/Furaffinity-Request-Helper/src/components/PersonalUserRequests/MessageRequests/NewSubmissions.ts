@@ -1,5 +1,5 @@
 import { Semaphore } from '../../../../../GlobalUtils/src/Semaphore';
-import { WaitAndCallAction } from '../../../utils/WaitAndCallAction';
+import { WaitAndCallAction, DEFAULT_ACTION_DELAY } from '../../../utils/WaitAndCallAction';
 import { FuraffinityRequests } from '../../../modules/FuraffinityRequests';
 import { Message } from '../Message';
 import { convertToNumber } from '../../../utils/GeneralUtils';
@@ -16,16 +16,16 @@ export class NewSubmissions {
         return FuraffinityRequests.fullUrl + '/msg/submissions/';
     }
 
-    async getSubmissionsPage(firstSubmissionId?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
+    async getSubmissionsPage(firstSubmissionId?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         firstSubmissionId = convertToNumber(firstSubmissionId);
         return await WaitAndCallAction.callFunctionAsync(() => this._getSubmissionsPage(firstSubmissionId as number | undefined), action, delay);
     }
 
-    async removeSubmissions(submissionIds?: string[] | number[], action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
+    async removeSubmissions(submissionIds?: string[] | number[], action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         return await WaitAndCallAction.callFunctionAsync(() => this._removeSubmissions(submissionIds), action, delay);
     }
 
-    async nukeSubmissions(action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
+    async nukeSubmissions(action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         return await WaitAndCallAction.callFunctionAsync(() => this._nukeSubmissions(), action, delay);
     }
 

@@ -1,10 +1,11 @@
-import { WaitAndCallAction } from '../../utils/WaitAndCallAction';
+import { WaitAndCallAction, DEFAULT_ACTION_DELAY } from '../../utils/WaitAndCallAction';
 import { Semaphore } from '../../../../GlobalUtils/src/Semaphore';
-import { Page } from './Page';
 import { FuraffinityRequests } from '../../modules/FuraffinityRequests';
-import { GalleryRequests, GalleryType } from '../../modules/GalleryRequests';
 import { IGalleryFolder } from '../../types/GalleryFolder';
 import { convertToNumber } from '../../utils/GeneralUtils';
+import { elementsTillId, elementsSinceId, elementsBetweenIds, elementsTillPage, elementsSincePage, elementsBetweenPages, findElementPageNo } from '../../utils/FigurePagingUtils';
+import checkTagsAll from '../../../../GlobalUtils/src/FA-Functions/checkTagsAll';
+import { Logger } from '../../../../GlobalUtils/src/Logger';
 
 export class Gallery {
     private readonly _semaphore: Semaphore;
@@ -17,86 +18,104 @@ export class Gallery {
         return FuraffinityRequests.fullUrl + '/gallery/';
     }
 
-    async getSubmissionPageNo(username: string, submissionId?: string | number, folder?: IGalleryFolder, fromPageNumber?: string | number, toPageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<number> {
+    static async fetchPage(username: string | undefined, folder: IGalleryFolder | undefined, pageNumber: number | undefined, semaphore: Semaphore): Promise<Document | undefined> {
+        if (username == null) {
+            Logger.logError('No username given');
+            return;
+        }
+        if (pageNumber == null || pageNumber <= 0) {
+            Logger.logWarning('No page number given. Using default value of 1.');
+            pageNumber = 1;
+        }
+        if (!username.endsWith('/')) {
+            username += '/';
+        }
+        let url = Gallery.hardLink + username;
+        if (folder != null) {
+            url += `folder/${folder.id}/`;
+            if (folder.name != null) {
+                url += `${folder.name}/`;
+            }
+        }
+        const page = await FuraffinityRequests.getHTML(url + pageNumber, semaphore);
+        checkTagsAll(page);
+        return page;
+    }
+
+    private async _fetchFigures(username: string, folder: IGalleryFolder | undefined, pageNumber: number | undefined): Promise<HTMLElement[]> {
+        if (pageNumber == null || pageNumber <= 0) {
+            pageNumber = 1;
+        }
+        Logger.logInfo(`Getting gallery of "${username}" on page "${pageNumber}".`);
+        const galleryDoc = await Gallery.fetchPage(username, folder, pageNumber, this._semaphore);
+        if (!galleryDoc || !(galleryDoc instanceof Document) || galleryDoc.getElementById('no-images')) {
+            Logger.logInfo(`No images found at gallery of "${username}" on page "${pageNumber}".`);
+            return [];
+        }
+        const figures = galleryDoc.getElementsByTagName('figure');
+        if (figures == null || figures.length === 0) {
+            Logger.logInfo(`No figures found at gallery of "${username}" on page "${pageNumber}".`);
+            return [];
+        }
+        return Array.from(figures);
+    }
+
+    async getSubmissionPageNo(username: string, submissionId?: string | number, folder?: IGalleryFolder, fromPageNumber?: string | number, toPageNumber?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<number> {
         submissionId = convertToNumber(submissionId);
         fromPageNumber = convertToNumber(fromPageNumber);
         toPageNumber = convertToNumber(toPageNumber);
 
         return await WaitAndCallAction.callFunctionAsync(
-            (percentId) => GalleryRequests.getSubmissionPageNo(username, submissionId as number | undefined, folder, fromPageNumber as number | undefined, toPageNumber as number | undefined, GalleryType.GALLERY, this._semaphore, percentId),
+            (percentId) => findElementPageNo((page) => this._fetchFigures(username, folder, page), submissionId as number | undefined, 'sid-', fromPageNumber as number | undefined, toPageNumber as number | undefined, percentId),
             action, delay
         );
     }
 
-    async getFiguresBetweenIds(username: string, fromId?: string | number, toId?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
+    async getFiguresBetweenIds(username: string, fromId?: string | number, toId?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
         fromId = convertToNumber(fromId);
         toId = convertToNumber(toId);
 
         if (fromId == null || fromId <= 0) {
             return await WaitAndCallAction.callFunctionAsync(
-                () => GalleryRequests.getGalleryFiguresTillId(username, undefined, toId as number | undefined, undefined, GalleryType.GALLERY, this._semaphore),
+                () => elementsTillId((page) => this._fetchFigures(username, undefined, page), toId as number | undefined, undefined),
                 action, delay
             );
         } else if (toId == null || toId <= 0) {
             return await WaitAndCallAction.callFunctionAsync(
-                () => GalleryRequests.getGalleryFiguresSinceId(username, undefined, fromId as number | undefined, undefined, GalleryType.GALLERY, this._semaphore),
+                () => elementsSinceId((page) => this._fetchFigures(username, undefined, page), fromId as number | undefined, undefined),
                 action, delay
             );
         } else {
             return await WaitAndCallAction.callFunctionAsync(
-                (percentId) => GalleryRequests.getGalleryFiguresBetweenIds(username, undefined, fromId as number | undefined, toId as number | undefined, undefined, undefined, GalleryType.GALLERY, this._semaphore, percentId),
+                (percentId) => elementsBetweenIds((page) => this._fetchFigures(username, undefined, page), fromId as number | undefined, toId as number | undefined, undefined, undefined, percentId),
                 action, delay
             );
         }
     }
 
-    async getFiguresInFolderBetweenIds(username: string, folder?: IGalleryFolder, fromId?: string | number, toId?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
+    async getFiguresInFolderBetweenIds(username: string, folder?: IGalleryFolder, fromId?: string | number, toId?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
         fromId = convertToNumber(fromId);
         toId = convertToNumber(toId);
 
         if (fromId == null || fromId <= 0) {
             return await WaitAndCallAction.callFunctionAsync(
-                () => GalleryRequests.getGalleryFiguresTillId(username, folder, toId as number | undefined, undefined, GalleryType.GALLERY, this._semaphore),
+                () => elementsTillId((page) => this._fetchFigures(username, folder, page), toId as number | undefined, undefined),
                 action, delay
             );
         } else if (toId == null || toId <= 0) {
             return await WaitAndCallAction.callFunctionAsync(
-                () => GalleryRequests.getGalleryFiguresSinceId(username, folder, fromId as number | undefined, undefined, GalleryType.GALLERY, this._semaphore),
+                () => elementsSinceId((page) => this._fetchFigures(username, folder, page), fromId as number | undefined, undefined),
                 action, delay
             );
         } else {
             return await WaitAndCallAction.callFunctionAsync(
-                (percentId) => GalleryRequests.getGalleryFiguresBetweenIds(username, folder, fromId as number | undefined, toId as number | undefined, undefined, undefined, GalleryType.GALLERY, this._semaphore, percentId),
+                (percentId) => elementsBetweenIds((page) => this._fetchFigures(username, folder, page), fromId as number | undefined, toId as number | undefined, undefined, undefined, percentId),
                 action, delay
             );
         }
     }
 
-    async getFiguresBetweenIdsBetweenPages(username: string, fromId?: string | number, toId?: string | number, fromPageNumber?: string | number, toPageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
-        fromId = convertToNumber(fromId);
-        toId = convertToNumber(toId);
-        fromPageNumber = convertToNumber(fromPageNumber);
-        toPageNumber = convertToNumber(toPageNumber);
-
-        if (fromId == null || fromId <= 0) {
-            return await WaitAndCallAction.callFunctionAsync(
-                () => GalleryRequests.getGalleryFiguresTillId(username, undefined, toId as number | undefined, fromPageNumber as number | undefined, GalleryType.GALLERY, this._semaphore),
-                action, delay
-            );
-        } else if (toId == null || toId <= 0) {
-            return await WaitAndCallAction.callFunctionAsync(
-                () => GalleryRequests.getGalleryFiguresSinceId(username, undefined, fromId as number | undefined, toPageNumber as number | undefined, GalleryType.GALLERY, this._semaphore),
-                action, delay
-            );
-        } else {
-            return await WaitAndCallAction.callFunctionAsync(
-                (percentId) => GalleryRequests.getGalleryFiguresBetweenIds(username, undefined, fromId as number | undefined, toId as number | undefined, fromPageNumber as number | undefined, toPageNumber as number | undefined, GalleryType.GALLERY, this._semaphore, percentId),
-                action, delay
-            );
-        }
-    }
-
-    async getFiguresInFolderBetweenIdsBetweenPages(username: string, folder?: IGalleryFolder, fromId?: string | number, toId?: string | number, fromPageNumber?: string | number, toPageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
+    async getFiguresBetweenIdsBetweenPages(username: string, fromId?: string | number, toId?: string | number, fromPageNumber?: string | number, toPageNumber?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
         fromId = convertToNumber(fromId);
         toId = convertToNumber(toId);
         fromPageNumber = convertToNumber(fromPageNumber);
@@ -104,98 +123,122 @@ export class Gallery {
 
         if (fromId == null || fromId <= 0) {
             return await WaitAndCallAction.callFunctionAsync(
-                () => GalleryRequests.getGalleryFiguresTillId(username, folder, toId as number | undefined, fromPageNumber as number | undefined, GalleryType.GALLERY, this._semaphore),
+                () => elementsTillId((page) => this._fetchFigures(username, undefined, page), toId as number | undefined, fromPageNumber as number | undefined),
                 action, delay
             );
         } else if (toId == null || toId <= 0) {
             return await WaitAndCallAction.callFunctionAsync(
-                () => GalleryRequests.getGalleryFiguresSinceId(username, folder, fromId as number | undefined, toPageNumber as number | undefined, GalleryType.GALLERY, this._semaphore),
+                () => elementsSinceId((page) => this._fetchFigures(username, undefined, page), fromId as number | undefined, toPageNumber as number | undefined),
                 action, delay
             );
         } else {
             return await WaitAndCallAction.callFunctionAsync(
-                (percentId) => GalleryRequests.getGalleryFiguresBetweenIds(username, folder, fromId as number | undefined, toId as number | undefined, fromPageNumber as number | undefined, toPageNumber as number | undefined, GalleryType.GALLERY, this._semaphore, percentId),
+                (percentId) => elementsBetweenIds((page) => this._fetchFigures(username, undefined, page), fromId as number | undefined, toId as number | undefined, fromPageNumber as number | undefined, toPageNumber as number | undefined, percentId),
                 action, delay
             );
         }
     }
 
-    async getFiguresBetweenPages(username: string, fromPageNumber?: string | number, toPageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
+    async getFiguresInFolderBetweenIdsBetweenPages(username: string, folder?: IGalleryFolder, fromId?: string | number, toId?: string | number, fromPageNumber?: string | number, toPageNumber?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
+        fromId = convertToNumber(fromId);
+        toId = convertToNumber(toId);
         fromPageNumber = convertToNumber(fromPageNumber);
         toPageNumber = convertToNumber(toPageNumber);
 
-        if (fromPageNumber == null || fromPageNumber <= 0) {
+        if (fromId == null || fromId <= 0) {
             return await WaitAndCallAction.callFunctionAsync(
-                (percentId) => GalleryRequests.getGalleryFiguresTillPage(username, undefined, toPageNumber as number | undefined, GalleryType.GALLERY, this._semaphore, percentId),
+                () => elementsTillId((page) => this._fetchFigures(username, folder, page), toId as number | undefined, fromPageNumber as number | undefined),
                 action, delay
             );
-        } else if (toPageNumber == null || toPageNumber <= 0) {
+        } else if (toId == null || toId <= 0) {
             return await WaitAndCallAction.callFunctionAsync(
-                () => GalleryRequests.getGalleryFiguresSincePage(username, undefined, fromPageNumber as number | undefined, GalleryType.GALLERY, this._semaphore),
+                () => elementsSinceId((page) => this._fetchFigures(username, folder, page), fromId as number | undefined, toPageNumber as number | undefined),
                 action, delay
             );
         } else {
             return await WaitAndCallAction.callFunctionAsync(
-                (percentId) => GalleryRequests.getGalleryFiguresBetweenPages(username, undefined, fromPageNumber as number | undefined, toPageNumber as number | undefined, GalleryType.GALLERY, this._semaphore, percentId),
+                (percentId) => elementsBetweenIds((page) => this._fetchFigures(username, folder, page), fromId as number | undefined, toId as number | undefined, fromPageNumber as number | undefined, toPageNumber as number | undefined, percentId),
                 action, delay
             );
         }
     }
 
-    async getFiguresInFolderBetweenPages(username: string, folder?: IGalleryFolder, fromPageNumber?: string | number, toPageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
+    async getFiguresBetweenPages(username: string, fromPageNumber?: string | number, toPageNumber?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
         fromPageNumber = convertToNumber(fromPageNumber);
         toPageNumber = convertToNumber(toPageNumber);
 
         if (fromPageNumber == null || fromPageNumber <= 0) {
             return await WaitAndCallAction.callFunctionAsync(
-                (percentId) => GalleryRequests.getGalleryFiguresTillPage(username, folder, toPageNumber as number | undefined, GalleryType.GALLERY, this._semaphore, percentId),
+                (percentId) => elementsTillPage((page) => this._fetchFigures(username, undefined, page), toPageNumber as number | undefined, percentId),
                 action, delay
             );
         } else if (toPageNumber == null || toPageNumber <= 0) {
             return await WaitAndCallAction.callFunctionAsync(
-                () => GalleryRequests.getGalleryFiguresSincePage(username, folder, fromPageNumber as number | undefined, GalleryType.GALLERY, this._semaphore),
+                () => elementsSincePage((page) => this._fetchFigures(username, undefined, page), fromPageNumber as number | undefined),
                 action, delay
             );
         } else {
             return await WaitAndCallAction.callFunctionAsync(
-                (percentId) => GalleryRequests.getGalleryFiguresBetweenPages(username, folder, fromPageNumber as number | undefined, toPageNumber as number | undefined, GalleryType.GALLERY, this._semaphore, percentId),
+                (percentId) => elementsBetweenPages((page) => this._fetchFigures(username, undefined, page), fromPageNumber as number | undefined, toPageNumber as number | undefined, percentId),
                 action, delay
             );
         }
     }
 
-    async getFigures(username: string, pageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[]> {
+    async getFiguresInFolderBetweenPages(username: string, folder?: IGalleryFolder, fromPageNumber?: string | number, toPageNumber?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
+        fromPageNumber = convertToNumber(fromPageNumber);
+        toPageNumber = convertToNumber(toPageNumber);
+
+        if (fromPageNumber == null || fromPageNumber <= 0) {
+            return await WaitAndCallAction.callFunctionAsync(
+                (percentId) => elementsTillPage((page) => this._fetchFigures(username, folder, page), toPageNumber as number | undefined, percentId),
+                action, delay
+            );
+        } else if (toPageNumber == null || toPageNumber <= 0) {
+            return await WaitAndCallAction.callFunctionAsync(
+                () => elementsSincePage((page) => this._fetchFigures(username, folder, page), fromPageNumber as number | undefined),
+                action, delay
+            );
+        } else {
+            return await WaitAndCallAction.callFunctionAsync(
+                (percentId) => elementsBetweenPages((page) => this._fetchFigures(username, folder, page), fromPageNumber as number | undefined, toPageNumber as number | undefined, percentId),
+                action, delay
+            );
+        }
+    }
+
+    async getFigures(username: string, pageNumber?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[]> {
         pageNumber = convertToNumber(pageNumber);
 
         return await WaitAndCallAction.callFunctionAsync(
-            () => GalleryRequests.getGalleryFigures(username, undefined, pageNumber as number | undefined, GalleryType.GALLERY, this._semaphore),
+            () => this._fetchFigures(username, undefined, pageNumber as number | undefined),
             action, delay
         );
     }
 
-    async getFiguresInFolder(username: string, folder?: IGalleryFolder, pageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[]> {
+    async getFiguresInFolder(username: string, folder?: IGalleryFolder, pageNumber?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[]> {
         pageNumber = convertToNumber(pageNumber);
 
         return await WaitAndCallAction.callFunctionAsync(
-            () => GalleryRequests.getGalleryFigures(username, folder, pageNumber as number | undefined, GalleryType.GALLERY, this._semaphore),
+            () => this._fetchFigures(username, folder, pageNumber as number | undefined),
             action, delay
         );
     }
 
-    async getPage(username: string, pageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
+    async getPage(username: string, pageNumber?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         pageNumber = convertToNumber(pageNumber);
 
         return await WaitAndCallAction.callFunctionAsync(
-            () => Page.getGalleryPage(username, undefined, pageNumber as number | undefined, GalleryType.GALLERY, this._semaphore),
+            () => Gallery.fetchPage(username, undefined, pageNumber as number | undefined, this._semaphore),
             action, delay
         );
     }
 
-    async getPageInFolder(username: string, folder?: IGalleryFolder, pageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
+    async getPageInFolder(username: string, folder?: IGalleryFolder, pageNumber?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         pageNumber = convertToNumber(pageNumber);
 
         return await WaitAndCallAction.callFunctionAsync(
-            () => Page.getGalleryPage(username, folder, pageNumber as number | undefined, GalleryType.GALLERY, this._semaphore),
+            () => Gallery.fetchPage(username, folder, pageNumber as number | undefined, this._semaphore),
             action, delay
         );
     }

@@ -1,5 +1,5 @@
 import { Semaphore } from '../../../../../GlobalUtils/src/Semaphore';
-import { WaitAndCallAction } from '../../../utils/WaitAndCallAction';
+import { WaitAndCallAction, DEFAULT_ACTION_DELAY } from '../../../utils/WaitAndCallAction';
 import { FuraffinityRequests } from '../../../modules/FuraffinityRequests';
 import { Logger } from '../../../../../GlobalUtils/src/Logger';
 
@@ -20,11 +20,11 @@ export class MessageTypeRequests {
         this._fieldName = fieldName;
     }
 
-    async removeMessages(ids?: string[] | number[], action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
+    async removeMessages(ids?: string[] | number[], action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         return await WaitAndCallAction.callFunctionAsync(() => this._removeMessages(ids), action, delay);
     }
 
-    async nukeMessages(action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
+    async nukeMessages(action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         return await WaitAndCallAction.callFunctionAsync(() => this._nukeMessages(), action, delay);
     }
 

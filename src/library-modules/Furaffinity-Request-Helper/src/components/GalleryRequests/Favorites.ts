@@ -1,10 +1,10 @@
-import { WaitAndCallAction } from '../../utils/WaitAndCallAction';
+import { WaitAndCallAction, DEFAULT_ACTION_DELAY } from '../../utils/WaitAndCallAction';
 import { IdArray } from '../../utils/ArrayHelper';
-import { Page } from './Page';
 import { FuraffinityRequests } from '../../modules/FuraffinityRequests';
 import { Semaphore } from '../../../../GlobalUtils/src/Semaphore';
 import { convertToNumber } from '../../utils/GeneralUtils';
 import { Logger } from '../../../../GlobalUtils/src/Logger';
+import checkTagsAll from '../../../../GlobalUtils/src/FA-Functions/checkTagsAll';
 
 export class Favorites {
     private readonly semaphore: Semaphore;
@@ -17,7 +17,36 @@ export class Favorites {
         return FuraffinityRequests.fullUrl + '/favorites/';
     }
 
-    async getSubmissionDataFavId(username: string, submissionId?: string | number, fromDataFavId?: string | number, toDataFavId?: string | number, maxPageNo?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<number> {
+    static async fetchPage(username: string | undefined, dataFavId: number | undefined, direction: number | undefined, semaphore: Semaphore): Promise<Document | undefined> {
+        if (username == null) {
+            Logger.logError('No username given');
+            return;
+        }
+        if (direction == null) {
+            Logger.logWarning('No direction given. Using default 1 instead.');
+            direction = 1;
+        }
+        if (!username.endsWith('/')) {
+            username += '/';
+        }
+        let url = Favorites.hardLink;
+        if (dataFavId != null && dataFavId >= 0) {
+            url += `${username}${dataFavId}/`;
+        } else {
+            Logger.logWarning('No last data fav id given. Using default 1 instead.');
+            url += username;
+        }
+        if (direction >= 0) {
+            url += 'next/';
+        } else {
+            url += 'prev/';
+        }
+        const page = await FuraffinityRequests.getHTML(url, semaphore);
+        checkTagsAll(page);
+        return page;
+    }
+
+    async getSubmissionDataFavId(username: string, submissionId?: string | number, fromDataFavId?: string | number, toDataFavId?: string | number, maxPageNo?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<number> {
         submissionId = convertToNumber(submissionId);
         fromDataFavId = convertToNumber(fromDataFavId);
         toDataFavId = convertToNumber(toDataFavId);
@@ -29,7 +58,7 @@ export class Favorites {
         );
     }
 
-    async getFiguresBetweenIds(username: string, fromId?: string | number, toId?: string | number, maxPageNo?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
+    async getFiguresBetweenIds(username: string, fromId?: string | number, toId?: string | number, maxPageNo?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
         fromId = convertToNumber(fromId);
         toId = convertToNumber(toId);
         maxPageNo = convertToNumber(maxPageNo);
@@ -53,11 +82,11 @@ export class Favorites {
     }
 
     /** @deprecated Use `getFiguresBetweenIdsBetweenDataIds` instead. */
-    async getFiguresBetweenIdsBetweenPages(username: string, fromId?: string | number, toId?: string | number, fromDataFavId?: string | number, toDataFavId?: string | number, maxPageNo?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
+    async getFiguresBetweenIdsBetweenPages(username: string, fromId?: string | number, toId?: string | number, fromDataFavId?: string | number, toDataFavId?: string | number, maxPageNo?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
         return await this.getFiguresBetweenIdsBetweenDataIds(username, fromId, toId, fromDataFavId, toDataFavId, maxPageNo, action, delay);
     }
 
-    async getFiguresBetweenIdsBetweenDataIds(username: string, fromId?: string | number, toId?: string | number, fromDataFavId?: string | number, toDataFavId?: string | number, maxPageNo?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
+    async getFiguresBetweenIdsBetweenDataIds(username: string, fromId?: string | number, toId?: string | number, fromDataFavId?: string | number, toDataFavId?: string | number, maxPageNo?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
         fromId = convertToNumber(fromId);
         toId = convertToNumber(toId);
         fromDataFavId = convertToNumber(fromDataFavId);
@@ -82,7 +111,7 @@ export class Favorites {
         }
     }
 
-    async getFiguresBetweenPages(username: string, fromDataFavId?: string | number, toDataFavId?: string | number, maxPageNo?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
+    async getFiguresBetweenPages(username: string, fromDataFavId?: string | number, toDataFavId?: string | number, maxPageNo?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
         fromDataFavId = convertToNumber(fromDataFavId);
         toDataFavId = convertToNumber(toDataFavId);
         maxPageNo = convertToNumber(maxPageNo);
@@ -105,7 +134,7 @@ export class Favorites {
         }
     }
 
-    async getFigures(username: string, fromDataFavId?: string | number, direction?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[]> {
+    async getFigures(username: string, fromDataFavId?: string | number, direction?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[]> {
         fromDataFavId = convertToNumber(fromDataFavId);
         direction = convertToNumber(direction);
 
@@ -115,12 +144,12 @@ export class Favorites {
         );
     }
 
-    async getPage(username: string, fromDataFavId?: string | number, direction?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
+    async getPage(username: string, fromDataFavId?: string | number, direction?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         fromDataFavId = convertToNumber(fromDataFavId);
         direction = convertToNumber(direction);
 
         return await WaitAndCallAction.callFunctionAsync(
-            () => Page.getFavoritesPage(username, fromDataFavId as number | undefined, direction as number | undefined, this.semaphore),
+            () => Favorites.fetchPage(username, fromDataFavId as number | undefined, direction as number | undefined, this.semaphore),
             action, delay
         );
     }
@@ -568,7 +597,7 @@ export class Favorites {
 
     private async _getFigures(username: string, dataFavId: number | undefined, direction: number | undefined): Promise<HTMLElement[]> {
         Logger.logInfo(`Getting Favorites of "${username}" since id "${dataFavId}" and direction "${direction}".`);
-        const galleryDoc = await Page.getFavoritesPage(username, dataFavId, direction, this.semaphore);
+        const galleryDoc = await Favorites.fetchPage(username, dataFavId, direction, this.semaphore);
         if (!galleryDoc || !(galleryDoc instanceof Document) || galleryDoc.getElementById('no-images')) {
             Logger.logInfo(`No images found at favorites of "${username}" on page "${dataFavId}".`);
             return [];
