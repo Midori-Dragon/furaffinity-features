@@ -19,18 +19,18 @@ export class UserProfile {
     }
 
     async getProfilePage(action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
-        return await WaitAndCallAction.callFunctionAsync(FuraffinityRequests.getHTML, [UserProfile.hardLinks['profile'], this._semaphore], action, delay);
+        return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(UserProfile.hardLinks['profile'], this._semaphore), action, delay);
     }
 
     async getProfilebannerPage(action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
-        return await WaitAndCallAction.callFunctionAsync(FuraffinityRequests.getHTML, [UserProfile.hardLinks['profilebanner'], this._semaphore], action, delay);
+        return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(UserProfile.hardLinks['profilebanner'], this._semaphore), action, delay);
     }
 
     async getContactsPage(action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
-        return await WaitAndCallAction.callFunctionAsync(FuraffinityRequests.getHTML, [UserProfile.hardLinks['contacts'], this._semaphore], action, delay);
+        return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(UserProfile.hardLinks['contacts'], this._semaphore), action, delay);
     }
 
     async getAvatarPage(action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
-        return await WaitAndCallAction.callFunctionAsync(FuraffinityRequests.getHTML, [UserProfile.hardLinks['avatar'], this._semaphore], action, delay);
+        return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(UserProfile.hardLinks['avatar'], this._semaphore), action, delay);
     }
 }

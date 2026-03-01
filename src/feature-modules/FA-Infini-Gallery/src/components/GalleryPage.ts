@@ -1,8 +1,7 @@
 import { Logger } from '../../../../library-modules/GlobalUtils/src/Logger';
-import getCurrGalleryFolder from '../../../../library-modules/GlobalUtils/src/URL-Functions/getCurrGalleryFolder';
 import { requestHelper, showPageSeparatorSetting } from '../index';
 import { IGalleryPage } from '../modules/IGalleryPage';
-import { createSeparatorElem, getFiguresFromPage, getUserNameFromUrl } from '../utils/Utils';
+import { createSeparatorElem, getFiguresFromPage, getFolderIdFromUrl, getFolderNameFromUrl, getUserNameFromUrl } from '../utils/Utils';
 
 export class GalleryPage implements IGalleryPage {
     pageNo: number;
@@ -20,8 +19,9 @@ export class GalleryPage implements IGalleryPage {
         const username = getUserNameFromUrl(window.location.toString());
         let page;
         if (this.isInFolder === true) {
-            const [folderId, folderName] = getCurrGalleryFolder() ?? [undefined, undefined];
-            page = await requestHelper.UserRequests.GalleryRequests.Gallery.getPageInFolder(username, folderId, folderName, this.pageNo);
+            const folderIdStr = getFolderIdFromUrl(window.location.toString());
+            const folder = folderIdStr != null ? { id: parseInt(folderIdStr), name: getFolderNameFromUrl(window.location.toString()) ?? undefined } : undefined;
+            page = await requestHelper.UserRequests.GalleryRequests.Gallery.getPageInFolder(username, folder, this.pageNo);
         } else {
             page = await requestHelper.UserRequests.GalleryRequests.Gallery.getPage(username, this.pageNo);
         }

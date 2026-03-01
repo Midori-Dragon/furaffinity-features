@@ -28,88 +28,83 @@ export class UserRequests {
     }
 
     async getUserPage(username?: string, action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
-        return await WaitAndCallAction.callFunctionAsync(getUserPageLocal, [username, this._semaphore], action, delay);
+        return await WaitAndCallAction.callFunctionAsync(() => this._getUserPage(username), action, delay);
     }
 
     async watchUser(username?: string, watchKey?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<boolean> {
-        return await WaitAndCallAction.callFunctionAsync(watchUserLocal, [username, watchKey, this._semaphore], action, delay);
+        return await WaitAndCallAction.callFunctionAsync(() => this._watchUser(username, watchKey), action, delay);
     }
 
     async unwatchUser(username?: string, unwatchKey?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<boolean> {
-        return await WaitAndCallAction.callFunctionAsync(unwatchUserLocal, [username, unwatchKey, this._semaphore], action, delay);
+        return await WaitAndCallAction.callFunctionAsync(() => this._unwatchUser(username, unwatchKey), action, delay);
     }
 
     async blockUser(username?: string, blockKey?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<boolean> {
-        return await WaitAndCallAction.callFunctionAsync(blockUserLocal, [username, blockKey, this._semaphore], action, delay);
+        return await WaitAndCallAction.callFunctionAsync(() => this._blockUser(username, blockKey), action, delay);
     }
 
     async unblockUser(username?: string, unblockKey?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<boolean> {
-        return await WaitAndCallAction.callFunctionAsync(unblockUserLocal, [username, unblockKey, this._semaphore], action, delay);
-    }
-}
-
-async function getUserPageLocal(username: string | undefined, semaphore: Semaphore): Promise<Document | undefined> {
-    if (username == null) {
-        Logger.logWarning('No username given');
-        return;
+        return await WaitAndCallAction.callFunctionAsync(() => this._unblockUser(username, unblockKey), action, delay);
     }
 
-    const url = UserRequests.hardLinks['user'] + username;
-    return await FuraffinityRequests.getHTML(url, semaphore);
-}
-
-async function watchUserLocal(username: string | undefined, watchKey: string | number | undefined, semaphore: Semaphore): Promise<boolean> {
-    if (username == null || username === '') {
-        Logger.logError('No username given');
-        return false;
-    }
-    if (watchKey == null || watchKey === '' || watchKey === -1) {
-        Logger.logError('No watch key given');
-        return false;
+    private async _getUserPage(username: string | undefined): Promise<Document | undefined> {
+        if (username == null) {
+            Logger.logWarning('No username given');
+            return;
+        }
+        const url = UserRequests.hardLinks['user'] + username;
+        return await FuraffinityRequests.getHTML(url, this._semaphore);
     }
 
-    const url = UserRequests.hardLinks['watch'] + username + '?key=' + watchKey;
-    return await FuraffinityRequests.getHTML(url, semaphore) == null;
-}
-
-async function unwatchUserLocal(username: string | undefined, unwatchKey: string | number | undefined, semaphore: Semaphore): Promise<boolean> {
-    if (username == null || username === '') {
-        Logger.logError('No username given');
-        return false;
-    }
-    if (unwatchKey == null || unwatchKey === '' || unwatchKey === -1) {
-        Logger.logError('No unwatch key given');
-        return false;
-    }
-
-    const url = UserRequests.hardLinks['unwatch'] + username + '?key=' + unwatchKey;
-    return await FuraffinityRequests.getHTML(url, semaphore) == null;
-}
-
-async function blockUserLocal(username: string | undefined, blockKey: string | number | undefined, semaphore: Semaphore): Promise<boolean> {
-    if (username == null || username === '') {
-        Logger.logError('No username given');
-        return false;
-    }
-    if (blockKey == null || blockKey === '' || blockKey === -1) {
-        Logger.logError('No block key given');
-        return false;
+    private async _watchUser(username: string | undefined, watchKey: string | number | undefined): Promise<boolean> {
+        if (username == null || username === '') {
+            Logger.logError('No username given');
+            return false;
+        }
+        if (watchKey == null || watchKey === '' || watchKey === -1) {
+            Logger.logError('No watch key given');
+            return false;
+        }
+        const url = UserRequests.hardLinks['watch'] + username + '?key=' + watchKey;
+        return await FuraffinityRequests.getHTML(url, this._semaphore) == null;
     }
 
-    const url = UserRequests.hardLinks['block'] + username + '?key=' + blockKey;
-    return await FuraffinityRequests.getHTML(url, semaphore) == null;
-}
-
-async function unblockUserLocal(username: string | undefined, unblockKey: string | number | undefined, semaphore: Semaphore): Promise<boolean> {
-    if (username == null || username === '') {
-        Logger.logError('No username given');
-        return false;
+    private async _unwatchUser(username: string | undefined, unwatchKey: string | number | undefined): Promise<boolean> {
+        if (username == null || username === '') {
+            Logger.logError('No username given');
+            return false;
+        }
+        if (unwatchKey == null || unwatchKey === '' || unwatchKey === -1) {
+            Logger.logError('No unwatch key given');
+            return false;
+        }
+        const url = UserRequests.hardLinks['unwatch'] + username + '?key=' + unwatchKey;
+        return await FuraffinityRequests.getHTML(url, this._semaphore) == null;
     }
-    if (unblockKey == null || unblockKey === '' || unblockKey === -1) {
-        Logger.logError('No unblock key given');
-        return false;
+
+    private async _blockUser(username: string | undefined, blockKey: string | number | undefined): Promise<boolean> {
+        if (username == null || username === '') {
+            Logger.logError('No username given');
+            return false;
+        }
+        if (blockKey == null || blockKey === '' || blockKey === -1) {
+            Logger.logError('No block key given');
+            return false;
+        }
+        const url = UserRequests.hardLinks['block'] + username + '?key=' + blockKey;
+        return await FuraffinityRequests.getHTML(url, this._semaphore) == null;
     }
 
-    const url = UserRequests.hardLinks['unblock'] + username + '?key=' + unblockKey;
-    return await FuraffinityRequests.getHTML(url, semaphore) == null;
+    private async _unblockUser(username: string | undefined, unblockKey: string | number | undefined): Promise<boolean> {
+        if (username == null || username === '') {
+            Logger.logError('No username given');
+            return false;
+        }
+        if (unblockKey == null || unblockKey === '' || unblockKey === -1) {
+            Logger.logError('No unblock key given');
+            return false;
+        }
+        const url = UserRequests.hardLinks['unblock'] + username + '?key=' + unblockKey;
+        return await FuraffinityRequests.getHTML(url, this._semaphore) == null;
+    }
 }

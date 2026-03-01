@@ -12,7 +12,7 @@ export class IdArray {
             result.push(elem);
             // Break the loop if the element ID matches the toId.
             const attribute = elem.getAttribute(attributeName);
-            if (attribute != null && attribute.replace('sid-', '') === toId) {
+            if (attribute?.replace('sid-', '') === toId) {
                 break;
             }
         }
@@ -35,7 +35,7 @@ export class IdArray {
 
             // If the current element's ID matches fromId, stop processing further
             const attribute = elem.getAttribute(attributeName);
-            if (attribute != null && attribute.replace('sid-', '') === fromId) {
+            if (attribute?.replace('sid-', '') === fromId) {
                 break;
             }
         }
@@ -56,10 +56,10 @@ export class IdArray {
         for (let i = 0; i < array.length; i++) {
             const attribute = array[i].getAttribute(attributeName);
 
-            if (attribute != null && attribute.replace('sid-', '') === fromId) {
+            if (attribute?.replace('sid-', '') === fromId) {
                 startIndex = i;
             }
-            if (attribute != null && attribute.replace('sid-', '') === toId) {
+            if (attribute?.replace('sid-', '') === toId) {
                 endIndex = i;
             }
             // If both indices are found, break the loop
@@ -95,7 +95,7 @@ export class IdArray {
         for (const elem of collection) {
             // The id attribute is a string, so we need to remove the "sid-" prefix to compare it to the given id
             const attribute = elem.getAttribute(attributeName);
-            if (attribute != null && attribute.replace('sid-', '') === id) {
+            if (attribute?.replace('sid-', '') === id) {
                 return true;
             }
         }

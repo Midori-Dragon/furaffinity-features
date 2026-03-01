@@ -7,13 +7,14 @@ import { Browse, BrowseOptions } from '../SearchRequests/Browse';
 import { Search, SearchOptions } from '../SearchRequests/Search';
 import { FuraffinityRequests } from '../../modules/FuraffinityRequests';
 import { GalleryType } from '../../modules/GalleryRequests';
+import { IGalleryFolder } from '../../types/GalleryFolder';
 import checkTagsAll from '../../../../GlobalUtils/src/FA-Functions/checkTagsAll';
 import { Logger } from '../../../../GlobalUtils/src/Logger';
 
 export class Page {
-    static async getGalleryPage(username: string | undefined, folderId: number | undefined, folderName: string | undefined, pageNumber: number | undefined, galleryType: GalleryType, semaphore: Semaphore): Promise<Document | undefined> {
+    static async getGalleryPage(username: string | undefined, folder: IGalleryFolder | undefined, pageNumber: number | undefined, galleryType: GalleryType, semaphore: Semaphore): Promise<Document | undefined> {
         if (galleryType === GalleryType.FAVORITES) {
-            const dataFavId = folderId ?? pageNumber;
+            const dataFavId = folder?.id ?? pageNumber;
             return await Page.getFavoritesPage(username, dataFavId, pageNumber, semaphore);
         } else if (galleryType === GalleryType.JOURNALS) {
             return await Page.getJournalsPage(username, pageNumber, semaphore);
@@ -45,10 +46,10 @@ export class Page {
                 break;
         }
 
-        if (folderId != null && folderId !== -1) {
-            url += `folder/${folderId}/`;
-            if (folderName != null) {
-                url += `${folderName}/`;
+        if (folder != null) {
+            url += `folder/${folder.id}/`;
+            if (folder.name != null) {
+                url += `${folder.name}/`;
             }
         }
         const page = await FuraffinityRequests.getHTML(url + pageNumber, semaphore);
@@ -111,9 +112,7 @@ export class Page {
             pageNumber = 1;
         }
 
-        if (browseOptions == null) {
-            browseOptions = new BrowseOptions();
-        }
+        browseOptions ??= new BrowseOptions();
 
         const payload: { [key: string]: string | number | undefined } = {
             'cat': browseOptions.category,
@@ -145,9 +144,7 @@ export class Page {
             pageNumber = 1;
         }
 
-        if (searchOptions == null) {
-            searchOptions = new SearchOptions();
-        }
+        searchOptions ??= new SearchOptions();
 
         const payload: { [key: string]: string | number | undefined } = {
             'page': pageNumber,

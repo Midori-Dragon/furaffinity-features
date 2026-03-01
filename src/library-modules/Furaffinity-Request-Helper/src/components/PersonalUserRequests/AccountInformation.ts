@@ -18,14 +18,14 @@ export class AccountInformation {
     }
 
     async getSettingsPage(action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
-        return await WaitAndCallAction.callFunctionAsync(FuraffinityRequests.getHTML, [AccountInformation.hardLinks['settings'], this._semaphore], action, delay);
+        return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(AccountInformation.hardLinks['settings'], this._semaphore), action, delay);
     }
 
     async getSiteSettingsPage(action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
-        return await WaitAndCallAction.callFunctionAsync(FuraffinityRequests.getHTML, [AccountInformation.hardLinks['siteSettings'], this._semaphore], action, delay);
+        return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(AccountInformation.hardLinks['siteSettings'], this._semaphore), action, delay);
     }
 
     async getUserSettingsPage(action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
-        return await WaitAndCallAction.callFunctionAsync(FuraffinityRequests.getHTML, [AccountInformation.hardLinks['userSettings'], this._semaphore], action, delay);
+        return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(AccountInformation.hardLinks['userSettings'], this._semaphore), action, delay);
     }
 }

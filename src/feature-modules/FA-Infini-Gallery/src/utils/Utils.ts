@@ -55,3 +55,13 @@ export function isElementOnScreen(element: Element): boolean {
     // Check if the element is within the visible area of the screen
     return (rect.top <= windowHeight) && ((rect.top + rect.height) >= 0);
 }
+
+export function getFolderIdFromUrl(url: string): string | null {
+    const match = url.match(/\/folder\/(\d+)(?=\/|$)/);
+    return match ? match[1] : null;
+}
+
+export function getFolderNameFromUrl(url: string): string | null {
+    const match = url.match(/\/folder\/\d+\/([^/?]+)(?=\/|$)/);
+    return match ? match[1] : null;
+}

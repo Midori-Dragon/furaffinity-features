@@ -21,7 +21,10 @@ export class Scraps {
         fromPageNumber = convertToNumber(fromPageNumber);
         toPageNumber = convertToNumber(toPageNumber);
 
-        return await WaitAndCallAction.callFunctionAsync(GalleryRequests.getSubmissionPageNo, [username, submissionId, undefined, undefined, fromPageNumber, toPageNumber, GalleryType.SCRAPS, this._semaphore], action, delay);
+        return await WaitAndCallAction.callFunctionAsync(
+            (percentId) => GalleryRequests.getSubmissionPageNo(username, submissionId as number | undefined, undefined, fromPageNumber as number | undefined, toPageNumber as number | undefined, GalleryType.SCRAPS, this._semaphore, percentId),
+            action, delay
+        );
     }
 
     async getFiguresBetweenIds(username: string, fromId?: string | number, toId?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[][]> {
@@ -29,11 +32,20 @@ export class Scraps {
         toId = convertToNumber(toId);
 
         if (fromId == null || fromId <= 0) {
-            return await WaitAndCallAction.callFunctionAsync(GalleryRequests.getGalleryFiguresTillId, [username, undefined, undefined, toId, undefined, GalleryType.SCRAPS, this._semaphore], action, delay);
+            return await WaitAndCallAction.callFunctionAsync(
+                () => GalleryRequests.getGalleryFiguresTillId(username, undefined, toId as number | undefined, undefined, GalleryType.SCRAPS, this._semaphore),
+                action, delay
+            );
         } else if (toId == null || toId <= 0) {
-            return await WaitAndCallAction.callFunctionAsync(GalleryRequests.getGalleryFiguresSinceId, [username, undefined, undefined, fromId, undefined, GalleryType.SCRAPS, this._semaphore], action, delay);
+            return await WaitAndCallAction.callFunctionAsync(
+                () => GalleryRequests.getGalleryFiguresSinceId(username, undefined, fromId as number | undefined, undefined, GalleryType.SCRAPS, this._semaphore),
+                action, delay
+            );
         } else {
-            return await WaitAndCallAction.callFunctionAsync(GalleryRequests.getGalleryFiguresBetweenIds, [username, undefined, undefined, fromId, toId, undefined, undefined, GalleryType.SCRAPS, this._semaphore], action, delay, true);
+            return await WaitAndCallAction.callFunctionAsync(
+                (percentId) => GalleryRequests.getGalleryFiguresBetweenIds(username, undefined, fromId as number | undefined, toId as number | undefined, undefined, undefined, GalleryType.SCRAPS, this._semaphore, percentId),
+                action, delay
+            );
         }
     }
 
@@ -44,11 +56,20 @@ export class Scraps {
         toPageNumber = convertToNumber(toPageNumber);
 
         if (fromId == null || fromId <= 0) {
-            return await WaitAndCallAction.callFunctionAsync(GalleryRequests.getGalleryFiguresTillId, [username, undefined, undefined, toId, fromPageNumber, GalleryType.SCRAPS, this._semaphore], action, delay);
+            return await WaitAndCallAction.callFunctionAsync(
+                () => GalleryRequests.getGalleryFiguresTillId(username, undefined, toId as number | undefined, fromPageNumber as number | undefined, GalleryType.SCRAPS, this._semaphore),
+                action, delay
+            );
         } else if (toId == null || toId <= 0) {
-            return await WaitAndCallAction.callFunctionAsync(GalleryRequests.getGalleryFiguresSinceId, [username, undefined, undefined, fromId, toPageNumber, GalleryType.SCRAPS, this._semaphore], action, delay);
+            return await WaitAndCallAction.callFunctionAsync(
+                () => GalleryRequests.getGalleryFiguresSinceId(username, undefined, fromId as number | undefined, toPageNumber as number | undefined, GalleryType.SCRAPS, this._semaphore),
+                action, delay
+            );
         } else {
-            return await WaitAndCallAction.callFunctionAsync(GalleryRequests.getGalleryFiguresBetweenIds, [username, undefined, undefined, fromId, toId, fromPageNumber, toPageNumber, GalleryType.SCRAPS, this._semaphore], action, delay, true);
+            return await WaitAndCallAction.callFunctionAsync(
+                (percentId) => GalleryRequests.getGalleryFiguresBetweenIds(username, undefined, fromId as number | undefined, toId as number | undefined, fromPageNumber as number | undefined, toPageNumber as number | undefined, GalleryType.SCRAPS, this._semaphore, percentId),
+                action, delay
+            );
         }
     }
 
@@ -57,23 +78,38 @@ export class Scraps {
         toPageNumber = convertToNumber(toPageNumber);
 
         if (fromPageNumber == null || fromPageNumber <= 0) {
-            return await WaitAndCallAction.callFunctionAsync(GalleryRequests.getGalleryFiguresTillPage, [username, undefined, undefined, toPageNumber, GalleryType.SCRAPS, this._semaphore], action, delay, true);
+            return await WaitAndCallAction.callFunctionAsync(
+                (percentId) => GalleryRequests.getGalleryFiguresTillPage(username, undefined, toPageNumber as number | undefined, GalleryType.SCRAPS, this._semaphore, percentId),
+                action, delay
+            );
         } else if (toPageNumber == null || toPageNumber <= 0) {
-            return await WaitAndCallAction.callFunctionAsync(GalleryRequests.getGalleryFiguresSincePage, [username, undefined, undefined, fromPageNumber, GalleryType.SCRAPS, this._semaphore], action, delay);
+            return await WaitAndCallAction.callFunctionAsync(
+                () => GalleryRequests.getGalleryFiguresSincePage(username, undefined, fromPageNumber as number | undefined, GalleryType.SCRAPS, this._semaphore),
+                action, delay
+            );
         } else {
-            return await WaitAndCallAction.callFunctionAsync(GalleryRequests.getGalleryFiguresBetweenPages, [username, undefined, undefined, fromPageNumber, toPageNumber, GalleryType.SCRAPS, this._semaphore], action, delay, true);
+            return await WaitAndCallAction.callFunctionAsync(
+                (percentId) => GalleryRequests.getGalleryFiguresBetweenPages(username, undefined, fromPageNumber as number | undefined, toPageNumber as number | undefined, GalleryType.SCRAPS, this._semaphore, percentId),
+                action, delay
+            );
         }
     }
 
     async getFigures(username: string, pageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<HTMLElement[]> {
         pageNumber = convertToNumber(pageNumber);
 
-        return await WaitAndCallAction.callFunctionAsync(GalleryRequests.getGalleryFigures, [username, undefined, undefined, pageNumber, GalleryType.SCRAPS, this._semaphore], action, delay);
+        return await WaitAndCallAction.callFunctionAsync(
+            () => GalleryRequests.getGalleryFigures(username, undefined, pageNumber as number | undefined, GalleryType.SCRAPS, this._semaphore),
+            action, delay
+        );
     }
 
     async getPage(username: string, pageNumber?: string | number, action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
         pageNumber = convertToNumber(pageNumber);
 
-        return await WaitAndCallAction.callFunctionAsync(Page.getGalleryPage, [username, undefined, undefined, pageNumber, GalleryType.SCRAPS, this._semaphore], action, delay);
+        return await WaitAndCallAction.callFunctionAsync(
+            () => Page.getGalleryPage(username, undefined, pageNumber as number | undefined, GalleryType.SCRAPS, this._semaphore),
+            action, delay
+        );
     }
 }

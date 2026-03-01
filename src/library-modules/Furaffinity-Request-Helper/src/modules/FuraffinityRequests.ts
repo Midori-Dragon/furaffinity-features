@@ -63,7 +63,7 @@ export class FuraffinityRequests {
             Logger.logError('No url given');
             return;
         }
-        return await WaitAndCallAction.callFunctionAsync(getHTMLLocal, [url, semaphore], action, delay);
+        return await WaitAndCallAction.callFunctionAsync(() => getHTMLLocal(url, semaphore), action, delay);
     }
 
     static async postHTML(url: string, payload: string[][] | Record<string, string> | string | URLSearchParams, semaphore: Semaphore, action?: (percentId?: string | number) => void, delay = 100): Promise<Document | undefined> {
@@ -71,7 +71,7 @@ export class FuraffinityRequests {
             Logger.logError('No url given');
             return;
         }
-        return await WaitAndCallAction.callFunctionAsync(postHTMLLocal, [url, payload, semaphore], action, delay);
+        return await WaitAndCallAction.callFunctionAsync(() => postHTMLLocal(url, payload, semaphore), action, delay);
     }
 }
 

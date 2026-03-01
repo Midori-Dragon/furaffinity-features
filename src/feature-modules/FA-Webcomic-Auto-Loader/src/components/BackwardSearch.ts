@@ -39,12 +39,13 @@ export class BackwardSearch implements IAutoLoaderSearchable {
         }
 
         const currUsername = getDocUsername(document)!;
-        const [folderId, folderName] = getCurrGalleryFolder() ?? [undefined, undefined];
+        const _galleryFolder = getCurrGalleryFolder();
+        const folder = _galleryFolder != null ? { id: _galleryFolder[0], name: _galleryFolder[1] } : undefined;
 
         Logger.logInfo(`${scriptName}: finding submission page...`);
         if (this.currSubmissionPageNo == null || this.currSubmissionPageNo < 1) {
             if (isInGallery) {
-                this.currSubmissionPageNo = await requestHelper.UserRequests.GalleryRequests.Gallery.getSubmissionPageNo(currUsername, this._currSid, folderId, folderName, -1, -1);
+                this.currSubmissionPageNo = await requestHelper.UserRequests.GalleryRequests.Gallery.getSubmissionPageNo(currUsername, this._currSid, folder, -1, -1);
             } else if (isInScraps) {
                 this.currSubmissionPageNo = await requestHelper.UserRequests.GalleryRequests.Scraps.getSubmissionPageNo(currUsername, this._currSid, -1, -1);
             }
@@ -54,7 +55,7 @@ export class BackwardSearch implements IAutoLoaderSearchable {
         Logger.logInfo(`${scriptName}: searching figures backward...`);
         let figures: HTMLElement[][] = [];
         if (isInGallery) {
-            figures = await requestHelper.UserRequests.GalleryRequests.Gallery.getFiguresInFolderBetweenPages(currUsername, folderId, folderName, this.currSubmissionPageNo!, this.currSubmissionPageNo! + this._amount);
+            figures = await requestHelper.UserRequests.GalleryRequests.Gallery.getFiguresInFolderBetweenPages(currUsername, folder, this.currSubmissionPageNo!, this.currSubmissionPageNo! + this._amount);
         } else if (isInScraps) {
             figures = await requestHelper.UserRequests.GalleryRequests.Scraps.getFiguresBetweenPages(currUsername, this.currSubmissionPageNo!, this.currSubmissionPageNo! + this._amount);
         }
