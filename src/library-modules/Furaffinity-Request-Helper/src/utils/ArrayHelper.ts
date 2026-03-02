@@ -21,7 +21,7 @@ export class IdArray {
 
     static getSinceId(collection: HTMLElement[], fromId: string | number, attributeName = 'id'): HTMLElement[] {
         // Convert the collection to an array and reverse it for processing from the end
-        const array = collection;
+        const array = [...collection];
         array.reverse();
 
         // Initialize an empty result array to store elements with IDs greater than or equal to fromId
