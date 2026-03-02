@@ -43,7 +43,7 @@ export default [
             'semi': ['warn', 'always'],
             'quotes': ['warn', 'single'],
             'eol-last': ['warn', 'always'],
-            "indent": ['warn', 4],
+            "indent": ['warn', 4, { SwitchCase: 1 }],
             'linebreak-style': ['warn', 'unix'],
             'eqeqeq': ['warn', 'smart'],
             '@typescript-eslint/no-unused-vars': ['warn'],

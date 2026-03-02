@@ -38,6 +38,7 @@ export class MessageBox {
             } catch (error: unknown) {
                 const reason = error instanceof Error ? error.message : String(error);
                 const fallback = this.getFallbackResult(buttons);
+                // eslint-disable-next-line no-alert
                 alert(`MessageBox failed to display (${reason})\n\n[${caption}]\n${text}`);
                 this.resolvePromise = null;
                 resolve(fallback);
