@@ -6,7 +6,6 @@ import { FAFigure } from '../components/FAFigure';
 
 export class FigureDataSaver {
     static readonly scanResultIdPrefix = 'wfv-scan-results';
-    static readonly chunkSize = 60;
     static readonly maxChunkBytes = 8192 * 0.9; // 90% of 8KB to leave some leeway
 
     static async saveFigures(figures: FAFigure[]): Promise<boolean> {
@@ -20,7 +19,7 @@ export class FigureDataSaver {
 
             for (let i = 0; i < compressedChunks.length; i++) {
                 const key = `${this.scanResultIdPrefix}-${i + 1}`;
-                const success  = await StorageWrapper.setItemAsync(key, compressedChunks[i]);
+                const success = await StorageWrapper.setItemAsync(key, compressedChunks[i]);
                 Logger.logInfo(`Chunk ${i + 1}/${compressedChunks.length}: ${compressedChunks[i].length} bytes`);
                 if (!success) {
                     Logger.logError(`Failed to save chunk ${i + 1}. Aborting.`);
@@ -59,16 +58,16 @@ export class FigureDataSaver {
         for (let i = 1; i <= chunkCount; i++) {
             const chunkKey = `${this.scanResultIdPrefix}-${i}`;
             const compressedData = await StorageWrapper.getItemAsync(chunkKey);
-            
+
             if (compressedData !== null && compressedData !== undefined) {
                 const decompressed = PakoWrapper.decompress(compressedData);
                 let figures = JSON.parse(decompressed) as FAFigure[];
                 figures = figures.map(figure => FAFigure.getRevivedObject(figure));
-                
-                allFigures = allFigures.concat(figures);
+
+                allFigures.push(...figures);
             }
         }
-        
+
         return allFigures;
     }
 
@@ -85,8 +84,8 @@ export class FigureDataSaver {
                     const decompressed = PakoWrapper.decompress(compressedData);
                     let figures = JSON.parse(decompressed) as FAFigure[];
                     figures = figures.map(figure => FAFigure.getRevivedObject(figure));
-                
-                    allFigures = allFigures.concat(figures);
+
+                    allFigures.push(...figures);
                 }
             }
             catch (error) {
@@ -94,7 +93,7 @@ export class FigureDataSaver {
             }
             i++;
         } while (compressedData != null && i <= 1000);
-        
+
         return allFigures;
     }
 

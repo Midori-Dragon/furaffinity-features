@@ -1,8 +1,8 @@
 export class Semaphore {
     maxConcurrency: number;
-    currentConcurrency: number;
-    waitingQueue: (() => void)[];
-    
+    private currentConcurrency: number;
+    private readonly waitingQueue: (() => void)[];
+
     constructor(maxConcurrency: number) {
         this.maxConcurrency = maxConcurrency;
         this.currentConcurrency = 0;

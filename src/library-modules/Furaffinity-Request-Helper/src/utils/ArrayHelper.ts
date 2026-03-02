@@ -1,7 +1,6 @@
 export class IdArray {
-    constructor() {
-        throw new Error('The IdArray class is static and cannot be instantiated.');
-    }
+    private constructor() { /* static class */ }
+
 
     static getTillId(collection: HTMLElement[], toId: string | number, attributeName = 'id'): HTMLElement[] {
         const result = [];

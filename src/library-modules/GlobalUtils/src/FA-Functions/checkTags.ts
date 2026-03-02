@@ -1,6 +1,6 @@
 import { Logger } from '../Logger';
 
-export default function (element: HTMLElement): void {
+export default function checkTags(element: HTMLElement): void {
     const userLoggedIn = document.body.getAttribute('data-user-logged-in') === '1';
     if (!userLoggedIn) {
         Logger.logWarning('User is not logged in, skipping tag check');
@@ -48,7 +48,7 @@ export default function (element: HTMLElement): void {
 function getBannedTags(tags: string[] | undefined | null): string[] {
     const blockedTags = document.body.getAttribute('data-tag-blocklist') ?? '';
     const tagsBlocklist = Array.from(blockedTags.split(' '));
-    
+
     let bTags = [];
 
     if (tags == null || tags.length === 0) {

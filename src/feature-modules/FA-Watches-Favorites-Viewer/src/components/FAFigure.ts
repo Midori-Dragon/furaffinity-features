@@ -6,7 +6,6 @@ export class FAFigure {
     className: string;
     image: FAFigureImage;
     figCaption: FAFigureFigCaption;
-    
 
     constructor(figure: HTMLElement) {
         this.id = figure.id.trimStart('sid-');
@@ -15,7 +14,7 @@ export class FAFigure {
         this.figCaption = new FAFigureFigCaption(figure.querySelector('figcaption')!);
     }
 
-    ToHTMLElement(): HTMLElement {
+    toHTMLElement(): HTMLElement {
         const figure = document.createElement('figure');
         figure.id = `sid-${this.id}`;
         figure.className = this.className;
@@ -79,7 +78,7 @@ export class FAFigure {
                 </figcaption>
                 
             </figure>`;
-        
+
         const parser = new DOMParser();
         const doc = parser.parseFromString(mock, 'text/html');
         return doc.body.firstElementChild as HTMLElement;
@@ -126,7 +125,7 @@ export class FAFigureFigCaption {
     byUsername: string;
     fromId: string;
     fromUsername: string;
-    
+
 
     constructor(figCaption: HTMLElement) {
         const aElems = figCaption.querySelectorAll('a');
@@ -135,7 +134,7 @@ export class FAFigureFigCaption {
 
         this.id = firstAElem.href.replace('/view/', '').replace('www.furaffinity.net', '').replace('https://', '').trimEnd('/');
         this.title = firstAElem.textContent ?? '';
-        
+
         this.byUserId = lastAElem.href.replace('/user/', '').replace('www.furaffinity.net', '').replace('https://', '').trimEnd('/');
         this.byUsername = lastAElem.textContent ?? '';
 

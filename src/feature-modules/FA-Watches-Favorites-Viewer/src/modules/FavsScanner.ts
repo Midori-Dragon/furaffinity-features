@@ -11,6 +11,7 @@ import { FAFigure } from '../components/FAFigure';
 
 export class FavsScanner {
     static readonly progressPercentId = 'wfv-scan-progress-percent';
+    private static readonly maxOperations = 80;
     lastFavIds: Record<string, string> = {};
     ignoredUsers: string[] = [];
     amountOperations = 0;
@@ -48,14 +49,11 @@ export class FavsScanner {
             try {
                 const userFigures = await this.scanUser(username!);
 
-                // Synchronize access to shared resources
-                synchronized: {
-                    figures.push(...userFigures);
-                    current++;
-                    percent = (current / total * 100.0);
-                    await StorageWrapper.setItemAsync(FavsScanner.progressPercentId, percent.toFixed(2));
-                    callBack?.(username!, percent, userFigures);
-                }
+                figures.push(...userFigures);
+                current++;
+                percent = (current / total * 100.0);
+                await StorageWrapper.setItemAsync(FavsScanner.progressPercentId, percent.toFixed(2));
+                callBack?.(username!, percent, userFigures);
             } catch (error) {
                 Logger.logError(`Failed to scan user ${username}:`, error);
             } finally {
@@ -69,8 +67,8 @@ export class FavsScanner {
     }
 
     async scanUser(username: string): Promise<FAFigure[]> {
-        if (this.amountOperations >= 80) {
-            Logger.logWarning(`Amount of operations reached 80. Stopping scan for ${username}.`);
+        if (this.amountOperations >= FavsScanner.maxOperations) {
+            Logger.logWarning(`Amount of operations reached ${FavsScanner.maxOperations}. Stopping scan for ${username}.`);
             return [];
         }
 

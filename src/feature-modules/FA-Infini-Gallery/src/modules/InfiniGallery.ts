@@ -39,7 +39,7 @@ export class InfiniGallery {
             this.startScrollDetection();
         } catch (error) {
             this.stopScrollDetection();
-            const isEndOfGallery = error instanceof Error && error.message === 'No figures found';
+            const isEndOfGallery = error instanceof Error && (error.message === 'No figures found' || error.message === 'No watches found');
             if (!isEndOfGallery) {
                 await showError(error, scriptName);
             }

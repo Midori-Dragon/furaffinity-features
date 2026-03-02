@@ -19,9 +19,9 @@ export class GalleryManager {
 
     constructor() {
         this.isGallery = window.location.toString().toLowerCase().includes('net/gallery');
-        
+
         this.isFavorites = window.location.toString().toLowerCase().includes('net/favorites');
-        
+
         this.isScraps = window.location.toString().toLowerCase().includes('net/scraps');
 
         this.isBrowse = window.location.toString().toLowerCase().includes('net/browse');
@@ -31,7 +31,7 @@ export class GalleryManager {
                 this.pageNo = parseInt(pageOption.value);
             }
         }
-        
+
         this.isSearch = window.location.toString().toLowerCase().includes('net/search');
         if (this.isSearch) {
             const searchAdvanced = document.getElementById('search-advanced');
@@ -56,7 +56,7 @@ export class GalleryManager {
 
     async loadNextPage(): Promise<void> {
         this.pageNo++;
-        
+
         if (this.isFavorites) {
             const gallery = document.body.querySelector('section[id*="gallery"]');
             const figures = gallery?.getElementsByTagName('figure');
@@ -91,10 +91,11 @@ export class GalleryManager {
             loadingSpinner.spinnerThickness = 5;
             loadingSpinner.size = 50;
             loadingSpinner.visible = true;
-                
+
             try {
                 this.prevFigures = await nextPage.loadPage(this.prevFigures);
-            } finally {
+            }
+            finally {
                 loadingSpinner.visible = false;
                 loadingSpinner.dispose();
                 nextPage.gallery.removeChild(spacer);

@@ -49,7 +49,7 @@ export class WatchesFavoritesPage {
 
         const figures = await FigureDataSaver.loadFigures();
         Logger.logInfo(`Loaded ${figures.length} figures`);
-        const htmlFigures = figures.map(figure => figure.ToHTMLElement());
+        const htmlFigures = figures.map(figure => figure.toHTMLElement());
         this.gallerySection.append(...htmlFigures);
 
         window.dispatchEvent(new CustomEvent('ei-update-embedded'));

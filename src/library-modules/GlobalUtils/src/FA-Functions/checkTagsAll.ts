@@ -1,6 +1,6 @@
 import checkTags from './checkTags';
 
-export default function (doc: Document | undefined | null): void {
+export default function checkTagsAll(doc: Document | undefined | null): void {
     if (doc == null) {
         return;
     }
