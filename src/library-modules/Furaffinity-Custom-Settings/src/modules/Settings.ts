@@ -180,7 +180,7 @@ export class Settings {
         headerContainer.className = 'section-header cs';
         const header = document.createElement('h2');
         header.textContent = headerName;
-        
+
         const bodyContainer = document.createElement('div');
         bodyContainer.className = 'section-body cs';
         if (this._isFeatureEnabledSetting.value) {
@@ -202,7 +202,7 @@ export class Settings {
         section.appendChild(bodyContainer);
         content.appendChild(section);
     }
-    
+
     private createFeatureEnableSetting(bodyContainer: HTMLElement): HTMLElement {
         const enableFeatureSettingContainerElem = document.createElement('label');
         enableFeatureSettingContainerElem.classList.add('switch-cs');

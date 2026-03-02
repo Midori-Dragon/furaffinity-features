@@ -33,7 +33,7 @@ export class SettingBoolean extends EventTarget implements ISetting<SettingType.
         const localValue = localStorage.getItem(this.id);
         if (localValue == null) {
             return this.defaultValue;
-        } 
+        }
         return localValue === 'true' || localValue === '1';
     }
     set value(newValue: SettingTypeMapping[SettingType.Boolean]) {
