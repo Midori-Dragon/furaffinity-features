@@ -65,3 +65,8 @@ export function getFolderNameFromUrl(url: string): string | null {
     const match = url.match(/\/folder\/\d+\/([^/?]+)(?=\/|$)/);
     return match ? match[1] : null;
 }
+
+export function anyGalleryExistsOnDOM(): boolean {
+    const galleries = document.body.querySelectorAll('section[id*="gallery"]');
+    return galleries.length !== 0;
+}

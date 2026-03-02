@@ -20,7 +20,7 @@ export class SettingText extends EventTarget implements ISetting<SettingType.Tex
     constructor(providerId: string, name: string) {
         super();
         Object.setPrototypeOf(this, SettingText.prototype);
-        
+
         this.name = name;
         this.id = providerId + '-' + makeIdCompatible(this.name);
         this.type = SettingType.Text;
@@ -45,10 +45,10 @@ export class SettingText extends EventTarget implements ISetting<SettingType.Tex
         try {
             if (newValue === this.defaultValue) {
                 localStorage.removeItem(this.id);
-                void SyncedStorage.removeItem(this.id);
+                void SyncedStorage.removeItem(this.id).catch((e: unknown) => Logger.logError('SyncedStorage.removeItem failed:', e));
             } else {
                 localStorage.setItem(this.id, newValue);
-                void SyncedStorage.setItem(this.id, newValue);
+                void SyncedStorage.setItem(this.id, newValue).catch((e: unknown) => Logger.logError('SyncedStorage.setItem failed:', e));
             }
         } catch (error) {
             Logger.logError(error);
@@ -108,7 +108,7 @@ export class SettingText extends EventTarget implements ISetting<SettingType.Tex
             if (value != null) {
                 localStorage.setItem(this.id, value.toString());
             }
-        });
+        }).catch((error: unknown) => Logger.logError('SyncedStorage.getItem failed:', error));
     }
 
     toString(): string {

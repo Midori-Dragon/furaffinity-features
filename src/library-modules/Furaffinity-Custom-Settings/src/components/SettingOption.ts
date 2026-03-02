@@ -18,7 +18,7 @@ export class SettingOption extends EventTarget implements ISetting<SettingType.O
     constructor(providerId: string, name: string) {
         super();
         Object.setPrototypeOf(this, SettingOption.prototype);
-        
+
         this.name = name;
         this.id = providerId + '-' + makeIdCompatible(this.name);
         this.type = SettingType.Option;
@@ -37,10 +37,10 @@ export class SettingOption extends EventTarget implements ISetting<SettingType.O
             // eslint-disable-next-line eqeqeq
             if (newValue == this.defaultValue) {
                 localStorage.removeItem(this.id);
-                void SyncedStorage.removeItem(this.id);
+                void SyncedStorage.removeItem(this.id).catch((e: unknown) => Logger.logError('SyncedStorage.removeItem failed:', e));
             } else {
                 localStorage.setItem(this.id, newValue.toString());
-                void SyncedStorage.setItem(this.id, newValue.toString());
+                void SyncedStorage.setItem(this.id, newValue.toString()).catch((e: unknown) => Logger.logError('SyncedStorage.setItem failed:', e));
             }
         } catch (error) {
             Logger.logError(error);
@@ -125,7 +125,7 @@ export class SettingOption extends EventTarget implements ISetting<SettingType.O
             if (value != null) {
                 localStorage.setItem(this.id, value.toString());
             }
-        });
+        }).catch((error: unknown) => Logger.logError('SyncedStorage.getItem failed:', error));
     }
 
     toString(): string {

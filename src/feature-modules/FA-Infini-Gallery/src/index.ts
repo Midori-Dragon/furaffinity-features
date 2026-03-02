@@ -7,6 +7,7 @@ import type { LoadingSpinner } from '../../../library-modules/Furaffinity-Loadin
 import type { MessageBox } from '../../../library-modules/Furaffinity-Message-Box/src/modules/MessageBox';
 import type { MessageBoxButtons } from '../../../library-modules/Furaffinity-Message-Box/src/components/MessageBoxButtons';
 import type { MessageBoxIcon } from '../../../library-modules/Furaffinity-Message-Box/src/components/MessageBoxIcon';
+import { anyGalleryExistsOnDOM } from './utils/Utils';
 
 declare global {
     interface Window {
@@ -44,7 +45,7 @@ if (customSettings.isFeatureEnabled) {
     const matchList = new window.FAMatchList(customSettings);
     matchList.matches = ['net/gallery', 'net/favorites', 'net/scraps', 'net/browse', 'net/search', 'net/controls/buddylist'];
     matchList.runInIFrame = false;
-    if (matchList.hasMatch) {
+    if (matchList.hasMatch && anyGalleryExistsOnDOM()) {
         const infiniGallery = new InfiniGallery();
         infiniGallery.startScrollDetection();
     }

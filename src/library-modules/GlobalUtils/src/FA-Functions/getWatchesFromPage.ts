@@ -1,3 +1,5 @@
+import { Logger } from '../Logger';
+
 export default function (page: Document): HTMLElement[] {
     try {
         const watchList: HTMLElement[] = [];
@@ -11,7 +13,8 @@ export default function (page: Document): HTMLElement[] {
         }
 
         return watchList;
-    } catch {
+    } catch (error) {
+        Logger.logError('Failed to parse watches from page:', error);
         return [];
     }
 }

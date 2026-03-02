@@ -42,7 +42,13 @@ export class Settings {
 
         let currSettingsJson = localStorage.getItem('ff-registered-settings');
         currSettingsJson ??= '[]';
-        const currSettings = JSON.parse(currSettingsJson) as Array<string>;
+        let currSettings: Array<string>;
+        try {
+            currSettings = JSON.parse(currSettingsJson) as Array<string>;
+        } catch (error) {
+            Logger.logError('Failed to parse registered settings from localStorage, resetting:', error);
+            currSettings = [];
+        }
         if (!currSettings.includes(this.providerId)) {
             currSettings.push(this.providerId);
             localStorage.setItem('ff-registered-settings', JSON.stringify(currSettings));

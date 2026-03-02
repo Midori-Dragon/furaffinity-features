@@ -3,8 +3,8 @@ import { Logger } from '../Logger';
 
 /* eslint-disable @typescript-eslint/explicit-module-boundary-types */
 export class SyncedStorage {
-    static warningSentCount: number = 0;
-    static maxWarningCount: number = 10;
+    static warningSentCount = 0;
+    static maxWarningCount = 10;
 
     static async setItem(key: any, value: any): Promise<void> {
         if (!GMInfo.isBrowserEnvironment()) {

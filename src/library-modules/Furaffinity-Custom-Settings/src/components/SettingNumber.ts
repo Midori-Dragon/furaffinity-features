@@ -1,4 +1,5 @@
 import { SyncedStorage } from '../../../GlobalUtils/src/Browser-API/SyncedStorage';
+import { Logger } from '../../../GlobalUtils/src/Logger';
 import { SettingType, SettingTypeMapping } from '../utils/SettingType';
 import { makeIdCompatible } from '../utils/Utils';
 import { ISetting } from './ISetting';
@@ -40,10 +41,10 @@ export class SettingNumber extends EventTarget implements ISetting<SettingType.N
         newValue = Math.min(Math.max(newValue, this.min), this.max);
         if (newValue === this.defaultValue) {
             localStorage.removeItem(this.id);
-            void SyncedStorage.removeItem(this.id);
+            void SyncedStorage.removeItem(this.id).catch((error: unknown) => Logger.logError('SyncedStorage.removeItem failed:', error));
         } else {
             localStorage.setItem(this.id, newValue.toString());
-            void SyncedStorage.setItem(this.id, newValue);
+            void SyncedStorage.setItem(this.id, newValue).catch((error: unknown) => Logger.logError('SyncedStorage.setItem failed:', error));
         }
         this._settingInputElem.value = newValue.toString();
         this.invokeInput(this._settingInputElem);
@@ -90,7 +91,7 @@ export class SettingNumber extends EventTarget implements ISetting<SettingType.N
             if (value != null) {
                 localStorage.setItem(this.id, value.toString());
             }
-        });
+        }).catch((error: unknown) => Logger.logError('SyncedStorage.getItem failed:', error));
     }
 
     toString(): string {
