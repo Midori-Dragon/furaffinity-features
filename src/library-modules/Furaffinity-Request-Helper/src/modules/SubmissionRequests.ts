@@ -58,14 +58,14 @@ export class SubmissionRequests {
         if (resultDoc == null) {
             return;
         }
-        try {
-            const standardpage = resultDoc.getElementById('standardpage');
-            if (standardpage) {
-                const blocked = standardpage.querySelector('div[class="redirect-message"]');
-                if (blocked?.textContent?.includes('blocked') ?? false) {
-                    return;
-                }
+        const standardpage = resultDoc.getElementById('standardpage');
+        if (standardpage) {
+            const blocked = standardpage.querySelector('div[class="redirect-message"]');
+            if (blocked != null && (blocked.textContent?.includes('blocked') ?? false)) {
+                throw new Error(blocked.textContent?.trim() ?? 'Cannot fav: you are blocked by this user');
             }
+        }
+        try {
             return this._getFavKey(resultDoc);
         } catch { }
     }
