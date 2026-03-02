@@ -2,7 +2,7 @@ import { Semaphore } from '../../../../../GlobalUtils/src/Semaphore';
 import { WaitAndCallAction, DEFAULT_ACTION_DELAY } from '../../../utils/WaitAndCallAction';
 import { FuraffinityRequests } from '../../../modules/FuraffinityRequests';
 import { MessageTypeRequests } from './MessageTypeRequests';
-import { Logger } from '../../../../../GlobalUtils/src/Logger';
+
 
 export class NewMessages {
     readonly Watches: MessageTypeRequests;
@@ -77,8 +77,7 @@ export class NewMessages {
         for (const id of journalIds) payload.push(['journals[]', id.toString()]);
 
         if (payload.length === 1) {
-            Logger.logError('No messages to remove');
-            return;
+            throw new Error('No messages to remove');
         }
 
         return await FuraffinityRequests.postHTML(NewMessages.hardLink, payload, this._semaphore);

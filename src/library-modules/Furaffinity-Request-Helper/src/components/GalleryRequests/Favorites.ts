@@ -155,8 +155,7 @@ export class Favorites {
 
     private async _getSubmissionDataFavId(username: string, submissionId: number | undefined, fromDataFavId: number | undefined, toDataFavId: number | undefined, maxPageNo: number | undefined): Promise<number> {
         if (submissionId == null || submissionId <= 0) {
-            Logger.logError('No submissionId given');
-            return -1;
+            throw new Error('No submissionId given');
         }
         if (fromDataFavId == null || fromDataFavId <= 0) {
             Logger.logWarning('fromDataFavId must be greater than 0. Using default 1 instead.');
@@ -205,8 +204,7 @@ export class Favorites {
 
     private async _getFiguresTillId(username: string, toId: number | undefined, fromDataFavId: number | undefined, maxPageNo: number | undefined): Promise<HTMLElement[][]> {
         if (toId == null || toId <= 0) {
-            Logger.logError('No toId given');
-            return [];
+            throw new Error('No toId given');
         }
         if (fromDataFavId == null || fromDataFavId <= 0) {
             Logger.logWarning('No fromDataFavId given. Using default 1 instead.');
@@ -255,8 +253,7 @@ export class Favorites {
 
     private async _getFiguresSinceId(username: string, fromId: number | undefined, toDataFavId: number | undefined, maxPageNo: number | undefined): Promise<HTMLElement[][]> {
         if (fromId == null || fromId <= 0) {
-            Logger.logError('No fromId given');
-            return [];
+            throw new Error('No fromId given');
         }
         if (toDataFavId == null || toDataFavId <= 0) {
             Logger.logWarning('No toDataFavId given. Using default 1 instead.');
@@ -348,12 +345,10 @@ export class Favorites {
 
     private async _getFiguresBetweenIds(username: string, fromId: number | undefined, toId: number | undefined, fromDataFavId: number | undefined, toDataFavId: number | undefined, maxPageNo: number | undefined): Promise<HTMLElement[][]> {
         if (fromId == null || fromId <= 0) {
-            Logger.logError('No fromId given');
-            return [];
+            throw new Error('No fromId given');
         }
         if (toId == null || toId <= 0) {
-            Logger.logError('No toId given');
-            return [];
+            throw new Error('No toId given');
         }
         if (fromDataFavId == null || fromDataFavId <= 0) {
             Logger.logWarning('No fromDataFavId given. Using default 1 instead.');

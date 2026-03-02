@@ -1,8 +1,9 @@
-import { loadingSpinSpeedSetting, requestHelper } from '..';
+import { loadingSpinSpeedSetting, requestHelper, scriptName } from '..';
 import getWatchesFromPage from '../../../../library-modules/GlobalUtils/src/FA-Functions/getWatchesFromPage';
 import { IgnoreList } from '../utils/IgnoreList';
 import '../styles/Style.css';
 import { Logger } from '../../../../library-modules/GlobalUtils/src/Logger';
+import { showError } from '../utils/showError';
 
 export class BuddyListManager {
     watchList: HTMLElement[] = [];
@@ -16,7 +17,9 @@ export class BuddyListManager {
         this.sectionBody = columnPage.querySelector('div[class="section-body"]')!;
         this.sectionBody.innerHTML = '';
 
-        void this.initialize();
+        void this.initialize().catch(async (error: unknown) => {
+            await showError(error, scriptName);
+        });
     }
 
     private async initialize(): Promise<void> {
@@ -149,12 +152,12 @@ export class BuddyListManager {
         if (file == null) {
             return;
         }
-        
+
         try {
             const text = await file.text();
             const ignoreList = JSON.parse(text);
             await IgnoreList.setIgnoreList(ignoreList);
-            
+
             Logger.logInfo('Buddy list imported successfully');
             window.location.reload();
         } catch (error) {

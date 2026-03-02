@@ -3,7 +3,6 @@ import { WaitAndCallAction, DEFAULT_ACTION_DELAY } from '../../../utils/WaitAndC
 import { FuraffinityRequests } from '../../../modules/FuraffinityRequests';
 import { Message } from '../Message';
 import { convertToNumber } from '../../../utils/GeneralUtils';
-import { Logger } from '../../../../../GlobalUtils/src/Logger';
 
 export class NewSubmissions {
     private readonly _semaphore: Semaphore;
@@ -39,8 +38,7 @@ export class NewSubmissions {
 
     private async _removeSubmissions(submissionIds: string[] | number[] | undefined): Promise<Document | undefined> {
         if (submissionIds == null || submissionIds.length === 0) {
-            Logger.logError('No submission ids to remove');
-            return;
+            throw new Error('No submission ids to remove');
         }
         const payload: [string, string][] = [
             ['messagecenter-action', Message.hardActions['remove']],
