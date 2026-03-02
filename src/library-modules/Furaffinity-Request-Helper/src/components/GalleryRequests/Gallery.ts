@@ -20,6 +20,7 @@ export class Gallery {
 
     static async fetchPage(username: string | undefined, folder: IGalleryFolder | undefined, pageNumber: number | undefined, semaphore: Semaphore): Promise<Document | undefined> {
         if (username == null) {
+            Logger.logError('Cannot fetch gallery page: no username given');
             throw new Error('Cannot fetch gallery page: no username given');
         }
         if (pageNumber == null || pageNumber <= 0) {

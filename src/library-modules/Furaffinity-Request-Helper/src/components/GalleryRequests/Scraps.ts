@@ -19,6 +19,7 @@ export class Scraps {
 
     static async fetchPage(username: string | undefined, pageNumber: number | undefined, semaphore: Semaphore): Promise<Document | undefined> {
         if (username == null) {
+            Logger.logError('Cannot fetch scraps page: no username given');
             throw new Error('Cannot fetch scraps page: no username given');
         }
         if (pageNumber == null || pageNumber <= 0) {

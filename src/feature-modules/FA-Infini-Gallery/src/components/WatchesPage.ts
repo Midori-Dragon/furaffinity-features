@@ -26,6 +26,7 @@ export class WatchesPage implements IGalleryPage {
     async loadPage(prevWatches?: HTMLElement[]): Promise<HTMLElement[]> {
         const page = await this.getPage();
         if (page == null) {
+            Logger.logError('No page found');
             throw new Error('No page found');
         }
 
@@ -52,6 +53,7 @@ export class WatchesPage implements IGalleryPage {
             this.gallery.appendChild(watchesContainer);
             watchesContainer.append(...watches);
         } else {
+            Logger.logError('No watches found');
             throw new Error('No watches found');
         }
 

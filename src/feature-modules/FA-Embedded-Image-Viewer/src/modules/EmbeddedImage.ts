@@ -191,6 +191,9 @@ export class EmbeddedImage extends EventTarget {
 
         const ddmenu = document.getElementById('ddmenu')!;
         const doc = await requestHelper.SubmissionRequests.getSubmissionPage(sid);
+        if (!this.embeddedElem.isConnected) {
+            return;
+        }
         if (doc != null) {
             this.submissionImg = doc.getElementById('submissionImg') as HTMLImageElement;
             const imgSrc = this.submissionImg.src;

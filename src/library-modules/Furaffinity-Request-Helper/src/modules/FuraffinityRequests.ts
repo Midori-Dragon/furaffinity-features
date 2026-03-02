@@ -60,6 +60,7 @@ export class FuraffinityRequests {
 
     static async getHTML(url: string, semaphore: Semaphore, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         if (url == null || url === '') {
+            Logger.logError('No url given for GET request');
             throw new Error('No url given for GET request');
         }
         return await WaitAndCallAction.callFunctionAsync(() => getHTMLLocal(url, semaphore), action, delay);
@@ -67,6 +68,7 @@ export class FuraffinityRequests {
 
     static async postHTML(url: string, payload: string[][] | Record<string, string> | string | URLSearchParams, semaphore: Semaphore, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         if (url == null || url === '') {
+            Logger.logError('No url given for POST request');
             throw new Error('No url given for POST request');
         }
         return await WaitAndCallAction.callFunctionAsync(() => postHTMLLocal(url, payload, semaphore), action, delay);

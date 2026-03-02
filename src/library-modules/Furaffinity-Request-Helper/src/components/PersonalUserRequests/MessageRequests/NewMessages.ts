@@ -1,3 +1,4 @@
+import { Logger } from '../../../../../GlobalUtils/src/Logger';
 import { Semaphore } from '../../../../../GlobalUtils/src/Semaphore';
 import { WaitAndCallAction, DEFAULT_ACTION_DELAY } from '../../../utils/WaitAndCallAction';
 import { FuraffinityRequests } from '../../../modules/FuraffinityRequests';
@@ -77,6 +78,7 @@ export class NewMessages {
         for (const id of journalIds) payload.push(['journals[]', id.toString()]);
 
         if (payload.length === 1) {
+            Logger.logError('No messages to remove');
             throw new Error('No messages to remove');
         }
 

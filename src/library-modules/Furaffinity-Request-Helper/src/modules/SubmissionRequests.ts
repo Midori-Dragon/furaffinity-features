@@ -1,3 +1,4 @@
+import { Logger } from '../../../GlobalUtils/src/Logger';
 import { Semaphore } from '../../../GlobalUtils/src/Semaphore';
 import { WaitAndCallAction, DEFAULT_ACTION_DELAY } from '../utils/WaitAndCallAction';
 import { FuraffinityRequests } from './FuraffinityRequests';
@@ -36,6 +37,7 @@ export class SubmissionRequests {
 
     private async _getSubmissionPage(submissionId: string | number | undefined): Promise<Document | undefined> {
         if (submissionId == null || submissionId === '' || submissionId === -1) {
+            Logger.logError('No submissionId given');
             throw new Error('No submissionId given');
         }
         const url = SubmissionRequests.hardLinks['view'] + submissionId;
@@ -44,21 +46,26 @@ export class SubmissionRequests {
 
     private async _favSubmission(submissionId: string | number | undefined, favKey: string | number | undefined): Promise<string | undefined> {
         if (submissionId == null || submissionId === '' || submissionId === -1) {
+            Logger.logError('No submissionId given');
             throw new Error('No submissionId given');
         }
         if (favKey == null || favKey === '' || favKey === -1) {
+            Logger.logError('No favKey given');
             throw new Error('No favKey given');
         }
         const url = SubmissionRequests.hardLinks['fav'] + submissionId + '?key=' + favKey;
         const resultDoc = await FuraffinityRequests.getHTML(url, this._semaphore);
         if (resultDoc == null) {
+            Logger.logError('Failed to fetch fav page');
             throw new Error('Failed to fetch fav page');
         }
         const standardpage = resultDoc.getElementById('standardpage');
         if (standardpage) {
             const blocked = standardpage.querySelector('div[class="redirect-message"]');
             if (blocked != null && (blocked.textContent?.includes('blocked') ?? false)) {
-                throw new Error(blocked.textContent?.trim() ?? 'Cannot fav: you are blocked by this user');
+                const errorMessage = blocked.textContent?.trim() ?? 'Cannot fav: you are blocked by this user';
+                Logger.logError(errorMessage);
+                throw new Error(errorMessage);
             }
         }
         return this._getFavKey(resultDoc);
@@ -66,14 +73,17 @@ export class SubmissionRequests {
 
     private async _unfavSubmission(submissionId: string | number | undefined, unfavKey: string | number | undefined): Promise<string | undefined> {
         if (submissionId == null || submissionId === '' || submissionId === -1) {
+            Logger.logError('No submissionId given');
             throw new Error('No submissionId given');
         }
         if (unfavKey == null || unfavKey === '' || unfavKey === -1) {
+            Logger.logError('No unfavKey given');
             throw new Error('No unfavKey given');
         }
         const url = SubmissionRequests.hardLinks['unfav'] + submissionId + '?key=' + unfavKey;
         const resultDoc = await FuraffinityRequests.getHTML(url, this._semaphore);
         if (resultDoc == null) {
+            Logger.logError('Failed to fetch unfav page');
             throw new Error('Failed to fetch unfav page');
         }
         return this._getFavKey(resultDoc);
@@ -81,6 +91,7 @@ export class SubmissionRequests {
 
     private async _getJournalPage(journalId: string | number | undefined): Promise<Document | undefined> {
         if (journalId == null || journalId === '' || journalId === -1) {
+            Logger.logError('No journalId given');
             throw new Error('No journalId given');
         }
         const url = SubmissionRequests.hardLinks['journal'] + journalId;

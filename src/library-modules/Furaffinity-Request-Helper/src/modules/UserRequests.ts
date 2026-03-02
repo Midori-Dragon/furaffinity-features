@@ -58,9 +58,11 @@ export class UserRequests {
 
     private async _watchUser(username: string | undefined, watchKey: string | number | undefined): Promise<boolean> {
         if (username == null || username === '') {
+            Logger.logError('No username given');
             throw new Error('No username given');
         }
         if (watchKey == null || watchKey === '' || watchKey === -1) {
+            Logger.logError('No watch key given');
             throw new Error('No watch key given');
         }
         const url = UserRequests.hardLinks['watch'] + username + '?key=' + watchKey;
@@ -69,9 +71,11 @@ export class UserRequests {
 
     private async _unwatchUser(username: string | undefined, unwatchKey: string | number | undefined): Promise<boolean> {
         if (username == null || username === '') {
+            Logger.logError('No username given');
             throw new Error('No username given');
         }
         if (unwatchKey == null || unwatchKey === '' || unwatchKey === -1) {
+            Logger.logError('No unwatch key given');
             throw new Error('No unwatch key given');
         }
         const url = UserRequests.hardLinks['unwatch'] + username + '?key=' + unwatchKey;
@@ -80,9 +84,11 @@ export class UserRequests {
 
     private async _blockUser(username: string | undefined, blockKey: string | number | undefined): Promise<boolean> {
         if (username == null || username === '') {
+            Logger.logError('No username given');
             throw new Error('No username given');
         }
         if (blockKey == null || blockKey === '' || blockKey === -1) {
+            Logger.logError('No block key given');
             throw new Error('No block key given');
         }
         const url = UserRequests.hardLinks['block'] + username + '?key=' + blockKey;
@@ -91,9 +97,11 @@ export class UserRequests {
 
     private async _unblockUser(username: string | undefined, unblockKey: string | number | undefined): Promise<boolean> {
         if (username == null || username === '') {
+            Logger.logError('No username given');
             throw new Error('No username given');
         }
         if (unblockKey == null || unblockKey === '' || unblockKey === -1) {
+            Logger.logError('No unblock key given');
             throw new Error('No unblock key given');
         }
         const url = UserRequests.hardLinks['unblock'] + username + '?key=' + unblockKey;

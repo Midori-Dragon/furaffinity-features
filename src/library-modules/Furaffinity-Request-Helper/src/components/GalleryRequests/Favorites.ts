@@ -19,6 +19,7 @@ export class Favorites {
 
     static async fetchPage(username: string | undefined, dataFavId: number | undefined, direction: number | undefined, semaphore: Semaphore): Promise<Document | undefined> {
         if (username == null) {
+            Logger.logError('Cannot fetch favorites page: no username given');
             throw new Error('Cannot fetch favorites page: no username given');
         }
         if (direction == null) {
@@ -155,6 +156,7 @@ export class Favorites {
 
     private async _getSubmissionDataFavId(username: string, submissionId: number | undefined, fromDataFavId: number | undefined, toDataFavId: number | undefined, maxPageNo: number | undefined): Promise<number> {
         if (submissionId == null || submissionId <= 0) {
+            Logger.logError('No submissionId given');
             throw new Error('No submissionId given');
         }
         if (fromDataFavId == null || fromDataFavId <= 0) {
@@ -204,6 +206,7 @@ export class Favorites {
 
     private async _getFiguresTillId(username: string, toId: number | undefined, fromDataFavId: number | undefined, maxPageNo: number | undefined): Promise<HTMLElement[][]> {
         if (toId == null || toId <= 0) {
+            Logger.logError('No toId given');
             throw new Error('No toId given');
         }
         if (fromDataFavId == null || fromDataFavId <= 0) {
@@ -253,6 +256,7 @@ export class Favorites {
 
     private async _getFiguresSinceId(username: string, fromId: number | undefined, toDataFavId: number | undefined, maxPageNo: number | undefined): Promise<HTMLElement[][]> {
         if (fromId == null || fromId <= 0) {
+            Logger.logError('No fromId given');
             throw new Error('No fromId given');
         }
         if (toDataFavId == null || toDataFavId <= 0) {
@@ -345,9 +349,11 @@ export class Favorites {
 
     private async _getFiguresBetweenIds(username: string, fromId: number | undefined, toId: number | undefined, fromDataFavId: number | undefined, toDataFavId: number | undefined, maxPageNo: number | undefined): Promise<HTMLElement[][]> {
         if (fromId == null || fromId <= 0) {
+            Logger.logError('No fromId given');
             throw new Error('No fromId given');
         }
         if (toId == null || toId <= 0) {
+            Logger.logError('No toId given');
             throw new Error('No toId given');
         }
         if (fromDataFavId == null || fromDataFavId <= 0) {

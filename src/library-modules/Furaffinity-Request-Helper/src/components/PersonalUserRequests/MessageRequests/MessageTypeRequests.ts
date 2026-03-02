@@ -1,3 +1,4 @@
+import { Logger } from '../../../../../GlobalUtils/src/Logger';
 import { Semaphore } from '../../../../../GlobalUtils/src/Semaphore';
 import { WaitAndCallAction, DEFAULT_ACTION_DELAY } from '../../../utils/WaitAndCallAction';
 import { FuraffinityRequests } from '../../../modules/FuraffinityRequests';
@@ -29,6 +30,7 @@ export class MessageTypeRequests {
 
     private async _removeMessages(ids?: string[] | number[]): Promise<Document | undefined> {
         if (ids == null || ids.length === 0) {
+            Logger.logError('No message ids to remove');
             throw new Error('No message ids to remove');
         }
         const payload: [string, string][] = [this._removeAction];

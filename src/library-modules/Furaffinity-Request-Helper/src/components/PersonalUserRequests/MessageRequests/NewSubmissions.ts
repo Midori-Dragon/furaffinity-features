@@ -1,3 +1,4 @@
+import { Logger } from '../../../../../GlobalUtils/src/Logger';
 import { Semaphore } from '../../../../../GlobalUtils/src/Semaphore';
 import { WaitAndCallAction, DEFAULT_ACTION_DELAY } from '../../../utils/WaitAndCallAction';
 import { FuraffinityRequests } from '../../../modules/FuraffinityRequests';
@@ -38,6 +39,7 @@ export class NewSubmissions {
 
     private async _removeSubmissions(submissionIds: string[] | number[] | undefined): Promise<Document | undefined> {
         if (submissionIds == null || submissionIds.length === 0) {
+            Logger.logError('No submission ids to remove');
             throw new Error('No submission ids to remove');
         }
         const payload: [string, string][] = [
