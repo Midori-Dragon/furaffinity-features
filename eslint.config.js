@@ -56,6 +56,11 @@ export default [
                 'warn',
                 {
                     selector: 'variable',
+                    modifiers: ['const'],
+                    format: ['camelCase', 'UPPER_CASE'],
+                },
+                {
+                    selector: 'variable',
                     format: ['camelCase'],
                 },
                 {
