@@ -19,8 +19,7 @@ export class Scraps {
 
     static async fetchPage(username: string | undefined, pageNumber: number | undefined, semaphore: Semaphore): Promise<Document | undefined> {
         if (username == null) {
-            Logger.logError('No username given');
-            return;
+            throw new Error('Cannot fetch scraps page: no username given');
         }
         if (pageNumber == null || pageNumber <= 0) {
             Logger.logWarning('No page number given. Using default value of 1.');

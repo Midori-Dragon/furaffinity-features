@@ -1,5 +1,7 @@
 import { isElementOnScreen } from '../utils/Utils';
 import { GalleryManager } from './GalleryManager';
+import { scriptName } from '../index';
+import { showError } from '../utils/showError';
 
 export class InfiniGallery {
     scanElem: HTMLElement;
@@ -35,8 +37,12 @@ export class InfiniGallery {
         try {
             await this.galleryManager.loadNextPage();
             this.startScrollDetection();
-        } catch {
+        } catch (error) {
             this.stopScrollDetection();
+            const isEndOfGallery = error instanceof Error && error.message === 'No figures found';
+            if (!isEndOfGallery) {
+                await showError(error, scriptName);
+            }
         }
     }
 }

@@ -2,6 +2,9 @@ import type { Settings } from '../../../library-modules/Furaffinity-Custom-Setti
 import type { SettingType } from '../../../library-modules/Furaffinity-Custom-Settings/src/utils/SettingType';
 import type { MatchList } from '../../../library-modules/Furaffinity-Match-List/src/modules/MatchList';
 import type { FuraffinityRequests } from '../../../library-modules/Furaffinity-Request-Helper/src/modules/FuraffinityRequests';
+import type { MessageBox } from '../../../library-modules/Furaffinity-Message-Box/src/modules/MessageBox';
+import type { MessageBoxButtons } from '../../../library-modules/Furaffinity-Message-Box/src/components/MessageBoxButtons';
+import type { MessageBoxIcon } from '../../../library-modules/Furaffinity-Message-Box/src/components/MessageBoxIcon';
 import { NukeIconOptions } from './utils/NukeIconOptions';
 import { MessageNuker } from './modules/MessageNuker';
 import { SubmissionNuker } from './modules/SubmissionNuker';
@@ -14,6 +17,9 @@ declare global {
         BrowseOptions: typeof FuraffinityRequests.Types.BrowseOptions;
         SearchOptions: typeof FuraffinityRequests.Types.SearchOptions;
         FAMatchList: typeof MatchList;
+        FAMessageBox: typeof MessageBox;
+        FAMessageBoxButtons: typeof MessageBoxButtons;
+        FAMessageBoxIcon: typeof MessageBoxIcon;
     }
 }
 

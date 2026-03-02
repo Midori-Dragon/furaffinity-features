@@ -8,6 +8,7 @@ import { ComicNavigation } from '../components/ComicNavigation';
 import { ForwardSearch } from '../components/ForwardSearch';
 import getCurrViewSid from '../utils/getDocViewSid';
 import { Lightbox } from './Lightbox';
+import { showError } from '../utils/showError';
 
 export class AutoLoader {
     submissionImg: HTMLImageElement;
@@ -73,20 +74,25 @@ export class AutoLoader {
 
     private async startAutoLoaderAsync(): Promise<void> {
         this._loadingSpinner.visible = true;
-        const autoLoader = new AutoLoaderSearch(this.submissionImg, this.currSid, this.currComicNav!);
-        const submissions = await autoLoader.search();
+        try {
+            const autoLoader = new AutoLoaderSearch(this.submissionImg, this.currSid, this.currComicNav!);
+            const submissions = await autoLoader.search();
 
-        const submissionIds = Object.keys(submissions).map(Number);
-        if (submissionIds.length === 0 || (submissionIds.length === 1 && submissionIds[0] === this.currSid)) {
-            this.comicNavExists = false;
-        }
-        else {
-            this.addLoadedSubmissions(submissions);
-            if (useCustomLightboxSetting.value) {
-                new Lightbox(this.currSid, submissions);
+            const submissionIds = Object.keys(submissions).map(Number);
+            if (submissionIds.length === 0 || (submissionIds.length === 1 && submissionIds[0] === this.currSid)) {
+                this.comicNavExists = false;
             }
+            else {
+                this.addLoadedSubmissions(submissions);
+                if (useCustomLightboxSetting.value) {
+                    new Lightbox(this.currSid, submissions);
+                }
+            }
+        } catch (error: unknown) {
+            await showError(error, scriptName);
+        } finally {
+            this._loadingSpinner.visible = false;
         }
-        this._loadingSpinner.visible = false;
     }
 
     startSimilarSearch(): void {
@@ -95,18 +101,23 @@ export class AutoLoader {
 
     private async startSimilarSearchAsync(): Promise<void> {
         this._loadingSpinner.visible = true;
-        const forwardSearch = new ForwardSearch(this.currSid);
-        const submissionsAfter = await forwardSearch.search();
+        try {
+            const forwardSearch = new ForwardSearch(this.currSid);
+            const submissionsAfter = await forwardSearch.search();
 
-        const backwardSearch = new BackwardSearch(this.currSid, backwardSearchSetting.value, forwardSearch.currSubmissionPageNo);
-        backwardSearch.sidToIgnore.push(...Object.keys(submissionsAfter).map(Number));
-        const submissionsBefore = await backwardSearch.search();
+            const backwardSearch = new BackwardSearch(this.currSid, backwardSearchSetting.value, forwardSearch.currSubmissionPageNo);
+            backwardSearch.sidToIgnore.push(...Object.keys(submissionsAfter).map(Number));
+            const submissionsBefore = await backwardSearch.search();
 
-        this.addLoadedSubmissions(submissionsBefore, submissionsAfter);
-        if (useCustomLightboxSetting.value) {
-            new Lightbox(this.currSid, { ...submissionsBefore, ...submissionsAfter });
+            this.addLoadedSubmissions(submissionsBefore, submissionsAfter);
+            if (useCustomLightboxSetting.value) {
+                new Lightbox(this.currSid, { ...submissionsBefore, ...submissionsAfter });
+            }
+        } catch (error: unknown) {
+            await showError(error, scriptName);
+        } finally {
+            this._loadingSpinner.visible = false;
         }
-        this._loadingSpinner.visible = false;
     }
 
     addLoadedSubmissions(...imgsArr: Record<number, HTMLImageElement>[]): void {

@@ -2,6 +2,8 @@ import { Logger } from '../../../../library-modules/GlobalUtils/src/Logger';
 import { FavsScanner } from '../modules/FavsScanner';
 import { FigureDataSaver } from '../utils/FigureDataSaver';
 import { checkMigrationNeeded, migrate } from '../utils/Migrate';
+import { scriptName } from '../index';
+import { showError } from '../utils/showError';
 
 export class WatchScanButton {
     static readonly scanResultId = 'wfv-scan-results';
@@ -11,7 +13,7 @@ export class WatchScanButton {
         const ddmenu = document.getElementById('ddmenu')!;
         const nav = ddmenu.querySelector('ul[class*="navhideonmobile"]')!;
         const messageBar = nav.querySelector('li[class*="message-bar-desktop"]')!;
-        
+
         this.wfButton = document.createElement('a');
         this.wfButton.id = 'wfButton';
         this.wfButton.className = 'notification-container inline';
@@ -23,34 +25,40 @@ export class WatchScanButton {
     }
 
     private async startScan(): Promise<void> {
-        const migrateNeeded = await checkMigrationNeeded();
-        if (migrateNeeded) {
-            const result = await window.FAMessageBox.show('Watches Favorite Viewer updated.Do you want to migrate your old data?', 'Confirm Migration', window.FAMessageBoxButtons.YesNoCancel, window.FAMessageBoxIcon.Question);
-            if (result === window.FADialogResult.Yes) {
-                await migrate();
-            } else if (result === window.FADialogResult.Cancel) {
+        try {
+            const migrateNeeded = await checkMigrationNeeded();
+            if (migrateNeeded) {
+                const result = await window.FAMessageBox.show('Watches Favorite Viewer updated.Do you want to migrate your old data?', 'Confirm Migration', window.FAMessageBoxButtons.YesNoCancel, window.FAMessageBoxIcon.Question);
+                if (result === window.FADialogResult.Yes) {
+                    await migrate();
+                } else if (result === window.FADialogResult.Cancel) {
+                    return;
+                }
+            }
+
+            this.wfButton.textContent = 'WF: 0.00%';
+
+            const scanner = new FavsScanner();
+            await scanner.init();
+            const figures = await scanner.scanAllUsers((username, percent, userFigures) => {
+                Logger.logInfo(`${percent}% | ${username} | ${userFigures.length}`);
+                this.wfButton.textContent = `WF: ${percent.toFixed(2)}%`;
+            });
+
+            if (figures.length === 0) {
+                this.wfButton.textContent = 'WF Scan again';
                 return;
             }
-        }
 
-        this.wfButton.textContent = 'WF: 0.00%';
+            await FigureDataSaver.saveFigures(figures);
 
-        const scanner = new FavsScanner();
-        await scanner.init();
-        const figures = await scanner.scanAllUsers((username, percent, userFigures) => {
-            Logger.logInfo(`${percent}% | ${username} | ${userFigures.length}`);
-            this.wfButton.textContent = `WF: ${percent.toFixed(2)}%`;
-        });
-
-        if (figures.length === 0) {
+            this.wfButton.textContent = `${figures.length}WF`;
+            this.wfButton.onclick = null;
+            this.wfButton.href = 'https://www.furaffinity.net/msg/submissions/?mode=wfv-favorites';
+        } catch (error) {
             this.wfButton.textContent = 'WF Scan again';
-            return;
+            this.wfButton.onclick = (): void => void this.startScan();
+            await showError(error, scriptName);
         }
-
-        await FigureDataSaver.saveFigures(figures);
-
-        this.wfButton.textContent = `${figures.length}WF`;
-        this.wfButton.onclick = null;
-        this.wfButton.href = 'https://www.furaffinity.net/msg/submissions/?mode=wfv-favorites';
     }
 }

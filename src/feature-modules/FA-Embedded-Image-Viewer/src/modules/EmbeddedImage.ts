@@ -1,4 +1,4 @@
-import { closeEmbedAfterOpenSetting, loadingSpinSpeedFavSetting, loadingSpinSpeedSetting, openInNewTabSetting, previewQualitySetting, requestHelper, showWatchingInfoSetting } from '..';
+import { closeEmbedAfterOpenSetting, loadingSpinSpeedFavSetting, loadingSpinSpeedSetting, openInNewTabSetting, previewQualitySetting, requestHelper, scriptName, showWatchingInfoSetting } from '..';
 import type { LoadingSpinner } from '../../../../library-modules/Furaffinity-Loading-Animations/src/components/LoadingSpinner';
 import { EmbeddedHTML } from '../components/EmbeddedHTML';
 import { getByLinkFromFigcaption, getFavKey, getFigureId, getPreviewQuality, getUserFromFigcaption } from '../utils/Utils';
@@ -6,6 +6,7 @@ import '../styles/Style.css';
 import string from '../../../../library-modules/GlobalUtils/src/string';
 import { Logger } from '../../../../library-modules/GlobalUtils/src/Logger';
 import type { CustomImageViewer } from '../../../../library-modules/Furaffinity-Submission-Image-Viewer/src/modules/CustomImageViewer';
+import { showError } from '../utils/showError';
 
 const embeddedModes = {
     watchesFavoriteViewer: 'wfv-favorites',
@@ -47,8 +48,14 @@ export class EmbeddedImage extends EventTarget {
         // Add click event to remove the embedded element when clicked outside
         document.addEventListener('click', this.onDocumentClick.bind(this));
 
-        void this.fillSubDocInfos(figure);
-        void this.fillUserInfos(figure);
+        void this.fillSubDocInfos(figure).catch(async (error: unknown) => {
+            this.loadingSpinner.visible = false;
+            this.previewLoadingSpinner.visible = false;
+            await showError(error, scriptName);
+        });
+        void this.fillUserInfos(figure).catch((error: unknown) => {
+            Logger.logError('Failed to load watching info:', error);
+        });
     }
 
     static get embeddedExists(): boolean {
@@ -78,7 +85,11 @@ export class EmbeddedImage extends EventTarget {
         const sid = figure.id.trimStart('sid-');
         this.remove();
         figure.remove();
-        await requestHelper.PersonalUserRequests.MessageRequests.NewSubmissions.removeSubmissions([sid]);
+        try {
+            await requestHelper.PersonalUserRequests.MessageRequests.NewSubmissions.removeSubmissions([sid]);
+        } catch (error: unknown) {
+            await showError(error, scriptName);
+        }
     }
 
     private invokeRemove(): void {
@@ -305,46 +316,53 @@ export class EmbeddedImage extends EventTarget {
         let isFav = favButton.getAttribute('isFav') === 'true';
 
         if (string.isNullOrWhitespace(favKey)) {
+            this.favRequestRunning = false;
             favButton.textContent = 'x';
             return;
         }
 
-        if (isFav) {
-            // Send the favorite request to the server
-            favKey = await requestHelper.SubmissionRequests.favSubmission(sid, favKey) ?? '';
-            loadingTextSpinner.visible = false;
+        try {
+            if (isFav) {
+                // Send the favorite request to the server
+                favKey = await requestHelper.SubmissionRequests.favSubmission(sid, favKey) ?? '';
+                loadingTextSpinner.visible = false;
 
-            // If the request was successful, set the favorite status to false and update the button text
-            if (!string.isNullOrWhitespace(favKey)) {
-                favButton.setAttribute('key', favKey);
-                isFav = false;
-                favButton.setAttribute('isFav', isFav.toString());
-                favButton.textContent = '-Fav';
+                // If the request was successful, set the favorite status to false and update the button text
+                if (!string.isNullOrWhitespace(favKey)) {
+                    favButton.setAttribute('key', favKey);
+                    isFav = false;
+                    favButton.setAttribute('isFav', isFav.toString());
+                    favButton.textContent = '-Fav';
+                } else {
+                    // If the request was not successful, set the button text to "x" and restore the original text after a short delay
+                    favButton.textContent = 'x';
+                    setTimeout(() => favButton.textContent = '+Fav', 1000);
+                }
             } else {
-                // If the request was not successful, set the button text to "x" and restore the original text after a short delay
-                favButton.textContent = 'x';
-                setTimeout(() => favButton.textContent = '+Fav', 1000);
-            }
-        } else {
-            // Send the unfavorite request to the server
-            favKey = await requestHelper.SubmissionRequests.unfavSubmission(sid, favKey) ?? '';
-            loadingTextSpinner.visible = false;
+                // Send the unfavorite request to the server
+                favKey = await requestHelper.SubmissionRequests.unfavSubmission(sid, favKey) ?? '';
+                loadingTextSpinner.visible = false;
 
-            // If the request was successful, set the favorite status to true and update the button text
-            if (!string.isNullOrWhitespace(favKey)) {
-                favButton.setAttribute('key', favKey);
-                isFav = true;
-                favButton.setAttribute('isFav', isFav.toString());
-                favButton.textContent = '+Fav';
-            } else {
-                // If the request was not successful, set the button text to "x" and restore the original text after a short delay
-                favButton.textContent = 'x';
-                setTimeout(() => favButton.textContent = '-Fav', 1000);
+                // If the request was successful, set the favorite status to true and update the button text
+                if (!string.isNullOrWhitespace(favKey)) {
+                    favButton.setAttribute('key', favKey);
+                    isFav = true;
+                    favButton.setAttribute('isFav', isFav.toString());
+                    favButton.textContent = '+Fav';
+                } else {
+                    // If the request was not successful, set the button text to "x" and restore the original text after a short delay
+                    favButton.textContent = 'x';
+                    setTimeout(() => favButton.textContent = '-Fav', 1000);
+                }
             }
+
+            // Set the favorite request running flag back to false
+        } catch (error: unknown) {
+            loadingTextSpinner.visible = false;
+            await showError(error, scriptName);
+        } finally {
+            this.favRequestRunning = false;
         }
-
-        // Set the favorite request running flag back to false
-        this.favRequestRunning = false;
     }
 
     static async addEmbeddedEventForAllFigures(): Promise<void> {

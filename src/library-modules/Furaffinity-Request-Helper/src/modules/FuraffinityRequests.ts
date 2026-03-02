@@ -60,16 +60,14 @@ export class FuraffinityRequests {
 
     static async getHTML(url: string, semaphore: Semaphore, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         if (url == null || url === '') {
-            Logger.logError('No url given');
-            return;
+            throw new Error('No url given for GET request');
         }
         return await WaitAndCallAction.callFunctionAsync(() => getHTMLLocal(url, semaphore), action, delay);
     }
 
     static async postHTML(url: string, payload: string[][] | Record<string, string> | string | URLSearchParams, semaphore: Semaphore, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         if (url == null || url === '') {
-            Logger.logError('No url given');
-            return;
+            throw new Error('No url given for POST request');
         }
         return await WaitAndCallAction.callFunctionAsync(() => postHTMLLocal(url, payload, semaphore), action, delay);
     }
@@ -85,14 +83,20 @@ async function getHTMLLocal(url: string, semaphore: Semaphore): Promise<Document
     try {
         // Send the GET request and retrieve the HTML document.
         const response = await fetch(url);
+        if (!response.ok) {
+            throw new Error(`HTTP error ${response.status} for: ${url}`);
+        }
         const html = await response.text();
         // Parse the HTML document using a DOMParser.
         const parser = new DOMParser();
         const doc = parser.parseFromString(html, 'text/html');
         return doc;
     } catch (error: any) {
-        // Log any errors that occurred during the request.
-        Logger.logError(error);
+        // Enrich network-level errors (e.g. "Failed to fetch") with the URL for better diagnostics.
+        const message = error instanceof Error ? error.message : String(error);
+        const enriched = new Error(`${message} (URL: ${url})`);
+        Logger.logError(enriched);
+        throw enriched;
     } finally {
         // Release the slot in the semaphore.
         if (semaphoreActive) {
@@ -117,25 +121,22 @@ async function postHTMLLocal(url: string, payload: string[][] | Record<string, s
             },
         });
 
-        // Check if the response is not ok and log an error if so
+        // Check if the response is not ok and throw an error
         if (!response.ok) {
-            Logger.logError(`HTTP error! Status: ${response.status}`);
-            return;
+            throw new Error(`HTTP error ${response.status} for: ${url}`);
         }
 
         const responseData = await response.text();
-        try {
-            // Parse the response data as an HTML document
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(responseData, 'text/html');
-            return doc;
-        } catch {
-            // Log the response data as if parsing fails
-            Logger.logError(`Failed to parse response data as HTML: ${responseData}`);
-        }
+        // Parse the response data as an HTML document
+        const parser = new DOMParser();
+        const doc = parser.parseFromString(responseData, 'text/html');
+        return doc;
     } catch (error: any) {
-        // Log any errors that occurred during the request
-        Logger.logError(error);
+        // Enrich network-level errors (e.g. "Failed to fetch") with the URL for better diagnostics.
+        const message = error instanceof Error ? error.message : String(error);
+        const enriched = new Error(`${message} (URL: ${url})`);
+        Logger.logError(enriched);
+        throw enriched;
     } finally {
         // Release the semaphore if it was acquired
         if (semaphoreActive) {

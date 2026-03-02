@@ -19,8 +19,7 @@ export class Favorites {
 
     static async fetchPage(username: string | undefined, dataFavId: number | undefined, direction: number | undefined, semaphore: Semaphore): Promise<Document | undefined> {
         if (username == null) {
-            Logger.logError('No username given');
-            return;
+            throw new Error('Cannot fetch favorites page: no username given');
         }
         if (direction == null) {
             Logger.logWarning('No direction given. Using default 1 instead.');

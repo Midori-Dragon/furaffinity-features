@@ -1,8 +1,9 @@
-import { loadingSpinSpeedSetting } from '..';
+import { loadingSpinSpeedSetting, scriptName } from '..';
 import checkTagsAll from '../../../../library-modules/GlobalUtils/src/FA-Functions/checkTagsAll';
 import { Logger } from '../../../../library-modules/GlobalUtils/src/Logger';
 import { hideUpToParent } from '../utils/cleanUpToParent';
 import { FigureDataSaver } from '../utils/FigureDataSaver';
+import { showError } from '../utils/showError';
 
 export class WatchesFavoritesPage {
     private gallerySection: HTMLElement;
@@ -37,7 +38,7 @@ export class WatchesFavoritesPage {
         hideUpToParent(this.gallerySection as HTMLElement, standardPage, sectionHeader);
         this.gallerySection.insertBeforeThis(document.createElement('br'));
 
-        void this.show();
+        void this.show().catch((error: unknown) => showError(error, scriptName));
     }
 
     async show(): Promise<void> {

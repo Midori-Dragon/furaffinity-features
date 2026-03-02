@@ -6,6 +6,9 @@ import type { LoadingTextSpinner } from '../../../library-modules/Furaffinity-Lo
 import type { MatchList } from '../../../library-modules/Furaffinity-Match-List/src/modules/MatchList';
 import type { FuraffinityRequests } from '../../../library-modules/Furaffinity-Request-Helper/src/modules/FuraffinityRequests';
 import type { CustomImageViewer } from '../../../library-modules/Furaffinity-Submission-Image-Viewer/src/modules/CustomImageViewer';
+import type { MessageBox } from '../../../library-modules/Furaffinity-Message-Box/src/modules/MessageBox';
+import type { MessageBoxButtons } from '../../../library-modules/Furaffinity-Message-Box/src/components/MessageBoxButtons';
+import type { MessageBoxIcon } from '../../../library-modules/Furaffinity-Message-Box/src/components/MessageBoxIcon';
 import { EmbeddedImage } from './modules/EmbeddedImage';
 import { downloadImage } from './utils/Utils';
 
@@ -19,6 +22,9 @@ declare global {
         FAImageViewer: typeof CustomImageViewer;
         FALoadingSpinner: typeof LoadingSpinner;
         FALoadingTextSpinner: typeof LoadingTextSpinner;
+        FAMessageBox: typeof MessageBox;
+        FAMessageBoxButtons: typeof MessageBoxButtons;
+        FAMessageBoxIcon: typeof MessageBoxIcon;
     }
 }
 

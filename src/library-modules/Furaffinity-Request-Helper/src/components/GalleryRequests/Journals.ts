@@ -18,8 +18,7 @@ export class Journals {
 
     static async fetchPage(username: string | undefined, pageNumber: number | undefined, semaphore: Semaphore): Promise<Document | undefined> {
         if (username == null) {
-            Logger.logError('No username given');
-            return;
+            throw new Error('Cannot fetch journals page: no username given');
         }
         if (pageNumber == null || pageNumber <= 0) {
             Logger.logWarning('Page number must be greater than 0. Using default 1 instead.');

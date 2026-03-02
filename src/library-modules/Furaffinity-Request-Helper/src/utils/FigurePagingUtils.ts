@@ -16,7 +16,14 @@ export async function elementsTillId(getElements: GetElementsFn, toId: number | 
     let i = (fromPage != null && fromPage >= 1) ? fromPage : 1;
 
     while (running) {
-        const elements = await getElements(i);
+        let elements: HTMLElement[] = [];
+        try {
+            elements = await getElements(i);
+        } catch (error) {
+            Logger.logError(`Failed to fetch page ${i}:`, error);
+            running = false;
+            continue;
+        }
         let currElementId = lastElementId;
         if (elements.length !== 0) {
             currElementId = elements[0].id;
@@ -50,7 +57,14 @@ export async function elementsSinceId(getElements: GetElementsFn, fromId: number
 
     if (toPage == null || toPage <= 0) {
         while (running) {
-            const elements = await getElements(i);
+            let elements: HTMLElement[] = [];
+            try {
+                elements = await getElements(i);
+            } catch (error) {
+                Logger.logError(`Failed to fetch page ${i}:`, error);
+                running = false;
+                continue;
+            }
             let currElementId = lastElementId;
             if (elements.length !== 0) {
                 currElementId = elements[0].id;
@@ -72,7 +86,14 @@ export async function elementsSinceId(getElements: GetElementsFn, fromId: number
     running = true;
 
     while (running) {
-        const elements = await getElements(i);
+        let elements: HTMLElement[] = [];
+        try {
+            elements = await getElements(i);
+        } catch (error) {
+            Logger.logError(`Failed to fetch page ${i}:`, error);
+            running = false;
+            continue;
+        }
         let currElementId: string | undefined = lastElementId;
         if (elements.length !== 0) {
             currElementId = elements[0].id;
@@ -128,7 +149,14 @@ export async function elementsBetweenIds(getElements: GetElementsFn, fromId: num
         if (toPage != null && toPage >= 1 && i >= toPage) {
             running = false;
         }
-        const elements = await getElements(i);
+        let elements: HTMLElement[] = [];
+        try {
+            elements = await getElements(i);
+        } catch (error) {
+            Logger.logError(`Failed to fetch page ${i}:`, error);
+            running = false;
+            continue;
+        }
         let currElementId = lastElementId;
         if (elements.length !== 0) {
             currElementId = elements[0].id;
@@ -169,7 +197,13 @@ export async function elementsTillPage(getElements: GetElementsFn, toPage: numbe
     let completedPages = 0;
 
     for (let i = 1; i <= toPage; i++) {
-        const elements = await getElements(i);
+        let elements: HTMLElement[] = [];
+        try {
+            elements = await getElements(i);
+        } catch (error) {
+            Logger.logError(`Failed to fetch page ${i}:`, error);
+            break;
+        }
         if (elements.length === 0) {
             i = toPage;
         } else {
@@ -194,7 +228,14 @@ export async function elementsSincePage(getElements: GetElementsFn, fromPage: nu
     let i = fromPage;
 
     while (running) {
-        const elements = await getElements(i);
+        let elements: HTMLElement[] = [];
+        try {
+            elements = await getElements(i);
+        } catch (error) {
+            Logger.logError(`Failed to fetch page ${i}:`, error);
+            running = false;
+            continue;
+        }
         let currElementId = lastElementId;
         if (elements.length !== 0) {
             currElementId = elements[0].id;
@@ -228,7 +269,13 @@ export async function elementsBetweenPages(getElements: GetElementsFn, fromPage:
     let completedPages = 0;
 
     for (let i = fromPage; i <= toPage; i += direction) {
-        const elements = await getElements(i);
+        let elements: HTMLElement[] = [];
+        try {
+            elements = await getElements(i);
+        } catch (error) {
+            Logger.logError(`Failed to fetch page ${i}:`, error);
+            break;
+        }
         if (elements.length === 0) {
             i = toPage;
         } else {
@@ -262,9 +309,15 @@ export async function findElementPageNo(getElements: GetElementsFn, elementId: n
     let completedPages = 0;
 
     for (let i = fromPage; i <= toPage; i += direction) {
-        const elements = await getElements(i);
+        let elements: HTMLElement[] = [];
+        try {
+            elements = await getElements(i);
+        } catch (error) {
+            Logger.logError(`Failed to fetch page ${i}:`, error);
+            continue;
+        }
         if (elements.length === 0) {
-            i = toPage;
+            break;
         } else {
             const resultElement = elements.find(el => el.id.trimStart(idPrefix) === elementId.toString());
             if (resultElement != null) {

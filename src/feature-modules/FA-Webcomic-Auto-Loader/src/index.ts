@@ -3,6 +3,9 @@ import type { SettingType } from '../../../library-modules/Furaffinity-Custom-Se
 import type { LoadingSpinner } from '../../../library-modules/Furaffinity-Loading-Animations/src/components/LoadingSpinner';
 import type { MatchList } from '../../../library-modules/Furaffinity-Match-List/src/modules/MatchList';
 import type { FuraffinityRequests } from '../../../library-modules/Furaffinity-Request-Helper/src/modules/FuraffinityRequests';
+import type { MessageBox } from '../../../library-modules/Furaffinity-Message-Box/src/modules/MessageBox';
+import type { MessageBoxButtons } from '../../../library-modules/Furaffinity-Message-Box/src/components/MessageBoxButtons';
+import type { MessageBoxIcon } from '../../../library-modules/Furaffinity-Message-Box/src/components/MessageBoxIcon';
 import { AutoLoader } from './modules/AutoLoader';
 
 declare global {
@@ -14,6 +17,9 @@ declare global {
         SearchOptions: typeof FuraffinityRequests.Types.SearchOptions;
         FAMatchList: typeof MatchList;
         FALoadingSpinner: typeof LoadingSpinner;
+        FAMessageBox: typeof MessageBox;
+        FAMessageBoxButtons: typeof MessageBoxButtons;
+        FAMessageBoxIcon: typeof MessageBoxIcon;
     }
 }
 

@@ -25,13 +25,13 @@ export class FavsScanner {
         const watchesPages = await requestHelper.PersonalUserRequests.ManageContent.getAllWatchesPages();
         const watches = watchesPages.map(page => getWatchesFromPage(page)).flat();
         let usernames = watches.map(watch => watch.querySelector('img[alt]')?.getAttribute('alt'));
-        
+
         // Create a semaphore with max concurrency of 2
         const semaphore = new Semaphore(requestHelper.maxAmountRequests);
-        
+
         // Filter out null/whitespace usernames and ignored users
-        usernames = usernames.filter(username => 
-            !string.isNullOrWhitespace(username) && 
+        usernames = usernames.filter(username =>
+            !string.isNullOrWhitespace(username) &&
             !this.ignoredUsers.includes(username!)
         );
 
@@ -39,15 +39,15 @@ export class FavsScanner {
         let percent = 0.0;
         let current = 0;
         const total = usernames.length;
-        
+
         // Use Promise.all with a map to process users concurrently with semaphore control
         await Promise.all(usernames.map(async (username) => {
             // Acquire a semaphore permit
             await semaphore.acquire();
-            
+
             try {
                 const userFigures = await this.scanUser(username!);
-                
+
                 // Synchronize access to shared resources
                 synchronized: {
                     figures.push(...userFigures);
@@ -56,6 +56,8 @@ export class FavsScanner {
                     await StorageWrapper.setItemAsync(FavsScanner.progressPercentId, percent.toFixed(2));
                     callBack?.(username!, percent, userFigures);
                 }
+            } catch (error) {
+                Logger.logError(`Failed to scan user ${username}:`, error);
             } finally {
                 // Always release the semaphore
                 semaphore.release();

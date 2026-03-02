@@ -43,9 +43,11 @@ export class WaitAndCallAction {
         }
         const waitAndCallAction = new WaitAndCallAction(action, delay);
         const percentId = waitAndCallAction.start();
-        const result = await fn(percentId);
-        waitAndCallAction.stop();
-        return result;
+        try {
+            return await fn(percentId);
+        } finally {
+            waitAndCallAction.stop();
+        }
     }
 
     static callFunction<T>(fn: (percentId?: string | number) => T, action?: (percentId?: string | number) => void, delay?: number): T {
