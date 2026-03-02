@@ -68,5 +68,7 @@ export function getFolderNameFromUrl(url: string): string | null {
 
 export function anyGalleryExistsOnDOM(): boolean {
     const galleries = document.body.querySelectorAll('section[id*="gallery"]');
-    return galleries.length !== 0;
+    const watchesGalleries = galleries.length === 0 ? document.body.querySelectorAll('div[class*="flex-watchlist"]') : [];
+
+    return galleries.length !== 0 || watchesGalleries.length !== 0;
 }
