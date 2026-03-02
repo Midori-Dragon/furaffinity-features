@@ -5,6 +5,7 @@
   "type": "module",
   "scripts": {
     "lint": "eslint .",
+    "changed-modules": "node build-scripts/changed-modules.cjs",
     "build:Browser-Extension": "npm run lint && node build-scripts/build-with-deps.cjs ./src/feature-modules/Furaffinity-Features-Browser/rollup.config.cjs --deps-from ./src/feature-modules/Furaffinity-Features/rollup.config.cjs && node build-scripts/copy-extension-resources.cjs",
     "build:Browser-Extension-Rebuild": "npm run lint && node build-scripts/build-with-deps.cjs ./src/feature-modules/Furaffinity-Features-Browser/rollup.config.cjs --deps-from ./src/feature-modules/Furaffinity-Features/rollup.config.cjs --rebuild && node build-scripts/copy-extension-resources.cjs",
     "build:Browser-Extension-Debug": "npm run lint && node build-scripts/build-with-deps.cjs ./src/feature-modules/Furaffinity-Features-Browser/rollup.config.cjs --deps-from ./src/feature-modules/Furaffinity-Features/rollup.config.cjs --debug && node build-scripts/copy-extension-resources.cjs",
