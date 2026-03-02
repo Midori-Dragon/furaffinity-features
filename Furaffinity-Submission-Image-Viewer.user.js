@@ -1113,7 +1113,7 @@
       }
   }
 
-  function checkTags (element) {
+  function checkTags(element) {
       const userLoggedIn = document.body.getAttribute('data-user-logged-in') === '1';
       if (!userLoggedIn) {
           Logger.logWarning('User is not logged in, skipping tag check');

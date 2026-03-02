@@ -3,7 +3,7 @@
 // @namespace   Violentmonkey Scripts
 // @require     https://greasyfork.org/scripts/525666-furaffinity-prototype-extensions/code/525666-furaffinity-prototype-extensions.js
 // @grant       GM_info
-// @version     1.0.3
+// @version     1.0.5
 // @author      Midori Dragon
 // @description Library to hold MessageBox functions for Furaffinity
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
@@ -195,7 +195,7 @@
       }
     }
 
-    var css_248z = "/* Base styles */\n.message-box-overlay {\n    position: fixed;\n    top: 0;\n    left: 0;\n    width: 100%;\n    height: 100%;\n    background-color: rgba(0, 0, 0, 0.5);\n    display: flex;\n    justify-content: center;\n    align-items: center;\n    z-index: 9999;\n}\n\n/* Dark theme (default) */\n.message-box-container {\n    border: 1px solid #444;\n    border-radius: 5px;\n    padding: 20px;\n    max-width: 500px;\n    width: 100%;\n    font-family: Arial, sans-serif;\n    transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;\n}\n\n.message-box-header {\n    display: flex;\n    align-items: center;\n    margin-bottom: 15px;\n}\n\n.message-box-icon-container {\n    margin-right: 15px;\n    width: 32px;\n    height: 32px;\n    flex-shrink: 0;\n}\n\n.message-box-title {\n    font-size: 18px;\n    font-weight: bold;\n    margin: 0;\n    transition: color 0.3s;\n}\n\n.message-box-content {\n    margin-bottom: 20px;\n    line-height: 1.5;\n    transition: color 0.3s;\n}\n\n.message-box-button-container {\n    display: flex;\n    justify-content: flex-end;\n    gap: 10px;\n}\n\n.message-box-button {\n    padding: 8px 16px;\n    border: none;\n    border-radius: 4px;\n    cursor: pointer;\n    font-size: 14px;\n    font-weight: bold;\n    background-color: #f1efeb;\n    transition: background-color 0.2s, color 0.2s, border-color 0.2s;\n}\n\n.message-box-button:hover {\n    background-color: #e0ded8;\n}\n\n/* Theme: Dark */\nbody[class*=\"theme-dark\"] .message-box-container {\n    background-color: #353b45;\n    border-color: #444;\n    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);\n}\n\nbody[class*=\"theme-dark\"] .message-box-button {\n    background-color: #434b5b;\n}\n\nbody[class*=\"theme-dark\"] .message-box-button:hover {\n    background-color: #576175;\n}\n\n/* Theme: Aurora */\nbody[class*=\"theme-aurora\"] .message-box-container {\n    background-color: #262931;\n    border-color: #444;\n    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);\n}\n\nbody[class*=\"theme-aurora\"] .message-box-button {\n    background-color: #65707c;\n}\n\nbody[class*=\"theme-aurora\"] .message-box-button:hover {\n    background-color: #8692a0;\n}\n\n/* Theme: Retro */\nbody[class*=\"theme-retro\"] .message-box-container {\n    background-color: #2e3b41;\n    border-color: #444;\n    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);\n}\n\nbody[class*=\"theme-retro\"] .message-box-button {\n    background-color: #4c585e;\n}\n\nbody[class*=\"theme-retro\"] .message-box-button:hover {\n    background-color: #7b909a;\n}\n\n/* Theme: Slate */\nbody[class*=\"theme-slate\"] .message-box-container {\n    background-color: #202225;\n    border-color: #444;\n    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);\n}\n\nbody[class*=\"theme-slate\"] .message-box-button {\n    background-color: #8c8c8c;\n}\n\nbody[class*=\"theme-slate\"] .message-box-button:hover {\n    background-color: #b3b1b1;\n}\n\n/* Theme: Light - already defined in base styles */\nbody[class*=\"theme-light\"] .message-box-container {\n    background-color: #f7f7f7;\n    border-color: #ccc;\n    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);\n}\n\nbody[class*=\"theme-light\"] .message-box-button {\n    background-color: #f1efeb;\n}\n\nbody[class*=\"theme-light\"] .message-box-button:hover {\n    background-color: #f1ede7;\n}\n";
+    var css_248z = "/* Base styles */\n.message-box-overlay {\n    position: fixed;\n    top: 0;\n    left: 0;\n    width: 100%;\n    height: 100%;\n    background-color: rgba(0, 0, 0, 0.5);\n    display: flex;\n    justify-content: center;\n    align-items: center;\n    z-index: 99999999;\n}\n\n/* Dark theme (default) */\n.message-box-container {\n    border: 1px solid #444;\n    border-radius: 5px;\n    padding: 20px;\n    max-width: 500px;\n    width: 100%;\n    font-family: Arial, sans-serif;\n    transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;\n}\n\n.message-box-header {\n    display: flex;\n    align-items: center;\n    margin-bottom: 15px;\n}\n\n.message-box-icon-container {\n    margin-right: 15px;\n    width: 32px;\n    height: 32px;\n    flex-shrink: 0;\n}\n\n.message-box-title {\n    font-size: 18px;\n    font-weight: bold;\n    margin: 0;\n    transition: color 0.3s;\n}\n\n.message-box-content {\n    margin-bottom: 20px;\n    line-height: 1.5;\n    transition: color 0.3s;\n}\n\n.message-box-button-container {\n    display: flex;\n    justify-content: flex-end;\n    gap: 10px;\n}\n\n.message-box-button {\n    padding: 8px 16px;\n    border: none;\n    border-radius: 4px;\n    cursor: pointer;\n    font-size: 14px;\n    font-weight: bold;\n    background-color: #f1efeb;\n    transition: background-color 0.2s, color 0.2s, border-color 0.2s;\n}\n\n.message-box-button:hover {\n    background-color: #e0ded8;\n}\n\n/* Theme: Dark */\nbody[class*=\"theme-dark\"] .message-box-container {\n    background-color: #353b45;\n    border-color: #444;\n    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);\n}\n\nbody[class*=\"theme-dark\"] .message-box-button {\n    background-color: #434b5b;\n}\n\nbody[class*=\"theme-dark\"] .message-box-button:hover {\n    background-color: #576175;\n}\n\n/* Theme: Aurora */\nbody[class*=\"theme-aurora\"] .message-box-container {\n    background-color: #262931;\n    border-color: #444;\n    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);\n}\n\nbody[class*=\"theme-aurora\"] .message-box-button {\n    background-color: #65707c;\n}\n\nbody[class*=\"theme-aurora\"] .message-box-button:hover {\n    background-color: #8692a0;\n}\n\n/* Theme: Retro */\nbody[class*=\"theme-retro\"] .message-box-container {\n    background-color: #2e3b41;\n    border-color: #444;\n    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);\n}\n\nbody[class*=\"theme-retro\"] .message-box-button {\n    background-color: #4c585e;\n}\n\nbody[class*=\"theme-retro\"] .message-box-button:hover {\n    background-color: #7b909a;\n}\n\n/* Theme: Slate */\nbody[class*=\"theme-slate\"] .message-box-container {\n    background-color: #202225;\n    border-color: #444;\n    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);\n}\n\nbody[class*=\"theme-slate\"] .message-box-button {\n    background-color: #8c8c8c;\n}\n\nbody[class*=\"theme-slate\"] .message-box-button:hover {\n    background-color: #b3b1b1;\n}\n\n/* Theme: Light - already defined in base styles */\nbody[class*=\"theme-light\"] .message-box-container {\n    background-color: #f7f7f7;\n    border-color: #ccc;\n    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);\n}\n\nbody[class*=\"theme-light\"] .message-box-button {\n    background-color: #f1efeb;\n}\n\nbody[class*=\"theme-light\"] .message-box-button:hover {\n    background-color: #f1ede7;\n}";
     styleInject(css_248z);
 
     class string {
@@ -232,8 +232,40 @@
             // Create a promise that will be resolved when a button is clicked
             return new Promise((resolve) => {
                 this.resolvePromise = resolve;
-                this.createMessageBox(text, caption, buttons, icon);
+                try {
+                    this.createMessageBox(text, caption, buttons, icon);
+                }
+                catch (error) {
+                    const reason = error instanceof Error ? error.message : String(error);
+                    const fallback = this.getFallbackResult(buttons);
+
+                    alert(`MessageBox failed to display (${reason})\n\n[${caption}]\n${text}`);
+                    this.resolvePromise = null;
+                    resolve(fallback);
+                }
             });
+        }
+        /**
+         * Returns the strongest negating DialogResult for the given button set,
+         * used as a fallback when the message box cannot be shown.
+         */
+        static getFallbackResult(buttons) {
+            switch (buttons) {
+                case MessageBoxButtons.OK:
+                    return DialogResult.OK;
+                case MessageBoxButtons.OKCancel:
+                    return DialogResult.Cancel;
+                case MessageBoxButtons.AbortRetryIgnore:
+                    return DialogResult.Abort;
+                case MessageBoxButtons.YesNoCancel:
+                    return DialogResult.Cancel;
+                case MessageBoxButtons.YesNo:
+                    return DialogResult.No;
+                case MessageBoxButtons.RetryCancel:
+                    return DialogResult.Cancel;
+                default:
+                    return DialogResult.Cancel;
+            }
         }
         /**
          * Creates the message box elements and adds them to the DOM.

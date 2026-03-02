@@ -5,10 +5,11 @@
 // @require     https://greasyfork.org/scripts/525666-furaffinity-prototype-extensions/code/525666-furaffinity-prototype-extensions.js
 // @require     https://greasyfork.org/scripts/483952-furaffinity-request-helper/code/483952-furaffinity-request-helper.js
 // @require     https://greasyfork.org/scripts/485827-furaffinity-match-list/code/485827-furaffinity-match-list.js
+// @require     https://greasyfork.org/scripts/528997-furaffinity-message-box/code/528997-furaffinity-message-box.js
 // @require     https://greasyfork.org/scripts/485153-furaffinity-loading-animations/code/485153-furaffinity-loading-animations.js
 // @require     https://greasyfork.org/scripts/475041-furaffinity-custom-settings/code/475041-furaffinity-custom-settings.js
 // @grant       GM_info
-// @version     2.2.9
+// @version     2.2.10
 // @author      Midori Dragon
 // @description Automatically loads the next page of the gallery as you reach the bottom
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
@@ -50,6 +51,9 @@
             url = url.substring(0, url.indexOf('?'));
         }
         url = url.trimEnd('/');
+        if (url.includes('/folder/')) {
+            url = url.substring(0, url.indexOf('/folder/'));
+        }
         return url.substring(url.lastIndexOf('/') + 1);
     }
     function isElementOnScreen(element) {
@@ -59,6 +63,19 @@
         const windowHeight = (window.innerHeight || document.documentElement.clientHeight) * 2;
         // Check if the element is within the visible area of the screen
         return (rect.top <= windowHeight) && ((rect.top + rect.height) >= 0);
+    }
+    function getFolderIdFromUrl(url) {
+        const match = url.match(/\/folder\/(\d+)(?=\/|$)/);
+        return match ? match[1] : null;
+    }
+    function getFolderNameFromUrl(url) {
+        const match = url.match(/\/folder\/\d+\/([^/?]+)(?=\/|$)/);
+        return match ? match[1] : null;
+    }
+    function anyGalleryExistsOnDOM() {
+        const galleries = document.body.querySelectorAll('section[id*="gallery"]');
+        const watchesGalleries = galleries.length === 0 ? document.body.querySelectorAll('div[class*="flex-watchlist"]') : [];
+        return galleries.length !== 0 || watchesGalleries.length !== 0;
     }
 
     var LogLevel;
@@ -250,8 +267,9 @@
             const username = getUserNameFromUrl(window.location.toString());
             let page;
             if (this.isInFolder === true) {
-                let folderId;
-                page = await requestHelper.UserRequests.GalleryRequests.Gallery.getPageInFolder(username, folderId, this.pageNo);
+                const folderIdStr = getFolderIdFromUrl(window.location.toString());
+                const folder = folderIdStr != null ? { id: parseInt(folderIdStr), name: getFolderNameFromUrl(window.location.toString()) ?? undefined } : undefined;
+                page = await requestHelper.UserRequests.GalleryRequests.Gallery.getPageInFolder(username, folder, this.pageNo);
             }
             else {
                 page = await requestHelper.UserRequests.GalleryRequests.Gallery.getPage(username, this.pageNo);
@@ -543,19 +561,20 @@
         }
     }
 
-    function getWatchesFromPage (page) {
+    function getWatchesFromPage(page) {
         try {
             const watchList = [];
             const pageColumnPage = page.getElementById('columnpage');
             const pageSectionBody = pageColumnPage.querySelector('div[class="section-body"]');
             const pageWatches = pageSectionBody.querySelector('div[class="flex-watchlist"]');
             const watches = pageWatches.querySelectorAll('div[class="flex-item-watchlist aligncenter"]');
-            for (const watch of Array.from(watches).map(elem => elem)) {
+            for (const watch of Array.from(watches)) {
                 watchList.push(watch);
             }
             return watchList;
         }
-        catch {
+        catch (error) {
+            Logger.logError('Failed to parse watches from page:', error);
             return [];
         }
     }
@@ -699,6 +718,11 @@
         }
     }
 
+    async function showError(error, caption) {
+        const message = error instanceof Error ? error.message : String(error);
+        await window.FAMessageBox.show(message, caption, window.FAMessageBoxButtons.OK, window.FAMessageBoxIcon.Error);
+    }
+
     class InfiniGallery {
         scanElem;
         galleryManager;
@@ -728,8 +752,12 @@
                 await this.galleryManager.loadNextPage();
                 this.startScrollDetection();
             }
-            catch {
+            catch (error) {
                 this.stopScrollDetection();
+                const isEndOfGallery = error instanceof Error && (error.message === 'No figures found' || error.message === 'No watches found');
+                if (!isEndOfGallery) {
+                    await showError(error, scriptName);
+                }
             }
         }
     }
@@ -749,7 +777,7 @@
         const matchList = new window.FAMatchList(customSettings);
         matchList.matches = ['net/gallery', 'net/favorites', 'net/scraps', 'net/browse', 'net/search', 'net/controls/buddylist'];
         matchList.runInIFrame = false;
-        if (matchList.hasMatch) {
+        if (matchList.hasMatch && anyGalleryExistsOnDOM()) {
             const infiniGallery = new InfiniGallery();
             infiniGallery.startScrollDetection();
         }

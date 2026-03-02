@@ -5,9 +5,10 @@
 // @require     https://greasyfork.org/scripts/525666-furaffinity-prototype-extensions/code/525666-furaffinity-prototype-extensions.js
 // @require     https://greasyfork.org/scripts/483952-furaffinity-request-helper/code/483952-furaffinity-request-helper.js
 // @require     https://greasyfork.org/scripts/485827-furaffinity-match-list/code/485827-furaffinity-match-list.js
+// @require     https://greasyfork.org/scripts/528997-furaffinity-message-box/code/528997-furaffinity-message-box.js
 // @require     https://greasyfork.org/scripts/475041-furaffinity-custom-settings/code/475041-furaffinity-custom-settings.js
 // @grant       GM_info
-// @version     1.0.10
+// @version     1.0.11
 // @author      Midori Dragon
 // @description Adds nuke buttons to instantly nuke all submissions or messages
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
@@ -43,6 +44,11 @@
         }
     }
 
+    async function showError(error, caption) {
+        const message = error instanceof Error ? error.message : String(error);
+        await window.FAMessageBox.show(message, caption, window.FAMessageBoxButtons.OK, window.FAMessageBoxIcon.Error);
+    }
+
     class NukeButton {
         messageType;
         nukeButton;
@@ -63,27 +69,34 @@
             this.nukeButton.addEventListener('click', () => void this.nuke());
         }
         async nuke() {
-            switch (this.messageType) {
-                case MessageType.Watches:
-                    await requestHelper.PersonalUserRequests.MessageRequests.NewMessages.Watches.nukeMessages();
-                    break;
-                case MessageType.JournalComments:
-                    await requestHelper.PersonalUserRequests.MessageRequests.NewMessages.JournalComments.nukeMessages();
-                    break;
-                case MessageType.Shouts:
-                    await requestHelper.PersonalUserRequests.MessageRequests.NewMessages.Shouts.nukeMessages();
-                    break;
-                case MessageType.Favorites:
-                    await requestHelper.PersonalUserRequests.MessageRequests.NewMessages.Favorites.nukeMessages();
-                    break;
-                case MessageType.Journals:
-                    await requestHelper.PersonalUserRequests.MessageRequests.NewMessages.Journals.nukeMessages();
-                    break;
-                case MessageType.Submission:
-                    await requestHelper.PersonalUserRequests.MessageRequests.NewSubmissions.nukeSubmissions();
-                    break;
+            try {
+                switch (this.messageType) {
+                    case MessageType.Watches:
+                        await requestHelper.PersonalUserRequests.MessageRequests.NewMessages.Watches.nukeMessages();
+                        break;
+                    case MessageType.JournalComments:
+                        await requestHelper.PersonalUserRequests.MessageRequests.NewMessages.JournalComments.nukeMessages();
+                        break;
+                    case MessageType.Shouts:
+                        await requestHelper.PersonalUserRequests.MessageRequests.NewMessages.Shouts.nukeMessages();
+                        break;
+                    case MessageType.Favorites:
+                        await requestHelper.PersonalUserRequests.MessageRequests.NewMessages.Favorites.nukeMessages();
+                        break;
+                    case MessageType.Journals:
+                        await requestHelper.PersonalUserRequests.MessageRequests.NewMessages.Journals.nukeMessages();
+                        break;
+                    case MessageType.Submission:
+                        await requestHelper.PersonalUserRequests.MessageRequests.NewSubmissions.nukeSubmissions();
+                        break;
+                }
             }
-            location.reload();
+            catch (error) {
+                await showError(error, scriptName);
+            }
+            finally {
+                location.reload();
+            }
         }
     }
 

@@ -10,7 +10,7 @@
 // @require     https://greasyfork.org/scripts/476762-furaffinity-custom-pages/code/476762-furaffinity-custom-pages.js
 // @require     https://greasyfork.org/scripts/475041-furaffinity-custom-settings/code/475041-furaffinity-custom-settings.js
 // @grant       GM_info
-// @version     3.0.17
+// @version     3.0.18
 // @author      Midori Dragon
 // @description Scans the Favorites of your Watches for new Favorites and shows a Button to view these (if any where found). (Works like Submission Page)
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
@@ -21,23 +21,6 @@
 // jshint esversion: 11
 (function (exports) {
     'use strict';
-
-    function getWatchesFromPage (page) {
-        try {
-            const watchList = [];
-            const pageColumnPage = page.getElementById('columnpage');
-            const pageSectionBody = pageColumnPage.querySelector('div[class="section-body"]');
-            const pageWatches = pageSectionBody.querySelector('div[class="flex-watchlist"]');
-            const watches = pageWatches.querySelectorAll('div[class="flex-item-watchlist aligncenter"]');
-            for (const watch of Array.from(watches).map(elem => elem)) {
-                watchList.push(watch);
-            }
-            return watchList;
-        }
-        catch {
-            return [];
-        }
-    }
 
     var LogLevel;
     (function (LogLevel) {
@@ -61,6 +44,24 @@
         }
         static get logInfo() {
             return LogLevel.Info <= Logger._logLevel ? console.log.bind(console) : () => { };
+        }
+    }
+
+    function getWatchesFromPage(page) {
+        try {
+            const watchList = [];
+            const pageColumnPage = page.getElementById('columnpage');
+            const pageSectionBody = pageColumnPage.querySelector('div[class="section-body"]');
+            const pageWatches = pageSectionBody.querySelector('div[class="flex-watchlist"]');
+            const watches = pageWatches.querySelectorAll('div[class="flex-item-watchlist aligncenter"]');
+            for (const watch of Array.from(watches)) {
+                watchList.push(watch);
+            }
+            return watchList;
+        }
+        catch (error) {
+            Logger.logError('Failed to parse watches from page:', error);
+            return [];
         }
     }
 
@@ -475,6 +476,11 @@
     var css_248z$1 = ".wfv-watch-container {\n    position: relative;\n    display: inline-block;\n}\n\n.wfv-watch-container img {\n    display: block;\n    width: 100%;\n    transition: opacity 0.2s ease;\n}\n\n.wfv-watch-container .wfv-ignore-text {\n    position: absolute;\n    top: 50%;\n    left: 50%;\n    transform: translate(-50%, -50%);\n    color: white;\n    font-size: 20px;\n    font-weight: bold;\n    opacity: 0;\n    transition: opacity 0.2s ease;\n}\n\n.wfv-watch-container:hover img {\n    opacity: 0.5;\n}\n\n.wfv-watch-container:hover .wfv-ignore-text {\n    opacity: 1;\n}\n\n.wfv-watch-container.ignored img {\n    opacity: 0.2;\n}\n\n.wfv-watch-container.ignored:hover img {\n    opacity: 0.5;\n}\n";
     styleInject(css_248z$1);
 
+    async function showError(error, caption) {
+        const message = error instanceof Error ? error.message : String(error);
+        await window.FAMessageBox.show(message, caption, window.FAMessageBoxButtons.OK, window.FAMessageBoxIcon.Error);
+    }
+
     class BuddyListManager {
         watchList = [];
         sectionBody;
@@ -483,7 +489,9 @@
             const columnPage = document.getElementById('columnpage');
             this.sectionBody = columnPage.querySelector('div[class="section-body"]');
             this.sectionBody.innerHTML = '';
-            void this.initialize();
+            void this.initialize().catch(async (error) => {
+                await showError(error, scriptName);
+            });
         }
         async initialize() {
             await this.showBuddyList();
@@ -616,7 +624,7 @@
         }
     }
 
-    function checkTags (element) {
+    function checkTags(element) {
         const userLoggedIn = document.body.getAttribute('data-user-logged-in') === '1';
         if (!userLoggedIn) {
             Logger.logWarning('User is not logged in, skipping tag check');
@@ -677,7 +685,7 @@
         element.classList[isBlocked ? 'add' : 'remove']('blocked-content');
     }
 
-    function checkTagsAll (doc) {
+    function checkTagsAll(doc) {
         if (doc == null) {
             return;
         }
@@ -7671,7 +7679,7 @@
             this.image = new FAFigureImage(figure.querySelector('img'));
             this.figCaption = new FAFigureFigCaption(figure.querySelector('figcaption'));
         }
-        ToHTMLElement() {
+        toHTMLElement() {
             const figure = document.createElement('figure');
             figure.id = `sid-${this.id}`;
             figure.className = this.className;
@@ -7830,7 +7838,6 @@
 
     class FigureDataSaver {
         static scanResultIdPrefix = 'wfv-scan-results';
-        static chunkSize = 60;
         static maxChunkBytes = 8192 * 0.9; // 90% of 8KB to leave some leeway
         static async saveFigures(figures) {
             // build compressed chunks
@@ -7881,7 +7888,7 @@
                     const decompressed = PakoWrapper.decompress(compressedData);
                     let figures = JSON.parse(decompressed);
                     figures = figures.map(figure => FAFigure.getRevivedObject(figure));
-                    allFigures = allFigures.concat(figures);
+                    allFigures.push(...figures);
                 }
             }
             return allFigures;
@@ -7898,7 +7905,7 @@
                         const decompressed = PakoWrapper.decompress(compressedData);
                         let figures = JSON.parse(decompressed);
                         figures = figures.map(figure => FAFigure.getRevivedObject(figure));
-                        allFigures = allFigures.concat(figures);
+                        allFigures.push(...figures);
                     }
                 }
                 catch (error) {
@@ -7969,7 +7976,7 @@
             }
             hideUpToParent(this.gallerySection, standardPage, sectionHeader);
             this.gallerySection.insertBeforeThis(document.createElement('br'));
-            void this.show();
+            void this.show().catch((error) => showError(error, scriptName));
         }
         async show() {
             const loadingSpinner = new window.FALoadingSpinner(this.gallerySection);
@@ -7978,7 +7985,7 @@
             loadingSpinner.visible = true;
             const figures = await FigureDataSaver.loadFigures();
             Logger.logInfo(`Loaded ${figures.length} figures`);
-            const htmlFigures = figures.map(figure => figure.ToHTMLElement());
+            const htmlFigures = figures.map(figure => figure.toHTMLElement());
             this.gallerySection.append(...htmlFigures);
             window.dispatchEvent(new CustomEvent('ei-update-embedded'));
             checkTagsAll(document);
@@ -8103,6 +8110,7 @@
 
     class FavsScanner {
         static progressPercentId = 'wfv-scan-progress-percent';
+        static maxOperations = 80;
         lastFavIds = {};
         ignoredUsers = [];
         amountOperations = 0;
@@ -8130,14 +8138,14 @@
                 await semaphore.acquire();
                 try {
                     const userFigures = await this.scanUser(username);
-                    // Synchronize access to shared resources
-                    synchronized: {
-                        figures.push(...userFigures);
-                        current++;
-                        percent = (current / total * 100.0);
-                        await StorageWrapper.setItemAsync(FavsScanner.progressPercentId, percent.toFixed(2));
-                        callBack?.(username, percent, userFigures);
-                    }
+                    figures.push(...userFigures);
+                    current++;
+                    percent = (current / total * 100.0);
+                    await StorageWrapper.setItemAsync(FavsScanner.progressPercentId, percent.toFixed(2));
+                    callBack?.(username, percent, userFigures);
+                }
+                catch (error) {
+                    Logger.logError(`Failed to scan user ${username}:`, error);
                 }
                 finally {
                     // Always release the semaphore
@@ -8148,8 +8156,8 @@
             return figures;
         }
         async scanUser(username) {
-            if (this.amountOperations >= 80) {
-                Logger.logWarning(`Amount of operations reached 80. Stopping scan for ${username}.`);
+            if (this.amountOperations >= FavsScanner.maxOperations) {
+                Logger.logWarning(`Amount of operations reached ${FavsScanner.maxOperations}. Stopping scan for ${username}.`);
                 return [];
             }
             const lastFavId = this.lastFavIds[username]?.trimStart('sid-');
@@ -8241,31 +8249,38 @@
             messageBar.appendChild(this.wfButton);
         }
         async startScan() {
-            const migrateNeeded = await checkMigrationNeeded();
-            if (migrateNeeded) {
-                const result = await window.FAMessageBox.show('Watches Favorite Viewer updated.Do you want to migrate your old data?', 'Confirm Migration', window.FAMessageBoxButtons.YesNoCancel, window.FAMessageBoxIcon.Question);
-                if (result === window.FADialogResult.Yes) {
-                    await migrate();
+            try {
+                const migrateNeeded = await checkMigrationNeeded();
+                if (migrateNeeded) {
+                    const result = await window.FAMessageBox.show('Watches Favorite Viewer updated.Do you want to migrate your old data?', 'Confirm Migration', window.FAMessageBoxButtons.YesNoCancel, window.FAMessageBoxIcon.Question);
+                    if (result === window.FADialogResult.Yes) {
+                        await migrate();
+                    }
+                    else if (result === window.FADialogResult.Cancel) {
+                        return;
+                    }
                 }
-                else if (result === window.FADialogResult.Cancel) {
+                this.wfButton.textContent = 'WF: 0.00%';
+                const scanner = new FavsScanner();
+                await scanner.init();
+                const figures = await scanner.scanAllUsers((username, percent, userFigures) => {
+                    Logger.logInfo(`${percent}% | ${username} | ${userFigures.length}`);
+                    this.wfButton.textContent = `WF: ${percent.toFixed(2)}%`;
+                });
+                if (figures.length === 0) {
+                    this.wfButton.textContent = 'WF Scan again';
                     return;
                 }
+                await FigureDataSaver.saveFigures(figures);
+                this.wfButton.textContent = `${figures.length}WF`;
+                this.wfButton.onclick = null;
+                this.wfButton.href = 'https://www.furaffinity.net/msg/submissions/?mode=wfv-favorites';
             }
-            this.wfButton.textContent = 'WF: 0.00%';
-            const scanner = new FavsScanner();
-            await scanner.init();
-            const figures = await scanner.scanAllUsers((username, percent, userFigures) => {
-                Logger.logInfo(`${percent}% | ${username} | ${userFigures.length}`);
-                this.wfButton.textContent = `WF: ${percent.toFixed(2)}%`;
-            });
-            if (figures.length === 0) {
+            catch (error) {
                 this.wfButton.textContent = 'WF Scan again';
-                return;
+                this.wfButton.onclick = () => void this.startScan();
+                await showError(error, scriptName);
             }
-            await FigureDataSaver.saveFigures(figures);
-            this.wfButton.textContent = `${figures.length}WF`;
-            this.wfButton.onclick = null;
-            this.wfButton.href = 'https://www.furaffinity.net/msg/submissions/?mode=wfv-favorites';
         }
     }
 
@@ -8422,7 +8437,7 @@
         MessageBoxThemes["Light"] = "light";
     })(MessageBoxThemes || (MessageBoxThemes = {}));
 
-    var css_248z = "/* Base styles */\n.message-box-overlay {\n    position: fixed;\n    top: 0;\n    left: 0;\n    width: 100%;\n    height: 100%;\n    background-color: rgba(0, 0, 0, 0.5);\n    display: flex;\n    justify-content: center;\n    align-items: center;\n    z-index: 9999;\n}\n\n/* Dark theme (default) */\n.message-box-container {\n    border: 1px solid #444;\n    border-radius: 5px;\n    padding: 20px;\n    max-width: 500px;\n    width: 100%;\n    font-family: Arial, sans-serif;\n    transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;\n}\n\n.message-box-header {\n    display: flex;\n    align-items: center;\n    margin-bottom: 15px;\n}\n\n.message-box-icon-container {\n    margin-right: 15px;\n    width: 32px;\n    height: 32px;\n    flex-shrink: 0;\n}\n\n.message-box-title {\n    font-size: 18px;\n    font-weight: bold;\n    margin: 0;\n    transition: color 0.3s;\n}\n\n.message-box-content {\n    margin-bottom: 20px;\n    line-height: 1.5;\n    transition: color 0.3s;\n}\n\n.message-box-button-container {\n    display: flex;\n    justify-content: flex-end;\n    gap: 10px;\n}\n\n.message-box-button {\n    padding: 8px 16px;\n    border: none;\n    border-radius: 4px;\n    cursor: pointer;\n    font-size: 14px;\n    font-weight: bold;\n    background-color: #f1efeb;\n    transition: background-color 0.2s, color 0.2s, border-color 0.2s;\n}\n\n.message-box-button:hover {\n    background-color: #e0ded8;\n}\n\n/* Theme: Dark */\nbody[class*=\"theme-dark\"] .message-box-container {\n    background-color: #353b45;\n    border-color: #444;\n    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);\n}\n\nbody[class*=\"theme-dark\"] .message-box-button {\n    background-color: #434b5b;\n}\n\nbody[class*=\"theme-dark\"] .message-box-button:hover {\n    background-color: #576175;\n}\n\n/* Theme: Aurora */\nbody[class*=\"theme-aurora\"] .message-box-container {\n    background-color: #262931;\n    border-color: #444;\n    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);\n}\n\nbody[class*=\"theme-aurora\"] .message-box-button {\n    background-color: #65707c;\n}\n\nbody[class*=\"theme-aurora\"] .message-box-button:hover {\n    background-color: #8692a0;\n}\n\n/* Theme: Retro */\nbody[class*=\"theme-retro\"] .message-box-container {\n    background-color: #2e3b41;\n    border-color: #444;\n    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);\n}\n\nbody[class*=\"theme-retro\"] .message-box-button {\n    background-color: #4c585e;\n}\n\nbody[class*=\"theme-retro\"] .message-box-button:hover {\n    background-color: #7b909a;\n}\n\n/* Theme: Slate */\nbody[class*=\"theme-slate\"] .message-box-container {\n    background-color: #202225;\n    border-color: #444;\n    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);\n}\n\nbody[class*=\"theme-slate\"] .message-box-button {\n    background-color: #8c8c8c;\n}\n\nbody[class*=\"theme-slate\"] .message-box-button:hover {\n    background-color: #b3b1b1;\n}\n\n/* Theme: Light - already defined in base styles */\nbody[class*=\"theme-light\"] .message-box-container {\n    background-color: #f7f7f7;\n    border-color: #ccc;\n    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);\n}\n\nbody[class*=\"theme-light\"] .message-box-button {\n    background-color: #f1efeb;\n}\n\nbody[class*=\"theme-light\"] .message-box-button:hover {\n    background-color: #f1ede7;\n}\n";
+    var css_248z = "/* Base styles */\n.message-box-overlay {\n    position: fixed;\n    top: 0;\n    left: 0;\n    width: 100%;\n    height: 100%;\n    background-color: rgba(0, 0, 0, 0.5);\n    display: flex;\n    justify-content: center;\n    align-items: center;\n    z-index: 99999999;\n}\n\n/* Dark theme (default) */\n.message-box-container {\n    border: 1px solid #444;\n    border-radius: 5px;\n    padding: 20px;\n    max-width: 500px;\n    width: 100%;\n    font-family: Arial, sans-serif;\n    transition: background-color 0.3s, color 0.3s, border-color 0.3s, box-shadow 0.3s;\n}\n\n.message-box-header {\n    display: flex;\n    align-items: center;\n    margin-bottom: 15px;\n}\n\n.message-box-icon-container {\n    margin-right: 15px;\n    width: 32px;\n    height: 32px;\n    flex-shrink: 0;\n}\n\n.message-box-title {\n    font-size: 18px;\n    font-weight: bold;\n    margin: 0;\n    transition: color 0.3s;\n}\n\n.message-box-content {\n    margin-bottom: 20px;\n    line-height: 1.5;\n    transition: color 0.3s;\n}\n\n.message-box-button-container {\n    display: flex;\n    justify-content: flex-end;\n    gap: 10px;\n}\n\n.message-box-button {\n    padding: 8px 16px;\n    border: none;\n    border-radius: 4px;\n    cursor: pointer;\n    font-size: 14px;\n    font-weight: bold;\n    background-color: #f1efeb;\n    transition: background-color 0.2s, color 0.2s, border-color 0.2s;\n}\n\n.message-box-button:hover {\n    background-color: #e0ded8;\n}\n\n/* Theme: Dark */\nbody[class*=\"theme-dark\"] .message-box-container {\n    background-color: #353b45;\n    border-color: #444;\n    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);\n}\n\nbody[class*=\"theme-dark\"] .message-box-button {\n    background-color: #434b5b;\n}\n\nbody[class*=\"theme-dark\"] .message-box-button:hover {\n    background-color: #576175;\n}\n\n/* Theme: Aurora */\nbody[class*=\"theme-aurora\"] .message-box-container {\n    background-color: #262931;\n    border-color: #444;\n    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);\n}\n\nbody[class*=\"theme-aurora\"] .message-box-button {\n    background-color: #65707c;\n}\n\nbody[class*=\"theme-aurora\"] .message-box-button:hover {\n    background-color: #8692a0;\n}\n\n/* Theme: Retro */\nbody[class*=\"theme-retro\"] .message-box-container {\n    background-color: #2e3b41;\n    border-color: #444;\n    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);\n}\n\nbody[class*=\"theme-retro\"] .message-box-button {\n    background-color: #4c585e;\n}\n\nbody[class*=\"theme-retro\"] .message-box-button:hover {\n    background-color: #7b909a;\n}\n\n/* Theme: Slate */\nbody[class*=\"theme-slate\"] .message-box-container {\n    background-color: #202225;\n    border-color: #444;\n    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.4);\n}\n\nbody[class*=\"theme-slate\"] .message-box-button {\n    background-color: #8c8c8c;\n}\n\nbody[class*=\"theme-slate\"] .message-box-button:hover {\n    background-color: #b3b1b1;\n}\n\n/* Theme: Light - already defined in base styles */\nbody[class*=\"theme-light\"] .message-box-container {\n    background-color: #f7f7f7;\n    border-color: #ccc;\n    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);\n}\n\nbody[class*=\"theme-light\"] .message-box-button {\n    background-color: #f1efeb;\n}\n\nbody[class*=\"theme-light\"] .message-box-button:hover {\n    background-color: #f1ede7;\n}";
     styleInject(css_248z);
 
     class MessageBox {
@@ -8450,8 +8465,40 @@
             // Create a promise that will be resolved when a button is clicked
             return new Promise((resolve) => {
                 this.resolvePromise = resolve;
-                this.createMessageBox(text, caption, buttons, icon);
+                try {
+                    this.createMessageBox(text, caption, buttons, icon);
+                }
+                catch (error) {
+                    const reason = error instanceof Error ? error.message : String(error);
+                    const fallback = this.getFallbackResult(buttons);
+
+                    alert(`MessageBox failed to display (${reason})\n\n[${caption}]\n${text}`);
+                    this.resolvePromise = null;
+                    resolve(fallback);
+                }
             });
+        }
+        /**
+         * Returns the strongest negating DialogResult for the given button set,
+         * used as a fallback when the message box cannot be shown.
+         */
+        static getFallbackResult(buttons) {
+            switch (buttons) {
+                case MessageBoxButtons.OK:
+                    return DialogResult.OK;
+                case MessageBoxButtons.OKCancel:
+                    return DialogResult.Cancel;
+                case MessageBoxButtons.AbortRetryIgnore:
+                    return DialogResult.Abort;
+                case MessageBoxButtons.YesNoCancel:
+                    return DialogResult.Cancel;
+                case MessageBoxButtons.YesNo:
+                    return DialogResult.No;
+                case MessageBoxButtons.RetryCancel:
+                    return DialogResult.Cancel;
+                default:
+                    return DialogResult.Cancel;
+            }
         }
         /**
          * Creates the message box elements and adds them to the DOM.

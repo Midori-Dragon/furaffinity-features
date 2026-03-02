@@ -6,11 +6,12 @@
 // @require     https://greasyfork.org/scripts/483952-furaffinity-request-helper/code/483952-furaffinity-request-helper.js
 // @require     https://greasyfork.org/scripts/492931-furaffinity-submission-image-viewer/code/492931-furaffinity-submission-image-viewer.js
 // @require     https://greasyfork.org/scripts/485827-furaffinity-match-list/code/485827-furaffinity-match-list.js
+// @require     https://greasyfork.org/scripts/528997-furaffinity-message-box/code/528997-furaffinity-message-box.js
 // @require     https://greasyfork.org/scripts/485153-furaffinity-loading-animations/code/485153-furaffinity-loading-animations.js
 // @require     https://greasyfork.org/scripts/476762-furaffinity-custom-pages/code/476762-furaffinity-custom-pages.js
 // @require     https://greasyfork.org/scripts/475041-furaffinity-custom-settings/code/475041-furaffinity-custom-settings.js
 // @grant       GM_info
-// @version     2.5.7
+// @version     2.5.8
 // @author      Midori Dragon
 // @description Embeds the clicked Image on the Current Site, so you can view it without loading the submission Page
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
@@ -200,6 +201,11 @@
         }
     }
 
+    async function showError(error, caption) {
+        const message = error instanceof Error ? error.message : String(error);
+        await window.FAMessageBox.show(message, caption, window.FAMessageBoxButtons.OK, window.FAMessageBoxIcon.Error);
+    }
+
     const embeddedModes = {
         watchesFavoriteViewer: 'wfv-favorites',
     };
@@ -230,8 +236,14 @@
             this.previewLoadingSpinner.size = 40;
             // Add click event to remove the embedded element when clicked outside
             document.addEventListener('click', this.onDocumentClick.bind(this));
-            void this.fillSubDocInfos(figure);
-            void this.fillUserInfos(figure);
+            void this.fillSubDocInfos(figure).catch(async (error) => {
+                this.loadingSpinner.visible = false;
+                this.previewLoadingSpinner.visible = false;
+                await showError(error, scriptName);
+            });
+            void this.fillUserInfos(figure).catch((error) => {
+                Logger.logError('Failed to load watching info:', error);
+            });
         }
         static get embeddedExists() {
             return document.getElementById('eiv-main') != null;
@@ -256,7 +268,12 @@
             const sid = figure.id.trimStart('sid-');
             this.remove();
             figure.remove();
-            await requestHelper.PersonalUserRequests.MessageRequests.NewSubmissions.removeSubmissions([sid]);
+            try {
+                await requestHelper.PersonalUserRequests.MessageRequests.NewSubmissions.removeSubmissions([sid]);
+            }
+            catch (error) {
+                await showError(error, scriptName);
+            }
         }
         invokeRemove() {
             this._onRemove?.();
@@ -462,45 +479,54 @@
             let favKey = favButton.getAttribute('key') ?? '';
             let isFav = favButton.getAttribute('isFav') === 'true';
             if (string.isNullOrWhitespace(favKey)) {
+                this.favRequestRunning = false;
                 favButton.textContent = 'x';
                 return;
             }
-            if (isFav) {
-                // Send the favorite request to the server
-                favKey = await requestHelper.SubmissionRequests.favSubmission(sid, favKey) ?? '';
-                loadingTextSpinner.visible = false;
-                // If the request was successful, set the favorite status to false and update the button text
-                if (!string.isNullOrWhitespace(favKey)) {
-                    favButton.setAttribute('key', favKey);
-                    isFav = false;
-                    favButton.setAttribute('isFav', isFav.toString());
-                    favButton.textContent = '-Fav';
+            try {
+                if (isFav) {
+                    // Send the favorite request to the server
+                    favKey = await requestHelper.SubmissionRequests.favSubmission(sid, favKey) ?? '';
+                    loadingTextSpinner.visible = false;
+                    // If the request was successful, set the favorite status to false and update the button text
+                    if (!string.isNullOrWhitespace(favKey)) {
+                        favButton.setAttribute('key', favKey);
+                        isFav = false;
+                        favButton.setAttribute('isFav', isFav.toString());
+                        favButton.textContent = '-Fav';
+                    }
+                    else {
+                        // If the request was not successful, set the button text to "x" and restore the original text after a short delay
+                        favButton.textContent = 'x';
+                        setTimeout(() => favButton.textContent = '+Fav', 1000);
+                    }
                 }
                 else {
-                    // If the request was not successful, set the button text to "x" and restore the original text after a short delay
-                    favButton.textContent = 'x';
-                    setTimeout(() => favButton.textContent = '+Fav', 1000);
+                    // Send the unfavorite request to the server
+                    favKey = await requestHelper.SubmissionRequests.unfavSubmission(sid, favKey) ?? '';
+                    loadingTextSpinner.visible = false;
+                    // If the request was successful, set the favorite status to true and update the button text
+                    if (!string.isNullOrWhitespace(favKey)) {
+                        favButton.setAttribute('key', favKey);
+                        isFav = true;
+                        favButton.setAttribute('isFav', isFav.toString());
+                        favButton.textContent = '+Fav';
+                    }
+                    else {
+                        // If the request was not successful, set the button text to "x" and restore the original text after a short delay
+                        favButton.textContent = 'x';
+                        setTimeout(() => favButton.textContent = '-Fav', 1000);
+                    }
                 }
+                // Set the favorite request running flag back to false
             }
-            else {
-                // Send the unfavorite request to the server
-                favKey = await requestHelper.SubmissionRequests.unfavSubmission(sid, favKey) ?? '';
+            catch (error) {
                 loadingTextSpinner.visible = false;
-                // If the request was successful, set the favorite status to true and update the button text
-                if (!string.isNullOrWhitespace(favKey)) {
-                    favButton.setAttribute('key', favKey);
-                    isFav = true;
-                    favButton.setAttribute('isFav', isFav.toString());
-                    favButton.textContent = '+Fav';
-                }
-                else {
-                    // If the request was not successful, set the button text to "x" and restore the original text after a short delay
-                    favButton.textContent = 'x';
-                    setTimeout(() => favButton.textContent = '-Fav', 1000);
-                }
+                await showError(error, scriptName);
             }
-            // Set the favorite request running flag back to false
-            this.favRequestRunning = false;
+            finally {
+                this.favRequestRunning = false;
+            }
         }
         static async addEmbeddedEventForAllFigures() {
             const nonEmbeddedFigures = document.querySelectorAll('figure:not([embedded])') ?? [];

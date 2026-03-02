@@ -2,7 +2,7 @@
 // @name        Furaffinity-Custom-Settings
 // @namespace   Violentmonkey Scripts
 // @grant       none
-// @version     4.3.3
+// @version     4.3.4
 // @author      Midori Dragon
 // @description Library to create Custom settings on Furaffinitiy
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
@@ -400,11 +400,11 @@
         set value(newValue) {
             if (newValue === this.defaultValue) {
                 localStorage.removeItem(this.id);
-                void SyncedStorage.removeItem(this.id);
+                void SyncedStorage.removeItem(this.id).catch((error) => Logger.logError('SyncedStorage.removeItem failed:', error));
             }
             else {
                 localStorage.setItem(this.id, newValue.toString());
-                void SyncedStorage.setItem(this.id, newValue);
+                void SyncedStorage.setItem(this.id, newValue).catch((error) => Logger.logError('SyncedStorage.setItem failed:', error));
             }
             this._settingInputElem.checked = newValue;
             this.invokeInput(this._settingInputElem);
@@ -444,7 +444,7 @@
                 if (value != null) {
                     localStorage.setItem(this.id, value.toString());
                 }
-            });
+            }).catch((error) => Logger.logError('SyncedStorage.getItem failed:', error));
         }
         toString() {
             return `${this.name} = ${this.value}`;
@@ -487,11 +487,11 @@
             newValue = Math.min(Math.max(newValue, this.min), this.max);
             if (newValue === this.defaultValue) {
                 localStorage.removeItem(this.id);
-                void SyncedStorage.removeItem(this.id);
+                void SyncedStorage.removeItem(this.id).catch((error) => Logger.logError('SyncedStorage.removeItem failed:', error));
             }
             else {
                 localStorage.setItem(this.id, newValue.toString());
-                void SyncedStorage.setItem(this.id, newValue);
+                void SyncedStorage.setItem(this.id, newValue).catch((error) => Logger.logError('SyncedStorage.setItem failed:', error));
             }
             this._settingInputElem.value = newValue.toString();
             this.invokeInput(this._settingInputElem);
@@ -535,7 +535,7 @@
                 if (value != null) {
                     localStorage.setItem(this.id, value.toString());
                 }
-            });
+            }).catch((error) => Logger.logError('SyncedStorage.getItem failed:', error));
         }
         toString() {
             return `${this.name} = ${this.value}`;
@@ -581,11 +581,11 @@
             try {
                 if (newValue === this.defaultValue) {
                     localStorage.removeItem(this.id);
-                    void SyncedStorage.removeItem(this.id);
+                    void SyncedStorage.removeItem(this.id).catch((e) => Logger.logError('SyncedStorage.removeItem failed:', e));
                 }
                 else {
                     localStorage.setItem(this.id, newValue);
-                    void SyncedStorage.setItem(this.id, newValue);
+                    void SyncedStorage.setItem(this.id, newValue).catch((e) => Logger.logError('SyncedStorage.setItem failed:', e));
                 }
             }
             catch (error) {
@@ -640,7 +640,7 @@
                 if (value != null) {
                     localStorage.setItem(this.id, value.toString());
                 }
-            });
+            }).catch((error) => Logger.logError('SyncedStorage.getItem failed:', error));
         }
         toString() {
             return `${this.name} = ${this.value}`;
@@ -709,11 +709,11 @@
 
                 if (newValue == this.defaultValue) {
                     localStorage.removeItem(this.id);
-                    void SyncedStorage.removeItem(this.id);
+                    void SyncedStorage.removeItem(this.id).catch((e) => Logger.logError('SyncedStorage.removeItem failed:', e));
                 }
                 else {
                     localStorage.setItem(this.id, newValue.toString());
-                    void SyncedStorage.setItem(this.id, newValue.toString());
+                    void SyncedStorage.setItem(this.id, newValue.toString()).catch((e) => Logger.logError('SyncedStorage.setItem failed:', e));
                 }
             }
             catch (error) {
@@ -790,7 +790,7 @@
                 if (value != null) {
                     localStorage.setItem(this.id, value.toString());
                 }
-            });
+            }).catch((error) => Logger.logError('SyncedStorage.getItem failed:', error));
         }
         toString() {
             return `${this.name} = ${this.value}`;
@@ -903,7 +903,14 @@
             this._isFeatureEnabledSetting.defaultValue = true;
             let currSettingsJson = localStorage.getItem('ff-registered-settings');
             currSettingsJson ??= '[]';
-            const currSettings = JSON.parse(currSettingsJson);
+            let currSettings;
+            try {
+                currSettings = JSON.parse(currSettingsJson);
+            }
+            catch (error) {
+                Logger.logError('Failed to parse registered settings from localStorage, resetting:', error);
+                currSettings = [];
+            }
             if (!currSettings.includes(this.providerId)) {
                 currSettings.push(this.providerId);
                 localStorage.setItem('ff-registered-settings', JSON.stringify(currSettings));

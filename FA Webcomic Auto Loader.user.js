@@ -5,10 +5,11 @@
 // @require     https://greasyfork.org/scripts/525666-furaffinity-prototype-extensions/code/525666-furaffinity-prototype-extensions.js
 // @require     https://greasyfork.org/scripts/483952-furaffinity-request-helper/code/483952-furaffinity-request-helper.js
 // @require     https://greasyfork.org/scripts/485827-furaffinity-match-list/code/485827-furaffinity-match-list.js
+// @require     https://greasyfork.org/scripts/528997-furaffinity-message-box/code/528997-furaffinity-message-box.js
 // @require     https://greasyfork.org/scripts/485153-furaffinity-loading-animations/code/485153-furaffinity-loading-animations.js
 // @require     https://greasyfork.org/scripts/475041-furaffinity-custom-settings/code/475041-furaffinity-custom-settings.js
 // @grant       GM_info
-// @version     2.2.10
+// @version     2.2.11
 // @author      Midori Dragon
 // @description Gives you the option to load all the subsequent comic pages on a FurAffinity comic page automatically. Even for pages without given Links
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
@@ -45,7 +46,7 @@
         }
     }
 
-    function checkTags (element) {
+    function checkTags(element) {
         const userLoggedIn = document.body.getAttribute('data-user-logged-in') === '1';
         if (!userLoggedIn) {
             Logger.logWarning('User is not logged in, skipping tag check');
@@ -247,16 +248,23 @@
 
     function getCurrGalleryFolder () {
         const url = window.location.toString().toLowerCase();
-        if (!url.includes('gallery') || !url.includes('folder')) {
-            return;
+        if (!url.includes('/gallery/') || !url.includes('/folder/')) {
+            return null;
         }
-        const parts = url.split('/');
-        const folderIdIndex = parts.indexOf('folder') + 1;
-        if (folderIdIndex >= parts.length) {
-            return;
+        const folderId = getFolderIdFromUrl(url);
+        const folderName = getFolderNameFromUrl(url);
+        if (folderId == null || folderName == null) {
+            return null;
         }
-        const folderId = parts[folderIdIndex];
-        return parseInt(folderId);
+        return [parseInt(folderId), folderName];
+    }
+    function getFolderIdFromUrl(url) {
+        const match = url.match(/\/folder\/(\d+)(?=\/|$)/);
+        return match ? match[1] : null;
+    }
+    function getFolderNameFromUrl(url) {
+        const match = url.match(/\/folder\/\d+\/([^\/\?]+)(?=\/|$)/);
+        return match ? match[1] : null;
     }
 
     function generalizeString (inputString, textToNumbers, removeCommonPhrases, removeSpecialChars, removeNumbers, removeSpaces, removeRoman) {
@@ -337,11 +345,12 @@
                 return {};
             }
             const currUsername = getDocUsername(document);
-            const folderId = getCurrGalleryFolder();
+            const galleryFolder = getCurrGalleryFolder();
+            const folder = galleryFolder != null ? { id: galleryFolder[0], name: galleryFolder[1] } : undefined;
             Logger.logInfo(`${scriptName}: finding submission page...`);
             if (this.currSubmissionPageNo == null || this.currSubmissionPageNo < 1) {
                 if (isInGallery) {
-                    this.currSubmissionPageNo = await requestHelper.UserRequests.GalleryRequests.Gallery.getSubmissionPageNo(currUsername, this._currSid, folderId, -1, -1);
+                    this.currSubmissionPageNo = await requestHelper.UserRequests.GalleryRequests.Gallery.getSubmissionPageNo(currUsername, this._currSid, folder, -1, -1);
                 }
                 else if (isInScraps) {
                     this.currSubmissionPageNo = await requestHelper.UserRequests.GalleryRequests.Scraps.getSubmissionPageNo(currUsername, this._currSid, -1, -1);
@@ -351,7 +360,7 @@
             Logger.logInfo(`${scriptName}: searching figures backward...`);
             let figures = [];
             if (isInGallery) {
-                figures = await requestHelper.UserRequests.GalleryRequests.Gallery.getFiguresInFolderBetweenPages(currUsername, folderId, this.currSubmissionPageNo, this.currSubmissionPageNo + this._amount);
+                figures = await requestHelper.UserRequests.GalleryRequests.Gallery.getFiguresInFolderBetweenPages(currUsername, folder, this.currSubmissionPageNo, this.currSubmissionPageNo + this._amount);
             }
             else if (isInScraps) {
                 figures = await requestHelper.UserRequests.GalleryRequests.Scraps.getFiguresBetweenPages(currUsername, this.currSubmissionPageNo, this.currSubmissionPageNo + this._amount);
@@ -402,11 +411,12 @@
                 return {};
             }
             const currUsername = getDocUsername(document);
-            const folderId = getCurrGalleryFolder();
+            const galleryFolder = getCurrGalleryFolder();
+            const folder = galleryFolder != null ? { id: galleryFolder[0], name: galleryFolder[1] } : undefined;
             Logger.logInfo(`${scriptName}: finding submission page...`);
             if (this.currSubmissionPageNo == null || this.currSubmissionPageNo < 1) {
                 if (isInGallery) {
-                    this.currSubmissionPageNo = await requestHelper.UserRequests.GalleryRequests.Gallery.getSubmissionPageNo(currUsername, this._currSid, folderId, -1, -1);
+                    this.currSubmissionPageNo = await requestHelper.UserRequests.GalleryRequests.Gallery.getSubmissionPageNo(currUsername, this._currSid, folder, -1, -1);
                 }
                 else if (isInScraps) {
                     this.currSubmissionPageNo = await requestHelper.UserRequests.GalleryRequests.Scraps.getSubmissionPageNo(currUsername, this._currSid, -1, -1);
@@ -416,7 +426,7 @@
             Logger.logInfo(`${scriptName}: searching figures forward...`);
             let figures = [];
             if (isInGallery) {
-                figures = await requestHelper.UserRequests.GalleryRequests.Gallery.getFiguresInFolderBetweenIds(currUsername, folderId, undefined, this._currSid);
+                figures = await requestHelper.UserRequests.GalleryRequests.Gallery.getFiguresInFolderBetweenIds(currUsername, folder, undefined, this._currSid);
             }
             else if (isInScraps) {
                 figures = await requestHelper.UserRequests.GalleryRequests.Scraps.getFiguresBetweenIds(currUsername, undefined, this._currSid);
@@ -639,6 +649,11 @@
         }
     }
 
+    async function showError(error, caption) {
+        const message = error instanceof Error ? error.message : String(error);
+        await window.FAMessageBox.show(message, caption, window.FAMessageBoxButtons.OK, window.FAMessageBoxIcon.Error);
+    }
+
     class AutoLoader {
         submissionImg;
         currComicNav = null;
@@ -694,35 +709,49 @@
         }
         async startAutoLoaderAsync() {
             this._loadingSpinner.visible = true;
-            const autoLoader = new AutoLoaderSearch(this.submissionImg, this.currSid, this.currComicNav);
-            const submissions = await autoLoader.search();
-            const submissionIds = Object.keys(submissions).map(Number);
-            if (submissionIds.length === 0 || (submissionIds.length === 1 && submissionIds[0] === this.currSid)) {
-                this.comicNavExists = false;
-            }
-            else {
-                this.addLoadedSubmissions(submissions);
-                if (useCustomLightboxSetting.value) {
-                    new Lightbox(this.currSid, submissions);
+            try {
+                const autoLoader = new AutoLoaderSearch(this.submissionImg, this.currSid, this.currComicNav);
+                const submissions = await autoLoader.search();
+                const submissionIds = Object.keys(submissions).map(Number);
+                if (submissionIds.length === 0 || (submissionIds.length === 1 && submissionIds[0] === this.currSid)) {
+                    this.comicNavExists = false;
+                }
+                else {
+                    this.addLoadedSubmissions(submissions);
+                    if (useCustomLightboxSetting.value) {
+                        new Lightbox(this.currSid, submissions);
+                    }
                 }
             }
-            this._loadingSpinner.visible = false;
+            catch (error) {
+                await showError(error, scriptName);
+            }
+            finally {
+                this._loadingSpinner.visible = false;
+            }
         }
         startSimilarSearch() {
             void this.startSimilarSearchAsync();
         }
         async startSimilarSearchAsync() {
             this._loadingSpinner.visible = true;
-            const forwardSearch = new ForwardSearch(this.currSid);
-            const submissionsAfter = await forwardSearch.search();
-            const backwardSearch = new BackwardSearch(this.currSid, backwardSearchSetting.value, forwardSearch.currSubmissionPageNo);
-            backwardSearch.sidToIgnore.push(...Object.keys(submissionsAfter).map(Number));
-            const submissionsBefore = await backwardSearch.search();
-            this.addLoadedSubmissions(submissionsBefore, submissionsAfter);
-            if (useCustomLightboxSetting.value) {
-                new Lightbox(this.currSid, { ...submissionsBefore, ...submissionsAfter });
+            try {
+                const forwardSearch = new ForwardSearch(this.currSid);
+                const submissionsAfter = await forwardSearch.search();
+                const backwardSearch = new BackwardSearch(this.currSid, backwardSearchSetting.value, forwardSearch.currSubmissionPageNo);
+                backwardSearch.sidToIgnore.push(...Object.keys(submissionsAfter).map(Number));
+                const submissionsBefore = await backwardSearch.search();
+                this.addLoadedSubmissions(submissionsBefore, submissionsAfter);
+                if (useCustomLightboxSetting.value) {
+                    new Lightbox(this.currSid, { ...submissionsBefore, ...submissionsAfter });
+                }
             }
-            this._loadingSpinner.visible = false;
+            catch (error) {
+                await showError(error, scriptName);
+            }
+            finally {
+                this._loadingSpinner.visible = false;
+            }
         }
         addLoadedSubmissions(...imgsArr) {
             const columnpage = document.getElementById('columnpage');
