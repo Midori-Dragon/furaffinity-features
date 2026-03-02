@@ -6,13 +6,16 @@
  * least one file changed since the latest release tag.
  *
  * Usage:
- *   node build-scripts/changed-modules.cjs [--tag <tag>]
+ *   node build-scripts/changed-modules.cjs [--tag <tag>] [--show-versions]
  *
  * Options:
- *   --tag <tag>   Compare against a specific tag instead of the latest one.
+ *   --tag <tag>        Compare against a specific tag instead of the latest one.
+ *   --show-versions    Also show the old and new @version from each module's
+ *                      rollup.config.cjs next to its name.
  */
 
 const { execSync } = require('child_process');
+const fs = require('fs');
 const path = require('path');
 
 // ── helpers ──────────────────────────────────────────────────────────────────
@@ -33,9 +36,12 @@ function latestTag() {
 
 const args = process.argv.slice(2);
 let compareTag = null;
+let showVersions = false;
 for (let i = 0; i < args.length; i++) {
     if (args[i] === '--tag' && args[i + 1]) {
         compareTag = args[++i];
+    } else if (args[i] === '--show-versions') {
+        showVersions = true;
     }
 }
 
@@ -63,6 +69,33 @@ try {
 if (changedFiles.length === 0) {
     console.log(`No changes since ${compareTag}.`);
     process.exit(0);
+}
+
+// ── version helpers ──────────────────────────────────────────────────────────
+
+/**
+ * Extract the @version value from the text content of a rollup.config.cjs.
+ * Returns null if not found.
+ */
+function extractVersion(content) {
+    const match = content.match(/@version\s+([^\s\n]+)/);
+    return match ? match[1] : null;
+}
+
+/**
+ * Read the version from a module's rollup.config.cjs at the given git tag.
+ * Returns null if the file didn't exist at that tag.
+ * Only call this when rollup.config.cjs exists on disk (existence already checked).
+ */
+function getTagVersion(tag, moduleRelDir) {
+    // Git paths always use forward slashes
+    const gitPath = moduleRelDir.replace(/\\/g, '/') + '/rollup.config.cjs';
+    try {
+        const content = git(`show "${tag}:${gitPath}"`);
+        return extractVersion(content);
+    } catch {
+        return null;
+    }
 }
 
 // ── map file paths → module names ────────────────────────────────────────────
@@ -109,18 +142,67 @@ const sorted = (arr) => arr.sort(([a], [b]) => a.localeCompare(b));
 
 console.log(`\nModules changed since ${compareTag}:\n`);
 
-if (libraryModules.length > 0) {
+const YELLOW = '\x1b[33m';
+const RESET = '\x1b[0m';
+
+/**
+ * Returns the version annotation string (e.g. "[v1.0.3 → v1.0.5]") for a
+ * module, or an empty string if versions are unavailable or showVersions is off.
+ */
+function getVersionInfo(moduleDir) {
+    if (!showVersions) return '';
+    const rollupPath = path.join(process.cwd(), moduleDir, 'rollup.config.cjs');
+    if (!fs.existsSync(rollupPath)) return '';
+    const newVer = extractVersion(fs.readFileSync(rollupPath, 'utf8'));
+    const oldVer = getTagVersion(compareTag, moduleDir);
+    if (oldVer != null && newVer != null) {
+        return oldVer === newVer
+            ? `${YELLOW}[v${oldVer} — v${newVer}]${RESET}`
+            : `[v${oldVer} → v${newVer}]`;
+    }
+    if (newVer != null) return `[new: v${newVer}]`;
+    if (oldVer != null) return `[was: v${oldVer}]`;
+    return '';
+}
+
+/** Compute the column widths needed to align a group of entries. */
+function computeWidths(entries) {
+    let nameWidth = 0;
+    let countWidth = 0;
+    for (const [name, { files }] of entries) {
+        nameWidth = Math.max(nameWidth, name.length);
+        const countStr = `(${files.length} file${files.length !== 1 ? 's' : ''})`;
+        countWidth = Math.max(countWidth, countStr.length);
+    }
+    return { nameWidth, countWidth };
+}
+
+function formatLine(name, moduleDir, files, nameWidth, countWidth) {
+    const countStr = `(${files.length} file${files.length !== 1 ? 's' : ''})`;
+    const versionInfo = getVersionInfo(moduleDir);
+    const line = `    • ${name.padEnd(nameWidth)}  ${countStr.padEnd(countWidth)}  ${versionInfo}`;
+    return line.trimEnd();
+}
+
+const sortedLibrary = sorted(libraryModules);
+const sortedFeature = sorted(featureModules);
+
+if (sortedLibrary.length > 0) {
+    const { nameWidth, countWidth } = computeWidths(sortedLibrary);
     console.log('  Library modules:');
-    for (const [name, { files }] of sorted(libraryModules)) {
-        console.log(`    • ${name}  (${files.length} file${files.length !== 1 ? 's' : ''})`);
+    for (const [name, { files }] of sortedLibrary) {
+        const moduleDir = `src/library-modules/${name}`;
+        console.log(formatLine(name, moduleDir, files, nameWidth, countWidth));
     }
 }
 
-if (featureModules.length > 0) {
-    if (libraryModules.length > 0) console.log('');
+if (sortedFeature.length > 0) {
+    if (sortedLibrary.length > 0) console.log('');
+    const { nameWidth, countWidth } = computeWidths(sortedFeature);
     console.log('  Feature modules:');
-    for (const [name, { files }] of sorted(featureModules)) {
-        console.log(`    • ${name}  (${files.length} file${files.length !== 1 ? 's' : ''})`);
+    for (const [name, { files }] of sortedFeature) {
+        const moduleDir = `src/feature-modules/${name}`;
+        console.log(formatLine(name, moduleDir, files, nameWidth, countWidth));
     }
 }
 
