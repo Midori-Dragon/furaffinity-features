@@ -35,30 +35,30 @@ export class BrowsePage implements IGalleryPage {
                     continue;
                 }
                 switch (optionName) {
-                case 'category':
-                    currBrowseOptions.category = parseInt(optionValue);
-                    break;
-                case 'type':
-                    currBrowseOptions.type = parseInt(optionValue);
-                    break;
-                case 'species':
-                    currBrowseOptions.species = parseInt(optionValue);
-                    break;
-                case 'gender':
-                    currBrowseOptions.gender = optionValue;
-                    break;
-                case 'results':
-                    currBrowseOptions.perPage = parseInt(optionValue);
-                    break;
-                case 'ratingGeneral':
-                    currBrowseOptions.ratingGeneral = optionValue === 'true';
-                    break;
-                case 'ratingMature':
-                    currBrowseOptions.ratingMature = optionValue === 'true';
-                    break;
-                case 'ratingAdult':
-                    currBrowseOptions.ratingAdult = optionValue === 'true';
-                    break;
+                    case 'category':
+                        currBrowseOptions.category = parseInt(optionValue);
+                        break;
+                    case 'type':
+                        currBrowseOptions.type = parseInt(optionValue);
+                        break;
+                    case 'species':
+                        currBrowseOptions.species = parseInt(optionValue);
+                        break;
+                    case 'gender':
+                        currBrowseOptions.gender = optionValue;
+                        break;
+                    case 'results':
+                        currBrowseOptions.perPage = parseInt(optionValue);
+                        break;
+                    case 'ratingGeneral':
+                        currBrowseOptions.ratingGeneral = optionValue === 'true';
+                        break;
+                    case 'ratingMature':
+                        currBrowseOptions.ratingMature = optionValue === 'true';
+                        break;
+                    case 'ratingAdult':
+                        currBrowseOptions.ratingAdult = optionValue === 'true';
+                        break;
                 }
             } catch { }
         }
@@ -68,15 +68,15 @@ export class BrowsePage implements IGalleryPage {
         for (const checkbox of Array.from(checkBoxes ?? [])) {
             // Set the option in the browse options object
             switch (checkbox.getAttribute('name')) {
-            case 'rating_general':
-                currBrowseOptions.ratingGeneral = checkbox.hasAttribute('checked');
-                break;
-            case 'rating_mature':
-                currBrowseOptions.ratingMature = checkbox.hasAttribute('checked');
-                break;
-            case 'rating_adult':
-                currBrowseOptions.ratingAdult = checkbox.hasAttribute('checked');
-                break;
+                case 'rating_general':
+                    currBrowseOptions.ratingGeneral = checkbox.hasAttribute('checked');
+                    break;
+                case 'rating_mature':
+                    currBrowseOptions.ratingMature = checkbox.hasAttribute('checked');
+                    break;
+                case 'rating_adult':
+                    currBrowseOptions.ratingAdult = checkbox.hasAttribute('checked');
+                    break;
             }
         }
 

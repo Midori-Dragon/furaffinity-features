@@ -30,7 +30,7 @@ export class SearchPage implements IGalleryPage {
         if (searchInput != null && searchInput instanceof HTMLTextAreaElement) {
             searchOptions.input = searchInput.value;
         }
-        
+
         const searchContainer = document.getElementById('search-advanced');
         if (searchContainer == null) {
             return searchOptions;
@@ -47,24 +47,24 @@ export class SearchPage implements IGalleryPage {
             }
 
             switch (name) {
-            case 'order-by':
-                searchOptions.orderBy = value;
-                break;
-            case 'order-direction':
-                searchOptions.orderDirection = value;
-                break;
-            case 'perpage':
-                searchOptions.perPage = parseInt(value);
-                break;
-            case 'category':
-                searchOptions.category = parseInt(value);
-                break;
-            case 'arttype':
-                searchOptions.type = parseInt(value);
-                break;
-            case 'species':
-                searchOptions.species = parseInt(value);
-                break;
+                case 'order-by':
+                    searchOptions.orderBy = value;
+                    break;
+                case 'order-direction':
+                    searchOptions.orderDirection = value;
+                    break;
+                case 'perpage':
+                    searchOptions.perPage = parseInt(value);
+                    break;
+                case 'category':
+                    searchOptions.category = parseInt(value);
+                    break;
+                case 'arttype':
+                    searchOptions.type = parseInt(value);
+                    break;
+                case 'species':
+                    searchOptions.species = parseInt(value);
+                    break;
             }
         }
 
@@ -74,19 +74,19 @@ export class SearchPage implements IGalleryPage {
             const name = radioButton.getAttribute('name');
             const value = radioButton.getAttribute('value');
             switch (name) {
-            case 'range':
-                searchOptions.range = value ?? undefined;
-                if (value === 'manual') {
-                    const rangeContainer = searchContainer.querySelector('div[class*="jsManualRangeContainer"]');
-                    const rangeFrom = rangeContainer?.querySelector('input[type="date"][name="range_from"]');
-                    searchOptions.rangeFrom = rangeFrom?.getAttribute('value') ?? undefined;
-                    const rangeTo = rangeContainer?.querySelector('input[type="date"][name="range_to"]');
-                    searchOptions.rangeTo = rangeTo?.getAttribute('value') ?? undefined;
-                }
-                break;
-            case 'mode':
-                searchOptions.matching = value ?? undefined;
-                break;
+                case 'range':
+                    searchOptions.range = value ?? undefined;
+                    if (value === 'manual') {
+                        const rangeContainer = searchContainer.querySelector('div[class*="jsManualRangeContainer"]');
+                        const rangeFrom = rangeContainer?.querySelector('input[type="date"][name="range_from"]');
+                        searchOptions.rangeFrom = rangeFrom?.getAttribute('value') ?? undefined;
+                        const rangeTo = rangeContainer?.querySelector('input[type="date"][name="range_to"]');
+                        searchOptions.rangeTo = rangeTo?.getAttribute('value') ?? undefined;
+                    }
+                    break;
+                case 'mode':
+                    searchOptions.matching = value ?? undefined;
+                    break;
             }
         }
 
@@ -94,33 +94,33 @@ export class SearchPage implements IGalleryPage {
         const checkBoxes = searchContainer?.querySelectorAll('input[type="checkbox"]');
         for (const checkBox of Array.from(checkBoxes ?? [])) {
             switch (checkBox.getAttribute('name')) {
-            case 'rating-general':
-                searchOptions.ratingGeneral = checkBox.hasAttribute('checked');
-                break;
-            case 'rating-mature':
-                searchOptions.ratingMature = checkBox.hasAttribute('checked');
-                break;
-            case 'rating-adult':
-                searchOptions.ratingAdult = checkBox.hasAttribute('checked');
-                break;
-            case 'type-art':
-                searchOptions.typeArt = checkBox.hasAttribute('checked');
-                break;
-            case 'type-music':
-                searchOptions.typeMusic = checkBox.hasAttribute('checked');
-                break;
-            case 'type-flash':
-                searchOptions.typeFlash = checkBox.hasAttribute('checked');
-                break;
-            case 'type-story':
-                searchOptions.typeStory = checkBox.hasAttribute('checked');
-                break;
-            case 'type-photo':
-                searchOptions.typePhotos = checkBox.hasAttribute('checked');
-                break;
-            case 'type-poetry':
-                searchOptions.typePoetry = checkBox.hasAttribute('checked');
-                break;
+                case 'rating-general':
+                    searchOptions.ratingGeneral = checkBox.hasAttribute('checked');
+                    break;
+                case 'rating-mature':
+                    searchOptions.ratingMature = checkBox.hasAttribute('checked');
+                    break;
+                case 'rating-adult':
+                    searchOptions.ratingAdult = checkBox.hasAttribute('checked');
+                    break;
+                case 'type-art':
+                    searchOptions.typeArt = checkBox.hasAttribute('checked');
+                    break;
+                case 'type-music':
+                    searchOptions.typeMusic = checkBox.hasAttribute('checked');
+                    break;
+                case 'type-flash':
+                    searchOptions.typeFlash = checkBox.hasAttribute('checked');
+                    break;
+                case 'type-story':
+                    searchOptions.typeStory = checkBox.hasAttribute('checked');
+                    break;
+                case 'type-photo':
+                    searchOptions.typePhotos = checkBox.hasAttribute('checked');
+                    break;
+                case 'type-poetry':
+                    searchOptions.typePoetry = checkBox.hasAttribute('checked');
+                    break;
             }
         }
 
@@ -141,12 +141,12 @@ export class SearchPage implements IGalleryPage {
             const name = (option.parentNode as HTMLSelectElement).getAttribute('name');
             const value = option.getAttribute('value');
             switch (name) {
-            case 'order-by':
-                searchOptions.orderBy = value ?? undefined;
-                break;
-            case 'order-direction':
-                searchOptions.orderDirection = value ?? undefined;
-                break;
+                case 'order-by':
+                    searchOptions.orderBy = value ?? undefined;
+                    break;
+                case 'order-direction':
+                    searchOptions.orderDirection = value ?? undefined;
+                    break;
             }
         }
 
@@ -156,12 +156,12 @@ export class SearchPage implements IGalleryPage {
             const name = radioButton.getAttribute('name');
             const value = radioButton.getAttribute('value');
             switch (name) {
-            case 'range':
-                searchOptions.range = value ?? undefined;
-                break;
-            case 'mode':
-                searchOptions.matching = value ?? undefined;
-                break;
+                case 'range':
+                    searchOptions.range = value ?? undefined;
+                    break;
+                case 'mode':
+                    searchOptions.matching = value ?? undefined;
+                    break;
             }
             if (value === 'manual') {
                 // Get the range values
@@ -176,33 +176,33 @@ export class SearchPage implements IGalleryPage {
         const checkBoxes = searchContainer?.querySelectorAll('input[type="checkbox"]');
         for (const checkBox of Array.from(checkBoxes ?? [])) {
             switch (checkBox.getAttribute('name')) {
-            case 'rating-general':
-                searchOptions.ratingGeneral = checkBox.hasAttribute('checked');
-                break;
-            case 'rating-mature':
-                searchOptions.ratingMature = checkBox.hasAttribute('checked');
-                break;
-            case 'rating-adult':
-                searchOptions.ratingAdult = checkBox.hasAttribute('checked');
-                break;
-            case 'type-art':
-                searchOptions.typeArt = checkBox.hasAttribute('checked');
-                break;
-            case 'type-music':
-                searchOptions.typeMusic = checkBox.hasAttribute('checked');
-                break;
-            case 'type-flash':
-                searchOptions.typeFlash = checkBox.hasAttribute('checked');
-                break;
-            case 'type-story':
-                searchOptions.typeStory = checkBox.hasAttribute('checked');
-                break;
-            case 'type-photo':
-                searchOptions.typePhotos = checkBox.hasAttribute('checked');
-                break;
-            case 'type-poetry':
-                searchOptions.typePoetry = checkBox.hasAttribute('checked');
-                break;
+                case 'rating-general':
+                    searchOptions.ratingGeneral = checkBox.hasAttribute('checked');
+                    break;
+                case 'rating-mature':
+                    searchOptions.ratingMature = checkBox.hasAttribute('checked');
+                    break;
+                case 'rating-adult':
+                    searchOptions.ratingAdult = checkBox.hasAttribute('checked');
+                    break;
+                case 'type-art':
+                    searchOptions.typeArt = checkBox.hasAttribute('checked');
+                    break;
+                case 'type-music':
+                    searchOptions.typeMusic = checkBox.hasAttribute('checked');
+                    break;
+                case 'type-flash':
+                    searchOptions.typeFlash = checkBox.hasAttribute('checked');
+                    break;
+                case 'type-story':
+                    searchOptions.typeStory = checkBox.hasAttribute('checked');
+                    break;
+                case 'type-photo':
+                    searchOptions.typePhotos = checkBox.hasAttribute('checked');
+                    break;
+                case 'type-poetry':
+                    searchOptions.typePoetry = checkBox.hasAttribute('checked');
+                    break;
             }
         }
 
@@ -214,7 +214,7 @@ export class SearchPage implements IGalleryPage {
         if (page == null) {
             throw new Error('No page found');
         }
-        
+
         prevFigures ??= [];
         const prevSids = prevFigures.map(figure => figure.id);
 

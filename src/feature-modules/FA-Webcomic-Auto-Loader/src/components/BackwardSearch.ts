@@ -39,8 +39,8 @@ export class BackwardSearch implements IAutoLoaderSearchable {
         }
 
         const currUsername = getDocUsername(document)!;
-        const _galleryFolder = getCurrGalleryFolder();
-        const folder = _galleryFolder != null ? { id: _galleryFolder[0], name: _galleryFolder[1] } : undefined;
+        const galleryFolder = getCurrGalleryFolder();
+        const folder = galleryFolder != null ? { id: galleryFolder[0], name: galleryFolder[1] } : undefined;
 
         Logger.logInfo(`${scriptName}: finding submission page...`);
         if (this.currSubmissionPageNo == null || this.currSubmissionPageNo < 1) {

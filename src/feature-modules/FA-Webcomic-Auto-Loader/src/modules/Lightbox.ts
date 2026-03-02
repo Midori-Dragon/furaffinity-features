@@ -28,7 +28,7 @@ export class Lightbox {
         const orgImg = columnpage.querySelector(`img[wal-sid="${orgSid}"]`)!;
         const orgImgClone = orgImg.readdToDom() as HTMLImageElement;
         imgs[orgSid] = orgImgClone;
-        
+
         this.prepareOrgLightbox();
         this.addSubmissionToLightbox(imgs);
 
@@ -60,7 +60,7 @@ export class Lightbox {
             this._lightboxContainer.children[this.currWalIndex]?.classList.remove('hidden');
             this._lightboxContainer.parentElement?.classList.remove('hidden');
             this._lightboxNavContainer?.classList.remove('hidden');
-        }    
+        }
     }
 
     navigateLeft(): void {
@@ -68,7 +68,7 @@ export class Lightbox {
             Logger.logInfo(`${scriptName}: navigating left '${this.currWalIndex} -> ${this.currWalIndex - 1}'`);
             const currImg = this._lightboxContainer.children[this.currWalIndex];
             const prevImg = this._lightboxContainer.children[this.currWalIndex - 1];
-            
+
             if (currImg != null && prevImg != null) {
                 currImg.classList.add('hidden');
                 prevImg.classList.remove('hidden');
@@ -82,7 +82,7 @@ export class Lightbox {
             Logger.logInfo(`${scriptName}: navigating right '${this.currWalIndex} -> ${this.currWalIndex + 1}'`);
             const currImg = this._lightboxContainer.children[this.currWalIndex];
             const nextImg = this._lightboxContainer.children[this.currWalIndex + 1];
-            
+
             if (currImg != null && nextImg != null) {
                 currImg.classList.add('hidden');
                 nextImg.classList.remove('hidden');
@@ -93,14 +93,14 @@ export class Lightbox {
 
     handleArrowKeys(event: KeyboardEvent): void {
         switch (event.key) {
-        case 'ArrowLeft':
-        case 'ArrowUp':
-            this.navigateLeft();
-            break;
-        case 'ArrowRight':
-        case 'ArrowDown':
-            this.navigateRight();
-            break;   
+            case 'ArrowLeft':
+            case 'ArrowUp':
+                this.navigateLeft();
+                break;
+            case 'ArrowRight':
+            case 'ArrowDown':
+                this.navigateRight();
+                break;
         }
 
         event.preventDefault();
@@ -180,13 +180,13 @@ export class Lightbox {
 
     private initializeViewerCanvas(): void {
         const viewerCanvas = document.body.querySelector('div[class*="viewer-canvas"]');
-        
+
         if (!viewerCanvas) {
             const viewerTemp = document.createElement('div');
             viewerTemp.innerHTML = LightboxHTML.html;
             const viewerContainer = viewerTemp.firstElementChild!;
             document.body.appendChild(viewerContainer);
-            
+
             Logger.logInfo(`${scriptName}: Created viewer canvas structure in hidden state`);
         }
     }

@@ -28,12 +28,12 @@ export class MessageNuker {
     getSectionTypeFromElement(section: HTMLElement): MessageType {
         const sectionString = section.id.trimStart('messages-');
         switch (sectionString) {
-        default: return MessageType.None;
-        case 'watches': return MessageType.Watches;
-        case 'comments-journal': return MessageType.JournalComments;
-        case 'shouts': return MessageType.Shouts;
-        case 'favorites': return MessageType.Favorites;
-        case 'journals': return MessageType.Journals;   
+            default: return MessageType.None;
+            case 'watches': return MessageType.Watches;
+            case 'comments-journal': return MessageType.JournalComments;
+            case 'shouts': return MessageType.Shouts;
+            case 'favorites': return MessageType.Favorites;
+            case 'journals': return MessageType.Journals;
         }
     }
 }

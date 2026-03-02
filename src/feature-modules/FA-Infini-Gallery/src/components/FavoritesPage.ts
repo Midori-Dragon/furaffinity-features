@@ -26,7 +26,7 @@ export class FavoritesPage implements IGalleryPage {
         if (page == null) {
             throw new Error('No page found');
         }
-        
+
         prevFigures ??= [];
         const prevSids = prevFigures.map(figure => figure.id);
 
