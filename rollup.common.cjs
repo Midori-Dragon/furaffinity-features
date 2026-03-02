@@ -21,7 +21,6 @@ module.exports = {
             // Strip ESLint directive comments from the final bundle.
             // Matches both line-style (// eslint-...) and block-style (/* eslint-... */) directives.
             // Returns { code, map: null } so Rollup knows the sourcemap chain is intentionally broken
-            // for this transformation (stripping comments doesn't affect real code positions meaningfully).
             name: 'strip-eslint-comments',
             renderChunk(code) {
                 const result = code
