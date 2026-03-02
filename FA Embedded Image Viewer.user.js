@@ -11,7 +11,7 @@
 // @require     https://greasyfork.org/scripts/476762-furaffinity-custom-pages/code/476762-furaffinity-custom-pages.js
 // @require     https://greasyfork.org/scripts/475041-furaffinity-custom-settings/code/475041-furaffinity-custom-settings.js
 // @grant       GM_info
-// @version     2.5.8
+// @version     2.5.9
 // @author      Midori Dragon
 // @description Embeds the clicked Image on the Current Site, so you can view it without loading the submission Page
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
@@ -363,6 +363,9 @@
             }
             const ddmenu = document.getElementById('ddmenu');
             const doc = await requestHelper.SubmissionRequests.getSubmissionPage(sid);
+            if (!this.embeddedElem.isConnected) {
+                return;
+            }
             if (doc != null) {
                 this.submissionImg = doc.getElementById('submissionImg');
                 const imgSrc = this.submissionImg.src;

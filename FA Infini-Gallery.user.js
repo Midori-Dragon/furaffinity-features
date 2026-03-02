@@ -9,7 +9,7 @@
 // @require     https://greasyfork.org/scripts/485153-furaffinity-loading-animations/code/485153-furaffinity-loading-animations.js
 // @require     https://greasyfork.org/scripts/475041-furaffinity-custom-settings/code/475041-furaffinity-custom-settings.js
 // @grant       GM_info
-// @version     2.2.10
+// @version     2.2.11
 // @author      Midori Dragon
 // @description Automatically loads the next page of the gallery as you reach the bottom
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
@@ -597,6 +597,7 @@
         async loadPage(prevWatches) {
             const page = await this.getPage();
             if (page == null) {
+                Logger.logError('No page found');
                 throw new Error('No page found');
             }
             prevWatches ??= [];
@@ -620,6 +621,7 @@
                 watchesContainer.append(...watches);
             }
             else {
+                Logger.logError('No watches found');
                 throw new Error('No watches found');
             }
             return watches;

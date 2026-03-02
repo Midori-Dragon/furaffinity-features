@@ -3,7 +3,7 @@
 // @namespace   Violentmonkey Scripts
 // @require     https://greasyfork.org/scripts/525666-furaffinity-prototype-extensions/code/525666-furaffinity-prototype-extensions.js
 // @grant       none
-// @version     1.5.0
+// @version     1.5.1
 // @author      Midori Dragon
 // @description Library to simplify requests to Furaffinity
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
@@ -678,6 +678,7 @@
         }
         static async fetchPage(username, folder, pageNumber, semaphore) {
             if (username == null) {
+                Logger.logError('Cannot fetch gallery page: no username given');
                 throw new Error('Cannot fetch gallery page: no username given');
             }
             if (pageNumber == null || pageNumber <= 0) {
@@ -831,6 +832,7 @@
         }
         static async fetchPage(username, pageNumber, semaphore) {
             if (username == null) {
+                Logger.logError('Cannot fetch scraps page: no username given');
                 throw new Error('Cannot fetch scraps page: no username given');
             }
             if (pageNumber == null || pageNumber <= 0) {
@@ -928,6 +930,7 @@
         }
         static async fetchPage(username, dataFavId, direction, semaphore) {
             if (username == null) {
+                Logger.logError('Cannot fetch favorites page: no username given');
                 throw new Error('Cannot fetch favorites page: no username given');
             }
             if (direction == null) {
@@ -1022,6 +1025,7 @@
         }
         async _getSubmissionDataFavId(username, submissionId, fromDataFavId, toDataFavId, maxPageNo) {
             if (submissionId == null || submissionId <= 0) {
+                Logger.logError('No submissionId given');
                 throw new Error('No submissionId given');
             }
             if (fromDataFavId == null || fromDataFavId <= 0) {
@@ -1068,6 +1072,7 @@
         }
         async _getFiguresTillId(username, toId, fromDataFavId, maxPageNo) {
             if (toId == null || toId <= 0) {
+                Logger.logError('No toId given');
                 throw new Error('No toId given');
             }
             if (fromDataFavId == null || fromDataFavId <= 0) {
@@ -1116,6 +1121,7 @@
         }
         async _getFiguresSinceId(username, fromId, toDataFavId, maxPageNo) {
             if (fromId == null || fromId <= 0) {
+                Logger.logError('No fromId given');
                 throw new Error('No fromId given');
             }
             if (toDataFavId == null || toDataFavId <= 0) {
@@ -1208,9 +1214,11 @@
         }
         async _getFiguresBetweenIds(username, fromId, toId, fromDataFavId, toDataFavId, maxPageNo) {
             if (fromId == null || fromId <= 0) {
+                Logger.logError('No fromId given');
                 throw new Error('No fromId given');
             }
             if (toId == null || toId <= 0) {
+                Logger.logError('No toId given');
                 throw new Error('No toId given');
             }
             if (fromDataFavId == null || fromDataFavId <= 0) {
@@ -1479,6 +1487,7 @@
         }
         static async fetchPage(username, pageNumber, semaphore) {
             if (username == null) {
+                Logger.logError('Cannot fetch journals page: no username given');
                 throw new Error('Cannot fetch journals page: no username given');
             }
             if (pageNumber == null || pageNumber <= 0) {
@@ -2536,9 +2545,11 @@
         }
         async _watchUser(username, watchKey) {
             if (username == null || username === '') {
+                Logger.logError('No username given');
                 throw new Error('No username given');
             }
             if (watchKey == null || watchKey === '' || watchKey === -1) {
+                Logger.logError('No watch key given');
                 throw new Error('No watch key given');
             }
             const url = UserRequests.hardLinks['watch'] + username + '?key=' + watchKey;
@@ -2546,9 +2557,11 @@
         }
         async _unwatchUser(username, unwatchKey) {
             if (username == null || username === '') {
+                Logger.logError('No username given');
                 throw new Error('No username given');
             }
             if (unwatchKey == null || unwatchKey === '' || unwatchKey === -1) {
+                Logger.logError('No unwatch key given');
                 throw new Error('No unwatch key given');
             }
             const url = UserRequests.hardLinks['unwatch'] + username + '?key=' + unwatchKey;
@@ -2556,9 +2569,11 @@
         }
         async _blockUser(username, blockKey) {
             if (username == null || username === '') {
+                Logger.logError('No username given');
                 throw new Error('No username given');
             }
             if (blockKey == null || blockKey === '' || blockKey === -1) {
+                Logger.logError('No block key given');
                 throw new Error('No block key given');
             }
             const url = UserRequests.hardLinks['block'] + username + '?key=' + blockKey;
@@ -2566,9 +2581,11 @@
         }
         async _unblockUser(username, unblockKey) {
             if (username == null || username === '') {
+                Logger.logError('No username given');
                 throw new Error('No username given');
             }
             if (unblockKey == null || unblockKey === '' || unblockKey === -1) {
+                Logger.logError('No unblock key given');
                 throw new Error('No unblock key given');
             }
             const url = UserRequests.hardLinks['unblock'] + username + '?key=' + unblockKey;
@@ -2604,6 +2621,7 @@
         }
         async _removeSubmissions(submissionIds) {
             if (submissionIds == null || submissionIds.length === 0) {
+                Logger.logError('No submission ids to remove');
                 throw new Error('No submission ids to remove');
             }
             const payload = [
@@ -2644,6 +2662,7 @@
         }
         async _removeMessages(ids) {
             if (ids == null || ids.length === 0) {
+                Logger.logError('No message ids to remove');
                 throw new Error('No message ids to remove');
             }
             const payload = [this._removeAction];
@@ -2706,6 +2725,7 @@
             for (const id of journalIds)
                 payload.push(['journals[]', id.toString()]);
             if (payload.length === 1) {
+                Logger.logError('No messages to remove');
                 throw new Error('No messages to remove');
             }
             return await FuraffinityRequests.postHTML(NewMessages.hardLink, payload, this._semaphore);
@@ -2898,6 +2918,7 @@
         }
         async _getSubmissionPage(submissionId) {
             if (submissionId == null || submissionId === '' || submissionId === -1) {
+                Logger.logError('No submissionId given');
                 throw new Error('No submissionId given');
             }
             const url = SubmissionRequests.hardLinks['view'] + submissionId;
@@ -2905,41 +2926,50 @@
         }
         async _favSubmission(submissionId, favKey) {
             if (submissionId == null || submissionId === '' || submissionId === -1) {
+                Logger.logError('No submissionId given');
                 throw new Error('No submissionId given');
             }
             if (favKey == null || favKey === '' || favKey === -1) {
+                Logger.logError('No favKey given');
                 throw new Error('No favKey given');
             }
             const url = SubmissionRequests.hardLinks['fav'] + submissionId + '?key=' + favKey;
             const resultDoc = await FuraffinityRequests.getHTML(url, this._semaphore);
             if (resultDoc == null) {
+                Logger.logError('Failed to fetch fav page');
                 throw new Error('Failed to fetch fav page');
             }
             const standardpage = resultDoc.getElementById('standardpage');
             if (standardpage) {
                 const blocked = standardpage.querySelector('div[class="redirect-message"]');
                 if (blocked != null && (blocked.textContent?.includes('blocked') ?? false)) {
-                    throw new Error(blocked.textContent?.trim() ?? 'Cannot fav: you are blocked by this user');
+                    const errorMessage = blocked.textContent?.trim() ?? 'Cannot fav: you are blocked by this user';
+                    Logger.logError(errorMessage);
+                    throw new Error(errorMessage);
                 }
             }
             return this._getFavKey(resultDoc);
         }
         async _unfavSubmission(submissionId, unfavKey) {
             if (submissionId == null || submissionId === '' || submissionId === -1) {
+                Logger.logError('No submissionId given');
                 throw new Error('No submissionId given');
             }
             if (unfavKey == null || unfavKey === '' || unfavKey === -1) {
+                Logger.logError('No unfavKey given');
                 throw new Error('No unfavKey given');
             }
             const url = SubmissionRequests.hardLinks['unfav'] + submissionId + '?key=' + unfavKey;
             const resultDoc = await FuraffinityRequests.getHTML(url, this._semaphore);
             if (resultDoc == null) {
+                Logger.logError('Failed to fetch unfav page');
                 throw new Error('Failed to fetch unfav page');
             }
             return this._getFavKey(resultDoc);
         }
         async _getJournalPage(journalId) {
             if (journalId == null || journalId === '' || journalId === -1) {
+                Logger.logError('No journalId given');
                 throw new Error('No journalId given');
             }
             const url = SubmissionRequests.hardLinks['journal'] + journalId;
@@ -3012,12 +3042,14 @@
         }
         static async getHTML(url, semaphore, action, delay = DEFAULT_ACTION_DELAY) {
             if (url == null || url === '') {
+                Logger.logError('No url given for GET request');
                 throw new Error('No url given for GET request');
             }
             return await WaitAndCallAction.callFunctionAsync(() => getHTMLLocal(url, semaphore), action, delay);
         }
         static async postHTML(url, payload, semaphore, action, delay = DEFAULT_ACTION_DELAY) {
             if (url == null || url === '') {
+                Logger.logError('No url given for POST request');
                 throw new Error('No url given for POST request');
             }
             return await WaitAndCallAction.callFunctionAsync(() => postHTMLLocal(url, payload, semaphore), action, delay);
