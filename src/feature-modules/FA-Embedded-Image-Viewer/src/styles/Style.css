@@ -21,6 +21,7 @@
 
 #eiv-submission-container {
     -webkit-user-drag: none;
+    align-self: center;
 }
 
 .eiv-submission-img {
