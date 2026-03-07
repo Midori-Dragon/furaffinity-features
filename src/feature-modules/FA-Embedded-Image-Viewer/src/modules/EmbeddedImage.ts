@@ -23,6 +23,7 @@ export class EmbeddedImage extends EventTarget {
     private _isFullSize = false;
     private _onRemove?: () => void;
     private _abortController = new AbortController();
+    private _onWindowResize = (): void => this.updateImageSize();
 
     private loadingSpinner: LoadingSpinner;
     private previewLoadingSpinner: LoadingSpinner;
@@ -49,6 +50,8 @@ export class EmbeddedImage extends EventTarget {
 
         // Add click event to remove the embedded element when clicked outside
         document.addEventListener('click', this.onDocumentClick.bind(this));
+
+        window.addEventListener('resize', this._onWindowResize);
 
         void this.fillSubDocInfos(figure).catch(async (error: unknown) => {
             if (this._abortController.signal.aborted) {
@@ -107,10 +110,28 @@ export class EmbeddedImage extends EventTarget {
 
     remove(): void {
         this._abortController.abort();
+        window.removeEventListener('resize', this._onWindowResize);
         this.faImageViewer?.destroy();
         this.embeddedElem.parentNode?.removeChild(this.embeddedElem);
         document.removeEventListener('click', this.onDocumentClick);
         this.invokeRemove();
+    }
+
+    private updateImageSize(): void {
+        if (this.faImageViewer == null) {
+            return;
+        }
+        const mainImg = this.faImageViewer.faImage.imgElem;
+        const prevImg = this.faImageViewer.faImagePreview.imgElem;
+        if (this._isFullSize) {
+            const maxW = Math.min(mainImg.naturalWidth || window.innerWidth - 80, window.innerWidth - 80) + 'px';
+            mainImg.style.maxWidth = prevImg.style.maxWidth = maxW;
+            mainImg.style.maxHeight = prevImg.style.maxHeight = '';
+        } else {
+            const ddmenu = document.getElementById('ddmenu')!;
+            mainImg.style.maxWidth = prevImg.style.maxWidth = window.innerWidth - 20 * 2 + 'px';
+            mainImg.style.maxHeight = prevImg.style.maxHeight = window.innerHeight - ddmenu.clientHeight - 38 * 2 - 20 * 2 - 100 + 'px';
+        }
     }
 
     private toggleFullSize(button: HTMLElement): void {
@@ -132,11 +153,7 @@ export class EmbeddedImage extends EventTarget {
             }
             this.embeddedElem.classList.add('eiv-expanded');
             if (this.faImageViewer != null) {
-                const mainImg = this.faImageViewer.faImage.imgElem;
-                const prevImg = this.faImageViewer.faImagePreview.imgElem;
-                const maxW = Math.min(mainImg.naturalWidth || window.innerWidth - 80, window.innerWidth - 80) + 'px';
-                mainImg.style.maxWidth = prevImg.style.maxWidth = maxW;
-                mainImg.style.maxHeight = prevImg.style.maxHeight = '';
+                this.updateImageSize();
                 this.faImageViewer.faImage.zoomEnabled = false;
                 this.faImageViewer.faImage.panEnabled = false;
                 this.faImageViewer.faImage.reset();
@@ -153,11 +170,7 @@ export class EmbeddedImage extends EventTarget {
             }
             document.getElementById('eiv-expanded-footer')?.remove();
             if (this.faImageViewer != null) {
-                const ddmenu = document.getElementById('ddmenu')!;
-                const mainImg = this.faImageViewer.faImage.imgElem;
-                const prevImg = this.faImageViewer.faImagePreview.imgElem;
-                mainImg.style.maxWidth = prevImg.style.maxWidth = window.innerWidth - 20 * 2 + 'px';
-                mainImg.style.maxHeight = prevImg.style.maxHeight = window.innerHeight - ddmenu.clientHeight - 38 * 2 - 20 * 2 - 100 + 'px';
+                this.updateImageSize();
                 this.faImageViewer.faImage.zoomEnabled = true;
                 this.faImageViewer.faImage.panEnabled = true;
             }
