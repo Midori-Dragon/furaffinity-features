@@ -142,7 +142,7 @@ export class EmbeddedImage extends EventTarget {
         const background = document.getElementById('eiv-background')!;
 
         if (this._isFullSize) {
-            button.textContent = '🗗'; //'Fit Size';
+            button.textContent = '  🗗  '; //'Fit Size';
             // Wrap buttons in a sticky footer, append to eiv-main
             const footer = document.createElement('div');
             footer.id = 'eiv-expanded-footer';
@@ -159,7 +159,7 @@ export class EmbeddedImage extends EventTarget {
                 this.faImageViewer.faImage.reset();
             }
         } else {
-            button.textContent = '⛶'; //'Full Size';
+            button.textContent = '  ⛶  '; //'Full Size';
             this.embeddedElem.classList.remove('eiv-expanded');
             // Restore button container back into background before the additional info, and show additional info
             if (additionalInfoContainer != null) {
@@ -183,7 +183,7 @@ export class EmbeddedImage extends EventTarget {
         this.embeddedElem.setAttribute('eiv-sid', figure.id.trimStart('sid-'));
         this.embeddedElem.innerHTML = EmbeddedHTML.html;
         const ddmenu = document.getElementById('ddmenu')!;
-        ddmenu.appendChild(this.embeddedElem);
+        ddmenu.insertAdjacentElement('afterend', this.embeddedElem);
 
         // Add click event to remove the embedded element when clicked outside
         this.embeddedElem.addEventListener('click', (event) => {

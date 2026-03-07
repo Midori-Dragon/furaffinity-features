@@ -5,6 +5,8 @@
     max-width: 1850px;
     z-index: 999999;
     background: rgba(30, 33, 38, .65);
+    text-align: center;
+    top: 50px;
 }
 
 #eiv-background {
@@ -62,8 +64,6 @@
 }
 
 #eiv-main.eiv-expanded {
-    top: 0;
-    left: 0;
     overflow-y: auto;
     scrollbar-color: #9f9f9f #2c2c2c;
 }
@@ -78,7 +78,7 @@
 
 #eiv-expanded-footer {
     position: sticky;
-    bottom: 10px;
+    bottom: 60px;
     width: fit-content;
     margin: 0 auto;
     padding: 8px 20px 12px;
