@@ -1,4 +1,4 @@
-import { closeEmbedAfterOpenSetting, loadingSpinSpeedFavSetting, loadingSpinSpeedSetting, openInNewTabSetting, previewQualitySetting, requestHelper, scriptName, showFullSizeButtonSetting, showWatchingInfoSetting } from '..';
+﻿import { closeEmbedAfterOpenSetting, loadingSpinSpeedFavSetting, loadingSpinSpeedSetting, openInNewTabSetting, previewQualitySetting, requestHelper, scriptName, showFullSizeButtonSetting, showWatchingInfoSetting } from '..';
 import type { LoadingSpinner } from '../../../../library-modules/Furaffinity-Loading-Animations/src/components/LoadingSpinner';
 import { EmbeddedHTML } from '../components/EmbeddedHTML';
 import { getByLinkFromFigcaption, getFavKey, getFigureId, getPreviewQuality, getUserFromFigcaption } from '../utils/Utils';
@@ -124,7 +124,7 @@ export class EmbeddedImage extends EventTarget {
         const mainImg = this.faImageViewer.faImage.imgElem;
         const prevImg = this.faImageViewer.faImagePreview.imgElem;
         if (this._isFullSize) {
-            const maxW = Math.min(mainImg.naturalWidth || window.innerWidth - 80, window.innerWidth - 80) + 'px';
+            const maxW = Math.min(mainImg.naturalWidth || window.innerWidth - 40, window.innerWidth - 40) + 'px';
             mainImg.style.maxWidth = prevImg.style.maxWidth = maxW;
             mainImg.style.maxHeight = prevImg.style.maxHeight = '';
         } else {
@@ -137,17 +137,10 @@ export class EmbeddedImage extends EventTarget {
     private toggleFullSize(button: HTMLElement): void {
         this._isFullSize = !this._isFullSize;
 
-        const buttonContainer = document.getElementById('eiv-button-container')!;
         const additionalInfoContainer = document.getElementById('eiv-additional-info-container');
-        const background = document.getElementById('eiv-background')!;
 
         if (this._isFullSize) {
-            button.textContent = '  🗗  '; //'Fit Size';
-            // Wrap buttons in a sticky footer, append to eiv-main
-            const footer = document.createElement('div');
-            footer.id = 'eiv-expanded-footer';
-            footer.appendChild(buttonContainer);
-            this.embeddedElem.appendChild(footer);
+            button.textContent = '  🗗  ';
             if (additionalInfoContainer != null) {
                 additionalInfoContainer.style.display = 'none';
             }
@@ -159,16 +152,11 @@ export class EmbeddedImage extends EventTarget {
                 this.faImageViewer.faImage.reset();
             }
         } else {
-            button.textContent = '  ⛶  '; //'Full Size';
+            button.textContent = '  ⛶  ';
             this.embeddedElem.classList.remove('eiv-expanded');
-            // Restore button container back into background before the additional info, and show additional info
             if (additionalInfoContainer != null) {
-                background.insertBefore(buttonContainer, additionalInfoContainer);
                 additionalInfoContainer.style.display = '';
-            } else {
-                background.appendChild(buttonContainer);
             }
-            document.getElementById('eiv-expanded-footer')?.remove();
             if (this.faImageViewer != null) {
                 this.updateImageSize();
                 this.faImageViewer.faImage.zoomEnabled = true;
@@ -176,7 +164,6 @@ export class EmbeddedImage extends EventTarget {
             }
         }
     }
-
     private createElements(figure: HTMLElement): void {
         // Create the main container for the embedded element
         this.embeddedElem.id = 'eiv-main';
