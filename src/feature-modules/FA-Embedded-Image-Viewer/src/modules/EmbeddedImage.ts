@@ -21,6 +21,7 @@ export class EmbeddedImage extends EventTarget {
 
     private _imageLoaded = false;
     private _onRemove?: () => void;
+    private _abortController = new AbortController();
 
     private loadingSpinner: LoadingSpinner;
     private previewLoadingSpinner: LoadingSpinner;
@@ -49,11 +50,17 @@ export class EmbeddedImage extends EventTarget {
         document.addEventListener('click', this.onDocumentClick.bind(this));
 
         void this.fillSubDocInfos(figure).catch(async (error: unknown) => {
+            if (this._abortController.signal.aborted) {
+                return;
+            }
             this.loadingSpinner.visible = false;
             this.previewLoadingSpinner.visible = false;
             await showError(error, scriptName);
         });
         void this.fillUserInfos(figure).catch((error: unknown) => {
+            if (this._abortController.signal.aborted) {
+                return;
+            }
             Logger.logError('Failed to load watching info:', error);
         });
     }
@@ -98,6 +105,7 @@ export class EmbeddedImage extends EventTarget {
     }
 
     remove(): void {
+        this._abortController.abort();
         this.faImageViewer?.destroy();
         this.embeddedElem.parentNode?.removeChild(this.embeddedElem);
         document.removeEventListener('click', this.onDocumentClick);
@@ -190,7 +198,7 @@ export class EmbeddedImage extends EventTarget {
         }
 
         const ddmenu = document.getElementById('ddmenu')!;
-        const doc = await requestHelper.SubmissionRequests.getSubmissionPage(sid);
+        const doc = await requestHelper.SubmissionRequests.getSubmissionPage(sid, this._abortController.signal);
         if (!this.embeddedElem.isConnected) {
             return;
         }
@@ -283,7 +291,7 @@ export class EmbeddedImage extends EventTarget {
                 const userLink = getUserFromFigcaption(figcaption);
                 console.log(userLink);
                 if (userLink != null) {
-                    const userPage = await requestHelper.UserRequests.getUserPage(userLink);
+                    const userPage = await requestHelper.UserRequests.getUserPage(userLink, this._abortController.signal);
                     if (userPage != null) {
                         const siteContent = userPage.getElementById('site-content');
                         const navInterfaceButtons = siteContent?.querySelector('userpage-nav-interface-buttons');
@@ -327,7 +335,7 @@ export class EmbeddedImage extends EventTarget {
         try {
             if (isFav) {
                 // Send the favorite request to the server
-                favKey = await requestHelper.SubmissionRequests.favSubmission(sid, favKey) ?? '';
+                favKey = await requestHelper.SubmissionRequests.favSubmission(sid, favKey, this._abortController.signal) ?? '';
                 loadingTextSpinner.visible = false;
 
                 // If the request was successful, set the favorite status to false and update the button text
@@ -343,7 +351,7 @@ export class EmbeddedImage extends EventTarget {
                 }
             } else {
                 // Send the unfavorite request to the server
-                favKey = await requestHelper.SubmissionRequests.unfavSubmission(sid, favKey) ?? '';
+                favKey = await requestHelper.SubmissionRequests.unfavSubmission(sid, favKey, this._abortController.signal) ?? '';
                 loadingTextSpinner.visible = false;
 
                 // If the request was successful, set the favorite status to true and update the button text
@@ -362,6 +370,9 @@ export class EmbeddedImage extends EventTarget {
             // Set the favorite request running flag back to false
         } catch (error: unknown) {
             loadingTextSpinner.visible = false;
+            if (this._abortController.signal.aborted) {
+                return;
+            }
             await showError(error, scriptName);
         } finally {
             this.favRequestRunning = false;

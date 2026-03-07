@@ -17,15 +17,15 @@ export class AccountInformation {
         };
     }
 
-    async getSettingsPage(action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
-        return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(AccountInformation.hardLinks['settings'], this._semaphore), action, delay);
+    async getSettingsPage(signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
+        return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(AccountInformation.hardLinks['settings'], this._semaphore, signal), action, delay);
     }
 
-    async getSiteSettingsPage(action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
-        return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(AccountInformation.hardLinks['siteSettings'], this._semaphore), action, delay);
+    async getSiteSettingsPage(signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
+        return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(AccountInformation.hardLinks['siteSettings'], this._semaphore, signal), action, delay);
     }
 
-    async getUserSettingsPage(action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
-        return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(AccountInformation.hardLinks['userSettings'], this._semaphore), action, delay);
+    async getUserSettingsPage(signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
+        return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(AccountInformation.hardLinks['userSettings'], this._semaphore, signal), action, delay);
     }
 }

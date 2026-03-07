@@ -58,24 +58,24 @@ export class FuraffinityRequests {
         return FuraffinityRequests._httpsString + FuraffinityRequests._domain;
     }
 
-    static async getHTML(url: string, semaphore: Semaphore, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
+    static async getHTML(url: string, semaphore: Semaphore, signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         if (url == null || url === '') {
             Logger.logError('No url given for GET request');
             throw new Error('No url given for GET request');
         }
-        return await WaitAndCallAction.callFunctionAsync(() => getHTMLLocal(url, semaphore), action, delay);
+        return await WaitAndCallAction.callFunctionAsync(() => getHTMLLocal(url, semaphore, signal), action, delay);
     }
 
-    static async postHTML(url: string, payload: string[][] | Record<string, string> | string | URLSearchParams, semaphore: Semaphore, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
+    static async postHTML(url: string, payload: string[][] | Record<string, string> | string | URLSearchParams, semaphore: Semaphore, signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         if (url == null || url === '') {
             Logger.logError('No url given for POST request');
             throw new Error('No url given for POST request');
         }
-        return await WaitAndCallAction.callFunctionAsync(() => postHTMLLocal(url, payload, semaphore), action, delay);
+        return await WaitAndCallAction.callFunctionAsync(() => postHTMLLocal(url, payload, semaphore, signal), action, delay);
     }
 }
 
-async function getHTMLLocal(url: string, semaphore: Semaphore): Promise<Document | undefined> {
+async function getHTMLLocal(url: string, semaphore: Semaphore, signal?: AbortSignal): Promise<Document | undefined> {
     Logger.logInfo(`Requesting '${url}'`);
     const semaphoreActive = semaphore != null && semaphore.maxConcurrency > 0;
     if (semaphoreActive) {
@@ -84,7 +84,7 @@ async function getHTMLLocal(url: string, semaphore: Semaphore): Promise<Document
     }
     try {
         // Send the GET request and retrieve the HTML document.
-        const response = await fetch(url);
+        const response = await fetch(url, { signal });
         if (!response.ok) {
             throw new Error(`HTTP error ${response.status} for: ${url}`);
         }
@@ -97,7 +97,9 @@ async function getHTMLLocal(url: string, semaphore: Semaphore): Promise<Document
         // Enrich network-level errors (e.g. "Failed to fetch") with the URL for better diagnostics.
         const message = error instanceof Error ? error.message : String(error);
         const enriched = new Error(`${message} (URL: ${url})`);
-        Logger.logError(enriched);
+        if (!(signal?.aborted ?? false)) {
+            Logger.logError(enriched);
+        }
         throw enriched;
     } finally {
         // Release the slot in the semaphore.
@@ -107,7 +109,7 @@ async function getHTMLLocal(url: string, semaphore: Semaphore): Promise<Document
     }
 }
 
-async function postHTMLLocal(url: string, payload: string[][] | Record<string, string> | string | URLSearchParams, semaphore: Semaphore): Promise<Document | undefined> {
+async function postHTMLLocal(url: string, payload: string[][] | Record<string, string> | string | URLSearchParams, semaphore: Semaphore, signal?: AbortSignal): Promise<Document | undefined> {
     // Check if the semaphore is active and acquire it if necessary
     const semaphoreActive = semaphore != null && semaphore.maxConcurrency > 0;
     if (semaphoreActive) {
@@ -121,6 +123,7 @@ async function postHTMLLocal(url: string, payload: string[][] | Record<string, s
             headers: {
                 'Content-Type': 'application/x-www-form-urlencoded',
             },
+            signal,
         });
 
         // Check if the response is not ok and throw an error
@@ -137,7 +140,9 @@ async function postHTMLLocal(url: string, payload: string[][] | Record<string, s
         // Enrich network-level errors (e.g. "Failed to fetch") with the URL for better diagnostics.
         const message = error instanceof Error ? error.message : String(error);
         const enriched = new Error(`${message} (URL: ${url})`);
-        Logger.logError(enriched);
+        if (!(signal?.aborted ?? false)) {
+            Logger.logError(enriched);
+        }
         throw enriched;
     } finally {
         // Release the semaphore if it was acquired

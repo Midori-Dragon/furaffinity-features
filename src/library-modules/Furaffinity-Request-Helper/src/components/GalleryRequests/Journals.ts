@@ -16,7 +16,7 @@ export class Journals {
         return FuraffinityRequests.fullUrl + '/journals/';
     }
 
-    static async fetchPage(username: string | undefined, pageNumber: number | undefined, semaphore: Semaphore): Promise<Document | undefined> {
+    static async fetchPage(username: string | undefined, pageNumber: number | undefined, semaphore: Semaphore, signal?: AbortSignal): Promise<Document | undefined> {
         if (username == null) {
             Logger.logError('Cannot fetch journals page: no username given');
             throw new Error('Cannot fetch journals page: no username given');
@@ -29,43 +29,43 @@ export class Journals {
             username += '/';
         }
         const url = Journals.hardLink + username;
-        return await FuraffinityRequests.getHTML(url + pageNumber, semaphore);
+        return await FuraffinityRequests.getHTML(url + pageNumber, semaphore, signal);
     }
 
-    async getJournalPageNo(username: string, journalId?: string | number, fromPageNumber?: string | number, toPageNumber?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<number> {
+    async getJournalPageNo(username: string, journalId?: string | number, fromPageNumber?: string | number, toPageNumber?: string | number, signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<number> {
         journalId = convertToNumber(journalId);
         fromPageNumber = convertToNumber(fromPageNumber);
         toPageNumber = convertToNumber(toPageNumber);
 
         return await WaitAndCallAction.callFunctionAsync(
-            (percentId) => findElementPageNo((pg) => this._getSections(username, pg), journalId as number | undefined, 'jid-', fromPageNumber as number | undefined, toPageNumber as number | undefined, percentId),
+            (percentId) => findElementPageNo((pg) => this._getSections(username, pg, signal), journalId as number | undefined, 'jid-', fromPageNumber as number | undefined, toPageNumber as number | undefined, percentId),
             action, delay
         );
     }
 
-    async getFiguresBetweenIds(username: string, fromId?: string | number, toId?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
+    async getFiguresBetweenIds(username: string, fromId?: string | number, toId?: string | number, signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
         fromId = convertToNumber(fromId);
         toId = convertToNumber(toId);
 
         if (fromId == null || fromId <= 0) {
             return await WaitAndCallAction.callFunctionAsync(
-                () => elementsTillId((pg) => this._getSections(username, pg), toId as number | undefined, undefined),
+                () => elementsTillId((pg) => this._getSections(username, pg, signal), toId as number | undefined, undefined),
                 action, delay
             );
         } else if (toId == null || toId <= 0) {
             return await WaitAndCallAction.callFunctionAsync(
-                () => elementsSinceId((pg) => this._getSections(username, pg), fromId as number | undefined, undefined),
+                () => elementsSinceId((pg) => this._getSections(username, pg, signal), fromId as number | undefined, undefined),
                 action, delay
             );
         } else {
             return await WaitAndCallAction.callFunctionAsync(
-                () => elementsBetweenIds((pg) => this._getSections(username, pg), fromId as number | undefined, toId as number | undefined, undefined, undefined),
+                () => elementsBetweenIds((pg) => this._getSections(username, pg, signal), fromId as number | undefined, toId as number | undefined, undefined, undefined),
                 action, delay
             );
         }
     }
 
-    async getFiguresBetweenIdsBetweenPages(username: string, fromId?: string | number, toId?: string | number, fromPageNumber?: string | number, toPageNumber?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
+    async getFiguresBetweenIdsBetweenPages(username: string, fromId?: string | number, toId?: string | number, fromPageNumber?: string | number, toPageNumber?: string | number, signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
         fromId = convertToNumber(fromId);
         toId = convertToNumber(toId);
         fromPageNumber = convertToNumber(fromPageNumber);
@@ -73,63 +73,63 @@ export class Journals {
 
         if (fromId == null || fromId <= 0) {
             return await WaitAndCallAction.callFunctionAsync(
-                () => elementsTillId((pg) => this._getSections(username, pg), toId as number | undefined, fromPageNumber as number | undefined),
+                () => elementsTillId((pg) => this._getSections(username, pg, signal), toId as number | undefined, fromPageNumber as number | undefined),
                 action, delay
             );
         } else if (toId == null || toId <= 0) {
             return await WaitAndCallAction.callFunctionAsync(
-                () => elementsSinceId((pg) => this._getSections(username, pg), fromId as number | undefined, toPageNumber as number | undefined),
+                () => elementsSinceId((pg) => this._getSections(username, pg, signal), fromId as number | undefined, toPageNumber as number | undefined),
                 action, delay
             );
         } else {
             return await WaitAndCallAction.callFunctionAsync(
-                () => elementsBetweenIds((pg) => this._getSections(username, pg), fromId as number | undefined, toId as number | undefined, fromPageNumber as number | undefined, toPageNumber as number | undefined),
+                () => elementsBetweenIds((pg) => this._getSections(username, pg, signal), fromId as number | undefined, toId as number | undefined, fromPageNumber as number | undefined, toPageNumber as number | undefined),
                 action, delay
             );
         }
     }
 
-    async getSectionsBetweenPages(username: string, fromPageNumber?: string | number, toPageNumber?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
+    async getSectionsBetweenPages(username: string, fromPageNumber?: string | number, toPageNumber?: string | number, signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
         fromPageNumber = convertToNumber(fromPageNumber);
         toPageNumber = convertToNumber(toPageNumber);
 
         if (fromPageNumber == null || fromPageNumber <= 0) {
             return await WaitAndCallAction.callFunctionAsync(
-                (percentId) => elementsTillPage((pg) => this._getSections(username, pg), toPageNumber as number | undefined, percentId),
+                (percentId) => elementsTillPage((pg) => this._getSections(username, pg, signal), toPageNumber as number | undefined, percentId),
                 action, delay
             );
         } else if (toPageNumber == null || toPageNumber <= 0) {
             return await WaitAndCallAction.callFunctionAsync(
-                () => elementsSincePage((pg) => this._getSections(username, pg), fromPageNumber as number | undefined),
+                () => elementsSincePage((pg) => this._getSections(username, pg, signal), fromPageNumber as number | undefined),
                 action, delay
             );
         } else {
             return await WaitAndCallAction.callFunctionAsync(
-                (percentId) => elementsBetweenPages((pg) => this._getSections(username, pg), fromPageNumber as number | undefined, toPageNumber as number | undefined, percentId),
+                (percentId) => elementsBetweenPages((pg) => this._getSections(username, pg, signal), fromPageNumber as number | undefined, toPageNumber as number | undefined, percentId),
                 action, delay
             );
         }
     }
 
-    async getSections(username: string, pageNumber?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[]> {
+    async getSections(username: string, pageNumber?: string | number, signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[]> {
         pageNumber = convertToNumber(pageNumber);
 
         return await WaitAndCallAction.callFunctionAsync(
-            () => this._getSections(username, pageNumber as number | undefined),
+            () => this._getSections(username, pageNumber as number | undefined, signal),
             action, delay
         );
     }
 
-    async getPage(username: string, pageNumber?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
+    async getPage(username: string, pageNumber?: string | number, signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         pageNumber = convertToNumber(pageNumber);
 
         return await WaitAndCallAction.callFunctionAsync(
-            () => Journals.fetchPage(username, pageNumber as number | undefined, this._semaphore),
+            () => Journals.fetchPage(username, pageNumber as number | undefined, this._semaphore, signal),
             action, delay
         );
     }
 
-    private async _getSections(username: string, pageNumber: number | undefined): Promise<HTMLElement[]> {
+    private async _getSections(username: string, pageNumber: number | undefined, signal?: AbortSignal): Promise<HTMLElement[]> {
         if (pageNumber == null || pageNumber <= 0) {
             Logger.logWarning('pageNumber must be greater than 0. Using default 1 instead.');
             pageNumber = 1;
@@ -137,7 +137,7 @@ export class Journals {
 
         Logger.logInfo(`Getting Journals of "${username}" on page "${pageNumber}".`);
 
-        const galleryDoc = await Journals.fetchPage(username, pageNumber, this._semaphore);
+        const galleryDoc = await Journals.fetchPage(username, pageNumber, this._semaphore, signal);
         if (!galleryDoc) {
             Logger.logWarning(`No journals found at "${username}" on page "${pageNumber}".`);
             return [];

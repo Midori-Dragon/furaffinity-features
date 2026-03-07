@@ -27,36 +27,36 @@ export class UserRequests {
         };
     }
 
-    async getUserPage(username?: string, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
-        return await WaitAndCallAction.callFunctionAsync(() => this._getUserPage(username), action, delay);
+    async getUserPage(username?: string, signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
+        return await WaitAndCallAction.callFunctionAsync(() => this._getUserPage(username, signal), action, delay);
     }
 
-    async watchUser(username?: string, watchKey?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<boolean> {
-        return await WaitAndCallAction.callFunctionAsync(() => this._watchUser(username, watchKey), action, delay);
+    async watchUser(username?: string, watchKey?: string | number, signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<boolean> {
+        return await WaitAndCallAction.callFunctionAsync(() => this._watchUser(username, watchKey, signal), action, delay);
     }
 
-    async unwatchUser(username?: string, unwatchKey?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<boolean> {
-        return await WaitAndCallAction.callFunctionAsync(() => this._unwatchUser(username, unwatchKey), action, delay);
+    async unwatchUser(username?: string, unwatchKey?: string | number, signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<boolean> {
+        return await WaitAndCallAction.callFunctionAsync(() => this._unwatchUser(username, unwatchKey, signal), action, delay);
     }
 
-    async blockUser(username?: string, blockKey?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<boolean> {
-        return await WaitAndCallAction.callFunctionAsync(() => this._blockUser(username, blockKey), action, delay);
+    async blockUser(username?: string, blockKey?: string | number, signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<boolean> {
+        return await WaitAndCallAction.callFunctionAsync(() => this._blockUser(username, blockKey, signal), action, delay);
     }
 
-    async unblockUser(username?: string, unblockKey?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<boolean> {
-        return await WaitAndCallAction.callFunctionAsync(() => this._unblockUser(username, unblockKey), action, delay);
+    async unblockUser(username?: string, unblockKey?: string | number, signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<boolean> {
+        return await WaitAndCallAction.callFunctionAsync(() => this._unblockUser(username, unblockKey, signal), action, delay);
     }
 
-    private async _getUserPage(username: string | undefined): Promise<Document | undefined> {
+    private async _getUserPage(username: string | undefined, signal?: AbortSignal): Promise<Document | undefined> {
         if (username == null) {
             Logger.logWarning('No username given');
             return;
         }
         const url = UserRequests.hardLinks['user'] + username;
-        return await FuraffinityRequests.getHTML(url, this._semaphore);
+        return await FuraffinityRequests.getHTML(url, this._semaphore, signal);
     }
 
-    private async _watchUser(username: string | undefined, watchKey: string | number | undefined): Promise<boolean> {
+    private async _watchUser(username: string | undefined, watchKey: string | number | undefined, signal?: AbortSignal): Promise<boolean> {
         if (username == null || username === '') {
             Logger.logError('No username given');
             throw new Error('No username given');
@@ -66,10 +66,10 @@ export class UserRequests {
             throw new Error('No watch key given');
         }
         const url = UserRequests.hardLinks['watch'] + username + '?key=' + watchKey;
-        return await FuraffinityRequests.getHTML(url, this._semaphore) == null;
+        return await FuraffinityRequests.getHTML(url, this._semaphore, signal) == null;
     }
 
-    private async _unwatchUser(username: string | undefined, unwatchKey: string | number | undefined): Promise<boolean> {
+    private async _unwatchUser(username: string | undefined, unwatchKey: string | number | undefined, signal?: AbortSignal): Promise<boolean> {
         if (username == null || username === '') {
             Logger.logError('No username given');
             throw new Error('No username given');
@@ -79,10 +79,10 @@ export class UserRequests {
             throw new Error('No unwatch key given');
         }
         const url = UserRequests.hardLinks['unwatch'] + username + '?key=' + unwatchKey;
-        return await FuraffinityRequests.getHTML(url, this._semaphore) == null;
+        return await FuraffinityRequests.getHTML(url, this._semaphore, signal) == null;
     }
 
-    private async _blockUser(username: string | undefined, blockKey: string | number | undefined): Promise<boolean> {
+    private async _blockUser(username: string | undefined, blockKey: string | number | undefined, signal?: AbortSignal): Promise<boolean> {
         if (username == null || username === '') {
             Logger.logError('No username given');
             throw new Error('No username given');
@@ -92,10 +92,10 @@ export class UserRequests {
             throw new Error('No block key given');
         }
         const url = UserRequests.hardLinks['block'] + username + '?key=' + blockKey;
-        return await FuraffinityRequests.getHTML(url, this._semaphore) == null;
+        return await FuraffinityRequests.getHTML(url, this._semaphore, signal) == null;
     }
 
-    private async _unblockUser(username: string | undefined, unblockKey: string | number | undefined): Promise<boolean> {
+    private async _unblockUser(username: string | undefined, unblockKey: string | number | undefined, signal?: AbortSignal): Promise<boolean> {
         if (username == null || username === '') {
             Logger.logError('No username given');
             throw new Error('No username given');
@@ -105,6 +105,6 @@ export class UserRequests {
             throw new Error('No unblock key given');
         }
         const url = UserRequests.hardLinks['unblock'] + username + '?key=' + unblockKey;
-        return await FuraffinityRequests.getHTML(url, this._semaphore) == null;
+        return await FuraffinityRequests.getHTML(url, this._semaphore, signal) == null;
     }
 }

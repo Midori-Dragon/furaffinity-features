@@ -52,21 +52,21 @@ export class NewMessages {
         nuke: ['nuke-all', 'Nuke Selected'],
     };
 
-    async getMessagesPage(action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
-        return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(NewMessages.hardLink, this._semaphore), action, delay);
+    async getMessagesPage(signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
+        return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(NewMessages.hardLink, this._semaphore, signal), action, delay);
     }
 
-    async removeMessages(userIds?: string[] | number[], journalCommentIds?: string[] | number[], shoutIds?: string[] | number[], favoriteIds?: string[] | number[], journalIds?: string[] | number[], action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
+    async removeMessages(userIds?: string[] | number[], journalCommentIds?: string[] | number[], shoutIds?: string[] | number[], favoriteIds?: string[] | number[], journalIds?: string[] | number[], signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         userIds ??= [];
         journalCommentIds ??= [];
         shoutIds ??= [];
         favoriteIds ??= [];
         journalIds ??= [];
 
-        return await WaitAndCallAction.callFunctionAsync(() => this._removeMessages(userIds!, journalCommentIds!, shoutIds!, favoriteIds!, journalIds!), action, delay);
+        return await WaitAndCallAction.callFunctionAsync(() => this._removeMessages(userIds!, journalCommentIds!, shoutIds!, favoriteIds!, journalIds!, signal), action, delay);
     }
 
-    private async _removeMessages(userIds: string[] | number[], journalCommentIds: string[] | number[], shoutIds: string[] | number[], favoriteIds: string[] | number[], journalIds: string[] | number[]): Promise<Document | undefined> {
+    private async _removeMessages(userIds: string[] | number[], journalCommentIds: string[] | number[], shoutIds: string[] | number[], favoriteIds: string[] | number[], journalIds: string[] | number[], signal?: AbortSignal): Promise<Document | undefined> {
         const payload: [string, string][] = [
             NewMessages.hardActions['remove'],
         ];
@@ -82,6 +82,6 @@ export class NewMessages {
             throw new Error('No messages to remove');
         }
 
-        return await FuraffinityRequests.postHTML(NewMessages.hardLink, payload, this._semaphore);
+        return await FuraffinityRequests.postHTML(NewMessages.hardLink, payload, this._semaphore, signal);
     }
 }

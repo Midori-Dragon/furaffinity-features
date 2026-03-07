@@ -17,7 +17,7 @@ export class Browse {
         return FuraffinityRequests.fullUrl + '/browse/';
     }
 
-    static async fetchPage(pageNumber: number | undefined, browseOptions: BrowseOptions | undefined, semaphore: Semaphore): Promise<Document | undefined> {
+    static async fetchPage(pageNumber: number | undefined, browseOptions: BrowseOptions | undefined, semaphore: Semaphore, signal?: AbortSignal): Promise<Document | undefined> {
         if (pageNumber == null || pageNumber <= 0) {
             Logger.logWarning('Page number must be greater than 0. Using default 1 instead.');
             pageNumber = 1;
@@ -25,7 +25,7 @@ export class Browse {
 
         browseOptions ??= new BrowseOptions();
 
-        const payload: { [key: string]: string | number | undefined } = {
+        const payload: { [key: string]: string | number | undefined; } = {
             'cat': browseOptions.category,
             'atype': browseOptions.type,
             'species': browseOptions.species,
@@ -44,7 +44,7 @@ export class Browse {
         const payloadArray = Object.entries(payload).map(([key, value]) => [key, value?.toString() ?? '']);
 
         const url = Browse.hardLink;
-        const page = await FuraffinityRequests.postHTML(url, payloadArray, semaphore);
+        const page = await FuraffinityRequests.postHTML(url, payloadArray, semaphore, signal);
         checkTagsAll(page);
         return page;
     }
@@ -63,29 +63,29 @@ export class Browse {
         return BrowseOptions;
     }
 
-    async getFiguresBetweenIds(fromId?: string | number, toId?: string | number, browseOptions?: BrowseOptions, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
+    async getFiguresBetweenIds(fromId?: string | number, toId?: string | number, browseOptions?: BrowseOptions, signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
         fromId = convertToNumber(fromId);
         toId = convertToNumber(toId);
 
         if (fromId == null || fromId <= 0) {
             return await WaitAndCallAction.callFunctionAsync(
-                () => SearchRequests.getBrowseFiguresTillId(toId as number | undefined, undefined, browseOptions, this._semaphore),
+                () => SearchRequests.getBrowseFiguresTillId(toId as number | undefined, undefined, browseOptions, this._semaphore, signal),
                 action, delay
             );
         } else if (toId == null || toId <= 0) {
             return await WaitAndCallAction.callFunctionAsync(
-                () => SearchRequests.getBrowseFiguresSinceId(fromId as number | undefined, undefined, browseOptions, this._semaphore),
+                () => SearchRequests.getBrowseFiguresSinceId(fromId as number | undefined, undefined, browseOptions, this._semaphore, signal),
                 action, delay
             );
         } else {
             return await WaitAndCallAction.callFunctionAsync(
-                (percentId) => SearchRequests.getBrowseFiguresBetweenIds(fromId as number | undefined, toId as number | undefined, undefined, undefined, browseOptions, this._semaphore, percentId),
+                (percentId) => SearchRequests.getBrowseFiguresBetweenIds(fromId as number | undefined, toId as number | undefined, undefined, undefined, browseOptions, this._semaphore, signal, percentId),
                 action, delay
             );
         }
     }
 
-    async getFiguresBetweenIdsBetweenPages(fromId?: string | number, toId?: string | number, fromPageNumber?: string | number, toPageNumber?: string | number, browseOptions?: BrowseOptions, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
+    async getFiguresBetweenIdsBetweenPages(fromId?: string | number, toId?: string | number, fromPageNumber?: string | number, toPageNumber?: string | number, browseOptions?: BrowseOptions, signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
         fromId = convertToNumber(fromId);
         toId = convertToNumber(toId);
         fromPageNumber = convertToNumber(fromPageNumber);
@@ -93,58 +93,58 @@ export class Browse {
 
         if (fromId == null || fromId <= 0) {
             return await WaitAndCallAction.callFunctionAsync(
-                () => SearchRequests.getBrowseFiguresTillId(toId as number | undefined, fromPageNumber as number | undefined, browseOptions, this._semaphore),
+                () => SearchRequests.getBrowseFiguresTillId(toId as number | undefined, fromPageNumber as number | undefined, browseOptions, this._semaphore, signal),
                 action, delay
             );
         } else if (toId == null || toId <= 0) {
             return await WaitAndCallAction.callFunctionAsync(
-                () => SearchRequests.getBrowseFiguresSinceId(fromId as number | undefined, toPageNumber as number | undefined, browseOptions, this._semaphore),
+                () => SearchRequests.getBrowseFiguresSinceId(fromId as number | undefined, toPageNumber as number | undefined, browseOptions, this._semaphore, signal),
                 action, delay
             );
         } else {
             return await WaitAndCallAction.callFunctionAsync(
-                (percentId) => SearchRequests.getBrowseFiguresBetweenIds(fromId as number | undefined, toId as number | undefined, fromPageNumber as number | undefined, toPageNumber as number | undefined, browseOptions, this._semaphore, percentId),
+                (percentId) => SearchRequests.getBrowseFiguresBetweenIds(fromId as number | undefined, toId as number | undefined, fromPageNumber as number | undefined, toPageNumber as number | undefined, browseOptions, this._semaphore, signal, percentId),
                 action, delay
             );
         }
     }
 
-    async getFiguresBetweenPages(fromPageNumber?: string | number, toPageNumber?: string | number, browseOptions?: BrowseOptions, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
+    async getFiguresBetweenPages(fromPageNumber?: string | number, toPageNumber?: string | number, browseOptions?: BrowseOptions, signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
         fromPageNumber = convertToNumber(fromPageNumber);
         toPageNumber = convertToNumber(toPageNumber);
 
         if (fromPageNumber == null || fromPageNumber <= 0) {
             return await WaitAndCallAction.callFunctionAsync(
-                (percentId) => SearchRequests.getBrowseFiguresTillPage(toPageNumber as number | undefined, browseOptions, this._semaphore, percentId),
+                (percentId) => SearchRequests.getBrowseFiguresTillPage(toPageNumber as number | undefined, browseOptions, this._semaphore, signal, percentId),
                 action, delay
             );
         } else if (toPageNumber == null || toPageNumber <= 0) {
             return await WaitAndCallAction.callFunctionAsync(
-                () => SearchRequests.getBrowseFiguresSincePage(fromPageNumber as number | undefined, browseOptions, this._semaphore),
+                () => SearchRequests.getBrowseFiguresSincePage(fromPageNumber as number | undefined, browseOptions, this._semaphore, signal),
                 action, delay
             );
         } else {
             return await WaitAndCallAction.callFunctionAsync(
-                (percentId) => SearchRequests.getBrowseFiguresBetweenPages(fromPageNumber as number | undefined, toPageNumber as number | undefined, browseOptions, this._semaphore, percentId),
+                (percentId) => SearchRequests.getBrowseFiguresBetweenPages(fromPageNumber as number | undefined, toPageNumber as number | undefined, browseOptions, this._semaphore, signal, percentId),
                 action, delay
             );
         }
     }
 
-    async getFigures(pageNumber?: string | number, browseOptions?: BrowseOptions, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[]> {
+    async getFigures(pageNumber?: string | number, browseOptions?: BrowseOptions, signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[]> {
         pageNumber = convertToNumber(pageNumber);
 
         return await WaitAndCallAction.callFunctionAsync(
-            () => SearchRequests.getBrowseFigures(pageNumber as number | undefined, browseOptions, this._semaphore),
+            () => SearchRequests.getBrowseFigures(pageNumber as number | undefined, browseOptions, this._semaphore, signal),
             action, delay
         );
     }
 
-    async getPage(pageNumber?: string | number, browseOptions?: BrowseOptions, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
+    async getPage(pageNumber?: string | number, browseOptions?: BrowseOptions, signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         pageNumber = convertToNumber(pageNumber);
 
         return await WaitAndCallAction.callFunctionAsync(
-            () => Browse.fetchPage(pageNumber as number | undefined, browseOptions, this._semaphore),
+            () => Browse.fetchPage(pageNumber as number | undefined, browseOptions, this._semaphore, signal),
             action, delay
         );
     }

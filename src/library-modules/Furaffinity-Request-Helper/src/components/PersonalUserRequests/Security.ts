@@ -17,15 +17,15 @@ export class Security {
         };
     }
 
-    async getSessionsPage(action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
-        return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(Security.hardLinks['sessions'], this._semaphore), action, delay);
+    async getSessionsPage(signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
+        return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(Security.hardLinks['sessions'], this._semaphore, signal), action, delay);
     }
 
-    async getLogsPage(action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
-        return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(Security.hardLinks['logs'], this._semaphore), action, delay);
+    async getLogsPage(signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
+        return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(Security.hardLinks['logs'], this._semaphore, signal), action, delay);
     }
 
-    async getLabelsPage(action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
-        return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(Security.hardLinks['labels'], this._semaphore), action, delay);
+    async getLabelsPage(signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
+        return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(Security.hardLinks['labels'], this._semaphore, signal), action, delay);
     }
 }

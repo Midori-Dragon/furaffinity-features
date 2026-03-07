@@ -19,32 +19,32 @@ export class SubmissionRequests {
         };
     }
 
-    async getSubmissionPage(submissionId?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
-        return await WaitAndCallAction.callFunctionAsync(() => this._getSubmissionPage(submissionId), action, delay);
+    async getSubmissionPage(submissionId?: string | number, signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
+        return await WaitAndCallAction.callFunctionAsync(() => this._getSubmissionPage(submissionId, signal), action, delay);
     }
 
-    async favSubmission(submissionId?: string | number, favKey?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<string | undefined> {
-        return await WaitAndCallAction.callFunctionAsync(() => this._favSubmission(submissionId, favKey), action, delay);
+    async favSubmission(submissionId?: string | number, favKey?: string | number, signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<string | undefined> {
+        return await WaitAndCallAction.callFunctionAsync(() => this._favSubmission(submissionId, favKey, signal), action, delay);
     }
 
-    async unfavSubmission(submissionId?: string | number, unfavKey?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<string | undefined> {
-        return await WaitAndCallAction.callFunctionAsync(() => this._unfavSubmission(submissionId, unfavKey), action, delay);
+    async unfavSubmission(submissionId?: string | number, unfavKey?: string | number, signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<string | undefined> {
+        return await WaitAndCallAction.callFunctionAsync(() => this._unfavSubmission(submissionId, unfavKey, signal), action, delay);
     }
 
     async getJournalPage(journalId?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         return await WaitAndCallAction.callFunctionAsync(() => this._getJournalPage(journalId), action, delay);
     }
 
-    private async _getSubmissionPage(submissionId: string | number | undefined): Promise<Document | undefined> {
+    private async _getSubmissionPage(submissionId: string | number | undefined, signal?: AbortSignal): Promise<Document | undefined> {
         if (submissionId == null || submissionId === '' || submissionId === -1) {
             Logger.logError('No submissionId given');
             throw new Error('No submissionId given');
         }
         const url = SubmissionRequests.hardLinks['view'] + submissionId;
-        return await FuraffinityRequests.getHTML(url, this._semaphore);
+        return await FuraffinityRequests.getHTML(url, this._semaphore, signal);
     }
 
-    private async _favSubmission(submissionId: string | number | undefined, favKey: string | number | undefined): Promise<string | undefined> {
+    private async _favSubmission(submissionId: string | number | undefined, favKey: string | number | undefined, signal?: AbortSignal): Promise<string | undefined> {
         if (submissionId == null || submissionId === '' || submissionId === -1) {
             Logger.logError('No submissionId given');
             throw new Error('No submissionId given');
@@ -54,7 +54,7 @@ export class SubmissionRequests {
             throw new Error('No favKey given');
         }
         const url = SubmissionRequests.hardLinks['fav'] + submissionId + '?key=' + favKey;
-        const resultDoc = await FuraffinityRequests.getHTML(url, this._semaphore);
+        const resultDoc = await FuraffinityRequests.getHTML(url, this._semaphore, signal);
         if (resultDoc == null) {
             Logger.logError('Failed to fetch fav page');
             throw new Error('Failed to fetch fav page');
@@ -71,7 +71,7 @@ export class SubmissionRequests {
         return this._getFavKey(resultDoc);
     }
 
-    private async _unfavSubmission(submissionId: string | number | undefined, unfavKey: string | number | undefined): Promise<string | undefined> {
+    private async _unfavSubmission(submissionId: string | number | undefined, unfavKey: string | number | undefined, signal?: AbortSignal): Promise<string | undefined> {
         if (submissionId == null || submissionId === '' || submissionId === -1) {
             Logger.logError('No submissionId given');
             throw new Error('No submissionId given');
@@ -81,7 +81,7 @@ export class SubmissionRequests {
             throw new Error('No unfavKey given');
         }
         const url = SubmissionRequests.hardLinks['unfav'] + submissionId + '?key=' + unfavKey;
-        const resultDoc = await FuraffinityRequests.getHTML(url, this._semaphore);
+        const resultDoc = await FuraffinityRequests.getHTML(url, this._semaphore, signal);
         if (resultDoc == null) {
             Logger.logError('Failed to fetch unfav page');
             throw new Error('Failed to fetch unfav page');

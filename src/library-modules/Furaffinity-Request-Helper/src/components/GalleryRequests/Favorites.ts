@@ -17,7 +17,7 @@ export class Favorites {
         return FuraffinityRequests.fullUrl + '/favorites/';
     }
 
-    static async fetchPage(username: string | undefined, dataFavId: number | undefined, direction: number | undefined, semaphore: Semaphore): Promise<Document | undefined> {
+    static async fetchPage(username: string | undefined, dataFavId: number | undefined, direction: number | undefined, semaphore: Semaphore, signal?: AbortSignal): Promise<Document | undefined> {
         if (username == null) {
             Logger.logError('Cannot fetch favorites page: no username given');
             throw new Error('Cannot fetch favorites page: no username given');
@@ -41,52 +41,52 @@ export class Favorites {
         } else {
             url += 'prev/';
         }
-        const page = await FuraffinityRequests.getHTML(url, semaphore);
+        const page = await FuraffinityRequests.getHTML(url, semaphore, signal);
         checkTagsAll(page);
         return page;
     }
 
-    async getSubmissionDataFavId(username: string, submissionId?: string | number, fromDataFavId?: string | number, toDataFavId?: string | number, maxPageNo?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<number> {
+    async getSubmissionDataFavId(username: string, submissionId?: string | number, fromDataFavId?: string | number, toDataFavId?: string | number, maxPageNo?: string | number, signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<number> {
         submissionId = convertToNumber(submissionId);
         fromDataFavId = convertToNumber(fromDataFavId);
         toDataFavId = convertToNumber(toDataFavId);
         maxPageNo = convertToNumber(maxPageNo);
 
         return await WaitAndCallAction.callFunctionAsync(
-            () => this._getSubmissionDataFavId(username, submissionId as number | undefined, fromDataFavId as number | undefined, toDataFavId as number | undefined, maxPageNo as number | undefined),
+            () => this._getSubmissionDataFavId(username, submissionId as number | undefined, fromDataFavId as number | undefined, toDataFavId as number | undefined, maxPageNo as number | undefined, signal),
             action, delay
         );
     }
 
-    async getFiguresBetweenIds(username: string, fromId?: string | number, toId?: string | number, maxPageNo?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
+    async getFiguresBetweenIds(username: string, fromId?: string | number, toId?: string | number, maxPageNo?: string | number, signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
         fromId = convertToNumber(fromId);
         toId = convertToNumber(toId);
         maxPageNo = convertToNumber(maxPageNo);
 
         if (fromId == null || fromId <= 0) {
             return await WaitAndCallAction.callFunctionAsync(
-                () => this._getFiguresTillId(username, toId as number | undefined, undefined, maxPageNo as number | undefined),
+                () => this._getFiguresTillId(username, toId as number | undefined, undefined, maxPageNo as number | undefined, signal),
                 action, delay
             );
         } else if (toId == null || toId <= 0) {
             return await WaitAndCallAction.callFunctionAsync(
-                () => this._getFiguresSinceId(username, fromId as number | undefined, undefined, maxPageNo as number | undefined),
+                () => this._getFiguresSinceId(username, fromId as number | undefined, undefined, maxPageNo as number | undefined, signal),
                 action, delay
             );
         } else {
             return await WaitAndCallAction.callFunctionAsync(
-                () => this._getFiguresBetweenIds(username, fromId as number | undefined, toId as number | undefined, undefined, undefined, maxPageNo as number | undefined),
+                () => this._getFiguresBetweenIds(username, fromId as number | undefined, toId as number | undefined, undefined, undefined, maxPageNo as number | undefined, signal),
                 action, delay
             );
         }
     }
 
     /** @deprecated Use `getFiguresBetweenIdsBetweenDataIds` instead. */
-    async getFiguresBetweenIdsBetweenPages(username: string, fromId?: string | number, toId?: string | number, fromDataFavId?: string | number, toDataFavId?: string | number, maxPageNo?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
-        return await this.getFiguresBetweenIdsBetweenDataIds(username, fromId, toId, fromDataFavId, toDataFavId, maxPageNo, action, delay);
+    async getFiguresBetweenIdsBetweenPages(username: string, fromId?: string | number, toId?: string | number, fromDataFavId?: string | number, toDataFavId?: string | number, maxPageNo?: string | number, signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
+        return await this.getFiguresBetweenIdsBetweenDataIds(username, fromId, toId, fromDataFavId, toDataFavId, maxPageNo, signal, action, delay);
     }
 
-    async getFiguresBetweenIdsBetweenDataIds(username: string, fromId?: string | number, toId?: string | number, fromDataFavId?: string | number, toDataFavId?: string | number, maxPageNo?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
+    async getFiguresBetweenIdsBetweenDataIds(username: string, fromId?: string | number, toId?: string | number, fromDataFavId?: string | number, toDataFavId?: string | number, maxPageNo?: string | number, signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
         fromId = convertToNumber(fromId);
         toId = convertToNumber(toId);
         fromDataFavId = convertToNumber(fromDataFavId);
@@ -95,66 +95,66 @@ export class Favorites {
 
         if (fromId == null || fromId <= 0) {
             return await WaitAndCallAction.callFunctionAsync(
-                () => this._getFiguresTillId(username, toId as number | undefined, fromDataFavId as number | undefined, maxPageNo as number | undefined),
+                () => this._getFiguresTillId(username, toId as number | undefined, fromDataFavId as number | undefined, maxPageNo as number | undefined, signal),
                 action, delay
             );
         } else if (toId == null || toId <= 0) {
             return await WaitAndCallAction.callFunctionAsync(
-                () => this._getFiguresSinceId(username, fromId as number | undefined, toDataFavId as number | undefined, maxPageNo as number | undefined),
+                () => this._getFiguresSinceId(username, fromId as number | undefined, toDataFavId as number | undefined, maxPageNo as number | undefined, signal),
                 action, delay
             );
         } else {
             return await WaitAndCallAction.callFunctionAsync(
-                () => this._getFiguresBetweenIds(username, fromId as number | undefined, toId as number | undefined, fromDataFavId as number | undefined, toDataFavId as number | undefined, maxPageNo as number | undefined),
+                () => this._getFiguresBetweenIds(username, fromId as number | undefined, toId as number | undefined, fromDataFavId as number | undefined, toDataFavId as number | undefined, maxPageNo as number | undefined, signal),
                 action, delay
             );
         }
     }
 
-    async getFiguresBetweenPages(username: string, fromDataFavId?: string | number, toDataFavId?: string | number, maxPageNo?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
+    async getFiguresBetweenPages(username: string, fromDataFavId?: string | number, toDataFavId?: string | number, maxPageNo?: string | number, signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[][]> {
         fromDataFavId = convertToNumber(fromDataFavId);
         toDataFavId = convertToNumber(toDataFavId);
         maxPageNo = convertToNumber(maxPageNo);
 
         if (fromDataFavId == null || fromDataFavId <= 0) {
             return await WaitAndCallAction.callFunctionAsync(
-                () => this._getFiguresTillPage(username, toDataFavId as number | undefined, maxPageNo as number | undefined),
+                () => this._getFiguresTillPage(username, toDataFavId as number | undefined, maxPageNo as number | undefined, signal),
                 action, delay
             );
         } else if (toDataFavId == null || toDataFavId <= 0) {
             return await WaitAndCallAction.callFunctionAsync(
-                () => this._getFiguresSincePage(username, fromDataFavId as number | undefined, maxPageNo as number | undefined),
+                () => this._getFiguresSincePage(username, fromDataFavId as number | undefined, maxPageNo as number | undefined, signal),
                 action, delay
             );
         } else {
             return await WaitAndCallAction.callFunctionAsync(
-                () => this._getFiguresBetweenPages(username, fromDataFavId as number | undefined, toDataFavId as number | undefined, maxPageNo as number | undefined),
+                () => this._getFiguresBetweenPages(username, fromDataFavId as number | undefined, toDataFavId as number | undefined, maxPageNo as number | undefined, signal),
                 action, delay
             );
         }
     }
 
-    async getFigures(username: string, fromDataFavId?: string | number, direction?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[]> {
+    async getFigures(username: string, fromDataFavId?: string | number, direction?: string | number, signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<HTMLElement[]> {
         fromDataFavId = convertToNumber(fromDataFavId);
         direction = convertToNumber(direction);
 
         return await WaitAndCallAction.callFunctionAsync(
-            () => this._getFigures(username, fromDataFavId as number | undefined, direction as number | undefined),
+            () => this._getFigures(username, fromDataFavId as number | undefined, direction as number | undefined, signal),
             action, delay
         );
     }
 
-    async getPage(username: string, fromDataFavId?: string | number, direction?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
+    async getPage(username: string, fromDataFavId?: string | number, direction?: string | number, signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         fromDataFavId = convertToNumber(fromDataFavId);
         direction = convertToNumber(direction);
 
         return await WaitAndCallAction.callFunctionAsync(
-            () => Favorites.fetchPage(username, fromDataFavId as number | undefined, direction as number | undefined, this.semaphore),
+            () => Favorites.fetchPage(username, fromDataFavId as number | undefined, direction as number | undefined, this.semaphore, signal),
             action, delay
         );
     }
 
-    private async _getSubmissionDataFavId(username: string, submissionId: number | undefined, fromDataFavId: number | undefined, toDataFavId: number | undefined, maxPageNo: number | undefined): Promise<number> {
+    private async _getSubmissionDataFavId(username: string, submissionId: number | undefined, fromDataFavId: number | undefined, toDataFavId: number | undefined, maxPageNo: number | undefined, signal?: AbortSignal): Promise<number> {
         if (submissionId == null || submissionId <= 0) {
             Logger.logError('No submissionId given');
             throw new Error('No submissionId given');
@@ -177,7 +177,7 @@ export class Favorites {
         let running = true;
         let i = 0;
         while (running && i < maxPageNo) {
-            const figures = await this._getFigures(username, dataFavId, 1);
+            const figures = await this._getFigures(username, dataFavId, 1, signal);
             let currFigureId = lastFigureId;
             if (figures.length !== 0) {
                 currFigureId = figures[0].id;
@@ -204,7 +204,7 @@ export class Favorites {
         return -1;
     }
 
-    private async _getFiguresTillId(username: string, toId: number | undefined, fromDataFavId: number | undefined, maxPageNo: number | undefined): Promise<HTMLElement[][]> {
+    private async _getFiguresTillId(username: string, toId: number | undefined, fromDataFavId: number | undefined, maxPageNo: number | undefined, signal?: AbortSignal): Promise<HTMLElement[][]> {
         if (toId == null || toId <= 0) {
             Logger.logError('No toId given');
             throw new Error('No toId given');
@@ -224,7 +224,7 @@ export class Favorites {
         let lastFigureId: string | undefined;
         let i = 0;
         while (running && i < maxPageNo) {
-            const figures = await this._getFigures(username, dataFavId, 1);
+            const figures = await this._getFigures(username, dataFavId, 1, signal);
             let currFigureId = lastFigureId;
             if (figures.length !== 0) {
                 currFigureId = figures[0].id;
@@ -254,7 +254,7 @@ export class Favorites {
         return allFigures;
     }
 
-    private async _getFiguresSinceId(username: string, fromId: number | undefined, toDataFavId: number | undefined, maxPageNo: number | undefined): Promise<HTMLElement[][]> {
+    private async _getFiguresSinceId(username: string, fromId: number | undefined, toDataFavId: number | undefined, maxPageNo: number | undefined, signal?: AbortSignal): Promise<HTMLElement[][]> {
         if (fromId == null || fromId <= 0) {
             Logger.logError('No fromId given');
             throw new Error('No fromId given');
@@ -276,7 +276,7 @@ export class Favorites {
 
         if (toDataFavId < 0) {
             while (running && i < maxPageNo) {
-                const figures = await this._getFigures(username, dataFavId, direction);
+                const figures = await this._getFigures(username, dataFavId, direction, signal);
                 let currFigureId = lastFigureId;
                 if (figures.length !== 0) {
                     currFigureId = figures[0].id;
@@ -305,7 +305,7 @@ export class Favorites {
 
         const allFigures = [];
         while (running && i < maxPageNo) {
-            const figures = await this._getFigures(username, dataFavId, direction);
+            const figures = await this._getFigures(username, dataFavId, direction, signal);
             let currFigureId = lastFigureId;
             if (figures.length !== 0) {
                 currFigureId = figures[0].id;
@@ -347,7 +347,7 @@ export class Favorites {
         return allFigures;
     }
 
-    private async _getFiguresBetweenIds(username: string, fromId: number | undefined, toId: number | undefined, fromDataFavId: number | undefined, toDataFavId: number | undefined, maxPageNo: number | undefined): Promise<HTMLElement[][]> {
+    private async _getFiguresBetweenIds(username: string, fromId: number | undefined, toId: number | undefined, fromDataFavId: number | undefined, toDataFavId: number | undefined, maxPageNo: number | undefined, signal?: AbortSignal): Promise<HTMLElement[][]> {
         if (fromId == null || fromId <= 0) {
             Logger.logError('No fromId given');
             throw new Error('No fromId given');
@@ -376,7 +376,7 @@ export class Favorites {
         let i = 0;
         if (fromDataFavId < 0 && toDataFavId < 0) {
             while (running && i < maxPageNo) {
-                const figures = await this._getFigures(username, dataFavId, direction);
+                const figures = await this._getFigures(username, dataFavId, direction, signal);
                 let currFigureId = lastFigureId;
                 if (figures.length !== 0) {
                     currFigureId = figures[0].id;
@@ -406,7 +406,7 @@ export class Favorites {
         const allFigures = [];
         lastFigureId = undefined;
         while (running && i < maxPageNo) {
-            const figures = await this._getFigures(username, dataFavId, direction);
+            const figures = await this._getFigures(username, dataFavId, direction, signal);
             let currFigureId: string | undefined = lastFigureId;
             if (figures.length !== 0) {
                 currFigureId = figures[0].id;
@@ -452,7 +452,7 @@ export class Favorites {
         return allFigures;
     }
 
-    private async _getFiguresTillPage(username: string, toDataFavId: number | undefined, maxPageNo: number | undefined): Promise<HTMLElement[][]> {
+    private async _getFiguresTillPage(username: string, toDataFavId: number | undefined, maxPageNo: number | undefined, signal?: AbortSignal): Promise<HTMLElement[][]> {
         if (toDataFavId == null || toDataFavId <= 0) {
             Logger.logWarning('toDataFavId must be greater than 0. Using default 1 instead.');
             toDataFavId = -1;
@@ -468,7 +468,7 @@ export class Favorites {
         let running = true;
         let i = 0;
         while (running && i < maxPageNo) {
-            const figures = await this._getFigures(username, dataFavId, 1);
+            const figures = await this._getFigures(username, dataFavId, 1, signal);
             let currFigureId = lastFigureId;
             if (figures.length !== 0) {
                 currFigureId = figures[0].id;
@@ -498,7 +498,7 @@ export class Favorites {
         return allFigures;
     }
 
-    private async _getFiguresSincePage(username: string, fromDataFavId: number | undefined, maxPageNo: number | undefined): Promise<HTMLElement[][]> {
+    private async _getFiguresSincePage(username: string, fromDataFavId: number | undefined, maxPageNo: number | undefined, signal?: AbortSignal): Promise<HTMLElement[][]> {
         if (fromDataFavId == null || fromDataFavId <= 0) {
             Logger.logWarning('fromDataFavId must be greater than 0. Using default 1 instead.');
             fromDataFavId = -1;
@@ -514,7 +514,7 @@ export class Favorites {
         let running = true;
         let i = 0;
         while (running && i < maxPageNo) {
-            const figures = await this._getFigures(username, dataFavId, 1);
+            const figures = await this._getFigures(username, dataFavId, 1, signal);
             let currFigureId = lastFigureId;
             if (figures.length !== 0) {
                 currFigureId = figures[0].id;
@@ -543,7 +543,7 @@ export class Favorites {
         return allFigures;
     }
 
-    private async _getFiguresBetweenPages(username: string, fromDataFavId: number | undefined, toDataFavId: number | undefined, maxPageNo: number | undefined): Promise<HTMLElement[][]> {
+    private async _getFiguresBetweenPages(username: string, fromDataFavId: number | undefined, toDataFavId: number | undefined, maxPageNo: number | undefined, signal?: AbortSignal): Promise<HTMLElement[][]> {
         if (fromDataFavId == null || fromDataFavId <= 0) {
             Logger.logWarning('fromDataFavId must be greater than 0. Using default 1 instead.');
             fromDataFavId = -1;
@@ -563,7 +563,7 @@ export class Favorites {
         let running = true;
         let i = 0;
         while (running && i < maxPageNo) {
-            const figures = await this._getFigures(username, dataFavId, 1);
+            const figures = await this._getFigures(username, dataFavId, 1, signal);
             let currFigureId = lastFigureId;
             if (figures.length !== 0) {
                 currFigureId = figures[0].id;
@@ -595,9 +595,9 @@ export class Favorites {
         return allFigures;
     }
 
-    private async _getFigures(username: string, dataFavId: number | undefined, direction: number | undefined): Promise<HTMLElement[]> {
+    private async _getFigures(username: string, dataFavId: number | undefined, direction: number | undefined, signal?: AbortSignal): Promise<HTMLElement[]> {
         Logger.logInfo(`Getting Favorites of "${username}" since id "${dataFavId}" and direction "${direction}".`);
-        const galleryDoc = await Favorites.fetchPage(username, dataFavId, direction, this.semaphore);
+        const galleryDoc = await Favorites.fetchPage(username, dataFavId, direction, this.semaphore, signal);
         if (!galleryDoc || !(galleryDoc instanceof Document) || galleryDoc.getElementById('no-images')) {
             Logger.logInfo(`No images found at favorites of "${username}" on page "${dataFavId}".`);
             return [];

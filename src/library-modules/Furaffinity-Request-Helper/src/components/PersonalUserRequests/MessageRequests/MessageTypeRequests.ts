@@ -20,15 +20,15 @@ export class MessageTypeRequests {
         this._fieldName = fieldName;
     }
 
-    async removeMessages(ids?: string[] | number[], action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
-        return await WaitAndCallAction.callFunctionAsync(() => this._removeMessages(ids), action, delay);
+    async removeMessages(ids?: string[] | number[], signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
+        return await WaitAndCallAction.callFunctionAsync(() => this._removeMessages(ids, signal), action, delay);
     }
 
-    async nukeMessages(action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
-        return await WaitAndCallAction.callFunctionAsync(() => this._nukeMessages(), action, delay);
+    async nukeMessages(signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
+        return await WaitAndCallAction.callFunctionAsync(() => this._nukeMessages(signal), action, delay);
     }
 
-    private async _removeMessages(ids?: string[] | number[]): Promise<Document | undefined> {
+    private async _removeMessages(ids?: string[] | number[], signal?: AbortSignal): Promise<Document | undefined> {
         if (ids == null || ids.length === 0) {
             Logger.logError('No message ids to remove');
             throw new Error('No message ids to remove');
@@ -37,11 +37,11 @@ export class MessageTypeRequests {
         for (const id of ids) {
             payload.push([this._fieldName, id.toString()]);
         }
-        return await FuraffinityRequests.postHTML(this._hardLink, payload, this._semaphore);
+        return await FuraffinityRequests.postHTML(this._hardLink, payload, this._semaphore, signal);
     }
 
-    private async _nukeMessages(): Promise<Document | undefined> {
+    private async _nukeMessages(signal?: AbortSignal): Promise<Document | undefined> {
         const payload: [string, string][] = [this._nukeAction];
-        return await FuraffinityRequests.postHTML(this._hardLink, payload, this._semaphore);
+        return await FuraffinityRequests.postHTML(this._hardLink, payload, this._semaphore, signal);
     }
 }

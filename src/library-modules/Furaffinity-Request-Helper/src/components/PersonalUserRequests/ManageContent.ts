@@ -23,21 +23,21 @@ export class ManageContent {
         };
     }
 
-    async getFoldersPages(action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
-        return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(ManageContent.hardLinks['folders'], this._semaphore), action, delay);
+    async getFoldersPages(signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
+        return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(ManageContent.hardLinks['folders'], this._semaphore, signal), action, delay);
     }
 
-    async getAllWatchesPages(action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document[]> {
-        return await WaitAndCallAction.callFunctionAsync(() => this._getAllWatchesPages(), action, delay);
+    async getAllWatchesPages(signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document[]> {
+        return await WaitAndCallAction.callFunctionAsync(() => this._getAllWatchesPages(signal), action, delay);
     }
 
-    async getWatchesPage(pageNumber?: string | number, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
+    async getWatchesPage(pageNumber?: string | number, signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         pageNumber = convertToNumber(pageNumber);
-        return await WaitAndCallAction.callFunctionAsync(() => this._getWatchesPage(pageNumber as number | undefined), action, delay);
+        return await WaitAndCallAction.callFunctionAsync(() => this._getWatchesPage(pageNumber as number | undefined, signal), action, delay);
     }
 
-    private async _getAllWatchesPages(): Promise<Document[]> {
-        let usersDoc = await FuraffinityRequests.getHTML(ManageContent.hardLinks['buddylist'] + 'x', this._semaphore);
+    private async _getAllWatchesPages(signal?: AbortSignal): Promise<Document[]> {
+        let usersDoc = await FuraffinityRequests.getHTML(ManageContent.hardLinks['buddylist'] + 'x', this._semaphore, signal);
         const columnPage = usersDoc?.getElementById('columnpage');
         const sectionBody = columnPage?.querySelector('div[class="section-body"');
         const paginationLinks = sectionBody?.querySelector('div[class*="pagination-links"]');
@@ -45,18 +45,18 @@ export class ManageContent {
         const userPageDocs = [];
         if (pages != null) {
             for (let i = 1; i <= pages.length; i++) {
-                usersDoc = await this._getWatchesPage(i);
+                usersDoc = await this._getWatchesPage(i, signal);
                 if (usersDoc) userPageDocs.push(usersDoc);
             }
         }
         return userPageDocs;
     }
 
-    private async _getWatchesPage(pageNumber: number | undefined): Promise<Document | undefined> {
+    private async _getWatchesPage(pageNumber: number | undefined, signal?: AbortSignal): Promise<Document | undefined> {
         if (pageNumber == null || pageNumber <= 0) {
             Logger.logWarning('No page number given. Using default 1 instead.');
             pageNumber = 1;
         }
-        return await FuraffinityRequests.getHTML(ManageContent.hardLinks['buddylist'] + pageNumber, this._semaphore);
+        return await FuraffinityRequests.getHTML(ManageContent.hardLinks['buddylist'] + pageNumber, this._semaphore, signal);
     }
 }
