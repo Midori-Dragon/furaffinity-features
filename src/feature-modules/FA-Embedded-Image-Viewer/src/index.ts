@@ -68,6 +68,10 @@ export const showWatchingInfoSetting = customSettings.newSetting(window.FASettin
 showWatchingInfoSetting.description = 'Wether to show if the user is watching the Submissions Author. (Will be slower)';
 showWatchingInfoSetting.defaultValue = false;
 
+export const showFullSizeButtonSetting = customSettings.newSetting(window.FASettingType.Boolean, 'Show Full Size Button');
+showFullSizeButtonSetting.description = 'Wether to show the Full Size button in the Embedded Image Viewer.';
+showFullSizeButtonSetting.defaultValue = true;
+
 customSettings.loadSettings();
 
 export const requestHelper = new window.FARequestHelper(2);

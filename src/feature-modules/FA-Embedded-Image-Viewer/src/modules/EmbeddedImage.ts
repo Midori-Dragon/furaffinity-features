@@ -1,4 +1,4 @@
-import { closeEmbedAfterOpenSetting, loadingSpinSpeedFavSetting, loadingSpinSpeedSetting, openInNewTabSetting, previewQualitySetting, requestHelper, scriptName, showWatchingInfoSetting } from '..';
+import { closeEmbedAfterOpenSetting, loadingSpinSpeedFavSetting, loadingSpinSpeedSetting, openInNewTabSetting, previewQualitySetting, requestHelper, scriptName, showFullSizeButtonSetting, showWatchingInfoSetting } from '..';
 import type { LoadingSpinner } from '../../../../library-modules/Furaffinity-Loading-Animations/src/components/LoadingSpinner';
 import { EmbeddedHTML } from '../components/EmbeddedHTML';
 import { getByLinkFromFigcaption, getFavKey, getFigureId, getPreviewQuality, getUserFromFigcaption } from '../utils/Utils';
@@ -20,6 +20,7 @@ export class EmbeddedImage extends EventTarget {
     faImageViewer: CustomImageViewer | undefined;
 
     private _imageLoaded = false;
+    private _isFullSize = false;
     private _onRemove?: () => void;
     private _abortController = new AbortController();
 
@@ -112,7 +113,58 @@ export class EmbeddedImage extends EventTarget {
         this.invokeRemove();
     }
 
-    createElements(figure: HTMLElement): void {
+    private toggleFullSize(button: HTMLElement): void {
+        this._isFullSize = !this._isFullSize;
+
+        const buttonContainer = document.getElementById('eiv-button-container')!;
+        const additionalInfoContainer = document.getElementById('eiv-additional-info-container');
+        const background = document.getElementById('eiv-background')!;
+
+        if (this._isFullSize) {
+            button.textContent = '🗗'; //'Fit Size';
+            // Wrap buttons in a sticky footer, append to eiv-main
+            const footer = document.createElement('div');
+            footer.id = 'eiv-expanded-footer';
+            footer.appendChild(buttonContainer);
+            this.embeddedElem.appendChild(footer);
+            if (additionalInfoContainer != null) {
+                additionalInfoContainer.style.display = 'none';
+            }
+            this.embeddedElem.classList.add('eiv-expanded');
+            if (this.faImageViewer != null) {
+                const mainImg = this.faImageViewer.faImage.imgElem;
+                const prevImg = this.faImageViewer.faImagePreview.imgElem;
+                const maxW = Math.min(mainImg.naturalWidth || window.innerWidth - 80, window.innerWidth - 80) + 'px';
+                mainImg.style.maxWidth = prevImg.style.maxWidth = maxW;
+                mainImg.style.maxHeight = prevImg.style.maxHeight = '';
+                this.faImageViewer.faImage.zoomEnabled = false;
+                this.faImageViewer.faImage.panEnabled = false;
+                this.faImageViewer.faImage.reset();
+            }
+        } else {
+            button.textContent = '⛶'; //'Full Size';
+            this.embeddedElem.classList.remove('eiv-expanded');
+            // Restore button container back into background before the additional info, and show additional info
+            if (additionalInfoContainer != null) {
+                background.insertBefore(buttonContainer, additionalInfoContainer);
+                additionalInfoContainer.style.display = '';
+            } else {
+                background.appendChild(buttonContainer);
+            }
+            document.getElementById('eiv-expanded-footer')?.remove();
+            if (this.faImageViewer != null) {
+                const ddmenu = document.getElementById('ddmenu')!;
+                const mainImg = this.faImageViewer.faImage.imgElem;
+                const prevImg = this.faImageViewer.faImagePreview.imgElem;
+                mainImg.style.maxWidth = prevImg.style.maxWidth = window.innerWidth - 20 * 2 + 'px';
+                mainImg.style.maxHeight = prevImg.style.maxHeight = window.innerHeight - ddmenu.clientHeight - 38 * 2 - 20 * 2 - 100 + 'px';
+                this.faImageViewer.faImage.zoomEnabled = true;
+                this.faImageViewer.faImage.panEnabled = true;
+            }
+        }
+    }
+
+    private createElements(figure: HTMLElement): void {
         // Create the main container for the embedded element
         this.embeddedElem.id = 'eiv-main';
         this.embeddedElem.setAttribute('eiv-sid', figure.id.trimStart('sid-'));
@@ -163,6 +215,12 @@ export class EmbeddedImage extends EventTarget {
 
         const closeButton = document.getElementById('eiv-close-button')!;
         closeButton.addEventListener('click', this.remove.bind(this));
+
+        const fullSizeButton = document.getElementById('eiv-fullsize-button')!;
+        if (!showFullSizeButtonSetting.value) {
+            fullSizeButton.style.display = 'none';
+        }
+        fullSizeButton.addEventListener('click', () => this.toggleFullSize(fullSizeButton));
 
         const embeddedModesValues = Object.values(embeddedModes);
         if (window.location.toString().toLowerCase().includes('msg/submissions') && embeddedModesValues.every(mode => !window.location.toString().toLocaleLowerCase().includes(mode))) {
