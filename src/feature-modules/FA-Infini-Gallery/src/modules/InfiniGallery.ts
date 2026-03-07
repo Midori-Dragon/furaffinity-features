@@ -2,12 +2,18 @@ import { isElementOnScreen } from '../utils/Utils';
 import { GalleryManager } from './GalleryManager';
 import { scriptName } from '../index';
 import { showError } from '../utils/showError';
+import { Logger } from '../../../../library-modules/GlobalUtils/src/Logger';
 
 export class InfiniGallery {
     scanElem: HTMLElement;
     galleryManager: GalleryManager;
 
     private scanInterval = -1;
+    private catchErrors = [
+        'No figures found',
+        'No watches found',
+        'Last page reached'
+    ];
 
     constructor() {
         this.scanElem = document.getElementById('footer')!;
@@ -39,8 +45,9 @@ export class InfiniGallery {
             this.startScrollDetection();
         } catch (error) {
             this.stopScrollDetection();
-            const isEndOfGallery = error instanceof Error && (error.message === 'No figures found' || error.message === 'No watches found');
+            const isEndOfGallery = error instanceof Error && this.catchErrors.includes(error.message);
             if (!isEndOfGallery) {
+                Logger.logError('Error loading next page:', error);
                 await showError(error, scriptName);
             }
         }
