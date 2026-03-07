@@ -11,7 +11,7 @@
 // @require     https://greasyfork.org/scripts/476762-furaffinity-custom-pages/code/476762-furaffinity-custom-pages.js
 // @require     https://greasyfork.org/scripts/475041-furaffinity-custom-settings/code/475041-furaffinity-custom-settings.js
 // @grant       GM_info
-// @version     2.5.9
+// @version     2.5.10
 // @author      Midori Dragon
 // @description Embeds the clicked Image on the Current Site, so you can view it without loading the submission Page
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
@@ -34,6 +34,7 @@
             <a id="eiv-download-button" type="button" class="eiv-button button standard mobile-fix">Download</a>
             <a id="eiv-open-button" type="button" class="eiv-button button standard mobile-fix">Open</a>
             <a id="eiv-open-gallery-button" type="button" class="eiv-button button standard mobile-fix" style="display: none;">Open Gallery</a>
+            <a id="eiv-fullsize-button" type="button" class="eiv-button button standard mobile-fix">  ⛶  </a>
             <a id="eiv-remove-sub-button" type="button" class="eiv-button button standard mobile-fix" style="display: none;">Remove</a>
             <a id="eiv-close-button" type="button" class="eiv-button button standard mobile-fix">Close</a>
         </div>
@@ -164,7 +165,7 @@
       }
     }
 
-    var css_248z = "#eiv-main {\n    position: fixed;\n    width: 100vw;\n    height: 100vh;\n    max-width: 1850px;\n    z-index: 999999;\n    background: rgba(30, 33, 38, .65);\n}\n\n#eiv-background {\n    position: fixed;\n    display: flex;\n    flex-direction: column;\n    left: 50%;\n    transform: translate(-50%, 0%);\n    margin-top: 20px;\n    padding: 20px;\n    background: rgba(30, 33, 38, .90);\n    border-radius: 10px;\n}\n\n#eiv-submission-container {\n    -webkit-user-drag: none;\n}\n\n.eiv-submission-img {\n    max-width: inherit;\n    max-height: inherit;\n    border-radius: 10px;\n    user-select: none;\n}\n\n#eiv-button-container {\n    position: relative;\n    margin-top: 20px;\n    margin-bottom: 6px;\n    margin-left: 20px;\n}\n\n#eiv-button-wrapper {\n    display: flex;\n    justify-content: center;\n    align-items: center;\n}\n\n#eiv-preview-spinner-container {\n    position: absolute;\n    top: 50%;\n    right: 0;\n    transform: translateY(-50%);\n}\n\n.eiv-button {\n    margin-left: 4px;\n    margin-right: 4px;\n    user-select: none;\n}\n\n#eiv-additional-info {\n    color: #afc6e1;\n}\n";
+    var css_248z = "#eiv-main {\n    position: fixed;\n    width: 100vw;\n    height: 100vh;\n    max-width: 1850px;\n    z-index: 999999;\n    background: rgba(30, 33, 38, .65);\n    text-align: center;\n    top: 50px;\n}\n\n#eiv-background {\n    position: fixed;\n    display: flex;\n    flex-direction: column;\n    left: 50%;\n    transform: translate(-50%, 0%);\n    margin-top: 20px;\n    padding: 20px;\n    background: rgba(30, 33, 38, .90);\n    border-radius: 10px;\n}\n\n#eiv-submission-container {\n    -webkit-user-drag: none;\n    align-self: center;\n}\n\n.eiv-submission-img {\n    max-width: inherit;\n    max-height: inherit;\n    border-radius: 10px;\n    user-select: none;\n}\n\n#eiv-button-container {\n    position: relative;\n    margin-top: 20px;\n    margin-bottom: 6px;\n    margin-left: 20px;\n}\n\n#eiv-button-wrapper {\n    display: flex;\n    justify-content: center;\n    align-items: center;\n}\n\n#eiv-preview-spinner-container {\n    position: absolute;\n    top: 50%;\n    right: 0;\n    transform: translateY(-50%);\n}\n\n.eiv-button {\n    margin-left: 4px;\n    margin-right: 4px;\n    user-select: none;\n}\n\n#eiv-additional-info {\n    color: #afc6e1;\n}\n\n#eiv-main.eiv-expanded #eiv-background {\n    top: 70px;\n    bottom: 20px;\n    margin-top: 0;\n    overflow: hidden;\n}\n\n#eiv-main.eiv-expanded #eiv-submission-container {\n    flex: 1;\n    min-height: 0;\n    align-self: stretch;\n    overflow: auto !important;\n    scrollbar-color: #9f9f9f #2c2c2c;\n}";
     styleInject(css_248z);
 
     class string {
@@ -216,7 +217,10 @@
         downloadRequestRunning = false;
         faImageViewer;
         _imageLoaded = false;
+        _isFullSize = false;
         _onRemove;
+        _abortController = new AbortController();
+        _onWindowResize = () => this.updateImageSize();
         loadingSpinner;
         previewLoadingSpinner;
         constructor(figure) {
@@ -236,12 +240,19 @@
             this.previewLoadingSpinner.size = 40;
             // Add click event to remove the embedded element when clicked outside
             document.addEventListener('click', this.onDocumentClick.bind(this));
+            window.addEventListener('resize', this._onWindowResize);
             void this.fillSubDocInfos(figure).catch(async (error) => {
+                if (this._abortController.signal.aborted) {
+                    return;
+                }
                 this.loadingSpinner.visible = false;
                 this.previewLoadingSpinner.visible = false;
                 await showError(error, scriptName);
             });
             void this.fillUserInfos(figure).catch((error) => {
+                if (this._abortController.signal.aborted) {
+                    return;
+                }
                 Logger.logError('Failed to load watching info:', error);
             });
         }
@@ -280,10 +291,58 @@
             this.dispatchEvent(new Event('remove'));
         }
         remove() {
+            this._abortController.abort();
+            window.removeEventListener('resize', this._onWindowResize);
             this.faImageViewer?.destroy();
             this.embeddedElem.parentNode?.removeChild(this.embeddedElem);
             document.removeEventListener('click', this.onDocumentClick);
             this.invokeRemove();
+        }
+        updateImageSize() {
+            if (this.faImageViewer == null) {
+                return;
+            }
+            const mainImg = this.faImageViewer.faImage.imgElem;
+            const prevImg = this.faImageViewer.faImagePreview.imgElem;
+            if (this._isFullSize) {
+                const maxW = Math.min(mainImg.naturalWidth || window.innerWidth - 40, window.innerWidth - 40) + 'px';
+                mainImg.style.maxWidth = prevImg.style.maxWidth = maxW;
+                mainImg.style.maxHeight = prevImg.style.maxHeight = '';
+            }
+            else {
+                const ddmenu = document.getElementById('ddmenu');
+                mainImg.style.maxWidth = prevImg.style.maxWidth = window.innerWidth - 20 * 2 + 'px';
+                mainImg.style.maxHeight = prevImg.style.maxHeight = window.innerHeight - ddmenu.clientHeight - 38 * 2 - 20 * 2 - 100 + 'px';
+            }
+        }
+        toggleFullSize(button) {
+            this._isFullSize = !this._isFullSize;
+            const additionalInfoContainer = document.getElementById('eiv-additional-info-container');
+            if (this._isFullSize) {
+                button.textContent = '  🗗  ';
+                if (additionalInfoContainer != null) {
+                    additionalInfoContainer.style.display = 'none';
+                }
+                this.embeddedElem.classList.add('eiv-expanded');
+                if (this.faImageViewer != null) {
+                    this.updateImageSize();
+                    this.faImageViewer.faImage.zoomEnabled = false;
+                    this.faImageViewer.faImage.panEnabled = false;
+                    this.faImageViewer.faImage.reset();
+                }
+            }
+            else {
+                button.textContent = '  ⛶  ';
+                this.embeddedElem.classList.remove('eiv-expanded');
+                if (additionalInfoContainer != null) {
+                    additionalInfoContainer.style.display = '';
+                }
+                if (this.faImageViewer != null) {
+                    this.updateImageSize();
+                    this.faImageViewer.faImage.zoomEnabled = true;
+                    this.faImageViewer.faImage.panEnabled = true;
+                }
+            }
         }
         createElements(figure) {
             // Create the main container for the embedded element
@@ -291,7 +350,7 @@
             this.embeddedElem.setAttribute('eiv-sid', figure.id.trimStart('sid-'));
             this.embeddedElem.innerHTML = EmbeddedHTML.html;
             const ddmenu = document.getElementById('ddmenu');
-            ddmenu.appendChild(this.embeddedElem);
+            ddmenu.insertAdjacentElement('afterend', this.embeddedElem);
             // Add click event to remove the embedded element when clicked outside
             this.embeddedElem.addEventListener('click', (event) => {
                 if (event.target === this.embeddedElem) {
@@ -330,6 +389,11 @@
             openButton.addEventListener('click', this.onOpenClick.bind(this));
             const closeButton = document.getElementById('eiv-close-button');
             closeButton.addEventListener('click', this.remove.bind(this));
+            const fullSizeButton = document.getElementById('eiv-fullsize-button');
+            if (!showFullSizeButtonSetting.value) {
+                fullSizeButton.style.display = 'none';
+            }
+            fullSizeButton.addEventListener('click', () => this.toggleFullSize(fullSizeButton));
             const embeddedModesValues = Object.values(embeddedModes);
             if (window.location.toString().toLowerCase().includes('msg/submissions') && embeddedModesValues.every(mode => !window.location.toString().toLocaleLowerCase().includes(mode))) {
                 const removeSubButton = document.getElementById('eiv-remove-sub-button');
@@ -362,7 +426,7 @@
                 return;
             }
             const ddmenu = document.getElementById('ddmenu');
-            const doc = await requestHelper.SubmissionRequests.getSubmissionPage(sid);
+            const doc = await requestHelper.SubmissionRequests.getSubmissionPage(sid, this._abortController.signal);
             if (!this.embeddedElem.isConnected) {
                 return;
             }
@@ -451,7 +515,7 @@
                     const userLink = getUserFromFigcaption(figcaption);
                     console.log(userLink);
                     if (userLink != null) {
-                        const userPage = await requestHelper.UserRequests.getUserPage(userLink);
+                        const userPage = await requestHelper.UserRequests.getUserPage(userLink, this._abortController.signal);
                         if (userPage != null) {
                             const siteContent = userPage.getElementById('site-content');
                             const navInterfaceButtons = siteContent?.querySelector('userpage-nav-interface-buttons');
@@ -489,7 +553,7 @@
             try {
                 if (isFav) {
                     // Send the favorite request to the server
-                    favKey = await requestHelper.SubmissionRequests.favSubmission(sid, favKey) ?? '';
+                    favKey = await requestHelper.SubmissionRequests.favSubmission(sid, favKey, this._abortController.signal) ?? '';
                     loadingTextSpinner.visible = false;
                     // If the request was successful, set the favorite status to false and update the button text
                     if (!string.isNullOrWhitespace(favKey)) {
@@ -506,7 +570,7 @@
                 }
                 else {
                     // Send the unfavorite request to the server
-                    favKey = await requestHelper.SubmissionRequests.unfavSubmission(sid, favKey) ?? '';
+                    favKey = await requestHelper.SubmissionRequests.unfavSubmission(sid, favKey, this._abortController.signal) ?? '';
                     loadingTextSpinner.visible = false;
                     // If the request was successful, set the favorite status to true and update the button text
                     if (!string.isNullOrWhitespace(favKey)) {
@@ -525,6 +589,9 @@
             }
             catch (error) {
                 loadingTextSpinner.visible = false;
+                if (this._abortController.signal.aborted) {
+                    return;
+                }
                 await showError(error, scriptName);
             }
             finally {
@@ -591,6 +658,9 @@
     const showWatchingInfoSetting = customSettings.newSetting(window.FASettingType.Boolean, 'Show Watching Info');
     showWatchingInfoSetting.description = 'Wether to show if the user is watching the Submissions Author. (Will be slower)';
     showWatchingInfoSetting.defaultValue = false;
+    const showFullSizeButtonSetting = customSettings.newSetting(window.FASettingType.Boolean, 'Show Full Size Button');
+    showFullSizeButtonSetting.description = 'Wether to show the Full Size button in the Embedded Image Viewer.';
+    showFullSizeButtonSetting.defaultValue = true;
     customSettings.loadSettings();
     const requestHelper = new window.FARequestHelper(2);
     if (customSettings.isFeatureEnabled) {
@@ -625,6 +695,7 @@
     exports.previewQualitySetting = previewQualitySetting;
     exports.requestHelper = requestHelper;
     exports.scriptName = scriptName;
+    exports.showFullSizeButtonSetting = showFullSizeButtonSetting;
     exports.showWatchingInfoSetting = showWatchingInfoSetting;
 
     return exports;

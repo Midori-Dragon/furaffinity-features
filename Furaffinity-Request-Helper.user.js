@@ -3,7 +3,7 @@
 // @namespace   Violentmonkey Scripts
 // @require     https://greasyfork.org/scripts/525666-furaffinity-prototype-extensions/code/525666-furaffinity-prototype-extensions.js
 // @grant       none
-// @version     1.5.1
+// @version     1.5.2
 // @author      Midori Dragon
 // @description Library to simplify requests to Furaffinity
 // @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
@@ -676,7 +676,7 @@
         static get hardLink() {
             return FuraffinityRequests.fullUrl + '/gallery/';
         }
-        static async fetchPage(username, folder, pageNumber, semaphore) {
+        static async fetchPage(username, folder, pageNumber, semaphore, signal) {
             if (username == null) {
                 Logger.logError('Cannot fetch gallery page: no username given');
                 throw new Error('Cannot fetch gallery page: no username given');
@@ -695,16 +695,16 @@
                     url += `${folder.name}/`;
                 }
             }
-            const page = await FuraffinityRequests.getHTML(url + pageNumber, semaphore);
+            const page = await FuraffinityRequests.getHTML(url + pageNumber, semaphore, signal);
             checkTagsAll(page);
             return page;
         }
-        async _fetchFigures(username, folder, pageNumber) {
+        async _fetchFigures(username, folder, pageNumber, signal) {
             if (pageNumber == null || pageNumber <= 0) {
                 pageNumber = 1;
             }
             Logger.logInfo(`Getting gallery of "${username}" on page "${pageNumber}".`);
-            const galleryDoc = await Gallery.fetchPage(username, folder, pageNumber, this._semaphore);
+            const galleryDoc = await Gallery.fetchPage(username, folder, pageNumber, this._semaphore, signal);
             if (!galleryDoc || !(galleryDoc instanceof Document) || galleryDoc.getElementById('no-images')) {
                 Logger.logInfo(`No images found at gallery of "${username}" on page "${pageNumber}".`);
                 return [];
@@ -716,109 +716,109 @@
             }
             return Array.from(figures);
         }
-        async getSubmissionPageNo(username, submissionId, folder, fromPageNumber, toPageNumber, action, delay = DEFAULT_ACTION_DELAY) {
+        async getSubmissionPageNo(username, submissionId, folder, fromPageNumber, toPageNumber, signal, action, delay = DEFAULT_ACTION_DELAY) {
             submissionId = convertToNumber(submissionId);
             fromPageNumber = convertToNumber(fromPageNumber);
             toPageNumber = convertToNumber(toPageNumber);
-            return await WaitAndCallAction.callFunctionAsync((percentId) => findElementPageNo((page) => this._fetchFigures(username, folder, page), submissionId, 'sid-', fromPageNumber, toPageNumber, percentId), action, delay);
+            return await WaitAndCallAction.callFunctionAsync((percentId) => findElementPageNo((page) => this._fetchFigures(username, folder, page, signal), submissionId, 'sid-', fromPageNumber, toPageNumber, percentId), action, delay);
         }
-        async getFiguresBetweenIds(username, fromId, toId, action, delay = DEFAULT_ACTION_DELAY) {
+        async getFiguresBetweenIds(username, fromId, toId, signal, action, delay = DEFAULT_ACTION_DELAY) {
             fromId = convertToNumber(fromId);
             toId = convertToNumber(toId);
             if (fromId == null || fromId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => elementsTillId((page) => this._fetchFigures(username, undefined, page), toId, undefined), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => elementsTillId((page) => this._fetchFigures(username, undefined, page, signal), toId, undefined), action, delay);
             }
             else if (toId == null || toId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => elementsSinceId((page) => this._fetchFigures(username, undefined, page), fromId, undefined), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => elementsSinceId((page) => this._fetchFigures(username, undefined, page, signal), fromId, undefined), action, delay);
             }
             else {
-                return await WaitAndCallAction.callFunctionAsync((percentId) => elementsBetweenIds((page) => this._fetchFigures(username, undefined, page), fromId, toId, undefined, undefined, percentId), action, delay);
+                return await WaitAndCallAction.callFunctionAsync((percentId) => elementsBetweenIds((page) => this._fetchFigures(username, undefined, page, signal), fromId, toId, undefined, undefined, percentId), action, delay);
             }
         }
-        async getFiguresInFolderBetweenIds(username, folder, fromId, toId, action, delay = DEFAULT_ACTION_DELAY) {
+        async getFiguresInFolderBetweenIds(username, folder, fromId, toId, signal, action, delay = DEFAULT_ACTION_DELAY) {
             fromId = convertToNumber(fromId);
             toId = convertToNumber(toId);
             if (fromId == null || fromId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => elementsTillId((page) => this._fetchFigures(username, folder, page), toId, undefined), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => elementsTillId((page) => this._fetchFigures(username, folder, page, signal), toId, undefined), action, delay);
             }
             else if (toId == null || toId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => elementsSinceId((page) => this._fetchFigures(username, folder, page), fromId, undefined), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => elementsSinceId((page) => this._fetchFigures(username, folder, page, signal), fromId, undefined), action, delay);
             }
             else {
-                return await WaitAndCallAction.callFunctionAsync((percentId) => elementsBetweenIds((page) => this._fetchFigures(username, folder, page), fromId, toId, undefined, undefined, percentId), action, delay);
+                return await WaitAndCallAction.callFunctionAsync((percentId) => elementsBetweenIds((page) => this._fetchFigures(username, folder, page, signal), fromId, toId, undefined, undefined, percentId), action, delay);
             }
         }
-        async getFiguresBetweenIdsBetweenPages(username, fromId, toId, fromPageNumber, toPageNumber, action, delay = DEFAULT_ACTION_DELAY) {
-            fromId = convertToNumber(fromId);
-            toId = convertToNumber(toId);
-            fromPageNumber = convertToNumber(fromPageNumber);
-            toPageNumber = convertToNumber(toPageNumber);
-            if (fromId == null || fromId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => elementsTillId((page) => this._fetchFigures(username, undefined, page), toId, fromPageNumber), action, delay);
-            }
-            else if (toId == null || toId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => elementsSinceId((page) => this._fetchFigures(username, undefined, page), fromId, toPageNumber), action, delay);
-            }
-            else {
-                return await WaitAndCallAction.callFunctionAsync((percentId) => elementsBetweenIds((page) => this._fetchFigures(username, undefined, page), fromId, toId, fromPageNumber, toPageNumber, percentId), action, delay);
-            }
-        }
-        async getFiguresInFolderBetweenIdsBetweenPages(username, folder, fromId, toId, fromPageNumber, toPageNumber, action, delay = DEFAULT_ACTION_DELAY) {
+        async getFiguresBetweenIdsBetweenPages(username, fromId, toId, fromPageNumber, toPageNumber, signal, action, delay = DEFAULT_ACTION_DELAY) {
             fromId = convertToNumber(fromId);
             toId = convertToNumber(toId);
             fromPageNumber = convertToNumber(fromPageNumber);
             toPageNumber = convertToNumber(toPageNumber);
             if (fromId == null || fromId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => elementsTillId((page) => this._fetchFigures(username, folder, page), toId, fromPageNumber), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => elementsTillId((page) => this._fetchFigures(username, undefined, page, signal), toId, fromPageNumber), action, delay);
             }
             else if (toId == null || toId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => elementsSinceId((page) => this._fetchFigures(username, folder, page), fromId, toPageNumber), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => elementsSinceId((page) => this._fetchFigures(username, undefined, page, signal), fromId, toPageNumber), action, delay);
             }
             else {
-                return await WaitAndCallAction.callFunctionAsync((percentId) => elementsBetweenIds((page) => this._fetchFigures(username, folder, page), fromId, toId, fromPageNumber, toPageNumber, percentId), action, delay);
+                return await WaitAndCallAction.callFunctionAsync((percentId) => elementsBetweenIds((page) => this._fetchFigures(username, undefined, page, signal), fromId, toId, fromPageNumber, toPageNumber, percentId), action, delay);
             }
         }
-        async getFiguresBetweenPages(username, fromPageNumber, toPageNumber, action, delay = DEFAULT_ACTION_DELAY) {
+        async getFiguresInFolderBetweenIdsBetweenPages(username, folder, fromId, toId, fromPageNumber, toPageNumber, signal, action, delay = DEFAULT_ACTION_DELAY) {
+            fromId = convertToNumber(fromId);
+            toId = convertToNumber(toId);
             fromPageNumber = convertToNumber(fromPageNumber);
             toPageNumber = convertToNumber(toPageNumber);
-            if (fromPageNumber == null || fromPageNumber <= 0) {
-                return await WaitAndCallAction.callFunctionAsync((percentId) => elementsTillPage((page) => this._fetchFigures(username, undefined, page), toPageNumber, percentId), action, delay);
+            if (fromId == null || fromId <= 0) {
+                return await WaitAndCallAction.callFunctionAsync(() => elementsTillId((page) => this._fetchFigures(username, folder, page, signal), toId, fromPageNumber), action, delay);
             }
-            else if (toPageNumber == null || toPageNumber <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => elementsSincePage((page) => this._fetchFigures(username, undefined, page), fromPageNumber), action, delay);
+            else if (toId == null || toId <= 0) {
+                return await WaitAndCallAction.callFunctionAsync(() => elementsSinceId((page) => this._fetchFigures(username, folder, page, signal), fromId, toPageNumber), action, delay);
             }
             else {
-                return await WaitAndCallAction.callFunctionAsync((percentId) => elementsBetweenPages((page) => this._fetchFigures(username, undefined, page), fromPageNumber, toPageNumber, percentId), action, delay);
+                return await WaitAndCallAction.callFunctionAsync((percentId) => elementsBetweenIds((page) => this._fetchFigures(username, folder, page, signal), fromId, toId, fromPageNumber, toPageNumber, percentId), action, delay);
             }
         }
-        async getFiguresInFolderBetweenPages(username, folder, fromPageNumber, toPageNumber, action, delay = DEFAULT_ACTION_DELAY) {
+        async getFiguresBetweenPages(username, fromPageNumber, toPageNumber, signal, action, delay = DEFAULT_ACTION_DELAY) {
             fromPageNumber = convertToNumber(fromPageNumber);
             toPageNumber = convertToNumber(toPageNumber);
             if (fromPageNumber == null || fromPageNumber <= 0) {
-                return await WaitAndCallAction.callFunctionAsync((percentId) => elementsTillPage((page) => this._fetchFigures(username, folder, page), toPageNumber, percentId), action, delay);
+                return await WaitAndCallAction.callFunctionAsync((percentId) => elementsTillPage((page) => this._fetchFigures(username, undefined, page, signal), toPageNumber, percentId), action, delay);
             }
             else if (toPageNumber == null || toPageNumber <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => elementsSincePage((page) => this._fetchFigures(username, folder, page), fromPageNumber), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => elementsSincePage((page) => this._fetchFigures(username, undefined, page, signal), fromPageNumber), action, delay);
             }
             else {
-                return await WaitAndCallAction.callFunctionAsync((percentId) => elementsBetweenPages((page) => this._fetchFigures(username, folder, page), fromPageNumber, toPageNumber, percentId), action, delay);
+                return await WaitAndCallAction.callFunctionAsync((percentId) => elementsBetweenPages((page) => this._fetchFigures(username, undefined, page, signal), fromPageNumber, toPageNumber, percentId), action, delay);
             }
         }
-        async getFigures(username, pageNumber, action, delay = DEFAULT_ACTION_DELAY) {
-            pageNumber = convertToNumber(pageNumber);
-            return await WaitAndCallAction.callFunctionAsync(() => this._fetchFigures(username, undefined, pageNumber), action, delay);
+        async getFiguresInFolderBetweenPages(username, folder, fromPageNumber, toPageNumber, signal, action, delay = DEFAULT_ACTION_DELAY) {
+            fromPageNumber = convertToNumber(fromPageNumber);
+            toPageNumber = convertToNumber(toPageNumber);
+            if (fromPageNumber == null || fromPageNumber <= 0) {
+                return await WaitAndCallAction.callFunctionAsync((percentId) => elementsTillPage((page) => this._fetchFigures(username, folder, page, signal), toPageNumber, percentId), action, delay);
+            }
+            else if (toPageNumber == null || toPageNumber <= 0) {
+                return await WaitAndCallAction.callFunctionAsync(() => elementsSincePage((page) => this._fetchFigures(username, folder, page, signal), fromPageNumber), action, delay);
+            }
+            else {
+                return await WaitAndCallAction.callFunctionAsync((percentId) => elementsBetweenPages((page) => this._fetchFigures(username, folder, page, signal), fromPageNumber, toPageNumber, percentId), action, delay);
+            }
         }
-        async getFiguresInFolder(username, folder, pageNumber, action, delay = DEFAULT_ACTION_DELAY) {
+        async getFigures(username, pageNumber, signal, action, delay = DEFAULT_ACTION_DELAY) {
             pageNumber = convertToNumber(pageNumber);
-            return await WaitAndCallAction.callFunctionAsync(() => this._fetchFigures(username, folder, pageNumber), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => this._fetchFigures(username, undefined, pageNumber, signal), action, delay);
         }
-        async getPage(username, pageNumber, action, delay = DEFAULT_ACTION_DELAY) {
+        async getFiguresInFolder(username, folder, pageNumber, signal, action, delay = DEFAULT_ACTION_DELAY) {
             pageNumber = convertToNumber(pageNumber);
-            return await WaitAndCallAction.callFunctionAsync(() => Gallery.fetchPage(username, undefined, pageNumber, this._semaphore), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => this._fetchFigures(username, folder, pageNumber, signal), action, delay);
         }
-        async getPageInFolder(username, folder, pageNumber, action, delay = DEFAULT_ACTION_DELAY) {
+        async getPage(username, pageNumber, signal, action, delay = DEFAULT_ACTION_DELAY) {
             pageNumber = convertToNumber(pageNumber);
-            return await WaitAndCallAction.callFunctionAsync(() => Gallery.fetchPage(username, folder, pageNumber, this._semaphore), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => Gallery.fetchPage(username, undefined, pageNumber, this._semaphore, signal), action, delay);
+        }
+        async getPageInFolder(username, folder, pageNumber, signal, action, delay = DEFAULT_ACTION_DELAY) {
+            pageNumber = convertToNumber(pageNumber);
+            return await WaitAndCallAction.callFunctionAsync(() => Gallery.fetchPage(username, folder, pageNumber, this._semaphore, signal), action, delay);
         }
     }
 
@@ -830,7 +830,7 @@
         static get hardLink() {
             return FuraffinityRequests.fullUrl + '/scraps/';
         }
-        static async fetchPage(username, pageNumber, semaphore) {
+        static async fetchPage(username, pageNumber, semaphore, signal) {
             if (username == null) {
                 Logger.logError('Cannot fetch scraps page: no username given');
                 throw new Error('Cannot fetch scraps page: no username given');
@@ -842,16 +842,16 @@
             if (!username.endsWith('/')) {
                 username += '/';
             }
-            const page = await FuraffinityRequests.getHTML(Scraps.hardLink + username + pageNumber, semaphore);
+            const page = await FuraffinityRequests.getHTML(Scraps.hardLink + username + pageNumber, semaphore, signal);
             checkTagsAll(page);
             return page;
         }
-        async _fetchFigures(username, pageNumber) {
+        async _fetchFigures(username, pageNumber, signal) {
             if (pageNumber == null || pageNumber <= 0) {
                 pageNumber = 1;
             }
             Logger.logInfo(`Getting scraps of "${username}" on page "${pageNumber}".`);
-            const galleryDoc = await Scraps.fetchPage(username, pageNumber, this._semaphore);
+            const galleryDoc = await Scraps.fetchPage(username, pageNumber, this._semaphore, signal);
             if (!galleryDoc || !(galleryDoc instanceof Document) || galleryDoc.getElementById('no-images')) {
                 Logger.logInfo(`No images found at scraps of "${username}" on page "${pageNumber}".`);
                 return [];
@@ -863,60 +863,60 @@
             }
             return Array.from(figures);
         }
-        async getSubmissionPageNo(username, submissionId, fromPageNumber, toPageNumber, action, delay = DEFAULT_ACTION_DELAY) {
+        async getSubmissionPageNo(username, submissionId, fromPageNumber, toPageNumber, signal, action, delay = DEFAULT_ACTION_DELAY) {
             submissionId = convertToNumber(submissionId);
             fromPageNumber = convertToNumber(fromPageNumber);
             toPageNumber = convertToNumber(toPageNumber);
-            return await WaitAndCallAction.callFunctionAsync((percentId) => findElementPageNo((page) => this._fetchFigures(username, page), submissionId, 'sid-', fromPageNumber, toPageNumber, percentId), action, delay);
+            return await WaitAndCallAction.callFunctionAsync((percentId) => findElementPageNo((page) => this._fetchFigures(username, page, signal), submissionId, 'sid-', fromPageNumber, toPageNumber, percentId), action, delay);
         }
-        async getFiguresBetweenIds(username, fromId, toId, action, delay = DEFAULT_ACTION_DELAY) {
+        async getFiguresBetweenIds(username, fromId, toId, signal, action, delay = DEFAULT_ACTION_DELAY) {
             fromId = convertToNumber(fromId);
             toId = convertToNumber(toId);
             if (fromId == null || fromId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => elementsTillId((page) => this._fetchFigures(username, page), toId, undefined), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => elementsTillId((page) => this._fetchFigures(username, page, signal), toId, undefined), action, delay);
             }
             else if (toId == null || toId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => elementsSinceId((page) => this._fetchFigures(username, page), fromId, undefined), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => elementsSinceId((page) => this._fetchFigures(username, page, signal), fromId, undefined), action, delay);
             }
             else {
-                return await WaitAndCallAction.callFunctionAsync((percentId) => elementsBetweenIds((page) => this._fetchFigures(username, page), fromId, toId, undefined, undefined, percentId), action, delay);
+                return await WaitAndCallAction.callFunctionAsync((percentId) => elementsBetweenIds((page) => this._fetchFigures(username, page, signal), fromId, toId, undefined, undefined, percentId), action, delay);
             }
         }
-        async getFiguresBetweenIdsBetweenPages(username, fromId, toId, fromPageNumber, toPageNumber, action, delay = DEFAULT_ACTION_DELAY) {
+        async getFiguresBetweenIdsBetweenPages(username, fromId, toId, fromPageNumber, toPageNumber, signal, action, delay = DEFAULT_ACTION_DELAY) {
             fromId = convertToNumber(fromId);
             toId = convertToNumber(toId);
             fromPageNumber = convertToNumber(fromPageNumber);
             toPageNumber = convertToNumber(toPageNumber);
             if (fromId == null || fromId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => elementsTillId((page) => this._fetchFigures(username, page), toId, fromPageNumber), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => elementsTillId((page) => this._fetchFigures(username, page, signal), toId, fromPageNumber), action, delay);
             }
             else if (toId == null || toId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => elementsSinceId((page) => this._fetchFigures(username, page), fromId, toPageNumber), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => elementsSinceId((page) => this._fetchFigures(username, page, signal), fromId, toPageNumber), action, delay);
             }
             else {
-                return await WaitAndCallAction.callFunctionAsync((percentId) => elementsBetweenIds((page) => this._fetchFigures(username, page), fromId, toId, fromPageNumber, toPageNumber, percentId), action, delay);
+                return await WaitAndCallAction.callFunctionAsync((percentId) => elementsBetweenIds((page) => this._fetchFigures(username, page, signal), fromId, toId, fromPageNumber, toPageNumber, percentId), action, delay);
             }
         }
-        async getFiguresBetweenPages(username, fromPageNumber, toPageNumber, action, delay = DEFAULT_ACTION_DELAY) {
+        async getFiguresBetweenPages(username, fromPageNumber, toPageNumber, signal, action, delay = DEFAULT_ACTION_DELAY) {
             fromPageNumber = convertToNumber(fromPageNumber);
             toPageNumber = convertToNumber(toPageNumber);
             if (fromPageNumber == null || fromPageNumber <= 0) {
-                return await WaitAndCallAction.callFunctionAsync((percentId) => elementsTillPage((page) => this._fetchFigures(username, page), toPageNumber, percentId), action, delay);
+                return await WaitAndCallAction.callFunctionAsync((percentId) => elementsTillPage((page) => this._fetchFigures(username, page, signal), toPageNumber, percentId), action, delay);
             }
             else if (toPageNumber == null || toPageNumber <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => elementsSincePage((page) => this._fetchFigures(username, page), fromPageNumber), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => elementsSincePage((page) => this._fetchFigures(username, page, signal), fromPageNumber), action, delay);
             }
             else {
-                return await WaitAndCallAction.callFunctionAsync((percentId) => elementsBetweenPages((page) => this._fetchFigures(username, page), fromPageNumber, toPageNumber, percentId), action, delay);
+                return await WaitAndCallAction.callFunctionAsync((percentId) => elementsBetweenPages((page) => this._fetchFigures(username, page, signal), fromPageNumber, toPageNumber, percentId), action, delay);
             }
         }
-        async getFigures(username, pageNumber, action, delay = DEFAULT_ACTION_DELAY) {
+        async getFigures(username, pageNumber, signal, action, delay = DEFAULT_ACTION_DELAY) {
             pageNumber = convertToNumber(pageNumber);
-            return await WaitAndCallAction.callFunctionAsync(() => this._fetchFigures(username, pageNumber), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => this._fetchFigures(username, pageNumber, signal), action, delay);
         }
-        async getPage(username, pageNumber, action, delay = DEFAULT_ACTION_DELAY) {
+        async getPage(username, pageNumber, signal, action, delay = DEFAULT_ACTION_DELAY) {
             pageNumber = convertToNumber(pageNumber);
-            return await WaitAndCallAction.callFunctionAsync(() => Scraps.fetchPage(username, pageNumber, this._semaphore), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => Scraps.fetchPage(username, pageNumber, this._semaphore, signal), action, delay);
         }
     }
 
@@ -928,7 +928,7 @@
         static get hardLink() {
             return FuraffinityRequests.fullUrl + '/favorites/';
         }
-        static async fetchPage(username, dataFavId, direction, semaphore) {
+        static async fetchPage(username, dataFavId, direction, semaphore, signal) {
             if (username == null) {
                 Logger.logError('Cannot fetch favorites page: no username given');
                 throw new Error('Cannot fetch favorites page: no username given');
@@ -954,76 +954,76 @@
             else {
                 url += 'prev/';
             }
-            const page = await FuraffinityRequests.getHTML(url, semaphore);
+            const page = await FuraffinityRequests.getHTML(url, semaphore, signal);
             checkTagsAll(page);
             return page;
         }
-        async getSubmissionDataFavId(username, submissionId, fromDataFavId, toDataFavId, maxPageNo, action, delay = DEFAULT_ACTION_DELAY) {
+        async getSubmissionDataFavId(username, submissionId, fromDataFavId, toDataFavId, maxPageNo, signal, action, delay = DEFAULT_ACTION_DELAY) {
             submissionId = convertToNumber(submissionId);
             fromDataFavId = convertToNumber(fromDataFavId);
             toDataFavId = convertToNumber(toDataFavId);
             maxPageNo = convertToNumber(maxPageNo);
-            return await WaitAndCallAction.callFunctionAsync(() => this._getSubmissionDataFavId(username, submissionId, fromDataFavId, toDataFavId, maxPageNo), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => this._getSubmissionDataFavId(username, submissionId, fromDataFavId, toDataFavId, maxPageNo, signal), action, delay);
         }
-        async getFiguresBetweenIds(username, fromId, toId, maxPageNo, action, delay = DEFAULT_ACTION_DELAY) {
+        async getFiguresBetweenIds(username, fromId, toId, maxPageNo, signal, action, delay = DEFAULT_ACTION_DELAY) {
             fromId = convertToNumber(fromId);
             toId = convertToNumber(toId);
             maxPageNo = convertToNumber(maxPageNo);
             if (fromId == null || fromId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => this._getFiguresTillId(username, toId, undefined, maxPageNo), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => this._getFiguresTillId(username, toId, undefined, maxPageNo, signal), action, delay);
             }
             else if (toId == null || toId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => this._getFiguresSinceId(username, fromId, undefined, maxPageNo), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => this._getFiguresSinceId(username, fromId, undefined, maxPageNo, signal), action, delay);
             }
             else {
-                return await WaitAndCallAction.callFunctionAsync(() => this._getFiguresBetweenIds(username, fromId, toId, undefined, undefined, maxPageNo), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => this._getFiguresBetweenIds(username, fromId, toId, undefined, undefined, maxPageNo, signal), action, delay);
             }
         }
         /** @deprecated Use `getFiguresBetweenIdsBetweenDataIds` instead. */
-        async getFiguresBetweenIdsBetweenPages(username, fromId, toId, fromDataFavId, toDataFavId, maxPageNo, action, delay = DEFAULT_ACTION_DELAY) {
-            return await this.getFiguresBetweenIdsBetweenDataIds(username, fromId, toId, fromDataFavId, toDataFavId, maxPageNo, action, delay);
+        async getFiguresBetweenIdsBetweenPages(username, fromId, toId, fromDataFavId, toDataFavId, maxPageNo, signal, action, delay = DEFAULT_ACTION_DELAY) {
+            return await this.getFiguresBetweenIdsBetweenDataIds(username, fromId, toId, fromDataFavId, toDataFavId, maxPageNo, signal, action, delay);
         }
-        async getFiguresBetweenIdsBetweenDataIds(username, fromId, toId, fromDataFavId, toDataFavId, maxPageNo, action, delay = DEFAULT_ACTION_DELAY) {
+        async getFiguresBetweenIdsBetweenDataIds(username, fromId, toId, fromDataFavId, toDataFavId, maxPageNo, signal, action, delay = DEFAULT_ACTION_DELAY) {
             fromId = convertToNumber(fromId);
             toId = convertToNumber(toId);
             fromDataFavId = convertToNumber(fromDataFavId);
             toDataFavId = convertToNumber(toDataFavId);
             maxPageNo = convertToNumber(maxPageNo);
             if (fromId == null || fromId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => this._getFiguresTillId(username, toId, fromDataFavId, maxPageNo), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => this._getFiguresTillId(username, toId, fromDataFavId, maxPageNo, signal), action, delay);
             }
             else if (toId == null || toId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => this._getFiguresSinceId(username, fromId, toDataFavId, maxPageNo), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => this._getFiguresSinceId(username, fromId, toDataFavId, maxPageNo, signal), action, delay);
             }
             else {
-                return await WaitAndCallAction.callFunctionAsync(() => this._getFiguresBetweenIds(username, fromId, toId, fromDataFavId, toDataFavId, maxPageNo), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => this._getFiguresBetweenIds(username, fromId, toId, fromDataFavId, toDataFavId, maxPageNo, signal), action, delay);
             }
         }
-        async getFiguresBetweenPages(username, fromDataFavId, toDataFavId, maxPageNo, action, delay = DEFAULT_ACTION_DELAY) {
+        async getFiguresBetweenPages(username, fromDataFavId, toDataFavId, maxPageNo, signal, action, delay = DEFAULT_ACTION_DELAY) {
             fromDataFavId = convertToNumber(fromDataFavId);
             toDataFavId = convertToNumber(toDataFavId);
             maxPageNo = convertToNumber(maxPageNo);
             if (fromDataFavId == null || fromDataFavId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => this._getFiguresTillPage(username, toDataFavId, maxPageNo), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => this._getFiguresTillPage(username, toDataFavId, maxPageNo, signal), action, delay);
             }
             else if (toDataFavId == null || toDataFavId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => this._getFiguresSincePage(username, fromDataFavId, maxPageNo), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => this._getFiguresSincePage(username, fromDataFavId, maxPageNo, signal), action, delay);
             }
             else {
-                return await WaitAndCallAction.callFunctionAsync(() => this._getFiguresBetweenPages(username, fromDataFavId, toDataFavId, maxPageNo), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => this._getFiguresBetweenPages(username, fromDataFavId, toDataFavId, maxPageNo, signal), action, delay);
             }
         }
-        async getFigures(username, fromDataFavId, direction, action, delay = DEFAULT_ACTION_DELAY) {
+        async getFigures(username, fromDataFavId, direction, signal, action, delay = DEFAULT_ACTION_DELAY) {
             fromDataFavId = convertToNumber(fromDataFavId);
             direction = convertToNumber(direction);
-            return await WaitAndCallAction.callFunctionAsync(() => this._getFigures(username, fromDataFavId, direction), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => this._getFigures(username, fromDataFavId, direction, signal), action, delay);
         }
-        async getPage(username, fromDataFavId, direction, action, delay = DEFAULT_ACTION_DELAY) {
+        async getPage(username, fromDataFavId, direction, signal, action, delay = DEFAULT_ACTION_DELAY) {
             fromDataFavId = convertToNumber(fromDataFavId);
             direction = convertToNumber(direction);
-            return await WaitAndCallAction.callFunctionAsync(() => Favorites.fetchPage(username, fromDataFavId, direction, this.semaphore), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => Favorites.fetchPage(username, fromDataFavId, direction, this.semaphore, signal), action, delay);
         }
-        async _getSubmissionDataFavId(username, submissionId, fromDataFavId, toDataFavId, maxPageNo) {
+        async _getSubmissionDataFavId(username, submissionId, fromDataFavId, toDataFavId, maxPageNo, signal) {
             if (submissionId == null || submissionId <= 0) {
                 Logger.logError('No submissionId given');
                 throw new Error('No submissionId given');
@@ -1045,7 +1045,7 @@
             let running = true;
             let i = 0;
             while (running && i < maxPageNo) {
-                const figures = await this._getFigures(username, dataFavId, 1);
+                const figures = await this._getFigures(username, dataFavId, 1, signal);
                 let currFigureId = lastFigureId;
                 if (figures.length !== 0) {
                     currFigureId = figures[0].id;
@@ -1070,7 +1070,7 @@
             }
             return -1;
         }
-        async _getFiguresTillId(username, toId, fromDataFavId, maxPageNo) {
+        async _getFiguresTillId(username, toId, fromDataFavId, maxPageNo, signal) {
             if (toId == null || toId <= 0) {
                 Logger.logError('No toId given');
                 throw new Error('No toId given');
@@ -1089,7 +1089,7 @@
             let lastFigureId;
             let i = 0;
             while (running && i < maxPageNo) {
-                const figures = await this._getFigures(username, dataFavId, 1);
+                const figures = await this._getFigures(username, dataFavId, 1, signal);
                 let currFigureId = lastFigureId;
                 if (figures.length !== 0) {
                     currFigureId = figures[0].id;
@@ -1119,7 +1119,7 @@
             }
             return allFigures;
         }
-        async _getFiguresSinceId(username, fromId, toDataFavId, maxPageNo) {
+        async _getFiguresSinceId(username, fromId, toDataFavId, maxPageNo, signal) {
             if (fromId == null || fromId <= 0) {
                 Logger.logError('No fromId given');
                 throw new Error('No fromId given');
@@ -1139,7 +1139,7 @@
             let i = 0;
             if (toDataFavId < 0) {
                 while (running && i < maxPageNo) {
-                    const figures = await this._getFigures(username, dataFavId, direction);
+                    const figures = await this._getFigures(username, dataFavId, direction, signal);
                     let currFigureId = lastFigureId;
                     if (figures.length !== 0) {
                         currFigureId = figures[0].id;
@@ -1168,7 +1168,7 @@
             }
             const allFigures = [];
             while (running && i < maxPageNo) {
-                const figures = await this._getFigures(username, dataFavId, direction);
+                const figures = await this._getFigures(username, dataFavId, direction, signal);
                 let currFigureId = lastFigureId;
                 if (figures.length !== 0) {
                     currFigureId = figures[0].id;
@@ -1212,7 +1212,7 @@
             }
             return allFigures;
         }
-        async _getFiguresBetweenIds(username, fromId, toId, fromDataFavId, toDataFavId, maxPageNo) {
+        async _getFiguresBetweenIds(username, fromId, toId, fromDataFavId, toDataFavId, maxPageNo, signal) {
             if (fromId == null || fromId <= 0) {
                 Logger.logError('No fromId given');
                 throw new Error('No fromId given');
@@ -1240,7 +1240,7 @@
             let i = 0;
             if (fromDataFavId < 0 && toDataFavId < 0) {
                 while (running && i < maxPageNo) {
-                    const figures = await this._getFigures(username, dataFavId, direction);
+                    const figures = await this._getFigures(username, dataFavId, direction, signal);
                     let currFigureId = lastFigureId;
                     if (figures.length !== 0) {
                         currFigureId = figures[0].id;
@@ -1270,7 +1270,7 @@
             const allFigures = [];
             lastFigureId = undefined;
             while (running && i < maxPageNo) {
-                const figures = await this._getFigures(username, dataFavId, direction);
+                const figures = await this._getFigures(username, dataFavId, direction, signal);
                 let currFigureId = lastFigureId;
                 if (figures.length !== 0) {
                     currFigureId = figures[0].id;
@@ -1320,7 +1320,7 @@
             }
             return allFigures;
         }
-        async _getFiguresTillPage(username, toDataFavId, maxPageNo) {
+        async _getFiguresTillPage(username, toDataFavId, maxPageNo, signal) {
             if (toDataFavId == null || toDataFavId <= 0) {
                 Logger.logWarning('toDataFavId must be greater than 0. Using default 1 instead.');
                 toDataFavId = -1;
@@ -1335,7 +1335,7 @@
             let running = true;
             let i = 0;
             while (running && i < maxPageNo) {
-                const figures = await this._getFigures(username, dataFavId, 1);
+                const figures = await this._getFigures(username, dataFavId, 1, signal);
                 let currFigureId = lastFigureId;
                 if (figures.length !== 0) {
                     currFigureId = figures[0].id;
@@ -1365,7 +1365,7 @@
             }
             return allFigures;
         }
-        async _getFiguresSincePage(username, fromDataFavId, maxPageNo) {
+        async _getFiguresSincePage(username, fromDataFavId, maxPageNo, signal) {
             if (fromDataFavId == null || fromDataFavId <= 0) {
                 Logger.logWarning('fromDataFavId must be greater than 0. Using default 1 instead.');
                 fromDataFavId = -1;
@@ -1380,7 +1380,7 @@
             let running = true;
             let i = 0;
             while (running && i < maxPageNo) {
-                const figures = await this._getFigures(username, dataFavId, 1);
+                const figures = await this._getFigures(username, dataFavId, 1, signal);
                 let currFigureId = lastFigureId;
                 if (figures.length !== 0) {
                     currFigureId = figures[0].id;
@@ -1409,7 +1409,7 @@
             }
             return allFigures;
         }
-        async _getFiguresBetweenPages(username, fromDataFavId, toDataFavId, maxPageNo) {
+        async _getFiguresBetweenPages(username, fromDataFavId, toDataFavId, maxPageNo, signal) {
             if (fromDataFavId == null || fromDataFavId <= 0) {
                 Logger.logWarning('fromDataFavId must be greater than 0. Using default 1 instead.');
                 fromDataFavId = -1;
@@ -1428,7 +1428,7 @@
             let running = true;
             let i = 0;
             while (running && i < maxPageNo) {
-                const figures = await this._getFigures(username, dataFavId, 1);
+                const figures = await this._getFigures(username, dataFavId, 1, signal);
                 let currFigureId = lastFigureId;
                 if (figures.length !== 0) {
                     currFigureId = figures[0].id;
@@ -1461,9 +1461,9 @@
             }
             return allFigures;
         }
-        async _getFigures(username, dataFavId, direction) {
+        async _getFigures(username, dataFavId, direction, signal) {
             Logger.logInfo(`Getting Favorites of "${username}" since id "${dataFavId}" and direction "${direction}".`);
-            const galleryDoc = await Favorites.fetchPage(username, dataFavId, direction, this.semaphore);
+            const galleryDoc = await Favorites.fetchPage(username, dataFavId, direction, this.semaphore, signal);
             if (!galleryDoc || !(galleryDoc instanceof Document) || galleryDoc.getElementById('no-images')) {
                 Logger.logInfo(`No images found at favorites of "${username}" on page "${dataFavId}".`);
                 return [];
@@ -1485,7 +1485,7 @@
         static get hardLink() {
             return FuraffinityRequests.fullUrl + '/journals/';
         }
-        static async fetchPage(username, pageNumber, semaphore) {
+        static async fetchPage(username, pageNumber, semaphore, signal) {
             if (username == null) {
                 Logger.logError('Cannot fetch journals page: no username given');
                 throw new Error('Cannot fetch journals page: no username given');
@@ -1498,70 +1498,70 @@
                 username += '/';
             }
             const url = Journals.hardLink + username;
-            return await FuraffinityRequests.getHTML(url + pageNumber, semaphore);
+            return await FuraffinityRequests.getHTML(url + pageNumber, semaphore, signal);
         }
-        async getJournalPageNo(username, journalId, fromPageNumber, toPageNumber, action, delay = DEFAULT_ACTION_DELAY) {
+        async getJournalPageNo(username, journalId, fromPageNumber, toPageNumber, signal, action, delay = DEFAULT_ACTION_DELAY) {
             journalId = convertToNumber(journalId);
             fromPageNumber = convertToNumber(fromPageNumber);
             toPageNumber = convertToNumber(toPageNumber);
-            return await WaitAndCallAction.callFunctionAsync((percentId) => findElementPageNo((pg) => this._getSections(username, pg), journalId, 'jid-', fromPageNumber, toPageNumber, percentId), action, delay);
+            return await WaitAndCallAction.callFunctionAsync((percentId) => findElementPageNo((pg) => this._getSections(username, pg, signal), journalId, 'jid-', fromPageNumber, toPageNumber, percentId), action, delay);
         }
-        async getFiguresBetweenIds(username, fromId, toId, action, delay = DEFAULT_ACTION_DELAY) {
+        async getFiguresBetweenIds(username, fromId, toId, signal, action, delay = DEFAULT_ACTION_DELAY) {
             fromId = convertToNumber(fromId);
             toId = convertToNumber(toId);
             if (fromId == null || fromId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => elementsTillId((pg) => this._getSections(username, pg), toId, undefined), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => elementsTillId((pg) => this._getSections(username, pg, signal), toId, undefined), action, delay);
             }
             else if (toId == null || toId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => elementsSinceId((pg) => this._getSections(username, pg), fromId, undefined), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => elementsSinceId((pg) => this._getSections(username, pg, signal), fromId, undefined), action, delay);
             }
             else {
-                return await WaitAndCallAction.callFunctionAsync(() => elementsBetweenIds((pg) => this._getSections(username, pg), fromId, toId, undefined, undefined), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => elementsBetweenIds((pg) => this._getSections(username, pg, signal), fromId, toId, undefined, undefined), action, delay);
             }
         }
-        async getFiguresBetweenIdsBetweenPages(username, fromId, toId, fromPageNumber, toPageNumber, action, delay = DEFAULT_ACTION_DELAY) {
+        async getFiguresBetweenIdsBetweenPages(username, fromId, toId, fromPageNumber, toPageNumber, signal, action, delay = DEFAULT_ACTION_DELAY) {
             fromId = convertToNumber(fromId);
             toId = convertToNumber(toId);
             fromPageNumber = convertToNumber(fromPageNumber);
             toPageNumber = convertToNumber(toPageNumber);
             if (fromId == null || fromId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => elementsTillId((pg) => this._getSections(username, pg), toId, fromPageNumber), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => elementsTillId((pg) => this._getSections(username, pg, signal), toId, fromPageNumber), action, delay);
             }
             else if (toId == null || toId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => elementsSinceId((pg) => this._getSections(username, pg), fromId, toPageNumber), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => elementsSinceId((pg) => this._getSections(username, pg, signal), fromId, toPageNumber), action, delay);
             }
             else {
-                return await WaitAndCallAction.callFunctionAsync(() => elementsBetweenIds((pg) => this._getSections(username, pg), fromId, toId, fromPageNumber, toPageNumber), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => elementsBetweenIds((pg) => this._getSections(username, pg, signal), fromId, toId, fromPageNumber, toPageNumber), action, delay);
             }
         }
-        async getSectionsBetweenPages(username, fromPageNumber, toPageNumber, action, delay = DEFAULT_ACTION_DELAY) {
+        async getSectionsBetweenPages(username, fromPageNumber, toPageNumber, signal, action, delay = DEFAULT_ACTION_DELAY) {
             fromPageNumber = convertToNumber(fromPageNumber);
             toPageNumber = convertToNumber(toPageNumber);
             if (fromPageNumber == null || fromPageNumber <= 0) {
-                return await WaitAndCallAction.callFunctionAsync((percentId) => elementsTillPage((pg) => this._getSections(username, pg), toPageNumber, percentId), action, delay);
+                return await WaitAndCallAction.callFunctionAsync((percentId) => elementsTillPage((pg) => this._getSections(username, pg, signal), toPageNumber, percentId), action, delay);
             }
             else if (toPageNumber == null || toPageNumber <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => elementsSincePage((pg) => this._getSections(username, pg), fromPageNumber), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => elementsSincePage((pg) => this._getSections(username, pg, signal), fromPageNumber), action, delay);
             }
             else {
-                return await WaitAndCallAction.callFunctionAsync((percentId) => elementsBetweenPages((pg) => this._getSections(username, pg), fromPageNumber, toPageNumber, percentId), action, delay);
+                return await WaitAndCallAction.callFunctionAsync((percentId) => elementsBetweenPages((pg) => this._getSections(username, pg, signal), fromPageNumber, toPageNumber, percentId), action, delay);
             }
         }
-        async getSections(username, pageNumber, action, delay = DEFAULT_ACTION_DELAY) {
+        async getSections(username, pageNumber, signal, action, delay = DEFAULT_ACTION_DELAY) {
             pageNumber = convertToNumber(pageNumber);
-            return await WaitAndCallAction.callFunctionAsync(() => this._getSections(username, pageNumber), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => this._getSections(username, pageNumber, signal), action, delay);
         }
-        async getPage(username, pageNumber, action, delay = DEFAULT_ACTION_DELAY) {
+        async getPage(username, pageNumber, signal, action, delay = DEFAULT_ACTION_DELAY) {
             pageNumber = convertToNumber(pageNumber);
-            return await WaitAndCallAction.callFunctionAsync(() => Journals.fetchPage(username, pageNumber, this._semaphore), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => Journals.fetchPage(username, pageNumber, this._semaphore, signal), action, delay);
         }
-        async _getSections(username, pageNumber) {
+        async _getSections(username, pageNumber, signal) {
             if (pageNumber == null || pageNumber <= 0) {
                 Logger.logWarning('pageNumber must be greater than 0. Using default 1 instead.');
                 pageNumber = 1;
             }
             Logger.logInfo(`Getting Journals of "${username}" on page "${pageNumber}".`);
-            const galleryDoc = await Journals.fetchPage(username, pageNumber, this._semaphore);
+            const galleryDoc = await Journals.fetchPage(username, pageNumber, this._semaphore, signal);
             if (!galleryDoc) {
                 Logger.logWarning(`No journals found at "${username}" on page "${pageNumber}".`);
                 return [];
@@ -1603,7 +1603,7 @@
         static get hardLink() {
             return FuraffinityRequests.fullUrl + '/browse/';
         }
-        static async fetchPage(pageNumber, browseOptions, semaphore) {
+        static async fetchPage(pageNumber, browseOptions, semaphore, signal) {
             if (pageNumber == null || pageNumber <= 0) {
                 Logger.logWarning('Page number must be greater than 0. Using default 1 instead.');
                 pageNumber = 1;
@@ -1627,7 +1627,7 @@
             }
             const payloadArray = Object.entries(payload).map(([key, value]) => [key, value?.toString() ?? '']);
             const url = Browse.hardLink;
-            const page = await FuraffinityRequests.postHTML(url, payloadArray, semaphore);
+            const page = await FuraffinityRequests.postHTML(url, payloadArray, semaphore, signal);
             checkTagsAll(page);
             return page;
         }
@@ -1643,54 +1643,54 @@
         static get BrowseOptions() {
             return BrowseOptions;
         }
-        async getFiguresBetweenIds(fromId, toId, browseOptions, action, delay = DEFAULT_ACTION_DELAY) {
+        async getFiguresBetweenIds(fromId, toId, browseOptions, signal, action, delay = DEFAULT_ACTION_DELAY) {
             fromId = convertToNumber(fromId);
             toId = convertToNumber(toId);
             if (fromId == null || fromId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getBrowseFiguresTillId(toId, undefined, browseOptions, this._semaphore), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getBrowseFiguresTillId(toId, undefined, browseOptions, this._semaphore, signal), action, delay);
             }
             else if (toId == null || toId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getBrowseFiguresSinceId(fromId, undefined, browseOptions, this._semaphore), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getBrowseFiguresSinceId(fromId, undefined, browseOptions, this._semaphore, signal), action, delay);
             }
             else {
-                return await WaitAndCallAction.callFunctionAsync((percentId) => SearchRequests.getBrowseFiguresBetweenIds(fromId, toId, undefined, undefined, browseOptions, this._semaphore, percentId), action, delay);
+                return await WaitAndCallAction.callFunctionAsync((percentId) => SearchRequests.getBrowseFiguresBetweenIds(fromId, toId, undefined, undefined, browseOptions, this._semaphore, signal, percentId), action, delay);
             }
         }
-        async getFiguresBetweenIdsBetweenPages(fromId, toId, fromPageNumber, toPageNumber, browseOptions, action, delay = DEFAULT_ACTION_DELAY) {
+        async getFiguresBetweenIdsBetweenPages(fromId, toId, fromPageNumber, toPageNumber, browseOptions, signal, action, delay = DEFAULT_ACTION_DELAY) {
             fromId = convertToNumber(fromId);
             toId = convertToNumber(toId);
             fromPageNumber = convertToNumber(fromPageNumber);
             toPageNumber = convertToNumber(toPageNumber);
             if (fromId == null || fromId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getBrowseFiguresTillId(toId, fromPageNumber, browseOptions, this._semaphore), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getBrowseFiguresTillId(toId, fromPageNumber, browseOptions, this._semaphore, signal), action, delay);
             }
             else if (toId == null || toId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getBrowseFiguresSinceId(fromId, toPageNumber, browseOptions, this._semaphore), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getBrowseFiguresSinceId(fromId, toPageNumber, browseOptions, this._semaphore, signal), action, delay);
             }
             else {
-                return await WaitAndCallAction.callFunctionAsync((percentId) => SearchRequests.getBrowseFiguresBetweenIds(fromId, toId, fromPageNumber, toPageNumber, browseOptions, this._semaphore, percentId), action, delay);
+                return await WaitAndCallAction.callFunctionAsync((percentId) => SearchRequests.getBrowseFiguresBetweenIds(fromId, toId, fromPageNumber, toPageNumber, browseOptions, this._semaphore, signal, percentId), action, delay);
             }
         }
-        async getFiguresBetweenPages(fromPageNumber, toPageNumber, browseOptions, action, delay = DEFAULT_ACTION_DELAY) {
+        async getFiguresBetweenPages(fromPageNumber, toPageNumber, browseOptions, signal, action, delay = DEFAULT_ACTION_DELAY) {
             fromPageNumber = convertToNumber(fromPageNumber);
             toPageNumber = convertToNumber(toPageNumber);
             if (fromPageNumber == null || fromPageNumber <= 0) {
-                return await WaitAndCallAction.callFunctionAsync((percentId) => SearchRequests.getBrowseFiguresTillPage(toPageNumber, browseOptions, this._semaphore, percentId), action, delay);
+                return await WaitAndCallAction.callFunctionAsync((percentId) => SearchRequests.getBrowseFiguresTillPage(toPageNumber, browseOptions, this._semaphore, signal, percentId), action, delay);
             }
             else if (toPageNumber == null || toPageNumber <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getBrowseFiguresSincePage(fromPageNumber, browseOptions, this._semaphore), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getBrowseFiguresSincePage(fromPageNumber, browseOptions, this._semaphore, signal), action, delay);
             }
             else {
-                return await WaitAndCallAction.callFunctionAsync((percentId) => SearchRequests.getBrowseFiguresBetweenPages(fromPageNumber, toPageNumber, browseOptions, this._semaphore, percentId), action, delay);
+                return await WaitAndCallAction.callFunctionAsync((percentId) => SearchRequests.getBrowseFiguresBetweenPages(fromPageNumber, toPageNumber, browseOptions, this._semaphore, signal, percentId), action, delay);
             }
         }
-        async getFigures(pageNumber, browseOptions, action, delay = DEFAULT_ACTION_DELAY) {
+        async getFigures(pageNumber, browseOptions, signal, action, delay = DEFAULT_ACTION_DELAY) {
             pageNumber = convertToNumber(pageNumber);
-            return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getBrowseFigures(pageNumber, browseOptions, this._semaphore), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getBrowseFigures(pageNumber, browseOptions, this._semaphore, signal), action, delay);
         }
-        async getPage(pageNumber, browseOptions, action, delay = DEFAULT_ACTION_DELAY) {
+        async getPage(pageNumber, browseOptions, signal, action, delay = DEFAULT_ACTION_DELAY) {
             pageNumber = convertToNumber(pageNumber);
-            return await WaitAndCallAction.callFunctionAsync(() => Browse.fetchPage(pageNumber, browseOptions, this._semaphore), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => Browse.fetchPage(pageNumber, browseOptions, this._semaphore, signal), action, delay);
         }
     }
     class BrowseOptions {
@@ -2234,7 +2234,7 @@
         static get hardLink() {
             return FuraffinityRequests.fullUrl + '/search/';
         }
-        static async fetchPage(pageNumber, searchOptions, semaphore) {
+        static async fetchPage(pageNumber, searchOptions, semaphore, signal) {
             if (pageNumber == null || pageNumber <= 0) {
                 Logger.logWarning('Page number must be greater than 0. Using default 1 instead.');
                 pageNumber = 1;
@@ -2290,7 +2290,7 @@
             }
             const payloadArray = Object.entries(payload).map(([key, value]) => [key, value?.toString() ?? '']);
             const url = Search.hardLink;
-            const page = await FuraffinityRequests.postHTML(url, payloadArray, semaphore);
+            const page = await FuraffinityRequests.postHTML(url, payloadArray, semaphore, signal);
             checkTagsAll(page);
             return page;
         }
@@ -2306,54 +2306,54 @@
         static get SearchOptions() {
             return SearchOptions;
         }
-        async getFiguresBetweenIds(fromId, toId, searchOptions, action, delay = DEFAULT_ACTION_DELAY) {
+        async getFiguresBetweenIds(fromId, toId, searchOptions, signal, action, delay = DEFAULT_ACTION_DELAY) {
             fromId = convertToNumber(fromId);
             toId = convertToNumber(toId);
             if (fromId == null || fromId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getSearchFiguresTillId(toId, undefined, searchOptions, this._semaphore), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getSearchFiguresTillId(toId, undefined, searchOptions, this._semaphore, signal), action, delay);
             }
             else if (toId == null || toId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getSearchFiguresSinceId(fromId, undefined, searchOptions, this._semaphore), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getSearchFiguresSinceId(fromId, undefined, searchOptions, this._semaphore, signal), action, delay);
             }
             else {
-                return await WaitAndCallAction.callFunctionAsync((percentId) => SearchRequests.getSearchFiguresBetweenIds(fromId, toId, undefined, undefined, searchOptions, this._semaphore, percentId), action, delay);
+                return await WaitAndCallAction.callFunctionAsync((percentId) => SearchRequests.getSearchFiguresBetweenIds(fromId, toId, undefined, undefined, searchOptions, this._semaphore, signal, percentId), action, delay);
             }
         }
-        async getFiguresBetweenIdsBetweenPages(fromId, toId, fromPageNumber, toPageNumber, searchOptions, action, delay = DEFAULT_ACTION_DELAY) {
+        async getFiguresBetweenIdsBetweenPages(fromId, toId, fromPageNumber, toPageNumber, searchOptions, signal, action, delay = DEFAULT_ACTION_DELAY) {
             fromId = convertToNumber(fromId);
             toId = convertToNumber(toId);
             fromPageNumber = convertToNumber(fromPageNumber);
             toPageNumber = convertToNumber(toPageNumber);
             if (fromId == null || fromId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getSearchFiguresTillId(toId, fromPageNumber, searchOptions, this._semaphore), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getSearchFiguresTillId(toId, fromPageNumber, searchOptions, this._semaphore, signal), action, delay);
             }
             else if (toId == null || toId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getSearchFiguresSinceId(fromId, toPageNumber, searchOptions, this._semaphore), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getSearchFiguresSinceId(fromId, toPageNumber, searchOptions, this._semaphore, signal), action, delay);
             }
             else {
-                return await WaitAndCallAction.callFunctionAsync((percentId) => SearchRequests.getSearchFiguresBetweenIds(fromId, toId, fromPageNumber, toPageNumber, searchOptions, this._semaphore, percentId), action, delay);
+                return await WaitAndCallAction.callFunctionAsync((percentId) => SearchRequests.getSearchFiguresBetweenIds(fromId, toId, fromPageNumber, toPageNumber, searchOptions, this._semaphore, signal, percentId), action, delay);
             }
         }
-        async getFiguresBetweenPages(fromPageNumber, toPageNumber, searchOptions, action, delay = DEFAULT_ACTION_DELAY) {
+        async getFiguresBetweenPages(fromPageNumber, toPageNumber, searchOptions, signal, action, delay = DEFAULT_ACTION_DELAY) {
             fromPageNumber = convertToNumber(fromPageNumber);
             toPageNumber = convertToNumber(toPageNumber);
             if (fromPageNumber == null || fromPageNumber <= 0) {
-                return await WaitAndCallAction.callFunctionAsync((percentId) => SearchRequests.getSearchFiguresTillPage(toPageNumber, searchOptions, this._semaphore, percentId), action, delay);
+                return await WaitAndCallAction.callFunctionAsync((percentId) => SearchRequests.getSearchFiguresTillPage(toPageNumber, searchOptions, this._semaphore, signal, percentId), action, delay);
             }
             else if (toPageNumber == null || toPageNumber <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getSearchFiguresSincePage(fromPageNumber, searchOptions, this._semaphore), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getSearchFiguresSincePage(fromPageNumber, searchOptions, this._semaphore, signal), action, delay);
             }
             else {
-                return await WaitAndCallAction.callFunctionAsync((percentId) => SearchRequests.getSearchFiguresBetweenPages(fromPageNumber, toPageNumber, searchOptions, this._semaphore, percentId), action, delay);
+                return await WaitAndCallAction.callFunctionAsync((percentId) => SearchRequests.getSearchFiguresBetweenPages(fromPageNumber, toPageNumber, searchOptions, this._semaphore, signal, percentId), action, delay);
             }
         }
-        async getFigures(pageNumber, searchOptions, action, delay = DEFAULT_ACTION_DELAY) {
+        async getFigures(pageNumber, searchOptions, signal, action, delay = DEFAULT_ACTION_DELAY) {
             pageNumber = convertToNumber(pageNumber);
-            return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getSearchFigures(pageNumber, searchOptions, this._semaphore), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getSearchFigures(pageNumber, searchOptions, this._semaphore, signal), action, delay);
         }
-        async getPage(pageNumber, searchOptions, action, delay = DEFAULT_ACTION_DELAY) {
+        async getPage(pageNumber, searchOptions, signal, action, delay = DEFAULT_ACTION_DELAY) {
             pageNumber = convertToNumber(pageNumber);
-            return await WaitAndCallAction.callFunctionAsync(() => Search.fetchPage(pageNumber, searchOptions, this._semaphore), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => Search.fetchPage(pageNumber, searchOptions, this._semaphore, signal), action, delay);
         }
     }
     class SearchOptions {
@@ -2428,30 +2428,30 @@
             this.Search = new Search(this._semaphore);
         }
         //#region Browse
-        static async getBrowseFiguresTillId(toId, fromPage, browseOptions, semaphore) {
-            return await elementsTillId((page) => SearchRequests.getBrowseFigures(page, browseOptions, semaphore), toId, fromPage);
+        static async getBrowseFiguresTillId(toId, fromPage, browseOptions, semaphore, signal) {
+            return await elementsTillId((page) => SearchRequests.getBrowseFigures(page, browseOptions, semaphore, signal), toId, fromPage);
         }
-        static async getBrowseFiguresSinceId(fromId, toPage, browseOptions, semaphore) {
-            return await elementsSinceId((page) => SearchRequests.getBrowseFigures(page, browseOptions, semaphore), fromId, toPage);
+        static async getBrowseFiguresSinceId(fromId, toPage, browseOptions, semaphore, signal) {
+            return await elementsSinceId((page) => SearchRequests.getBrowseFigures(page, browseOptions, semaphore, signal), fromId, toPage);
         }
-        static async getBrowseFiguresBetweenIds(fromId, toId, fromPage, toPage, browseOptions, semaphore, percentId) {
-            return await elementsBetweenIds((page) => SearchRequests.getBrowseFigures(page, browseOptions, semaphore), fromId, toId, fromPage, toPage, percentId);
+        static async getBrowseFiguresBetweenIds(fromId, toId, fromPage, toPage, browseOptions, semaphore, signal, percentId) {
+            return await elementsBetweenIds((page) => SearchRequests.getBrowseFigures(page, browseOptions, semaphore, signal), fromId, toId, fromPage, toPage, percentId);
         }
-        static async getBrowseFiguresTillPage(toPageNumber, browseOptions, semaphore, percentId) {
-            return await elementsTillPage((page) => SearchRequests.getBrowseFigures(page, browseOptions, semaphore), toPageNumber, percentId);
+        static async getBrowseFiguresTillPage(toPageNumber, browseOptions, semaphore, signal, percentId) {
+            return await elementsTillPage((page) => SearchRequests.getBrowseFigures(page, browseOptions, semaphore, signal), toPageNumber, percentId);
         }
-        static async getBrowseFiguresSincePage(fromPageNumber, browseOptions, semaphore) {
-            return await elementsSincePage((page) => SearchRequests.getBrowseFigures(page, browseOptions, semaphore), fromPageNumber);
+        static async getBrowseFiguresSincePage(fromPageNumber, browseOptions, semaphore, signal) {
+            return await elementsSincePage((page) => SearchRequests.getBrowseFigures(page, browseOptions, semaphore, signal), fromPageNumber);
         }
-        static async getBrowseFiguresBetweenPages(fromPageNumber, toPageNumber, browseOptions, semaphore, percentId) {
-            return await elementsBetweenPages((page) => SearchRequests.getBrowseFigures(page, browseOptions, semaphore), fromPageNumber, toPageNumber, percentId);
+        static async getBrowseFiguresBetweenPages(fromPageNumber, toPageNumber, browseOptions, semaphore, signal, percentId) {
+            return await elementsBetweenPages((page) => SearchRequests.getBrowseFigures(page, browseOptions, semaphore, signal), fromPageNumber, toPageNumber, percentId);
         }
-        static async getBrowseFigures(pageNumber, browseOptions, semaphore) {
+        static async getBrowseFigures(pageNumber, browseOptions, semaphore, signal) {
             if (pageNumber == null || pageNumber <= 0) {
                 Logger.logWarning('No pageNumber given. Using default value of 1.');
                 pageNumber = 1;
             }
-            const galleryDoc = await Browse.fetchPage(pageNumber, browseOptions, semaphore);
+            const galleryDoc = await Browse.fetchPage(pageNumber, browseOptions, semaphore, signal);
             if (galleryDoc == null || !(galleryDoc instanceof Document) || galleryDoc.getElementById('no-images')) {
                 Logger.logInfo(`No images found at browse on page "${pageNumber}".`);
                 return [];
@@ -2465,30 +2465,30 @@
         }
         //#endregion
         //#region Search
-        static async getSearchFiguresTillId(toId, fromPage, searchOptions, semaphore) {
-            return await elementsTillId((page) => SearchRequests.getSearchFigures(page, searchOptions, semaphore), toId, fromPage);
+        static async getSearchFiguresTillId(toId, fromPage, searchOptions, semaphore, signal) {
+            return await elementsTillId((page) => SearchRequests.getSearchFigures(page, searchOptions, semaphore, signal), toId, fromPage);
         }
-        static async getSearchFiguresSinceId(fromId, toPage, searchOptions, semaphore) {
-            return await elementsSinceId((page) => SearchRequests.getSearchFigures(page, searchOptions, semaphore), fromId, toPage);
+        static async getSearchFiguresSinceId(fromId, toPage, searchOptions, semaphore, signal) {
+            return await elementsSinceId((page) => SearchRequests.getSearchFigures(page, searchOptions, semaphore, signal), fromId, toPage);
         }
-        static async getSearchFiguresBetweenIds(fromId, toId, fromPage, toPage, searchOptions, semaphore, percentId) {
-            return await elementsBetweenIds((page) => SearchRequests.getSearchFigures(page, searchOptions, semaphore), fromId, toId, fromPage, toPage, percentId);
+        static async getSearchFiguresBetweenIds(fromId, toId, fromPage, toPage, searchOptions, semaphore, signal, percentId) {
+            return await elementsBetweenIds((page) => SearchRequests.getSearchFigures(page, searchOptions, semaphore, signal), fromId, toId, fromPage, toPage, percentId);
         }
-        static async getSearchFiguresTillPage(toPageNumber, searchOptions, semaphore, percentId) {
-            return await elementsTillPage((page) => SearchRequests.getSearchFigures(page, searchOptions, semaphore), toPageNumber, percentId);
+        static async getSearchFiguresTillPage(toPageNumber, searchOptions, semaphore, signal, percentId) {
+            return await elementsTillPage((page) => SearchRequests.getSearchFigures(page, searchOptions, semaphore, signal), toPageNumber, percentId);
         }
-        static async getSearchFiguresSincePage(fromPageNumber, searchOptions, semaphore) {
-            return await elementsSincePage((page) => SearchRequests.getSearchFigures(page, searchOptions, semaphore), fromPageNumber);
+        static async getSearchFiguresSincePage(fromPageNumber, searchOptions, semaphore, signal) {
+            return await elementsSincePage((page) => SearchRequests.getSearchFigures(page, searchOptions, semaphore, signal), fromPageNumber);
         }
-        static async getSearchFiguresBetweenPages(fromPageNumber, toPageNumber, searchOptions, semaphore, percentId) {
-            return await elementsBetweenPages((page) => SearchRequests.getSearchFigures(page, searchOptions, semaphore), fromPageNumber, toPageNumber, percentId);
+        static async getSearchFiguresBetweenPages(fromPageNumber, toPageNumber, searchOptions, semaphore, signal, percentId) {
+            return await elementsBetweenPages((page) => SearchRequests.getSearchFigures(page, searchOptions, semaphore, signal), fromPageNumber, toPageNumber, percentId);
         }
-        static async getSearchFigures(pageNumber, searchOptions, semaphore) {
+        static async getSearchFigures(pageNumber, searchOptions, semaphore, signal) {
             if (pageNumber == null || pageNumber <= 0) {
                 Logger.logWarning('No pageNumber given. Using default value of 1.');
                 pageNumber = 1;
             }
-            const galleryDoc = await Search.fetchPage(pageNumber, searchOptions, semaphore);
+            const galleryDoc = await Search.fetchPage(pageNumber, searchOptions, semaphore, signal);
             if (galleryDoc == null || !(galleryDoc instanceof Document) || galleryDoc.getElementById('no-images')) {
                 Logger.logInfo(`No images found at search on page "${pageNumber}".`);
                 return [];
@@ -2520,30 +2520,30 @@
                 unblock: FuraffinityRequests.fullUrl + '/unblock/',
             };
         }
-        async getUserPage(username, action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => this._getUserPage(username), action, delay);
+        async getUserPage(username, signal, action, delay = DEFAULT_ACTION_DELAY) {
+            return await WaitAndCallAction.callFunctionAsync(() => this._getUserPage(username, signal), action, delay);
         }
-        async watchUser(username, watchKey, action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => this._watchUser(username, watchKey), action, delay);
+        async watchUser(username, watchKey, signal, action, delay = DEFAULT_ACTION_DELAY) {
+            return await WaitAndCallAction.callFunctionAsync(() => this._watchUser(username, watchKey, signal), action, delay);
         }
-        async unwatchUser(username, unwatchKey, action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => this._unwatchUser(username, unwatchKey), action, delay);
+        async unwatchUser(username, unwatchKey, signal, action, delay = DEFAULT_ACTION_DELAY) {
+            return await WaitAndCallAction.callFunctionAsync(() => this._unwatchUser(username, unwatchKey, signal), action, delay);
         }
-        async blockUser(username, blockKey, action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => this._blockUser(username, blockKey), action, delay);
+        async blockUser(username, blockKey, signal, action, delay = DEFAULT_ACTION_DELAY) {
+            return await WaitAndCallAction.callFunctionAsync(() => this._blockUser(username, blockKey, signal), action, delay);
         }
-        async unblockUser(username, unblockKey, action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => this._unblockUser(username, unblockKey), action, delay);
+        async unblockUser(username, unblockKey, signal, action, delay = DEFAULT_ACTION_DELAY) {
+            return await WaitAndCallAction.callFunctionAsync(() => this._unblockUser(username, unblockKey, signal), action, delay);
         }
-        async _getUserPage(username) {
+        async _getUserPage(username, signal) {
             if (username == null) {
                 Logger.logWarning('No username given');
                 return;
             }
             const url = UserRequests.hardLinks['user'] + username;
-            return await FuraffinityRequests.getHTML(url, this._semaphore);
+            return await FuraffinityRequests.getHTML(url, this._semaphore, signal);
         }
-        async _watchUser(username, watchKey) {
+        async _watchUser(username, watchKey, signal) {
             if (username == null || username === '') {
                 Logger.logError('No username given');
                 throw new Error('No username given');
@@ -2553,9 +2553,9 @@
                 throw new Error('No watch key given');
             }
             const url = UserRequests.hardLinks['watch'] + username + '?key=' + watchKey;
-            return await FuraffinityRequests.getHTML(url, this._semaphore) == null;
+            return await FuraffinityRequests.getHTML(url, this._semaphore, signal) == null;
         }
-        async _unwatchUser(username, unwatchKey) {
+        async _unwatchUser(username, unwatchKey, signal) {
             if (username == null || username === '') {
                 Logger.logError('No username given');
                 throw new Error('No username given');
@@ -2565,9 +2565,9 @@
                 throw new Error('No unwatch key given');
             }
             const url = UserRequests.hardLinks['unwatch'] + username + '?key=' + unwatchKey;
-            return await FuraffinityRequests.getHTML(url, this._semaphore) == null;
+            return await FuraffinityRequests.getHTML(url, this._semaphore, signal) == null;
         }
-        async _blockUser(username, blockKey) {
+        async _blockUser(username, blockKey, signal) {
             if (username == null || username === '') {
                 Logger.logError('No username given');
                 throw new Error('No username given');
@@ -2577,9 +2577,9 @@
                 throw new Error('No block key given');
             }
             const url = UserRequests.hardLinks['block'] + username + '?key=' + blockKey;
-            return await FuraffinityRequests.getHTML(url, this._semaphore) == null;
+            return await FuraffinityRequests.getHTML(url, this._semaphore, signal) == null;
         }
-        async _unblockUser(username, unblockKey) {
+        async _unblockUser(username, unblockKey, signal) {
             if (username == null || username === '') {
                 Logger.logError('No username given');
                 throw new Error('No username given');
@@ -2589,7 +2589,7 @@
                 throw new Error('No unblock key given');
             }
             const url = UserRequests.hardLinks['unblock'] + username + '?key=' + unblockKey;
-            return await FuraffinityRequests.getHTML(url, this._semaphore) == null;
+            return await FuraffinityRequests.getHTML(url, this._semaphore, signal) == null;
         }
     }
 
@@ -2601,25 +2601,25 @@
         static get hardLink() {
             return FuraffinityRequests.fullUrl + '/msg/submissions/';
         }
-        async getSubmissionsPage(firstSubmissionId, action, delay = DEFAULT_ACTION_DELAY) {
+        async getSubmissionsPage(firstSubmissionId, signal, action, delay = DEFAULT_ACTION_DELAY) {
             firstSubmissionId = convertToNumber(firstSubmissionId);
-            return await WaitAndCallAction.callFunctionAsync(() => this._getSubmissionsPage(firstSubmissionId), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => this._getSubmissionsPage(firstSubmissionId, signal), action, delay);
         }
-        async removeSubmissions(submissionIds, action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => this._removeSubmissions(submissionIds), action, delay);
+        async removeSubmissions(submissionIds, signal, action, delay = DEFAULT_ACTION_DELAY) {
+            return await WaitAndCallAction.callFunctionAsync(() => this._removeSubmissions(submissionIds, signal), action, delay);
         }
-        async nukeSubmissions(action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => this._nukeSubmissions(), action, delay);
+        async nukeSubmissions(signal, action, delay = DEFAULT_ACTION_DELAY) {
+            return await WaitAndCallAction.callFunctionAsync(() => this._nukeSubmissions(signal), action, delay);
         }
-        async _getSubmissionsPage(firstSubmissionId) {
+        async _getSubmissionsPage(firstSubmissionId, signal) {
             if (firstSubmissionId == null || firstSubmissionId <= 0) {
-                return await FuraffinityRequests.getHTML(`${NewSubmissions.hardLink}new@72/`, this._semaphore);
+                return await FuraffinityRequests.getHTML(`${NewSubmissions.hardLink}new@72/`, this._semaphore, signal);
             }
             else {
-                return await FuraffinityRequests.getHTML(`${NewSubmissions.hardLink}new~${firstSubmissionId}@72/`, this._semaphore);
+                return await FuraffinityRequests.getHTML(`${NewSubmissions.hardLink}new~${firstSubmissionId}@72/`, this._semaphore, signal);
             }
         }
-        async _removeSubmissions(submissionIds) {
+        async _removeSubmissions(submissionIds, signal) {
             if (submissionIds == null || submissionIds.length === 0) {
                 Logger.logError('No submission ids to remove');
                 throw new Error('No submission ids to remove');
@@ -2630,13 +2630,13 @@
             for (const submissionId of submissionIds) {
                 payload.push(['submissions[]', submissionId.toString()]);
             }
-            return await FuraffinityRequests.postHTML(`${NewSubmissions.hardLink}new@72/`, payload, this._semaphore);
+            return await FuraffinityRequests.postHTML(`${NewSubmissions.hardLink}new@72/`, payload, this._semaphore, signal);
         }
-        async _nukeSubmissions() {
+        async _nukeSubmissions(signal) {
             const payload = [
                 ['messagecenter-action', Message.hardActions['nuke']],
             ];
-            return await FuraffinityRequests.postHTML(`${NewSubmissions.hardLink}new@72/`, payload, this._semaphore);
+            return await FuraffinityRequests.postHTML(`${NewSubmissions.hardLink}new@72/`, payload, this._semaphore, signal);
         }
     }
 
@@ -2654,13 +2654,13 @@
             this._nukeAction = nukeAction;
             this._fieldName = fieldName;
         }
-        async removeMessages(ids, action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => this._removeMessages(ids), action, delay);
+        async removeMessages(ids, signal, action, delay = DEFAULT_ACTION_DELAY) {
+            return await WaitAndCallAction.callFunctionAsync(() => this._removeMessages(ids, signal), action, delay);
         }
-        async nukeMessages(action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => this._nukeMessages(), action, delay);
+        async nukeMessages(signal, action, delay = DEFAULT_ACTION_DELAY) {
+            return await WaitAndCallAction.callFunctionAsync(() => this._nukeMessages(signal), action, delay);
         }
-        async _removeMessages(ids) {
+        async _removeMessages(ids, signal) {
             if (ids == null || ids.length === 0) {
                 Logger.logError('No message ids to remove');
                 throw new Error('No message ids to remove');
@@ -2669,11 +2669,11 @@
             for (const id of ids) {
                 payload.push([this._fieldName, id.toString()]);
             }
-            return await FuraffinityRequests.postHTML(this._hardLink, payload, this._semaphore);
+            return await FuraffinityRequests.postHTML(this._hardLink, payload, this._semaphore, signal);
         }
-        async _nukeMessages() {
+        async _nukeMessages(signal) {
             const payload = [this._nukeAction];
-            return await FuraffinityRequests.postHTML(this._hardLink, payload, this._semaphore);
+            return await FuraffinityRequests.postHTML(this._hardLink, payload, this._semaphore, signal);
         }
     }
 
@@ -2699,18 +2699,18 @@
             remove: ['remove-all', 'Remove Selected'],
             nuke: ['nuke-all', 'Nuke Selected'],
         };
-        async getMessagesPage(action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(NewMessages.hardLink, this._semaphore), action, delay);
+        async getMessagesPage(signal, action, delay = DEFAULT_ACTION_DELAY) {
+            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(NewMessages.hardLink, this._semaphore, signal), action, delay);
         }
-        async removeMessages(userIds, journalCommentIds, shoutIds, favoriteIds, journalIds, action, delay = DEFAULT_ACTION_DELAY) {
+        async removeMessages(userIds, journalCommentIds, shoutIds, favoriteIds, journalIds, signal, action, delay = DEFAULT_ACTION_DELAY) {
             userIds ??= [];
             journalCommentIds ??= [];
             shoutIds ??= [];
             favoriteIds ??= [];
             journalIds ??= [];
-            return await WaitAndCallAction.callFunctionAsync(() => this._removeMessages(userIds, journalCommentIds, shoutIds, favoriteIds, journalIds), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => this._removeMessages(userIds, journalCommentIds, shoutIds, favoriteIds, journalIds, signal), action, delay);
         }
-        async _removeMessages(userIds, journalCommentIds, shoutIds, favoriteIds, journalIds) {
+        async _removeMessages(userIds, journalCommentIds, shoutIds, favoriteIds, journalIds, signal) {
             const payload = [
                 NewMessages.hardActions['remove'],
             ];
@@ -2728,7 +2728,7 @@
                 Logger.logError('No messages to remove');
                 throw new Error('No messages to remove');
             }
-            return await FuraffinityRequests.postHTML(NewMessages.hardLink, payload, this._semaphore);
+            return await FuraffinityRequests.postHTML(NewMessages.hardLink, payload, this._semaphore, signal);
         }
     }
 
@@ -2762,14 +2762,14 @@
                 userSettings: FuraffinityRequests.fullUrl + '/controls/user-settings/',
             };
         }
-        async getSettingsPage(action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(AccountInformation.hardLinks['settings'], this._semaphore), action, delay);
+        async getSettingsPage(signal, action, delay = DEFAULT_ACTION_DELAY) {
+            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(AccountInformation.hardLinks['settings'], this._semaphore, signal), action, delay);
         }
-        async getSiteSettingsPage(action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(AccountInformation.hardLinks['siteSettings'], this._semaphore), action, delay);
+        async getSiteSettingsPage(signal, action, delay = DEFAULT_ACTION_DELAY) {
+            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(AccountInformation.hardLinks['siteSettings'], this._semaphore, signal), action, delay);
         }
-        async getUserSettingsPage(action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(AccountInformation.hardLinks['userSettings'], this._semaphore), action, delay);
+        async getUserSettingsPage(signal, action, delay = DEFAULT_ACTION_DELAY) {
+            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(AccountInformation.hardLinks['userSettings'], this._semaphore, signal), action, delay);
         }
     }
 
@@ -2786,17 +2786,17 @@
                 avatar: FuraffinityRequests.fullUrl + '/controls/avatar/',
             };
         }
-        async getProfilePage(action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(UserProfile.hardLinks['profile'], this._semaphore), action, delay);
+        async getProfilePage(signal, action, delay = DEFAULT_ACTION_DELAY) {
+            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(UserProfile.hardLinks['profile'], this._semaphore, signal), action, delay);
         }
-        async getProfilebannerPage(action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(UserProfile.hardLinks['profilebanner'], this._semaphore), action, delay);
+        async getProfilebannerPage(signal, action, delay = DEFAULT_ACTION_DELAY) {
+            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(UserProfile.hardLinks['profilebanner'], this._semaphore, signal), action, delay);
         }
-        async getContactsPage(action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(UserProfile.hardLinks['contacts'], this._semaphore), action, delay);
+        async getContactsPage(signal, action, delay = DEFAULT_ACTION_DELAY) {
+            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(UserProfile.hardLinks['contacts'], this._semaphore, signal), action, delay);
         }
-        async getAvatarPage(action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(UserProfile.hardLinks['avatar'], this._semaphore), action, delay);
+        async getAvatarPage(signal, action, delay = DEFAULT_ACTION_DELAY) {
+            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(UserProfile.hardLinks['avatar'], this._semaphore, signal), action, delay);
         }
     }
 
@@ -2816,18 +2816,18 @@
                 badges: FuraffinityRequests.fullUrl + '/controls/badges/',
             };
         }
-        async getFoldersPages(action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(ManageContent.hardLinks['folders'], this._semaphore), action, delay);
+        async getFoldersPages(signal, action, delay = DEFAULT_ACTION_DELAY) {
+            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(ManageContent.hardLinks['folders'], this._semaphore, signal), action, delay);
         }
-        async getAllWatchesPages(action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => this._getAllWatchesPages(), action, delay);
+        async getAllWatchesPages(signal, action, delay = DEFAULT_ACTION_DELAY) {
+            return await WaitAndCallAction.callFunctionAsync(() => this._getAllWatchesPages(signal), action, delay);
         }
-        async getWatchesPage(pageNumber, action, delay = DEFAULT_ACTION_DELAY) {
+        async getWatchesPage(pageNumber, signal, action, delay = DEFAULT_ACTION_DELAY) {
             pageNumber = convertToNumber(pageNumber);
-            return await WaitAndCallAction.callFunctionAsync(() => this._getWatchesPage(pageNumber), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => this._getWatchesPage(pageNumber, signal), action, delay);
         }
-        async _getAllWatchesPages() {
-            let usersDoc = await FuraffinityRequests.getHTML(ManageContent.hardLinks['buddylist'] + 'x', this._semaphore);
+        async _getAllWatchesPages(signal) {
+            let usersDoc = await FuraffinityRequests.getHTML(ManageContent.hardLinks['buddylist'] + 'x', this._semaphore, signal);
             const columnPage = usersDoc?.getElementById('columnpage');
             const sectionBody = columnPage?.querySelector('div[class="section-body"');
             const paginationLinks = sectionBody?.querySelector('div[class*="pagination-links"]');
@@ -2835,19 +2835,19 @@
             const userPageDocs = [];
             if (pages != null) {
                 for (let i = 1; i <= pages.length; i++) {
-                    usersDoc = await this._getWatchesPage(i);
+                    usersDoc = await this._getWatchesPage(i, signal);
                     if (usersDoc)
                         userPageDocs.push(usersDoc);
                 }
             }
             return userPageDocs;
         }
-        async _getWatchesPage(pageNumber) {
+        async _getWatchesPage(pageNumber, signal) {
             if (pageNumber == null || pageNumber <= 0) {
                 Logger.logWarning('No page number given. Using default 1 instead.');
                 pageNumber = 1;
             }
-            return await FuraffinityRequests.getHTML(ManageContent.hardLinks['buddylist'] + pageNumber, this._semaphore);
+            return await FuraffinityRequests.getHTML(ManageContent.hardLinks['buddylist'] + pageNumber, this._semaphore, signal);
         }
     }
 
@@ -2863,14 +2863,14 @@
                 labels: FuraffinityRequests.fullUrl + '/controls/labels/',
             };
         }
-        async getSessionsPage(action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(Security.hardLinks['sessions'], this._semaphore), action, delay);
+        async getSessionsPage(signal, action, delay = DEFAULT_ACTION_DELAY) {
+            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(Security.hardLinks['sessions'], this._semaphore, signal), action, delay);
         }
-        async getLogsPage(action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(Security.hardLinks['logs'], this._semaphore), action, delay);
+        async getLogsPage(signal, action, delay = DEFAULT_ACTION_DELAY) {
+            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(Security.hardLinks['logs'], this._semaphore, signal), action, delay);
         }
-        async getLabelsPage(action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(Security.hardLinks['labels'], this._semaphore), action, delay);
+        async getLabelsPage(signal, action, delay = DEFAULT_ACTION_DELAY) {
+            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(Security.hardLinks['labels'], this._semaphore, signal), action, delay);
         }
     }
 
@@ -2904,27 +2904,27 @@
                 journal: FuraffinityRequests.fullUrl + '/journal/',
             };
         }
-        async getSubmissionPage(submissionId, action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => this._getSubmissionPage(submissionId), action, delay);
+        async getSubmissionPage(submissionId, signal, action, delay = DEFAULT_ACTION_DELAY) {
+            return await WaitAndCallAction.callFunctionAsync(() => this._getSubmissionPage(submissionId, signal), action, delay);
         }
-        async favSubmission(submissionId, favKey, action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => this._favSubmission(submissionId, favKey), action, delay);
+        async favSubmission(submissionId, favKey, signal, action, delay = DEFAULT_ACTION_DELAY) {
+            return await WaitAndCallAction.callFunctionAsync(() => this._favSubmission(submissionId, favKey, signal), action, delay);
         }
-        async unfavSubmission(submissionId, unfavKey, action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => this._unfavSubmission(submissionId, unfavKey), action, delay);
+        async unfavSubmission(submissionId, unfavKey, signal, action, delay = DEFAULT_ACTION_DELAY) {
+            return await WaitAndCallAction.callFunctionAsync(() => this._unfavSubmission(submissionId, unfavKey, signal), action, delay);
         }
         async getJournalPage(journalId, action, delay = DEFAULT_ACTION_DELAY) {
             return await WaitAndCallAction.callFunctionAsync(() => this._getJournalPage(journalId), action, delay);
         }
-        async _getSubmissionPage(submissionId) {
+        async _getSubmissionPage(submissionId, signal) {
             if (submissionId == null || submissionId === '' || submissionId === -1) {
                 Logger.logError('No submissionId given');
                 throw new Error('No submissionId given');
             }
             const url = SubmissionRequests.hardLinks['view'] + submissionId;
-            return await FuraffinityRequests.getHTML(url, this._semaphore);
+            return await FuraffinityRequests.getHTML(url, this._semaphore, signal);
         }
-        async _favSubmission(submissionId, favKey) {
+        async _favSubmission(submissionId, favKey, signal) {
             if (submissionId == null || submissionId === '' || submissionId === -1) {
                 Logger.logError('No submissionId given');
                 throw new Error('No submissionId given');
@@ -2934,7 +2934,7 @@
                 throw new Error('No favKey given');
             }
             const url = SubmissionRequests.hardLinks['fav'] + submissionId + '?key=' + favKey;
-            const resultDoc = await FuraffinityRequests.getHTML(url, this._semaphore);
+            const resultDoc = await FuraffinityRequests.getHTML(url, this._semaphore, signal);
             if (resultDoc == null) {
                 Logger.logError('Failed to fetch fav page');
                 throw new Error('Failed to fetch fav page');
@@ -2950,7 +2950,7 @@
             }
             return this._getFavKey(resultDoc);
         }
-        async _unfavSubmission(submissionId, unfavKey) {
+        async _unfavSubmission(submissionId, unfavKey, signal) {
             if (submissionId == null || submissionId === '' || submissionId === -1) {
                 Logger.logError('No submissionId given');
                 throw new Error('No submissionId given');
@@ -2960,7 +2960,7 @@
                 throw new Error('No unfavKey given');
             }
             const url = SubmissionRequests.hardLinks['unfav'] + submissionId + '?key=' + unfavKey;
-            const resultDoc = await FuraffinityRequests.getHTML(url, this._semaphore);
+            const resultDoc = await FuraffinityRequests.getHTML(url, this._semaphore, signal);
             if (resultDoc == null) {
                 Logger.logError('Failed to fetch unfav page');
                 throw new Error('Failed to fetch unfav page');
@@ -3040,22 +3040,22 @@
         static get fullUrl() {
             return FuraffinityRequests._httpsString + FuraffinityRequests._domain;
         }
-        static async getHTML(url, semaphore, action, delay = DEFAULT_ACTION_DELAY) {
+        static async getHTML(url, semaphore, signal, action, delay = DEFAULT_ACTION_DELAY) {
             if (url == null || url === '') {
                 Logger.logError('No url given for GET request');
                 throw new Error('No url given for GET request');
             }
-            return await WaitAndCallAction.callFunctionAsync(() => getHTMLLocal(url, semaphore), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => getHTMLLocal(url, semaphore, signal), action, delay);
         }
-        static async postHTML(url, payload, semaphore, action, delay = DEFAULT_ACTION_DELAY) {
+        static async postHTML(url, payload, semaphore, signal, action, delay = DEFAULT_ACTION_DELAY) {
             if (url == null || url === '') {
                 Logger.logError('No url given for POST request');
                 throw new Error('No url given for POST request');
             }
-            return await WaitAndCallAction.callFunctionAsync(() => postHTMLLocal(url, payload, semaphore), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => postHTMLLocal(url, payload, semaphore, signal), action, delay);
         }
     }
-    async function getHTMLLocal(url, semaphore) {
+    async function getHTMLLocal(url, semaphore, signal) {
         Logger.logInfo(`Requesting '${url}'`);
         const semaphoreActive = semaphore != null && semaphore.maxConcurrency > 0;
         if (semaphoreActive) {
@@ -3064,7 +3064,7 @@
         }
         try {
             // Send the GET request and retrieve the HTML document.
-            const response = await fetch(url);
+            const response = await fetch(url, { signal });
             if (!response.ok) {
                 throw new Error(`HTTP error ${response.status} for: ${url}`);
             }
@@ -3078,7 +3078,9 @@
             // Enrich network-level errors (e.g. "Failed to fetch") with the URL for better diagnostics.
             const message = error instanceof Error ? error.message : String(error);
             const enriched = new Error(`${message} (URL: ${url})`);
-            Logger.logError(enriched);
+            if (!(signal?.aborted ?? false)) {
+                Logger.logError(enriched);
+            }
             throw enriched;
         }
         finally {
@@ -3088,7 +3090,7 @@
             }
         }
     }
-    async function postHTMLLocal(url, payload, semaphore) {
+    async function postHTMLLocal(url, payload, semaphore, signal) {
         // Check if the semaphore is active and acquire it if necessary
         const semaphoreActive = semaphore != null && semaphore.maxConcurrency > 0;
         if (semaphoreActive) {
@@ -3102,6 +3104,7 @@
                 headers: {
                     'Content-Type': 'application/x-www-form-urlencoded',
                 },
+                signal,
             });
             // Check if the response is not ok and throw an error
             if (!response.ok) {
@@ -3117,7 +3120,9 @@
             // Enrich network-level errors (e.g. "Failed to fetch") with the URL for better diagnostics.
             const message = error instanceof Error ? error.message : String(error);
             const enriched = new Error(`${message} (URL: ${url})`);
-            Logger.logError(enriched);
+            if (!(signal?.aborted ?? false)) {
+                Logger.logError(enriched);
+            }
             throw enriched;
         }
         finally {
