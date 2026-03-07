@@ -142,3 +142,7 @@ If you have questions or need clarification, feel free to:
 Remember, these guidelines are meant to help maintain project consistency while keeping things simple. The main focus is on ensuring dual compatibility (userscript/extension) and maintaining the modular structure.
 
 Thank you for contributing!
+
+---
+
+[!["Buy me a dragon pet"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/der_floh)

@@ -372,3 +372,7 @@ If you are happy with your changes, you can package the browser extension by run
 Contributions are welcome! Feel free to open issues and pull requests.
 
 Please read [CONTRIBUTING.md](./CONTRIBUTING.md) for more information.
+
+---
+
+[!["Buy me a dragon pet"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/der_floh)
