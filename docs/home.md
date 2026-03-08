@@ -2,7 +2,7 @@
 
 [![Chrome users](https://img.shields.io/chrome-web-store/users/dedddeinlepdkegmhnlggepfoeakikmc?label=chrome%20users&color=4285f4&logo=google-chrome)](https://chromewebstore.google.com/detail/dedddeinlepdkegmhnlggepfoeakikmc)
 [![Firefox users](https://img.shields.io/amo/users/furaffinity-features?label=firefox%20users&color=ff7139&logo=firefox-browser)](https://addons.mozilla.org/firefox/addon/furaffinity-features/)
-[![Greasy Fork users](https://img.shields.io/greasyfork/dt/543793?label=greasyfork%20installs&logo=greasyfork)](https://greasyfork.org/scripts/543793-furaffinity-features)
+[![Greasy Fork users](https://img.shields.io/greasyfork/dt/543793?label=greasyfork%20users&logo=greasyfork)](https://greasyfork.org/scripts/543793-furaffinity-features)
 [![Release](https://img.shields.io/github/v/release/Midori-Dragon/furaffinity-features?label=Release&color=2ea44f&logo=github)](https://github.com/Midori-Dragon/furaffinity-features/releases/latest)
 [![Issues](https://img.shields.io/github/issues/Midori-Dragon/furaffinity-features?label=Issues&color=e4a000&logo=github)](https://github.com/Midori-Dragon/furaffinity-features/issues)
 
