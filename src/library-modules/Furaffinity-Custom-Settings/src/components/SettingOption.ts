@@ -33,17 +33,12 @@ export class SettingOption extends EventTarget implements ISetting<SettingType.O
         return localStorage.getItem(this.id) ?? this.defaultValue;
     }
     set value(newValue: SettingTypeMapping[SettingType.Option]) {
-        try {
-            // eslint-disable-next-line eqeqeq
-            if (newValue == this.defaultValue) {
-                localStorage.removeItem(this.id);
-                void SyncedStorage.removeItem(this.id).catch((e: unknown) => Logger.logError('SyncedStorage.removeItem failed:', e));
-            } else {
-                localStorage.setItem(this.id, newValue.toString());
-                void SyncedStorage.setItem(this.id, newValue.toString()).catch((e: unknown) => Logger.logError('SyncedStorage.setItem failed:', e));
-            }
-        } catch (error) {
-            Logger.logError(error);
+        if (newValue === this.defaultValue) {
+            localStorage.removeItem(this.id);
+            void SyncedStorage.removeItem(this.id).catch((error: unknown) => Logger.logError('SyncedStorage.removeItem failed:', error));
+        } else {
+            localStorage.setItem(this.id, newValue.toString());
+            void SyncedStorage.setItem(this.id, newValue.toString()).catch((error: unknown) => Logger.logError('SyncedStorage.setItem failed:', error));
         }
         this._settingInputElem.value = newValue.toString();
         this.invokeInput(this._settingInputElem);

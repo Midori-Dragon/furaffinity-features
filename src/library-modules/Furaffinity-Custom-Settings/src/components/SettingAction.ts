@@ -50,8 +50,7 @@ export class SettingAction extends EventTarget implements ISetting<SettingType.A
         return settingElem;
     }
 
-    // eslint-disable-next-line @typescript-eslint/no-empty-function -- Actions don't have any saved data
-    loadFromSyncedStorage(): void { }
+    loadFromSyncedStorage(): void { /* No value to load for Action */ }
 
     toString(): string {
         return `${this.name} = ${this.value}`;

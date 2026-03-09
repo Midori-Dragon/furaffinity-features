@@ -41,7 +41,7 @@ export class AutoLoaderSearch implements IAutoLoaderSearchable {
                 loadedImgs[this.currSid] = img;
                 this.currImgIndex++;
             } catch (error) {
-                Logger.logError(error);
+                Logger.logError(`Failed to load search page for sid '${this.currComicNav?.nextId}'`, error);
                 break;
             }
         } while (this.currComicNav?.nextId !== -1);

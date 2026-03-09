@@ -91,7 +91,7 @@ export class Settings {
                 }
             }
         } catch (error) {
-            Logger.logError(error);
+            Logger.logError(`Failed to load settings for provider '${this.providerId}'`, error);
         }
     }
 
@@ -134,7 +134,7 @@ export class Settings {
             document.body.removeChild(a);
             URL.revokeObjectURL(url);
         } catch (error) {
-            Logger.logError(error);
+            Logger.logError(`Failed to export settings for provider '${this.providerId}'`, error);
         }
     }
 
@@ -148,7 +148,7 @@ export class Settings {
                 await StorageWrapper.setItemAsync(key, value);
             }
         } catch (error) {
-            Logger.logError(error);
+            Logger.logError(`Failed to import settings for provider '${this.providerId}'`, error);
         }
     }
 
@@ -313,7 +313,7 @@ export class Settings {
                 settings.appendChild(currExSettings);
             }
         } catch (error) {
-            Logger.logError(error);
+            Logger.logError(`Failed to add extension ${name} to settings menu`, error);
         }
     }
 
@@ -346,7 +346,7 @@ export class Settings {
                 settings.appendChild(document.createElement('br'));
             }
         } catch (error) {
-            Logger.logError(error);
+            Logger.logError(`Failed to add extension ${name} to settings sidebar`, error);
         }
     }
 };

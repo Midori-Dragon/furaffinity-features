@@ -12,8 +12,8 @@ export class StorageWrapper {
             await SyncedStorage.setItem(key, value);
             return true;
         }
-        catch {
-            Logger.logError(`Failed to set item in storage: ${key}=${value}`);
+        catch (error) {
+            Logger.logError(`Failed to set item in storage: ${key}=${value}`, error);
             return false;
         }
     }
@@ -29,7 +29,7 @@ export class StorageWrapper {
                     setTimeout(() => void attemptSave(), 1000);
                 }
             };
-        
+
             void attemptSave();
         });
     }
@@ -43,8 +43,8 @@ export class StorageWrapper {
             }
             return valueSynced ?? valueLocal;
         }
-        catch {
-            Logger.logError(`Failed to get item from storage: ${key}`);
+        catch (error) {
+            Logger.logError(`Failed to get item from storage: ${key}`, error);
             return null;
         }
     }
@@ -55,8 +55,8 @@ export class StorageWrapper {
             await SyncedStorage.removeItem(key);
             return true;
         }
-        catch {
-            Logger.logError(`Failed to remove item from storage: ${key}`);
+        catch (error) {
+            Logger.logError(`Failed to remove item from storage: ${key}`, error);
             return false;
         }
     }
@@ -74,8 +74,8 @@ export class StorageWrapper {
             const syncedItems = await SyncedStorage.getAllItems();
             return { ...localStorageItems, ...syncedItems };
         }
-        catch {
-            Logger.logError('Failed to get all items from storage');
+        catch (error) {
+            Logger.logError('Failed to get all items from storage', error);
             return {};
         }
     }

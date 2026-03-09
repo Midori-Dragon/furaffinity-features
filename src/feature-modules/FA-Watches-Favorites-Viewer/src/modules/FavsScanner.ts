@@ -101,8 +101,8 @@ export class FavsScanner {
                 try {
                     figure.figCaption.fromId = '';
                     figure.figCaption.fromUsername = '';
-                } catch {
-                    Logger.logError(`Failed to get from watch for ${figure.id}`);
+                } catch (error) {
+                    Logger.logError(`Failed to get from watch for ${figure.id}`, error);
                 }
             }
         }

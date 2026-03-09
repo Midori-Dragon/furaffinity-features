@@ -42,16 +42,12 @@ export class SettingText extends EventTarget implements ISetting<SettingType.Tex
         }
         this._errorMessage.style.display = 'none';
 
-        try {
-            if (newValue === this.defaultValue) {
-                localStorage.removeItem(this.id);
-                void SyncedStorage.removeItem(this.id).catch((e: unknown) => Logger.logError('SyncedStorage.removeItem failed:', e));
-            } else {
-                localStorage.setItem(this.id, newValue);
-                void SyncedStorage.setItem(this.id, newValue).catch((e: unknown) => Logger.logError('SyncedStorage.setItem failed:', e));
-            }
-        } catch (error) {
-            Logger.logError(error);
+        if (newValue === this.defaultValue) {
+            localStorage.removeItem(this.id);
+            void SyncedStorage.removeItem(this.id).catch((error: unknown) => Logger.logError('SyncedStorage.removeItem failed:', error));
+        } else {
+            localStorage.setItem(this.id, newValue);
+            void SyncedStorage.setItem(this.id, newValue).catch((error: unknown) => Logger.logError('SyncedStorage.setItem failed:', error));
         }
         this._settingInputElem.value = newValue;
         this.invokeInput(this._settingInputElem);
