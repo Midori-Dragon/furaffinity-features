@@ -532,8 +532,8 @@ FodyWeavers.xsd
 # JetBrains Rider
 *.sln.iml
 
-# windsurf
-.windsurfrules
+# graphify
+graphify-out/
 
 # custom
 .vs/
