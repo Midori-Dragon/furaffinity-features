@@ -1,17 +1,17 @@
 import { requestHelper, scriptName } from '..';
 import { Logger } from '../../../../library-modules/GlobalUtils/src/Logger';
 import getDocViewSid from '../utils/getDocViewSid';
-import { ComicNavigation } from './ComicNavigation';
+import { ComicNav, IComicNav } from '../../../../library-modules/GlobalUtils/src/FA-Functions/ComicNav';
 import { IAutoLoaderSearchable } from './IAutoLoaderSearchable';
 
 export class AutoLoaderSearch implements IAutoLoaderSearchable {
     private rootImg: HTMLImageElement;
     private rootSid: number;
-    private currComicNav: ComicNavigation | null;
+    private currComicNav: IComicNav | null;
     private currImgIndex = 1;
     private currSid = -1;
 
-    constructor(rootImg: HTMLImageElement, rootSid: number, comicNav: ComicNavigation) {
+    constructor(rootImg: HTMLImageElement, rootSid: number, comicNav: IComicNav) {
         this.rootImg = rootImg;
         this.rootSid = rootSid;
         this.currComicNav = comicNav;
@@ -27,8 +27,8 @@ export class AutoLoaderSearch implements IAutoLoaderSearchable {
                 if (this.currComicNav == null) {
                     break;
                 }
-            
-                const img = await this.getPage(this.currComicNav.nextId);
+
+                const img = await this.getPage(this.currComicNav.next!.sid);
                 if (img == null) {
                     break;
                 }
@@ -41,10 +41,10 @@ export class AutoLoaderSearch implements IAutoLoaderSearchable {
                 loadedImgs[this.currSid] = img;
                 this.currImgIndex++;
             } catch (error) {
-                Logger.logError(`Failed to load search page for sid '${this.currComicNav?.nextId}'`, error);
+                Logger.logError(`Failed to load search page for sid '${this.currComicNav?.next?.sid}'`, error);
                 break;
             }
-        } while (this.currComicNav?.nextId !== -1);
+        } while (this.currComicNav?.next != null);
         Logger.logInfo(`${scriptName}: finished search. Found ${Object.keys(loadedImgs).length} images.`);
 
         return loadedImgs;
@@ -63,12 +63,7 @@ export class AutoLoaderSearch implements IAutoLoaderSearchable {
 
         this.currSid = getDocViewSid(page);
 
-        const descriptionElem = page.getElementById('columnpage')?.querySelector('div[class*="submission-description"]');
-        if (descriptionElem != null) {
-            this.currComicNav = ComicNavigation.fromElement(descriptionElem as HTMLElement);
-        } else {
-            this.currComicNav = null;
-        }
+        this.currComicNav = ComicNav.fromDocument(page);
 
         return img as HTMLImageElement;
     }

@@ -2,9 +2,9 @@ import { backwardSearchSetting, loadingSpinSpeedSetting, overwriteNavButtonsSett
 import type { LoadingSpinner } from '../../../../library-modules/Furaffinity-Loading-Animations/src/components/LoadingSpinner';
 import checkTags from '../../../../library-modules/GlobalUtils/src/FA-Functions/checkTags';
 import { Logger } from '../../../../library-modules/GlobalUtils/src/Logger';
+import { ComicNav, IComicNav } from '../../../../library-modules/GlobalUtils/src/FA-Functions/ComicNav';
 import { AutoLoaderSearch } from '../components/AutoLoaderSearch';
 import { BackwardSearch } from '../components/BackwardSearch';
-import { ComicNavigation } from '../components/ComicNavigation';
 import { ForwardSearch } from '../components/ForwardSearch';
 import getCurrViewSid from '../utils/getDocViewSid';
 import { Lightbox } from './Lightbox';
@@ -12,7 +12,7 @@ import { showError } from '../utils/showError';
 
 export class AutoLoader {
     submissionImg: HTMLImageElement;
-    currComicNav: ComicNavigation | null | undefined = null;
+    currComicNav: IComicNav | null | undefined = null;
     currSid = -1;
     private _loadingSpinner: LoadingSpinner;
     private _comicNavExists = false;
@@ -33,16 +33,11 @@ export class AutoLoader {
         this.submissionImg.parentNode!.appendChild(document.createElement('br'));
         this.submissionImg.parentNode!.appendChild(this._searchButton);
 
-        const descriptionElem = document.getElementById('columnpage')?.querySelector('div[class*="submission-description"]');
-        if (descriptionElem != null) {
-            this.currComicNav = ComicNavigation.fromElement(descriptionElem as HTMLElement);
-            if (this.currComicNav != null) {
-                if (this.currComicNav.prevId !== -1 || this.currComicNav.firstId !== -1 || this.currComicNav.nextId !== -1) {
-                    this._comicNavExists = true;
-                    if (overwriteNavButtonsSetting.value) {
-                        this.overwriteNavButtons();
-                    }
-                }
+        this.currComicNav = ComicNav.fromDocument(document);
+        if (this.currComicNav?.next != null) {
+            this._comicNavExists = true;
+            if (overwriteNavButtonsSetting.value) {
+                this.overwriteNavButtons();
             }
         }
 
@@ -163,12 +158,12 @@ export class AutoLoader {
         const favoriteNav = columnpage?.querySelector('div[class*="favorite-nav"]');
 
         let prevButton = favoriteNav?.children[0];
-        if (prevButton != null && this.currComicNav!.prevId !== -1) {
+        if (prevButton != null && this.currComicNav!.prev != null) {
             if (prevButton.textContent?.toLowerCase()?.includes('prev') ?? false) {
-                (prevButton as HTMLLinkElement).href = `/view/${this.currComicNav!.prevId}/`;
+                (prevButton as HTMLLinkElement).href = `/view/${this.currComicNav!.prev!.sid}/`;
             } else {
                 const prevButtonReal = document.createElement('a');
-                prevButtonReal.href = `/view/${this.currComicNav!.prevId}/`;
+                prevButtonReal.href = `/view/${this.currComicNav!.prev!.sid}/`;
                 prevButtonReal.classList.add('button', 'standard', 'mobile-fix');
                 prevButtonReal.textContent = 'Prev';
                 prevButtonReal.style.marginRight = '4px';
@@ -177,12 +172,12 @@ export class AutoLoader {
         }
 
         let nextButton = favoriteNav?.children[favoriteNav.children.length - 1];
-        if (nextButton != null && this.currComicNav!.nextId !== -1) {
+        if (nextButton != null && this.currComicNav!.next != null) {
             if (nextButton.textContent?.toLowerCase()?.includes('next') ?? false) {
-                (nextButton as HTMLLinkElement).href = `/view/${this.currComicNav!.nextId}/`;
+                (nextButton as HTMLLinkElement).href = `/view/${this.currComicNav!.next!.sid}/`;
             } else {
                 const nextButtonReal = document.createElement('a');
-                nextButtonReal.href = `/view/${this.currComicNav!.nextId}/`;
+                nextButtonReal.href = `/view/${this.currComicNav!.next!.sid}/`;
                 nextButtonReal.classList.add('button', 'standard', 'mobile-fix');
                 nextButtonReal.textContent = 'Next';
                 nextButtonReal.style.marginLeft = '4px';
