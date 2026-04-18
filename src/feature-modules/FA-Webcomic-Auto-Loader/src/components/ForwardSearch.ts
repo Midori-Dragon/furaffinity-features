@@ -13,9 +13,11 @@ export class ForwardSearch implements IAutoLoaderSearchable {
     sidToIgnore: number[] = [];
 
     private _currSid: number;
+    private _limit: number;
 
-    constructor(currSid: number, currSubmissionPageNo?: number) {
+    constructor(currSid: number, limit: number, currSubmissionPageNo?: number) {
         this._currSid = currSid;
+        this._limit = limit;
         this.currSubmissionPageNo = currSubmissionPageNo;
         this.sidToIgnore.push(currSid);
     }
@@ -61,6 +63,10 @@ export class ForwardSearch implements IAutoLoaderSearchable {
         figuresFlattend = figuresFlattend.filter(figure => !this.sidToIgnore.includes(parseInt(figure.id.trimStart('sid-'))));
         figuresFlattend = figuresFlattend.filter(figure => figureTitleIsGenerallyEqual(figure, currTitle!));
         figuresFlattend.reverse();
+        if (figuresFlattend.length > this._limit) {
+            figuresFlattend = figuresFlattend.slice(0, this._limit);
+            Logger.logInfo(`${scriptName}: forward search limit reached, capping at '${this._limit}' figures`);
+        }
         Logger.logInfo(`${scriptName}: searching figures forward found '${figuresFlattend.length}' figures`);
 
         Logger.logInfo(`${scriptName}: loading submission pages...`);

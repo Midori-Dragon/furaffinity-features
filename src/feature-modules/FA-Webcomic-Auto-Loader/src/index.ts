@@ -39,6 +39,10 @@ export const backwardSearchSetting = customSettings.newSetting(window.FASettingT
 backwardSearchSetting.description = 'Sets the amount of similar pages to search backward. (More Pages take longer)';
 backwardSearchSetting.defaultValue = 3;
 
+export const similarSearchLimitSetting = customSettings.newSetting(window.FASettingType.Number, 'Similar Search Limit');
+similarSearchLimitSetting.description = 'Sets the maximum number of similar submissions to load in each direction. (10 per direction = max 20 total)';
+similarSearchLimitSetting.defaultValue = 10;
+
 export const overwriteNavButtonsSetting = customSettings.newSetting(window.FASettingType.Boolean, 'Overwrite Nav Buttons');
 overwriteNavButtonsSetting.description = 'Sets wether the default Navigation Buttons (next/prev) are overwritten by the Auto-Loader. (Works only if comic navigation is present)';
 overwriteNavButtonsSetting.defaultValue = true;

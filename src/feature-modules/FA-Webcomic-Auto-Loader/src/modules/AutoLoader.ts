@@ -1,4 +1,4 @@
-import { backwardSearchSetting, loadingSpinSpeedSetting, overwriteNavButtonsSetting, scriptName, useCustomLightboxSetting } from '..';
+import { backwardSearchSetting, loadingSpinSpeedSetting, overwriteNavButtonsSetting, scriptName, similarSearchLimitSetting, useCustomLightboxSetting } from '..';
 import type { LoadingSpinner } from '../../../../library-modules/Furaffinity-Loading-Animations/src/components/LoadingSpinner';
 import checkTags from '../../../../library-modules/GlobalUtils/src/FA-Functions/checkTags';
 import { Logger } from '../../../../library-modules/GlobalUtils/src/Logger';
@@ -97,10 +97,10 @@ export class AutoLoader {
     private async startSimilarSearchAsync(): Promise<void> {
         this._loadingSpinner.visible = true;
         try {
-            const forwardSearch = new ForwardSearch(this.currSid);
+            const forwardSearch = new ForwardSearch(this.currSid, similarSearchLimitSetting.value);
             const submissionsAfter = await forwardSearch.search();
 
-            const backwardSearch = new BackwardSearch(this.currSid, backwardSearchSetting.value, forwardSearch.currSubmissionPageNo);
+            const backwardSearch = new BackwardSearch(this.currSid, backwardSearchSetting.value, similarSearchLimitSetting.value, forwardSearch.currSubmissionPageNo);
             backwardSearch.sidToIgnore.push(...Object.keys(submissionsAfter).map(Number));
             const submissionsBefore = await backwardSearch.search();
 

@@ -14,10 +14,12 @@ export class BackwardSearch implements IAutoLoaderSearchable {
 
     private _currSid: number;
     private _amount: number;
+    private _limit: number;
 
-    constructor(currSid: number, amount: number, currSubmissionPageNo?: number) {
+    constructor(currSid: number, amount: number, limit: number, currSubmissionPageNo?: number) {
         this._currSid = currSid;
         this._amount = amount;
+        this._limit = limit;
         this.currSubmissionPageNo = currSubmissionPageNo;
         this.sidToIgnore.push(currSid);
     }
@@ -63,6 +65,10 @@ export class BackwardSearch implements IAutoLoaderSearchable {
         figuresFlattend = figuresFlattend.filter(figure => !this.sidToIgnore.includes(parseInt(figure.id.trimStart('sid-'))));
         figuresFlattend = figuresFlattend.filter(figure => figureTitleIsGenerallyEqual(figure, currTitle!));
         figuresFlattend.reverse();
+        if (figuresFlattend.length > this._limit) {
+            figuresFlattend = figuresFlattend.slice(figuresFlattend.length - this._limit);
+            Logger.logInfo(`${scriptName}: backward search limit reached, capping at '${this._limit}' figures`);
+        }
         Logger.logInfo(`${scriptName}: searching figures backward found '${figuresFlattend.length}' figures`);
 
         Logger.logInfo(`${scriptName}: loading submission pages...`);
