@@ -1,7 +1,7 @@
 import { FlatCompat } from '@eslint/eslintrc';
 import tsPlugin from '@typescript-eslint/eslint-plugin';
 import tsParser from '@typescript-eslint/parser';
-import importPlugin from 'eslint-plugin-import';
+import importPlugin from 'eslint-plugin-import-x';
 import { fileURLToPath } from 'url';
 import path from 'path';
 
@@ -34,7 +34,7 @@ export default [
         },
         plugins: {
             '@typescript-eslint': tsPlugin,
-            'import': importPlugin,
+            'import-x': importPlugin,
         },
         rules: {
             ...tsPlugin.configs.recommended.rules,
@@ -72,7 +72,7 @@ export default [
                     format: ['PascalCase'],
                 },
             ],
-            'import/order': [
+            'import-x/order': [
                 'warn',
                 {
                     groups: [

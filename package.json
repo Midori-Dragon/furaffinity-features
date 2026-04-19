@@ -30,29 +30,29 @@
   "license": "MIT",
   "description": "Collection of Features for Fur Affinity as UserScript or Browser Extension",
   "dependencies": {
-    "@panzoom/panzoom": "^4.6.1",
+    "@panzoom/panzoom": "^4.6.2",
     "pako": "^2.1.0",
     "tslib": "^2.8.1"
   },
   "devDependencies": {
-    "@eslint/eslintrc": "^3.3.3",
-    "@rollup/plugin-commonjs": "^29.0.0",
+    "@eslint/eslintrc": "^3.3.5",
+    "@rollup/plugin-commonjs": "^29.0.2",
     "@rollup/plugin-node-resolve": "^16.0.3",
     "@rollup/plugin-typescript": "^12.3.0",
-    "@types/chrome": "^0.1.37",
+    "@types/chrome": "^0.1.40",
     "@types/firefox-webext-browser": "^143.0.0",
     "@types/pako": "^2.0.4",
     "@types/webextension-polyfill": "^0.12.5",
-    "@typescript-eslint/eslint-plugin": "^8.56.0",
-    "@typescript-eslint/parser": "^8.56.0",
+    "@typescript-eslint/eslint-plugin": "^8.58.2",
+    "@typescript-eslint/parser": "^8.58.2",
     "archiver": "^7.0.1",
     "docsify-cli": "^4.4.4",
-    "eslint": "^9.0.0",
-    "eslint-plugin-import": "^2.32.0",
+    "eslint": "^10.2.1",
+    "eslint-plugin-import-x": "^4.16.2",
     "http-server": "^14.1.1",
-    "rollup": "^4.59.0",
+    "rollup": "^4.60.2",
     "rollup-plugin-postcss": "^4.0.2",
-    "typescript": "^5.9.3",
-    "web-ext": "^9.3.0"
+    "typescript": "^6.0.3",
+    "web-ext": "^10.1.0"
   }
 }
