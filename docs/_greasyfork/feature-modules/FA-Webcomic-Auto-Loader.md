@@ -32,6 +32,7 @@ See documentation on [FA-Webcomic-Auto-Loader](https://midori-dragon.github.io/f
 - `showSearchButton` - Enable/disable the search for similar pages button *(default: true)*
 - `loadingSpinSpeed` - Control loading animation speed *(default: 1000)*
 - `backwardSearch` - How many pages to search backwards *(default: 3)*
+- `similarSearchLimit` - Maximum number of similar submissions to load in each direction (10 per direction = max 20 total) *(default: 10)*
 - `overwriteNavButtons` - Whether to overwrite navigation buttons with comic navigation *(default: true)*
 - `useCustomLightbox` - Enable/disable custom lightbox *(default: true)*
 - `Custom Lightbox Show Nav` - Enable/disable custom lightbox navigation *(default: true)*
