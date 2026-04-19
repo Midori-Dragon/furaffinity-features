@@ -1,4 +1,4 @@
-# <img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/logo.png" height="30"> FA Instant Nuker
+# <img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/icon.svg" height="30"> FA Instant Nuker
 
 A userscript/browser extension that enhances FurAffinity gallery browsing by providing a nuke button, that when pressed instantly nukes the current page without asking for confirmation.
 

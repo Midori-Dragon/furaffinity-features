@@ -1,4 +1,4 @@
-# <img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/logo.png" height="30"> Furaffinity Request Helper
+# <img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/icon.svg" height="30"> Furaffinity Request Helper
 
 Helper Library (wrapper) for common Requests to FurAffinity.
 

@@ -1,4 +1,4 @@
-# <img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/logo.png" height="30"> Furaffinity Message Box
+# <img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/icon.svg" height="30"> Furaffinity Message Box
 
 Helper Library to show a MessageBox for your custom FurAffinity Script.
 

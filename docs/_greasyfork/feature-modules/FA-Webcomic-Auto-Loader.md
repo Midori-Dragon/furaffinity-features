@@ -1,4 +1,4 @@
-# <img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/logo.png" height="30"> FA Webcomic Auto Loader
+# <img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/icon.svg" height="30"> FA Webcomic Auto Loader
 
 A userscript/browser extension that enhances FurAffinity webcomic navigation by automatically detecting and loading comic pages.
 

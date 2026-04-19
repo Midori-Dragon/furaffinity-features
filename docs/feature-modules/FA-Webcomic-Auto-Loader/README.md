@@ -40,7 +40,7 @@ A userscript/browser extension that enhances FurAffinity webcomic navigation by 
 The AutoLoader class contains the following properties:
 
 - `submissionImg` - The current comic page image
-- `currComicNav` - Current comic navigation instance *(see [ComicNavigation](#comicnavigation))* 
+- `currComicNav` - Current comic navigation instance *(see [ComicNavigation](#comicnavigation))*
 - `comicNavExists` - Whether the current comic navigation instance exists
 - `currSid` - The current submission ID
 

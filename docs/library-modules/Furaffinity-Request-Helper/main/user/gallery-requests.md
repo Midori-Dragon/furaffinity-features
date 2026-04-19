@@ -36,7 +36,7 @@ await requestHelper.UserRequests.GalleryRequests.Gallery.getPage("someusername",
   - *`pageNumber` - Specifies the Number of the page for which you want to get the figures*
   - *`action` - Specifies the action function that gets executed while the Request is going*
   - *`delay` - Specifies the delay in Milliseconds between each execution of the `action` while the Request is going. Default value is `100`*
-    
+
   ---
 
 - `async getFiguresTillPage(username, toPageNumber, action, delay = 100)` - Returns an Array of Arrays of Figures. For each Page you have an Array of Figures on that Page until the specified Page of the given User
@@ -57,7 +57,7 @@ await requestHelper.UserRequests.GalleryRequests.Gallery.getPage("someusername",
   - *`toPageNumber` - Specifies the Number of the page till which you want to get all figures*
   - *`action` - Specifies the action function that gets executed while the Request is going*
   - *`delay` - Specifies the delay in Milliseconds between each execution of the `action` while the Request is going. Default value is `100`*
-    
+
   ---
 
 - `async getFiguresTillId(username, toId, action, delay = 100)` - Returns an Arrays of Arrays of Figures. For each Page you have an Array of Figures on that Page since the specified Figure Id of the given User
@@ -78,7 +78,7 @@ await requestHelper.UserRequests.GalleryRequests.Gallery.getPage("someusername",
   - *`fromId` - Specifies the If of the Figure since which you want to get all figures*
   - *`action` - Specifies the action function that gets executed while the Request is going*
   - *`delay` - Specifies the delay in Milliseconds between each execution of the `action` while the Request is going. Default value is `100`*
-    
+
   ---
 
 - `async getFiguresTillIdSincePage(username, toId, fromPageNumber, action, delay = 100)` - Returns an Arrays of Arrays of Figures. For each Page you have an Array of Figures on that Page since the specified Page and until the specified Figure Id of the given User

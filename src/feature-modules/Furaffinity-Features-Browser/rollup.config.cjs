@@ -13,10 +13,10 @@ module.exports = {
 // @namespace   Violentmonkey Scripts
 // @match       *://*.furaffinity.net/*
 // @grant       GM_info
-// @version     1.3.13
+// @version     1.3.14
 // @author      Midori Dragon
 // @description Combines all Furaffinity Features Scripts into one
-// @icon        https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/logo.png
+// @icon        https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/icon.svg
 // @license     MIT
 // @homepageURL https://greasyfork.org/scripts/543793-furaffinity-features
 // @supportURL  https://greasyfork.org/scripts/543793-furaffinity-features/feedback

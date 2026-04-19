@@ -1,4 +1,4 @@
-# <img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/logo.png" height="30"> FA Infini Gallery
+# <img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/icon.svg" height="30"> FA Infini Gallery
 
 A userscript/browser extension that enhances FurAffinity gallery browsing by automatically loading the next page when scrolling to the bottom.
 

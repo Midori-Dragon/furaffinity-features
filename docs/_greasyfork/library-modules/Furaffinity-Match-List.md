@@ -1,4 +1,4 @@
-# <img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/logo.png" height="30"> Furaffinity Match List
+# <img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/icon.svg" height="30"> Furaffinity Match List
 
 Helper Library to create a Matchlist for your custom FurAffinity Script.
 
@@ -22,7 +22,6 @@ See documentation on [Furaffinity-Match-List](https://midori-dragon.github.io/fu
   matchlist.matches.push("part/of-url");
   matchlist.matches = ["part/of-url"];
   ```
-  *See [MatchList](#matchlist) for more info*
   <br>
 
 - Check for matches:

@@ -448,8 +448,8 @@ export class EmbeddedImage extends EventTarget {
                 // If the event is a mouse event and the target is an HTML element
                 if (event instanceof MouseEvent && event.target instanceof HTMLElement) {
                     // If the event is not a Ctrl+Click event and the target is not a favorite button
-                    // and the target is not a checkbox
-                    if (!event.ctrlKey && !event.target.id.includes('favbutton') && event.target.getAttribute('type') !== 'checkbox') {
+                    // and the target is not inside the figcaption
+                    if (!event.ctrlKey && !event.target.id.includes('favbutton') && event.target.closest('figcaption') == null) {
                         // If the target has a href attribute, return
                         if (!string.isNullOrWhitespace(event.target.getAttribute('href'))) {
                             return;

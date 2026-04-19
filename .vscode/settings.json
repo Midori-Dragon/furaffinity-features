@@ -151,7 +151,7 @@
     "editor.codeActionsOnSave": {
         "source.fixAll.eslint": "always"
     },
-    "typescript.tsserver.experimental.enableProjectDiagnostics": true,
+    "js/ts.tsserver.experimental.enableProjectDiagnostics": true,
     "files.exclude": {
         "**/node_modules": true,
         "**/.git": true,
@@ -170,5 +170,19 @@
         "**/Properties": true,
         "**/packages": true
     },
-    "files.eol": "\n"
+    "files.eol": "\n",
+    "markdownlint.config": {
+        "no-inline-html": false,
+        "no-duplicate-heading": false,
+        "no-alt-text": false,
+        "heading-increment": false,
+        "no-bare-urls": false,
+        "no-trailing-punctuation": false,
+        "ul-indent": false,
+        "blanks-around-headings": false,
+        "blanks-around-lists": false,
+        "table-column-style": false,
+        "blanks-around-fences": false,
+        "first-line-heading": false
+    },
 }

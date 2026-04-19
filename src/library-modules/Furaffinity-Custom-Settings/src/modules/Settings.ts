@@ -272,6 +272,7 @@ export class Settings {
 
     private createSettingReset(setting: ISetting<SettingType>): HTMLElement {
         const settingDescReset = document.createElement('a');
+        settingDescReset.type = 'button';
         settingDescReset.id = setting.id + '_settingreset';
         settingDescReset.textContent = 'Reset this Setting';
         settingDescReset.style.cursor = 'pointer';

@@ -153,14 +153,16 @@ export class Lightbox {
         const container = document.createElement('div');
         container.classList.add('wal-lightbox-nav', 'hidden', 'wal-no-select');
 
-        const leftButton = document.createElement('a');
+        const leftButton = document.createElement('button');
+        leftButton.type = 'button';
         leftButton.classList.add('button', 'standard', 'mobile-fix');
         leftButton.textContent = '<---';
         leftButton.style.marginRight = '4px';
         leftButton.addEventListener('click', this.navigateLeft.bind(this));
         container.appendChild(leftButton);
 
-        const closeButton = document.createElement('a');
+        const closeButton = document.createElement('button');
+        closeButton.type = 'button';
         closeButton.classList.add('button', 'standard', 'mobile-fix');
         closeButton.textContent = 'Close';
         closeButton.addEventListener('click', () => {
@@ -168,7 +170,8 @@ export class Lightbox {
         });
         container.appendChild(closeButton);
 
-        const rightButton = document.createElement('a');
+        const rightButton = document.createElement('button');
+        rightButton.type = 'button';
         rightButton.classList.add('button', 'standard', 'mobile-fix');
         rightButton.textContent = '--->';
         rightButton.style.marginLeft = '4px';

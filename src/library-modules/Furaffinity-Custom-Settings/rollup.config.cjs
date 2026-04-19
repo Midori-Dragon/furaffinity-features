@@ -11,10 +11,10 @@ module.exports = {
 // @name        Furaffinity-Custom-Settings
 // @namespace   Violentmonkey Scripts
 // @grant       none
-// @version     4.3.5
+// @version     4.3.6
 // @author      Midori Dragon
 // @description Library to create Custom settings on Furaffinitiy
-// @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
+// @icon        https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/fa_logo.svg
 // @license     MIT
 // @homepageURL https://greasyfork.org/scripts/475041-furaffinity-custom-settings
 // @supportURL  https://greasyfork.org/scripts/475041-furaffinity-custom-settings/feedback

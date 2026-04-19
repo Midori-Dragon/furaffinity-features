@@ -16,7 +16,7 @@ export class AutoLoader {
     currSid = -1;
     private _loadingSpinner: LoadingSpinner;
     private _comicNavExists = false;
-    private _searchButton: HTMLAnchorElement;
+    private _searchButton: HTMLButtonElement;
 
     constructor() {
         this.currSid = getCurrViewSid(document);
@@ -25,7 +25,7 @@ export class AutoLoader {
         this.submissionImg.setAttribute('wal-index', '0');
         this.submissionImg.setAttribute('wal-sid', this.currSid.toString());
 
-        this._searchButton = document.createElement('a');
+        this._searchButton = document.createElement('button');
         this._searchButton.id = 'wal-search-button';
         this._searchButton.classList.add('wal-button', 'button', 'standard', 'mobile-fix');
         this._searchButton.type = 'button';

@@ -1,4 +1,4 @@
-# <img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/logo.png" height="30"> Furaffinity Features
+# <img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/icon.svg" height="30"> Furaffinity Features
 
 [![Chrome users](https://img.shields.io/chrome-web-store/users/dedddeinlepdkegmhnlggepfoeakikmc?label=chrome%20users&color=4285f4&logo=google-chrome)](https://chromewebstore.google.com/detail/dedddeinlepdkegmhnlggepfoeakikmc)
 [![Firefox users](https://img.shields.io/amo/users/furaffinity-features?label=firefox%20users&color=ff7139&logo=firefox-browser)](https://addons.mozilla.org/firefox/addon/furaffinity-features/)
@@ -345,4 +345,4 @@ Please read [Contributing](./contributing) for more information.
 
 ---
 
-[!["Buy me a dragon pet"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/der_floh)
+[!["Buy me a coffee"](https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/meta/orange-button-x180.png)](https://www.buymeacoffee.com/midori_dragon)

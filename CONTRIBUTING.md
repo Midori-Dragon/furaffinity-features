@@ -10,7 +10,7 @@ Thank you for your interest in contributing to this project! This guide will hel
    - UserScript (for script managers like Violentmonkey)
    - Browser Extension (Chrome and Firefox)
 
-2. **Module Independence**: 
+2. **Module Independence**:
    - Each top-level directory represents an independent user script
    - Scripts should be self-contained with minimal dependencies on other modules
    - If your feature needs functionality from another module, reference it in your Rollup config banner
@@ -122,13 +122,13 @@ Thank you for your interest in contributing to this project! This guide will hel
 
 > [!NOTE]
 > `FA-Embedded-Image-Viewer` is currently the most complex Feature
-> 
+>
 > `FA-Instant-Nuker` is currently the simplest Feature
-> 
+>
 > `Furaffinity-Request-Helper` is currently the biggest Library
-> 
+>
 > `Furaffinity-Custom-Settings` is currently the most complex Library
-> 
+>
 > `Furaffinity-Match-List` is currently the simplest Library
 
 ## Questions?
@@ -145,4 +145,4 @@ Thank you for contributing!
 
 ---
 
-[!["Buy me a dragon pet"](https://www.buymeacoffee.com/assets/img/custom_images/orange_img.png)](https://www.buymeacoffee.com/der_floh)
+[!["Buy me a coffee"](https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/meta/orange-button-x180.png)](https://www.buymeacoffee.com/midori_dragon)

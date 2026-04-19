@@ -1,4 +1,4 @@
-# <img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/logo.png" height="30"> FA Watches Favorites Viewer
+# <img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/icon.svg" height="30"> FA Watches Favorites Viewer
 
 A userscript/browser extension that adds a new function to scan for favorites of your watched users and display them in a new page.
 

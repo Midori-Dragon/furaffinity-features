@@ -1,4 +1,4 @@
-# <img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/logo.png" height="30"> FA Embedded Image Viewer
+# <img src="https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/icon.svg" height="30"> FA Embedded Image Viewer
 
 A userscript/browser extension that enhances image viewing on FurAffinity by providing an embedded image viewer. When any submission is clicked, instead of opening the page this script will embedd the clicked image on the current site.
 

@@ -15,10 +15,12 @@ export class WatchScanButton {
         const messageBar = nav.querySelector('li[class*="message-bar-desktop"]')!;
 
         this.wfButton = document.createElement('a');
+        this.wfButton.type = 'button';
         this.wfButton.id = 'wfButton';
         this.wfButton.className = 'notification-container inline';
         this.wfButton.title = 'Start a WF scan';
         this.wfButton.style.cursor = 'pointer';
+        this.wfButton.style.setProperty('text-decoration', 'none', 'important');
         this.wfButton.textContent = 'WF Scan';
         this.wfButton.onclick = (): void => void this.startScan();
         messageBar.appendChild(this.wfButton);
@@ -54,7 +56,7 @@ export class WatchScanButton {
 
             this.wfButton.textContent = `${figures.length}WF`;
             this.wfButton.onclick = null;
-            this.wfButton.href = 'https://www.furaffinity.net/msg/submissions/?mode=wfv-favorites';
+            this.wfButton.onclick = (): void => { window.location.href = 'https://www.furaffinity.net/msg/submissions/?mode=wfv-favorites'; };
         } catch (error) {
             this.wfButton.textContent = 'WF Scan again';
             this.wfButton.onclick = (): void => void this.startScan();
