@@ -87,4 +87,94 @@ function resolveRequireOrder(requireUrls, srcRoot, exclude = new Set(), resolved
     return order;
 }
 
-module.exports = { moduleSlugFromUrl, findModuleDir, extractRequiresFromBanner, resolveRequireOrder };
+/**
+ * Build the full dependency graph by recursively reading rollup.config.cjs banners.
+ * No compilation — only reads config files to discover @require URLs.
+ *
+ * Returns a Map keyed by module directory path, with values:
+ *   { moduleName, moduleDir, configPath, buildPath, deps: string[] (moduleDir paths) }
+ *
+ * @param {string[]} requireUrls  Top-level @require URLs
+ * @param {string}   srcRoot      Absolute path to the src/ directory
+ * @param {Map}      [graph]      Internal: accumulates the graph
+ * @returns {Map<string, {moduleName: string, moduleDir: string, configPath: string, buildPath: string, deps: string[]}>}
+ */
+function buildDependencyGraph(requireUrls, srcRoot, graph = new Map()) {
+    for (const url of requireUrls) {
+        const slug = moduleSlugFromUrl(url);
+        const moduleDir = findModuleDir(slug, srcRoot);
+        if (!moduleDir) continue;
+
+        // Already visited
+        if (graph.has(moduleDir)) continue;
+
+        const moduleName = path.basename(moduleDir);
+        const configPath = path.join(moduleDir, 'rollup.config.cjs');
+        const buildPath = path.join(moduleDir, 'dist', 'bundle.user.js');
+
+        if (!fs.existsSync(configPath)) continue;
+
+        // Read this module's @requires from its config banner
+        const resolvedConfig = path.resolve(configPath);
+        delete require.cache[resolvedConfig];
+        const rollupConfig = require(resolvedConfig);
+        const banner = rollupConfig.output?.banner ?? '';
+        const subRequireUrls = extractRequiresFromBanner(banner);
+
+        // Resolve sub-dependency URLs to module dirs
+        const deps = [];
+        for (const subUrl of subRequireUrls) {
+            const subSlug = moduleSlugFromUrl(subUrl);
+            const subDir = findModuleDir(subSlug, srcRoot);
+            if (subDir) deps.push(subDir);
+        }
+
+        graph.set(moduleDir, { moduleName, moduleDir, configPath, buildPath, deps });
+
+        // Recurse into sub-dependencies
+        buildDependencyGraph(subRequireUrls, srcRoot, graph);
+    }
+    return graph;
+}
+
+/**
+ * Compute build levels from a dependency graph (topological sort by depth).
+ * Level 0 = leaf modules (no dependencies), Level 1 = depends only on L0, etc.
+ * Modules within the same level can be built in parallel.
+ *
+ * @param {Map} graph  From buildDependencyGraph()
+ * @returns {Array<Array<{moduleName, moduleDir, configPath, buildPath, deps}>>}
+ */
+function computeBuildLevels(graph) {
+    const levels = new Map(); // moduleDir → level number
+
+    function getLevel(moduleDir) {
+        if (levels.has(moduleDir)) return levels.get(moduleDir);
+        const node = graph.get(moduleDir);
+        if (!node || node.deps.length === 0) {
+            levels.set(moduleDir, 0);
+            return 0;
+        }
+        const maxDepLevel = Math.max(...node.deps.map(dep => getLevel(dep)));
+        const level = maxDepLevel + 1;
+        levels.set(moduleDir, level);
+        return level;
+    }
+
+    for (const moduleDir of graph.keys()) {
+        getLevel(moduleDir);
+    }
+
+    // Group by level
+    const maxLevel = Math.max(...levels.values(), -1);
+    const result = [];
+    for (let i = 0; i <= maxLevel; i++) {
+        result.push([]);
+    }
+    for (const [moduleDir, level] of levels) {
+        result[level].push(graph.get(moduleDir));
+    }
+    return result;
+}
+
+module.exports = { moduleSlugFromUrl, findModuleDir, extractRequiresFromBanner, resolveRequireOrder, buildDependencyGraph, computeBuildLevels };

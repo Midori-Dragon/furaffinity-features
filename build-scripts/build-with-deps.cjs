@@ -3,9 +3,11 @@ const fs = require('fs');
 const path = require('path');
 const util = require('util');
 const crypto = require('crypto');
-const { moduleSlugFromUrl, findModuleDir, extractRequiresFromBanner } = require('./module-resolver.cjs');
+const { execFile } = require('child_process');
+const { extractRequiresFromBanner, buildDependencyGraph, computeBuildLevels } = require('./module-resolver.cjs');
 
 const srcRoot = path.resolve(__dirname, '..', 'src');
+const workerScript = path.join(__dirname, 'build-module-worker.cjs');
 
 // Promisify filesystem functions for cleaner async/await usage
 const readFile = util.promisify(fs.readFile);
@@ -25,7 +27,7 @@ const colors = {
 
 const hashIncludeFileTypes = ['ts', 'tsx', 'js', 'jsx', 'cjs', 'css', 'html'];
 
-// Helper function to build a module using Rollup
+// Helper function to build a module using Rollup (in-process, used for the main module)
 async function buildModule(rollupConfigPath, debug = false) {
     const resolvedPath = path.resolve(rollupConfigPath);
     // Clear require cache so rebuilds always pick up the latest config
@@ -39,13 +41,17 @@ async function buildModule(rollupConfigPath, debug = false) {
     return { outputPath: path.dirname(outputFile), outputFile };
 }
 
-// Extract dependencies from the banner of a built output file (used for recursive sub-dep resolution)
-async function extractDependencies(buildFilePath, moduleName = 'bundle.user.js') {
-    console.log(`   ${colors.cyan}Extracting dependencies from: ${colors.blue}${moduleName}${colors.reset}`);
-    const content = await readFile(buildFilePath, 'utf-8');
-    const dependencies = extractRequiresFromBanner(content);
-    dependencies.forEach(dep => console.log(`   ${colors.blue}Found dependency: ${dep}${colors.reset}`));
-    return { dependencies };
+// Build a module in a separate Node.js process for true CPU parallelism
+function buildModuleInProcess(configPath, debug = false) {
+    return new Promise((resolve, reject) => {
+        const args = [workerScript, configPath];
+        if (debug) args.push('--debug');
+        execFile(process.execPath, args, { maxBuffer: 10 * 1024 * 1024 }, (error, stdout, stderr) => {
+            if (stderr) process.stderr.write(stderr);
+            if (error) reject(error);
+            else resolve();
+        });
+    });
 }
 
 // Extract dependencies directly from a rollup config's banner string — no build required
@@ -54,10 +60,7 @@ function extractDependenciesFromConfig(rollupConfigPath) {
     delete require.cache[resolvedPath];
     const rollupConfig = require(resolvedPath);
     const banner = rollupConfig.output?.banner ?? '';
-    const dependencies = extractRequiresFromBanner(banner);
-    console.log(`${colors.cyan}Dependencies from config banner:${colors.reset}`);
-    dependencies.forEach(dep => console.log(`   ${colors.blue}${dep}${colors.reset}`));
-    return { dependencies };
+    return extractRequiresFromBanner(banner);
 }
 
 // Calculate hash of a directory recursively
@@ -91,97 +94,71 @@ async function calculateDirectoryHash(directory) {
     return hash.digest('hex');
 }
 
-// Check if dependency needs rebuilding
-async function needsRebuilding(modulePath, buildPath, debug = false) {
+// Check if dependency needs rebuilding, using a precomputed hash
+function needsRebuilding(precomputedHash, buildPath, debug = false) {
     const hashFile = path.join(path.dirname(buildPath), debug ? '.build-hash-debug' : '.build-hash');
-
-    // Get current hash
-    const currentHash = await calculateDirectoryHash(modulePath);
-
     try {
-        // Check if build exists and has hash
         if (fs.existsSync(buildPath) && fs.existsSync(hashFile)) {
-            const savedHash = await readFile(hashFile, 'utf-8');
-            return currentHash !== savedHash;
+            const savedHash = fs.readFileSync(hashFile, 'utf-8');
+            return precomputedHash !== savedHash;
         }
         return true;
     } catch (error) {
-        console.warn(`  ${colors.yellow}⚠ Warning: Error reading build hash for ${path.basename(modulePath)}${colors.reset}`);
+        return true;
     }
 }
 
-// Save build hash
-async function saveBuildHash(modulePath, buildPath, debug = false) {
-    const hash = await calculateDirectoryHash(modulePath);
+// Save build hash (reuses precomputed hash — no recalculation)
+async function saveBuildHash(precomputedHash, buildPath, debug = false) {
     const hashFile = path.join(path.dirname(buildPath), debug ? '.build-hash-debug' : '.build-hash');
-    await writeFile(hashFile, hash);
+    await writeFile(hashFile, precomputedHash);
 }
 
-// Recursively resolve dependencies and ensure correct order
-async function resolveDependencies(dependencies, rebuild = false, debug = false, resolved = new Set(), order = []) {
-    for (const dep of dependencies) {
-        const slug = moduleSlugFromUrl(dep);
-        const moduleDir = findModuleDir(slug, srcRoot);
+// Build dependency modules in parallel waves (by topological level)
+async function buildDependenciesParallel(graph, levels, rebuild = false, debug = false) {
+    // Step 1: Hash all module directories in parallel upfront
+    console.log(`${colors.cyan}Hashing ${graph.size} module directories...${colors.reset}`);
+    const hashStart = Date.now();
+    const hashMap = new Map();
+    await Promise.all(
+        Array.from(graph.values()).map(async (node) => {
+            const hash = await calculateDirectoryHash(node.moduleDir);
+            hashMap.set(node.moduleDir, hash);
+        })
+    );
+    console.log(`   ${colors.green}✓ Hashing complete (${((Date.now() - hashStart) / 1000).toFixed(2)}s)${colors.reset}\n`);
 
-        if (!moduleDir) {
-            console.warn(`  ${colors.yellow}⚠ Warning: Rollup config not found for dependency: ${slug}${colors.reset}`);
-            continue;
-        }
+    // Step 2: Build each level in parallel
+    for (let i = 0; i < levels.length; i++) {
+        const level = levels[i];
+        const moduleNames = level.map(n => n.moduleName).join(', ');
+        console.log(`${colors.cyan}Building level ${i} (${level.length} modules): ${colors.blue}${moduleNames}${colors.reset}`);
+        const levelStart = Date.now();
 
-        const moduleName = path.basename(moduleDir);
-        const configPath = path.join(moduleDir, 'rollup.config.cjs');
-        const buildPath = path.join(moduleDir, 'dist/bundle.user.js');
-        const modulePath = moduleDir;
+        await Promise.all(level.map(async (node) => {
+            const { moduleName, configPath, buildPath, moduleDir } = node;
+            const precomputedHash = hashMap.get(moduleDir);
 
-        if (resolved.has(buildPath)) {
-            console.log(`${colors.cyan}Skipping already resolved dependency: ${colors.blue}${moduleName}${colors.reset}\n`);
-            continue;
-        }
+            // Check if rebuild is needed
+            let shouldRebuild = rebuild || needsRebuilding(precomputedHash, buildPath, debug);
 
-        if (!fs.existsSync(configPath)) {
-            console.warn(`  ${colors.yellow}⚠ Warning: Rollup config not found for dependency: ${moduleName}${colors.reset}`);
-            continue;
-        }
-
-        console.log(`${colors.cyan}Resolving dependency: ${colors.blue}${moduleName}${colors.reset}`);
-
-        // Check if rebuild is needed
-        let shouldRebuild = true;
-
-        if (!rebuild) {
-            shouldRebuild = await needsRebuilding(modulePath, buildPath, debug);
-        }
-
-        if (!shouldRebuild && fs.existsSync(buildPath)) {
-            console.log(`   ${colors.green}✓ Using cached build for ${moduleName}${colors.reset}`);
-        } else {
-            try {
-                console.log(`   ${colors.cyan}Building ${colors.blue}${moduleName}${colors.reset}`);
-                await buildModule(configPath, debug);
-                await saveBuildHash(modulePath, buildPath, debug);
-                console.log(`   ${colors.green}✓ Successfully built ${moduleName}${colors.reset}`);
-            } catch (error) {
-                console.error(`${colors.red}✗ Error building ${moduleName}:${colors.reset}`, error);
-                continue;
+            if (!shouldRebuild && fs.existsSync(buildPath)) {
+                console.log(`   ${colors.green}✓ Using cached build for ${moduleName}${colors.reset}`);
+            } else {
+                try {
+                    console.log(`   ${colors.cyan}Building ${colors.blue}${moduleName}${colors.reset}`);
+                    const buildStart = Date.now();
+                    await buildModuleInProcess(configPath, debug);
+                    await saveBuildHash(precomputedHash, buildPath, debug);
+                    console.log(`   ${colors.green}✓ Successfully built ${moduleName} (${((Date.now() - buildStart) / 1000).toFixed(2)}s)${colors.reset}`);
+                } catch (error) {
+                    console.error(`${colors.red}✗ Error building ${moduleName}:${colors.reset}`, error);
+                }
             }
-        }
+        }));
 
-        if (fs.existsSync(buildPath)) {
-            resolved.add(buildPath);
-            const { dependencies: subDeps } = await extractDependencies(buildPath, moduleName);
-            if (subDeps.length > 0) {
-                console.log(`  ${colors.cyan}Found nested dependencies for ${colors.blue}${moduleName}:${colors.reset}`);
-                subDeps.forEach(subDep => console.log(`    ${colors.blue}- ${subDep}${colors.reset}`));
-            }
-            await resolveDependencies(subDeps, rebuild, debug, resolved, order);
-            order.push(buildPath);
-            console.log(`   ${colors.green}✓ Added ${moduleName} to build order${colors.reset}`);
-        } else {
-            console.warn(`  ${colors.yellow}⚠ Warning: Build file not found after building: ${buildPath}${colors.reset}`);
-        }
+        console.log(`   ${colors.green}✓ Level ${i} complete (${((Date.now() - levelStart) / 1000).toFixed(2)}s)${colors.reset}\n`);
     }
-
-    return order;
 }
 
 
@@ -232,15 +209,18 @@ async function main() {
     try {
         const moduleName = path.basename(path.dirname(rollupConfigPath));
 
-        // Step 1: Read dependency order — from --deps-from config if provided, otherwise from main config
+        // Step 1: Build the full dependency graph from config banners (no compilation)
         const depsSource = depsConfigPath ?? rollupConfigPath;
-        console.log(`${colors.cyan}Reading dependency order from ${path.basename(path.dirname(depsSource))} config...${colors.reset}`);
-        const { dependencies } = extractDependenciesFromConfig(depsSource);
+        console.log(`${colors.cyan}Building dependency graph from ${path.basename(path.dirname(depsSource))} config...${colors.reset}`);
+        const topLevelDeps = extractDependenciesFromConfig(depsSource);
+        const graph = buildDependencyGraph(topLevelDeps, srcRoot);
+        const levels = computeBuildLevels(graph);
+        console.log(`   ${colors.green}✓ Found ${graph.size} dependencies in ${levels.length} levels${colors.reset}\n`);
 
-        // Step 2: Build each dependency individually (hash-cached, bottom-up)
+        // Step 2: Build each dependency level in parallel (hash-cached)
         // These individual bundles are used for GreasyFork distribution
-        console.log(`\n${colors.cyan}Resolving and building dependencies...${colors.reset}`);
-        await resolveDependencies(dependencies, rebuild, debug);
+        console.log(`${colors.cyan}Building dependencies in parallel waves...${colors.reset}\n`);
+        await buildDependenciesParallel(graph, levels, rebuild, debug);
 
         // Step 3: Build the main module last — single Rollup pass over all source files
         // Rollup deduplicates shared code (Logger etc.) automatically since it sees the full import graph
