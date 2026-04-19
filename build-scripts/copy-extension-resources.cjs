@@ -37,20 +37,20 @@ async function copyExtensionFiles() {
         }
     }
 
-    // Copy icons folder if it exists
-    const iconsPath = path.resolve('./assets/icons');
-    if (fs.existsSync(iconsPath)) {
-        const iconsDistPath = path.join(distPath, 'icons');
-        await mkdir(iconsDistPath, { recursive: true });
-
-        const icons = fs.readdirSync(iconsPath);
-        for (const icon of icons) {
-            const iconPath = path.join(iconsPath, icon);
-            const iconDestPath = path.join(iconsDistPath, icon);
-            await copyFile(iconPath, iconDestPath);
+    // Copy only icons listed in manifest
+    const manifest = JSON.parse(fs.readFileSync(manifestDestPath, 'utf8'));
+    const manifestIcons = Object.values(manifest.icons ?? {});
+    if (manifestIcons.length > 0) {
+        for (const iconRelPath of manifestIcons) {
+            const iconSrcPath = path.resolve('./assets', iconRelPath);
+            const iconDestPath = path.join(distPath, iconRelPath);
+            if (fs.existsSync(iconSrcPath)) {
+                await mkdir(path.dirname(iconDestPath), { recursive: true });
+                await copyFile(iconSrcPath, iconDestPath);
+            } else {
+                console.log(`${colors.yellow}⚠ Warning: icon '${iconRelPath}' listed in manifest not found${colors.reset}`);
+            }
         }
-    } else {
-        console.log(`${colors.yellow}⚠ Warning: icons folder not found${colors.reset}`);
     }
 }
 
