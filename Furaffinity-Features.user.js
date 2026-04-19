@@ -16,10 +16,10 @@
 // @require     https://greasyfork.org/scripts/527752-fa-instant-nuker/code/527752-fa-instant-nuker.js
 // @require     https://greasyfork.org/scripts/463464-fa-watches-favorites-viewer/code/463464-fa-watches-favorites-viewer.js
 // @grant       GM_info
-// @version     1.3.12
+// @version     1.3.14
 // @author      Midori Dragon
 // @description Combines all Furaffinity Features Scripts into one
-// @icon        https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/logo.png
+// @icon        https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/icon.svg
 // @license     MIT
 // @homepageURL https://greasyfork.org/scripts/543793-furaffinity-features
 // @supportURL  https://greasyfork.org/scripts/543793-furaffinity-features/feedback

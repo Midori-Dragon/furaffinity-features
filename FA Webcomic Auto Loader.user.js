@@ -9,10 +9,10 @@
 // @require     https://greasyfork.org/scripts/485153-furaffinity-loading-animations/code/485153-furaffinity-loading-animations.js
 // @require     https://greasyfork.org/scripts/475041-furaffinity-custom-settings/code/475041-furaffinity-custom-settings.js
 // @grant       GM_info
-// @version     2.2.11
+// @version     2.2.13
 // @author      Midori Dragon
 // @description Gives you the option to load all the subsequent comic pages on a FurAffinity comic page automatically. Even for pages without given Links
-// @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
+// @icon        https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/fa_logo.svg
 // @license     MIT
 // @homepageURL https://greasyfork.org/scripts/457759-fa-webcomic-auto-loader
 // @supportURL  https://greasyfork.org/scripts/457759-fa-webcomic-auto-loader/feedback
@@ -107,15 +107,6 @@
         element.classList[isBlocked ? 'add' : 'remove']('blocked-content');
     }
 
-    function getCurrViewSid (doc) {
-        let ogUrl = doc.querySelector('meta[property="og:url"]').getAttribute('content');
-        if (ogUrl == null) {
-            return -1;
-        }
-        ogUrl = ogUrl.trimEnd('/');
-        return parseInt(ogUrl.split('/').pop());
-    }
-
     class string {
         static isNullOrWhitespace(str) {
             return str == null || str.trim() === '';
@@ -125,21 +116,19 @@
         }
     }
 
-    class ComicNavigation {
-        prevId = -1;
-        firstId = -1;
-        nextId = -1;
-        constructor(prevId, firstId, nextId) {
-            this.prevId = prevId;
-            this.firstId = firstId;
-            this.nextId = nextId;
-        }
-        static fromElement(elem) {
-            const comicNav = new ComicNavigation(-1, -1, -1);
-            const navElems = elem.querySelectorAll('a[href*="view"]');
+    class ComicNav {
+        prev;
+        next;
+        current;
+        first;
+        static fromDocument(doc) {
+            const columnPage = doc.getElementById('columnpage');
+            const sDescription = columnPage?.querySelector('div[class*="submission-description"]');
+            const navElems = sDescription?.querySelectorAll('a[href*="/view/"]');
             if (navElems == null || navElems.length === 0) {
                 return null;
             }
+            const comicNav = {};
             for (const navElem of Array.from(navElems)) {
                 const navText = navElem?.textContent?.toLowerCase();
                 if (string.isNullOrWhitespace(navText)) {
@@ -149,22 +138,32 @@
                 if (string.isNullOrWhitespace(idText)) {
                     continue;
                 }
-                const i = idText.search(/[?#]/);
-                idText = i === -1 ? idText : idText.slice(0, i);
-                idText = idText.trimEnd('/');
-                idText = idText.split('/').pop();
+                const match = idText.match(/\/view\/(\d+)/);
+                const sid = match ? match[1] : null;
+                if (string.isNullOrWhitespace(sid)) {
+                    continue;
+                }
                 if (navText.includes('prev')) {
-                    comicNav.prevId = parseInt(idText);
+                    comicNav.prev = { title: navText, sid: parseInt(sid) };
                 }
                 else if (navText.includes('next')) {
-                    comicNav.nextId = parseInt(idText);
+                    comicNav.next = { title: navText, sid: parseInt(sid) };
                 }
                 else if (navText.includes('start') || navText.includes('first')) {
-                    comicNav.firstId = parseInt(idText);
+                    comicNav.first = { title: navText, sid: parseInt(sid) };
                 }
             }
             return comicNav;
         }
+    }
+
+    function getCurrViewSid (doc) {
+        let ogUrl = doc.querySelector('meta[property="og:url"]').getAttribute('content');
+        if (ogUrl == null) {
+            return -1;
+        }
+        ogUrl = ogUrl.trimEnd('/');
+        return parseInt(ogUrl.split('/').pop());
     }
 
     class AutoLoaderSearch {
@@ -187,7 +186,7 @@
                     if (this.currComicNav == null) {
                         break;
                     }
-                    const img = await this.getPage(this.currComicNav.nextId);
+                    const img = await this.getPage(this.currComicNav.next.sid);
                     if (img == null) {
                         break;
                     }
@@ -199,10 +198,10 @@
                     this.currImgIndex++;
                 }
                 catch (error) {
-                    Logger.logError(error);
+                    Logger.logError(`Failed to load search page for sid '${this.currComicNav?.next?.sid}'`, error);
                     break;
                 }
-            } while (this.currComicNav?.nextId !== -1);
+            } while (this.currComicNav?.next != null);
             Logger.logInfo(`${scriptName}: finished search. Found ${Object.keys(loadedImgs).length} images.`);
             return loadedImgs;
         }
@@ -215,35 +214,54 @@
             img.setAttribute('wal-index', this.currImgIndex.toString());
             img.setAttribute('wal-sid', sid.toString());
             this.currSid = getCurrViewSid(page);
-            const descriptionElem = page.getElementById('columnpage')?.querySelector('div[class*="submission-description"]');
-            if (descriptionElem != null) {
-                this.currComicNav = ComicNavigation.fromElement(descriptionElem);
-            }
-            else {
-                this.currComicNav = null;
-            }
+            this.currComicNav = ComicNav.fromDocument(page);
             return img;
         }
     }
 
     function isSubmissionPageInGallery (doc) {
+        let isGallery = false;
         const columnPage = doc.getElementById('columnpage');
         const favNav = columnPage?.querySelector('div[class*="favorite-nav"]');
-        const mainGalleryButton = favNav?.querySelector('a[title*="submissions"]');
-        if (mainGalleryButton != null && mainGalleryButton.href.includes('gallery')) {
-            return true;
+        isGallery = isInGallery(favNav);
+        if (!isGallery) {
+            isGallery = isInMiniGallery(columnPage);
         }
-        return false;
+        return isGallery;
+    }
+    function isInGallery(favNav) {
+        const mainGalleryButton = favNav?.querySelector('a[title*="submissions"]');
+        return mainGalleryButton instanceof HTMLAnchorElement &&
+            mainGalleryButton.href.includes('gallery/');
+    }
+    function isInMiniGallery(columnPage) {
+        const miniGallery = columnPage?.querySelector('div[id="minigallery"]');
+        const mainMiniGalleryTitleContainer = miniGallery?.querySelector('div[class="minigallery-title"]');
+        const mainMiniGalleryButton = mainMiniGalleryTitleContainer?.querySelector('a[href]');
+        return mainMiniGalleryButton instanceof HTMLAnchorElement &&
+            mainMiniGalleryButton.href.includes('gallery/');
     }
 
     function isSubmissionPageInScraps (doc) {
         const columnPage = doc.getElementById('columnpage');
         const favNav = columnPage?.querySelector('div[class*="favorite-nav"]');
-        const mainGalleryButton = favNav?.querySelector('a[title*="submissions"]');
-        if (mainGalleryButton != null && mainGalleryButton.href.includes('scraps')) {
-            return true;
+        let isScraps = isInScraps(favNav);
+        if (!isScraps) {
+            isScraps = isInMiniGalleryScraps(columnPage);
         }
-        return false;
+        return isScraps;
+    }
+    function isInScraps(favNav) {
+        const mainGalleryButton = favNav?.querySelector('a[title*="submissions"]');
+        return mainGalleryButton instanceof HTMLAnchorElement &&
+            mainGalleryButton.href.includes('scraps/');
+    }
+    function isInMiniGalleryScraps(columnPage) {
+        const miniGallery = columnPage?.querySelector('div[id="minigallery"]');
+        const mainMiniGalleryTitleContainer = miniGallery?.querySelector('div[class="minigallery-title"]');
+        const mainMiniGalleryButton = mainMiniGalleryTitleContainer?.querySelector('a[href]');
+        return mainMiniGalleryButton instanceof HTMLAnchorElement &&
+            mainMiniGalleryButton.href.includes('scraps/');
     }
 
     function getCurrGalleryFolder () {
@@ -325,9 +343,11 @@
         sidToIgnore = [];
         _currSid;
         _amount;
-        constructor(currSid, amount, currSubmissionPageNo) {
+        _limit;
+        constructor(currSid, amount, limit, currSubmissionPageNo) {
             this._currSid = currSid;
             this._amount = amount;
+            this._limit = limit;
             this.currSubmissionPageNo = currSubmissionPageNo;
             this.sidToIgnore.push(currSid);
         }
@@ -369,6 +389,10 @@
             figuresFlattend = figuresFlattend.filter(figure => !this.sidToIgnore.includes(parseInt(figure.id.trimStart('sid-'))));
             figuresFlattend = figuresFlattend.filter(figure => figureTitleIsGenerallyEqual(figure, currTitle));
             figuresFlattend.reverse();
+            if (figuresFlattend.length > this._limit) {
+                figuresFlattend = figuresFlattend.slice(figuresFlattend.length - this._limit);
+                Logger.logInfo(`${scriptName}: backward search limit reached, capping at '${this._limit}' figures`);
+            }
             Logger.logInfo(`${scriptName}: searching figures backward found '${figuresFlattend.length}' figures`);
             Logger.logInfo(`${scriptName}: loading submission pages...`);
             const result = {};
@@ -392,8 +416,10 @@
         currSubmissionPageNo;
         sidToIgnore = [];
         _currSid;
-        constructor(currSid, currSubmissionPageNo) {
+        _limit;
+        constructor(currSid, limit, currSubmissionPageNo) {
             this._currSid = currSid;
+            this._limit = limit;
             this.currSubmissionPageNo = currSubmissionPageNo;
             this.sidToIgnore.push(currSid);
         }
@@ -435,6 +461,10 @@
             figuresFlattend = figuresFlattend.filter(figure => !this.sidToIgnore.includes(parseInt(figure.id.trimStart('sid-'))));
             figuresFlattend = figuresFlattend.filter(figure => figureTitleIsGenerallyEqual(figure, currTitle));
             figuresFlattend.reverse();
+            if (figuresFlattend.length > this._limit) {
+                figuresFlattend = figuresFlattend.slice(0, this._limit);
+                Logger.logInfo(`${scriptName}: forward search limit reached, capping at '${this._limit}' figures`);
+            }
             Logger.logInfo(`${scriptName}: searching figures forward found '${figuresFlattend.length}' figures`);
             Logger.logInfo(`${scriptName}: loading submission pages...`);
             const result = {};
@@ -616,20 +646,23 @@
         createNavigationButtons() {
             const container = document.createElement('div');
             container.classList.add('wal-lightbox-nav', 'hidden', 'wal-no-select');
-            const leftButton = document.createElement('a');
+            const leftButton = document.createElement('button');
+            leftButton.type = 'button';
             leftButton.classList.add('button', 'standard', 'mobile-fix');
             leftButton.textContent = '<---';
             leftButton.style.marginRight = '4px';
             leftButton.addEventListener('click', this.navigateLeft.bind(this));
             container.appendChild(leftButton);
-            const closeButton = document.createElement('a');
+            const closeButton = document.createElement('button');
+            closeButton.type = 'button';
             closeButton.classList.add('button', 'standard', 'mobile-fix');
             closeButton.textContent = 'Close';
             closeButton.addEventListener('click', () => {
                 this.isHidden = true;
             });
             container.appendChild(closeButton);
-            const rightButton = document.createElement('a');
+            const rightButton = document.createElement('button');
+            rightButton.type = 'button';
             rightButton.classList.add('button', 'standard', 'mobile-fix');
             rightButton.textContent = '--->';
             rightButton.style.marginLeft = '4px';
@@ -666,23 +699,18 @@
             this.submissionImg = document.getElementById('submissionImg');
             this.submissionImg.setAttribute('wal-index', '0');
             this.submissionImg.setAttribute('wal-sid', this.currSid.toString());
-            this._searchButton = document.createElement('a');
+            this._searchButton = document.createElement('button');
             this._searchButton.id = 'wal-search-button';
             this._searchButton.classList.add('wal-button', 'button', 'standard', 'mobile-fix');
             this._searchButton.type = 'button';
             this._searchButton.style.margin = '20px 0 10px 0';
             this.submissionImg.parentNode.appendChild(document.createElement('br'));
             this.submissionImg.parentNode.appendChild(this._searchButton);
-            const descriptionElem = document.getElementById('columnpage')?.querySelector('div[class*="submission-description"]');
-            if (descriptionElem != null) {
-                this.currComicNav = ComicNavigation.fromElement(descriptionElem);
-                if (this.currComicNav != null) {
-                    if (this.currComicNav.prevId !== -1 || this.currComicNav.firstId !== -1 || this.currComicNav.nextId !== -1) {
-                        this._comicNavExists = true;
-                        if (overwriteNavButtonsSetting.value) {
-                            this.overwriteNavButtons();
-                        }
-                    }
+            this.currComicNav = ComicNav.fromDocument(document);
+            if (this.currComicNav?.next != null) {
+                this._comicNavExists = true;
+                if (overwriteNavButtonsSetting.value) {
+                    this.overwriteNavButtons();
                 }
             }
             this.updateSearchButton(this.comicNavExists);
@@ -736,9 +764,9 @@
         async startSimilarSearchAsync() {
             this._loadingSpinner.visible = true;
             try {
-                const forwardSearch = new ForwardSearch(this.currSid);
+                const forwardSearch = new ForwardSearch(this.currSid, similarSearchLimitSetting.value);
                 const submissionsAfter = await forwardSearch.search();
-                const backwardSearch = new BackwardSearch(this.currSid, backwardSearchSetting.value, forwardSearch.currSubmissionPageNo);
+                const backwardSearch = new BackwardSearch(this.currSid, backwardSearchSetting.value, similarSearchLimitSetting.value, forwardSearch.currSubmissionPageNo);
                 backwardSearch.sidToIgnore.push(...Object.keys(submissionsAfter).map(Number));
                 const submissionsBefore = await backwardSearch.search();
                 this.addLoadedSubmissions(submissionsBefore, submissionsAfter);
@@ -790,13 +818,13 @@
             const columnpage = document.getElementById('columnpage');
             const favoriteNav = columnpage?.querySelector('div[class*="favorite-nav"]');
             let prevButton = favoriteNav?.children[0];
-            if (prevButton != null && this.currComicNav.prevId !== -1) {
+            if (prevButton != null && this.currComicNav.prev != null) {
                 if (prevButton.textContent?.toLowerCase()?.includes('prev') ?? false) {
-                    prevButton.href = `/view/${this.currComicNav.prevId}/`;
+                    prevButton.href = `/view/${this.currComicNav.prev.sid}/`;
                 }
                 else {
                     const prevButtonReal = document.createElement('a');
-                    prevButtonReal.href = `/view/${this.currComicNav.prevId}/`;
+                    prevButtonReal.href = `/view/${this.currComicNav.prev.sid}/`;
                     prevButtonReal.classList.add('button', 'standard', 'mobile-fix');
                     prevButtonReal.textContent = 'Prev';
                     prevButtonReal.style.marginRight = '4px';
@@ -804,13 +832,13 @@
                 }
             }
             let nextButton = favoriteNav?.children[favoriteNav.children.length - 1];
-            if (nextButton != null && this.currComicNav.nextId !== -1) {
+            if (nextButton != null && this.currComicNav.next != null) {
                 if (nextButton.textContent?.toLowerCase()?.includes('next') ?? false) {
-                    nextButton.href = `/view/${this.currComicNav.nextId}/`;
+                    nextButton.href = `/view/${this.currComicNav.next.sid}/`;
                 }
                 else {
                     const nextButtonReal = document.createElement('a');
-                    nextButtonReal.href = `/view/${this.currComicNav.nextId}/`;
+                    nextButtonReal.href = `/view/${this.currComicNav.next.sid}/`;
                     nextButtonReal.classList.add('button', 'standard', 'mobile-fix');
                     nextButtonReal.textContent = 'Next';
                     nextButtonReal.style.marginLeft = '4px';
@@ -847,6 +875,9 @@
     const backwardSearchSetting = customSettings.newSetting(window.FASettingType.Number, 'Backward Search Amount');
     backwardSearchSetting.description = 'Sets the amount of similar pages to search backward. (More Pages take longer)';
     backwardSearchSetting.defaultValue = 3;
+    const similarSearchLimitSetting = customSettings.newSetting(window.FASettingType.Number, 'Similar Search Limit');
+    similarSearchLimitSetting.description = 'Sets the maximum number of similar submissions to load in each direction. (10 per direction = max 20 total)';
+    similarSearchLimitSetting.defaultValue = 10;
     const overwriteNavButtonsSetting = customSettings.newSetting(window.FASettingType.Boolean, 'Overwrite Nav Buttons');
     overwriteNavButtonsSetting.description = 'Sets wether the default Navigation Buttons (next/prev) are overwritten by the Auto-Loader. (Works only if comic navigation is present)';
     overwriteNavButtonsSetting.defaultValue = true;
@@ -874,6 +905,7 @@
     exports.requestHelper = requestHelper;
     exports.scriptName = scriptName;
     exports.showSearchButtonSetting = showSearchButtonSetting;
+    exports.similarSearchLimitSetting = similarSearchLimitSetting;
     exports.useCustomLightboxSetting = useCustomLightboxSetting;
 
     return exports;

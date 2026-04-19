@@ -2,10 +2,10 @@
 // @name        Furaffinity-Custom-Settings
 // @namespace   Violentmonkey Scripts
 // @grant       none
-// @version     4.3.4
+// @version     4.3.6
 // @author      Midori Dragon
 // @description Library to create Custom settings on Furaffinitiy
-// @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
+// @icon        https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/fa_logo.svg
 // @license     MIT
 // @homepageURL https://greasyfork.org/scripts/475041-furaffinity-custom-settings
 // @supportURL  https://greasyfork.org/scripts/475041-furaffinity-custom-settings/feedback
@@ -96,7 +96,6 @@
             settingElem.addEventListener('click', this.invokeInput.bind(this));
             return settingElem;
         }
-
         loadFromSyncedStorage() { }
         toString() {
             return `${this.name} = ${this.value}`;
@@ -578,18 +577,13 @@
                 return;
             }
             this._errorMessage.style.display = 'none';
-            try {
-                if (newValue === this.defaultValue) {
-                    localStorage.removeItem(this.id);
-                    void SyncedStorage.removeItem(this.id).catch((e) => Logger.logError('SyncedStorage.removeItem failed:', e));
-                }
-                else {
-                    localStorage.setItem(this.id, newValue);
-                    void SyncedStorage.setItem(this.id, newValue).catch((e) => Logger.logError('SyncedStorage.setItem failed:', e));
-                }
+            if (newValue === this.defaultValue) {
+                localStorage.removeItem(this.id);
+                void SyncedStorage.removeItem(this.id).catch((error) => Logger.logError('SyncedStorage.removeItem failed:', error));
             }
-            catch (error) {
-                Logger.logError(error);
+            else {
+                localStorage.setItem(this.id, newValue);
+                void SyncedStorage.setItem(this.id, newValue).catch((error) => Logger.logError('SyncedStorage.setItem failed:', error));
             }
             this._settingInputElem.value = newValue;
             this.invokeInput(this._settingInputElem);
@@ -705,19 +699,13 @@
             return localStorage.getItem(this.id) ?? this.defaultValue;
         }
         set value(newValue) {
-            try {
-
-                if (newValue == this.defaultValue) {
-                    localStorage.removeItem(this.id);
-                    void SyncedStorage.removeItem(this.id).catch((e) => Logger.logError('SyncedStorage.removeItem failed:', e));
-                }
-                else {
-                    localStorage.setItem(this.id, newValue.toString());
-                    void SyncedStorage.setItem(this.id, newValue.toString()).catch((e) => Logger.logError('SyncedStorage.setItem failed:', e));
-                }
+            if (newValue === this.defaultValue) {
+                localStorage.removeItem(this.id);
+                void SyncedStorage.removeItem(this.id).catch((error) => Logger.logError('SyncedStorage.removeItem failed:', error));
             }
-            catch (error) {
-                Logger.logError(error);
+            else {
+                localStorage.setItem(this.id, newValue.toString());
+                void SyncedStorage.setItem(this.id, newValue.toString()).catch((error) => Logger.logError('SyncedStorage.setItem failed:', error));
             }
             this._settingInputElem.value = newValue.toString();
             this.invokeInput(this._settingInputElem);
@@ -812,8 +800,8 @@
                 await SyncedStorage.setItem(key, value);
                 return true;
             }
-            catch {
-                Logger.logError(`Failed to set item in storage: ${key}=${value}`);
+            catch (error) {
+                Logger.logError(`Failed to set item in storage: ${key}=${value}`, error);
                 return false;
             }
         }
@@ -841,8 +829,8 @@
                 }
                 return valueSynced ?? valueLocal;
             }
-            catch {
-                Logger.logError(`Failed to get item from storage: ${key}`);
+            catch (error) {
+                Logger.logError(`Failed to get item from storage: ${key}`, error);
                 return null;
             }
         }
@@ -852,8 +840,8 @@
                 await SyncedStorage.removeItem(key);
                 return true;
             }
-            catch {
-                Logger.logError(`Failed to remove item from storage: ${key}`);
+            catch (error) {
+                Logger.logError(`Failed to remove item from storage: ${key}`, error);
                 return false;
             }
         }
@@ -870,8 +858,8 @@
                 const syncedItems = await SyncedStorage.getAllItems();
                 return { ...localStorageItems, ...syncedItems };
             }
-            catch {
-                Logger.logError('Failed to get all items from storage');
+            catch (error) {
+                Logger.logError('Failed to get all items from storage', error);
                 return {};
             }
         }
@@ -951,7 +939,7 @@
                 }
             }
             catch (error) {
-                Logger.logError(error);
+                Logger.logError(`Failed to load settings for provider '${this.providerId}'`, error);
             }
         }
         async exportSettings() {
@@ -989,7 +977,7 @@
                 URL.revokeObjectURL(url);
             }
             catch (error) {
-                Logger.logError(error);
+                Logger.logError(`Failed to export settings for provider '${this.providerId}'`, error);
             }
         }
         async importSettings(settingsJson) {
@@ -1003,7 +991,7 @@
                 }
             }
             catch (error) {
-                Logger.logError(error);
+                Logger.logError(`Failed to import settings for provider '${this.providerId}'`, error);
             }
         }
         loadSettingValues(headerName, settings) {
@@ -1111,6 +1099,7 @@
         }
         createSettingReset(setting) {
             const settingDescReset = document.createElement('a');
+            settingDescReset.type = 'button';
             settingDescReset.id = setting.id + '_settingreset';
             settingDescReset.textContent = 'Reset this Setting';
             settingDescReset.style.cursor = 'pointer';
@@ -1149,7 +1138,7 @@
                 }
             }
             catch (error) {
-                Logger.logError(error);
+                Logger.logError(`Failed to add extension ${name} to settings menu`, error);
             }
         }
         addExSettingsMenuSidebar(name, provider, nameId, providerId) {
@@ -1178,7 +1167,7 @@
                 }
             }
             catch (error) {
-                Logger.logError(error);
+                Logger.logError(`Failed to add extension ${name} to settings sidebar`, error);
             }
         }
     }

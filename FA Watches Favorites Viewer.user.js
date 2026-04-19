@@ -10,10 +10,10 @@
 // @require     https://greasyfork.org/scripts/476762-furaffinity-custom-pages/code/476762-furaffinity-custom-pages.js
 // @require     https://greasyfork.org/scripts/475041-furaffinity-custom-settings/code/475041-furaffinity-custom-settings.js
 // @grant       GM_info
-// @version     3.0.18
+// @version     3.0.20
 // @author      Midori Dragon
 // @description Scans the Favorites of your Watches for new Favorites and shows a Button to view these (if any where found). (Works like Submission Page)
-// @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
+// @icon        https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/fa_logo.svg
 // @license     MIT
 // @homepageURL https://greasyfork.org/scripts/463464-fa-watches-favorites-viewer
 // @supportURL  https://greasyfork.org/scripts/463464-fa-watches-favorites-viewer/feedback
@@ -339,8 +339,8 @@
                 await SyncedStorage.setItem(key, value);
                 return true;
             }
-            catch {
-                Logger.logError(`Failed to set item in storage: ${key}=${value}`);
+            catch (error) {
+                Logger.logError(`Failed to set item in storage: ${key}=${value}`, error);
                 return false;
             }
         }
@@ -368,8 +368,8 @@
                 }
                 return valueSynced ?? valueLocal;
             }
-            catch {
-                Logger.logError(`Failed to get item from storage: ${key}`);
+            catch (error) {
+                Logger.logError(`Failed to get item from storage: ${key}`, error);
                 return null;
             }
         }
@@ -379,8 +379,8 @@
                 await SyncedStorage.removeItem(key);
                 return true;
             }
-            catch {
-                Logger.logError(`Failed to remove item from storage: ${key}`);
+            catch (error) {
+                Logger.logError(`Failed to remove item from storage: ${key}`, error);
                 return false;
             }
         }
@@ -397,8 +397,8 @@
                 const syncedItems = await SyncedStorage.getAllItems();
                 return { ...localStorageItems, ...syncedItems };
             }
-            catch {
-                Logger.logError('Failed to get all items from storage');
+            catch (error) {
+                Logger.logError('Failed to get all items from storage', error);
                 return {};
             }
         }
@@ -8188,8 +8188,8 @@
                         figure.figCaption.fromId = '';
                         figure.figCaption.fromUsername = '';
                     }
-                    catch {
-                        Logger.logError(`Failed to get from watch for ${figure.id}`);
+                    catch (error) {
+                        Logger.logError(`Failed to get from watch for ${figure.id}`, error);
                     }
                 }
             }
@@ -8240,10 +8240,12 @@
             const nav = ddmenu.querySelector('ul[class*="navhideonmobile"]');
             const messageBar = nav.querySelector('li[class*="message-bar-desktop"]');
             this.wfButton = document.createElement('a');
+            this.wfButton.type = 'button';
             this.wfButton.id = 'wfButton';
             this.wfButton.className = 'notification-container inline';
             this.wfButton.title = 'Start a WF scan';
             this.wfButton.style.cursor = 'pointer';
+            this.wfButton.style.setProperty('text-decoration', 'none', 'important');
             this.wfButton.textContent = 'WF Scan';
             this.wfButton.onclick = () => void this.startScan();
             messageBar.appendChild(this.wfButton);
@@ -8274,7 +8276,7 @@
                 await FigureDataSaver.saveFigures(figures);
                 this.wfButton.textContent = `${figures.length}WF`;
                 this.wfButton.onclick = null;
-                this.wfButton.href = 'https://www.furaffinity.net/msg/submissions/?mode=wfv-favorites';
+                this.wfButton.onclick = () => { window.location.href = 'https://www.furaffinity.net/msg/submissions/?mode=wfv-favorites'; };
             }
             catch (error) {
                 this.wfButton.textContent = 'WF Scan again';

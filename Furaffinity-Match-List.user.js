@@ -2,10 +2,10 @@
 // @name        Furaffinity-Match-List
 // @namespace   Violentmonkey Scripts
 // @grant       GM_info
-// @version     1.1.4
+// @version     1.1.5
 // @author      Midori Dragon
 // @description Library to create a matchlist for your Furaffinity Script
-// @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
+// @icon        https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/fa_logo.svg
 // @license     MIT
 // @homepageURL https://greasyfork.org/scripts/485827-furaffinity-match-list
 // @supportURL  https://greasyfork.org/scripts/485827-furaffinity-match-list/feedback

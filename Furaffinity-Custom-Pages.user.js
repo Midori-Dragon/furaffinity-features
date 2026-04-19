@@ -2,10 +2,10 @@
 // @name        Furaffinity-Custom-Pages
 // @namespace   Violentmonkey Scripts
 // @grant       none
-// @version     1.2.4
+// @version     1.2.5
 // @author      Midori Dragon
 // @description Library to create Custom pages on Furaffinitiy
-// @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
+// @icon        https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/fa_logo.svg
 // @license     MIT
 // @homepageURL https://greasyfork.org/scripts/476762-furaffinity-custom-pages
 // @supportURL  https://greasyfork.org/scripts/476762-furaffinity-custom-pages/feedback

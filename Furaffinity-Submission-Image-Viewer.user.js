@@ -2,10 +2,10 @@
 // @name        Furaffinity-Submission-Image-Viewer
 // @namespace   Violentmonkey Scripts
 // @grant       GM_info
-// @version     1.3.0
+// @version     1.3.1
 // @author      Midori Dragon
 // @description Library for creating custom image elements on Furaffinity
-// @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
+// @icon        https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/fa_logo.svg
 // @license     MIT
 // @homepageURL https://greasyfork.org/scripts/492931-furaffinity-submission-image-viewer
 // @supportURL  https://greasyfork.org/scripts/492931-furaffinity-submission-image-viewer/feedback
@@ -15,43 +15,10 @@
   'use strict';
 
   /**
-  * Panzoom 4.6.1 for panning and zooming elements using CSS transforms
+  * Panzoom 4.6.2 for panning and zooming elements using CSS transforms
   * Copyright Timmy Willison and other contributors
   * https://github.com/timmywil/panzoom/blob/main/MIT-License.txt
   */
-  /******************************************************************************
-  Copyright (c) Microsoft Corporation.
-
-  Permission to use, copy, modify, and/or distribute this software for any
-  purpose with or without fee is hereby granted.
-
-  THE SOFTWARE IS PROVIDED "AS IS" AND THE AUTHOR DISCLAIMS ALL WARRANTIES WITH
-  REGARD TO THIS SOFTWARE INCLUDING ALL IMPLIED WARRANTIES OF MERCHANTABILITY
-  AND FITNESS. IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY SPECIAL, DIRECT,
-  INDIRECT, OR CONSEQUENTIAL DAMAGES OR ANY DAMAGES WHATSOEVER RESULTING FROM
-  LOSS OF USE, DATA OR PROFITS, WHETHER IN AN ACTION OF CONTRACT, NEGLIGENCE OR
-  OTHER TORTIOUS ACTION, ARISING OUT OF OR IN CONNECTION WITH THE USE OR
-  PERFORMANCE OF THIS SOFTWARE.
-  ***************************************************************************** */
-  /* global Reflect, Promise, SuppressedError, Symbol, Iterator */
-
-
-  var __assign = function() {
-      __assign = Object.assign || function __assign(t) {
-          for (var s, i = 1, n = arguments.length; i < n; i++) {
-              s = arguments[i];
-              for (var p in s) if (Object.prototype.hasOwnProperty.call(s, p)) t[p] = s[p];
-          }
-          return t;
-      };
-      return __assign.apply(this, arguments);
-  };
-
-  typeof SuppressedError === "function" ? SuppressedError : function (error, suppressed, message) {
-      var e = new Error(message);
-      return e.name = "SuppressedError", e.error = error, e.suppressed = suppressed, e;
-  };
-
   if (typeof window !== 'undefined') {
     // Support: IE11 only
     if (window.NodeList && !NodeList.prototype.forEach) {
@@ -69,11 +36,11 @@
     }
   }
 
-  var isIE = typeof document !== 'undefined' && !!document.documentMode;
+  const isIE = typeof document !== 'undefined' && !!document.documentMode;
   /**
    * Lazy creation of a CSS style declaration
    */
-  var divStyle;
+  let divStyle;
   function createStyle() {
       if (divStyle) {
           return divStyle;
@@ -83,20 +50,20 @@
   /**
    * Proper prefixing for cross-browser compatibility
    */
-  var prefixes = ['webkit', 'moz', 'ms'];
-  var prefixCache = {};
+  const prefixes = ['webkit', 'moz', 'ms'];
+  const prefixCache = {};
   function getPrefixedName(name) {
       if (prefixCache[name]) {
           return prefixCache[name];
       }
-      var divStyle = createStyle();
+      const divStyle = createStyle();
       if (name in divStyle) {
           return (prefixCache[name] = name);
       }
-      var capName = name[0].toUpperCase() + name.slice(1);
-      var i = prefixes.length;
+      const capName = name[0].toUpperCase() + name.slice(1);
+      let i = prefixes.length;
       while (i--) {
-          var prefixedName = "".concat(prefixes[i]).concat(capName);
+          const prefixedName = `${prefixes[i]}${capName}`;
           if (prefixedName in divStyle) {
               return (prefixCache[name] = prefixedName);
           }
@@ -108,16 +75,15 @@
   function getCSSNum(name, style) {
       return parseFloat(style[getPrefixedName(name)]) || 0;
   }
-  function getBoxStyle(elem, name, style) {
-      if (style === void 0) { style = window.getComputedStyle(elem); }
+  function getBoxStyle(elem, name, style = window.getComputedStyle(elem)) {
       // Support: FF 68+
       // Firefox requires specificity for border
-      var suffix = name === 'border' ? 'Width' : '';
+      const suffix = name === 'border' ? 'Width' : '';
       return {
-          left: getCSSNum("".concat(name, "Left").concat(suffix), style),
-          right: getCSSNum("".concat(name, "Right").concat(suffix), style),
-          top: getCSSNum("".concat(name, "Top").concat(suffix), style),
-          bottom: getCSSNum("".concat(name, "Bottom").concat(suffix), style)
+          left: getCSSNum(`${name}Left${suffix}`, style),
+          right: getCSSNum(`${name}Right${suffix}`, style),
+          top: getCSSNum(`${name}Top${suffix}`, style),
+          bottom: getCSSNum(`${name}Bottom${suffix}`, style)
       };
   }
   /**
@@ -131,8 +97,8 @@
    * and takes care of prefixing the transition and transform
    */
   function setTransition(elem, options) {
-      var transform = getPrefixedName('transform');
-      setStyle(elem, 'transition', "".concat(transform, " ").concat(options.duration, "ms ").concat(options.easing));
+      const transform = getPrefixedName('transform');
+      setStyle(elem, 'transition', `${transform} ${options.duration}ms ${options.easing}`);
   }
   /**
    * Set the transform using the proper prefix
@@ -153,11 +119,10 @@
    * })
    * ```
    */
-  function setTransform(elem, _a, _options) {
-      var x = _a.x, y = _a.y, scale = _a.scale, isSVG = _a.isSVG;
-      setStyle(elem, 'transform', "scale(".concat(scale, ") translate(").concat(x, "px, ").concat(y, "px)"));
+  function setTransform(elem, { x, y, scale, isSVG }, _options) {
+      setStyle(elem, 'transform', `scale(${scale}) translate(${x}px, ${y}px)`);
       if (isSVG && isIE) {
-          var matrixValue = window.getComputedStyle(elem).getPropertyValue('transform');
+          const matrixValue = window.getComputedStyle(elem).getPropertyValue('transform');
           elem.setAttribute('transform', matrixValue);
       }
   }
@@ -165,14 +130,17 @@
    * Dimensions used in containment and focal point zooming
    */
   function getDimensions(elem) {
-      var parent = elem.parentNode;
-      var style = window.getComputedStyle(elem);
-      var parentStyle = window.getComputedStyle(parent);
-      var rectElem = elem.getBoundingClientRect();
-      var rectParent = parent.getBoundingClientRect();
+      let parent = elem.parentNode;
+      if (!parent || parent.nodeType !== 1) {
+          parent = document.documentElement;
+      }
+      const style = window.getComputedStyle(elem);
+      const parentStyle = window.getComputedStyle(parent);
+      const rectElem = elem.getBoundingClientRect();
+      const rectParent = parent.getBoundingClientRect();
       return {
           elem: {
-              style: style,
+              style,
               width: rectElem.width,
               height: rectElem.height,
               top: rectElem.top,
@@ -196,7 +164,7 @@
       };
   }
 
-  var events = {
+  let events = {
       down: 'mousedown',
       move: 'mousemove',
       up: 'mouseup mouseleave'
@@ -218,12 +186,12 @@
       }
   }
   function onPointer(event, elem, handler, eventOpts) {
-      events[event].split(' ').forEach(function (name) {
+      events[event].split(' ').forEach((name) => {
           elem.addEventListener(name, handler, eventOpts);
       });
   }
   function destroyPointer(event, elem, handler) {
-      events[event].split(' ').forEach(function (name) {
+      events[event].split(' ').forEach((name) => {
           elem.removeEventListener(name, handler);
       });
   }
@@ -232,7 +200,7 @@
    * Utilites for working with multiple pointer events
    */
   function findEventIndex(pointers, event) {
-      var i = pointers.length;
+      let i = pointers.length;
       while (i--) {
           if (pointers[i].pointerId === event.pointerId) {
               return i;
@@ -241,12 +209,11 @@
       return -1;
   }
   function addPointer(pointers, event) {
-      var i;
+      let i;
       // Add touches if applicable
       if (event.touches) {
           i = 0;
-          for (var _i = 0, _a = event.touches; _i < _a.length; _i++) {
-              var touch = _a[_i];
+          for (const touch of event.touches) {
               touch.pointerId = i++;
               addPointer(pointers, touch);
           }
@@ -268,7 +235,7 @@
           }
           return;
       }
-      var i = findEventIndex(pointers, event);
+      const i = findEventIndex(pointers, event);
       if (i > -1) {
           pointers.splice(i, 1);
       }
@@ -281,8 +248,8 @@
   function getMiddle(pointers) {
       // Copy to avoid changing by reference
       pointers = pointers.slice(0);
-      var event1 = pointers.pop();
-      var event2;
+      let event1 = pointers.pop();
+      let event2;
       while ((event2 = pointers.pop())) {
           event1 = {
               clientX: (event2.clientX - event1.clientX) / 2 + event1.clientX,
@@ -300,8 +267,8 @@
       if (pointers.length < 2) {
           return 0;
       }
-      var event1 = pointers[0];
-      var event2 = pointers[1];
+      const event1 = pointers[0];
+      const event2 = pointers[1];
       return Math.sqrt(Math.pow(Math.abs(event2.clientX - event1.clientX), 2) +
           Math.pow(Math.abs(event2.clientY - event1.clientY), 2));
   }
@@ -311,7 +278,7 @@
    * Panzoom requires this so events work properly
    */
   function isAttached(node) {
-      var currentNode = node;
+      let currentNode = node;
       while (currentNode && currentNode.parentNode) {
           if (currentNode.parentNode === document)
               return true;
@@ -327,10 +294,10 @@
       return (elem.getAttribute('class') || '').trim();
   }
   function hasClass(elem, className) {
-      return elem.nodeType === 1 && " ".concat(getClass(elem), " ").indexOf(" ".concat(className, " ")) > -1;
+      return elem.nodeType === 1 && ` ${getClass(elem)} `.indexOf(` ${className} `) > -1;
   }
   function isExcluded(elem, options) {
-      for (var cur = elem; cur != null; cur = cur.parentNode) {
+      for (let cur = elem; cur != null; cur = cur.parentNode) {
           if (hasClass(cur, options.excludeClass) || options.exclude.indexOf(cur) > -1) {
               return true;
           }
@@ -342,14 +309,14 @@
    * Determine if an element is SVG by checking the namespace
    * Exception: the <svg> element itself should be treated like HTML
    */
-  var rsvg = /^http:[\w\.\/]+svg$/;
+  const rsvg = /^http:[\w\.\/]+svg$/;
   function isSVGElement(elem) {
       return rsvg.test(elem.namespaceURI) && elem.nodeName.toLowerCase() !== 'svg';
   }
 
   function shallowClone(obj) {
-      var clone = {};
-      for (var key in obj) {
+      const clone = {};
+      for (const key in obj) {
           if (obj.hasOwnProperty(key)) {
               clone[key] = obj[key];
           }
@@ -357,7 +324,16 @@
       return clone;
   }
 
-  var defaultOptions = {
+  /**
+   * Panzoom for panning and zooming elements using CSS transforms
+   * https://github.com/timmywil/panzoom
+   *
+   * Copyright Timmy Willison and other contributors
+   * Released under the MIT license
+   * https://github.com/timmywil/panzoom/blob/main/MIT-License.txt
+   *
+   */
+  const defaultOptions = {
       animate: false,
       canvas: false,
       cursor: 'move',
@@ -369,7 +345,7 @@
       easing: 'ease-in-out',
       exclude: [],
       excludeClass: 'panzoom-exclude',
-      handleStartEvent: function (e) {
+      handleStartEvent: (e) => {
           e.preventDefault();
           e.stopPropagation();
       },
@@ -379,7 +355,7 @@
       panOnlyWhenZoomed: false,
       pinchAndPan: false,
       relative: false,
-      setTransform: setTransform,
+      setTransform,
       startX: 0,
       startY: 0,
       startScale: 1,
@@ -396,9 +372,9 @@
       if (!isAttached(elem)) {
           throw new Error('Panzoom should be called on elements that have been attached to the DOM');
       }
-      options = __assign(__assign({}, defaultOptions), options);
-      var isSVG = isSVGElement(elem);
-      var parent = elem.parentNode;
+      options = { ...defaultOptions, ...options };
+      const isSVG = isSVGElement(elem);
+      const parent = elem.parentNode;
       // Set parent styles
       parent.style.overflow = options.overflow;
       parent.style.userSelect = 'none';
@@ -423,9 +399,8 @@
           elem.style.touchAction = '';
           setStyle(elem, 'transformOrigin', '');
       }
-      function setOptions(opts) {
-          if (opts === void 0) { opts = {}; }
-          for (var key in opts) {
+      function setOptions(opts = {}) {
+          for (const key in opts) {
               if (opts.hasOwnProperty(key)) {
                   options[key] = opts[key];
               }
@@ -443,27 +418,27 @@
               elem.style.touchAction = opts.touchAction;
           }
       }
-      var x = 0;
-      var y = 0;
-      var scale = 1;
-      var isPanning = false;
+      let x = 0;
+      let y = 0;
+      let scale = 1;
+      let isPanning = false;
       zoom(options.startScale, { animate: false, force: true });
       // Wait for scale to update
       // for accurate dimensions
       // to constrain initial values
-      setTimeout(function () {
+      setTimeout(() => {
           pan(options.startX, options.startY, { animate: false, force: true });
       });
       function trigger(eventName, detail, opts) {
           if (opts.silent) {
               return;
           }
-          var event = new CustomEvent(eventName, { detail: detail });
+          const event = new CustomEvent(eventName, { detail });
           elem.dispatchEvent(event);
       }
       function setTransformWithEvent(eventName, opts, originalEvent) {
-          var value = { x: x, y: y, scale: scale, isSVG: isSVG, originalEvent: originalEvent };
-          requestAnimationFrame(function () {
+          const value = { x, y, scale, isSVG, originalEvent };
+          requestAnimationFrame(() => {
               if (typeof opts.animate === 'boolean') {
                   if (opts.animate) {
                       setTransition(elem, opts);
@@ -479,9 +454,9 @@
           return value;
       }
       function constrainXY(toX, toY, toScale, panOptions) {
-          var opts = __assign(__assign({}, options), panOptions);
-          var result = { x: x, y: y, opts: opts };
-          if (!(panOptions === null || panOptions === void 0 ? void 0 : panOptions.force) &&
+          const opts = { ...options, ...panOptions };
+          const result = { x, y, opts };
+          if (!panOptions?.force &&
               (opts.disablePan || (opts.panOnlyWhenZoomed && scale === opts.startScale))) {
               return result;
           }
@@ -494,16 +469,16 @@
               result.y = (opts.relative ? y : 0) + toY;
           }
           if (opts.contain) {
-              var dims = getDimensions(elem);
-              var realWidth = dims.elem.width / scale;
-              var realHeight = dims.elem.height / scale;
-              var scaledWidth = realWidth * toScale;
-              var scaledHeight = realHeight * toScale;
-              var diffHorizontal = (scaledWidth - realWidth) / 2;
-              var diffVertical = (scaledHeight - realHeight) / 2;
+              const dims = getDimensions(elem);
+              const realWidth = dims.elem.width / scale;
+              const realHeight = dims.elem.height / scale;
+              const scaledWidth = realWidth * toScale;
+              const scaledHeight = realHeight * toScale;
+              const diffHorizontal = (scaledWidth - realWidth) / 2;
+              const diffVertical = (scaledHeight - realHeight) / 2;
               if (opts.contain === 'inside') {
-                  var minX = (-dims.elem.margin.left - dims.parent.padding.left + diffHorizontal) / toScale;
-                  var maxX = (dims.parent.width -
+                  const minX = (-dims.elem.margin.left - dims.parent.padding.left + diffHorizontal) / toScale;
+                  const maxX = (dims.parent.width -
                       scaledWidth -
                       dims.parent.padding.left -
                       dims.elem.margin.left -
@@ -512,8 +487,8 @@
                       diffHorizontal) /
                       toScale;
                   result.x = Math.max(Math.min(result.x, maxX), minX);
-                  var minY = (-dims.elem.margin.top - dims.parent.padding.top + diffVertical) / toScale;
-                  var maxY = (dims.parent.height -
+                  const minY = (-dims.elem.margin.top - dims.parent.padding.top + diffVertical) / toScale;
+                  const maxY = (dims.parent.height -
                       scaledHeight -
                       dims.parent.padding.top -
                       dims.elem.margin.top -
@@ -524,21 +499,21 @@
                   result.y = Math.max(Math.min(result.y, maxY), minY);
               }
               else if (opts.contain === 'outside') {
-                  var minX = (-(scaledWidth - dims.parent.width) -
+                  const minX = (-(scaledWidth - dims.parent.width) -
                       dims.parent.padding.left -
                       dims.parent.border.left -
                       dims.parent.border.right +
                       diffHorizontal) /
                       toScale;
-                  var maxX = (diffHorizontal - dims.parent.padding.left) / toScale;
+                  const maxX = (diffHorizontal - dims.parent.padding.left) / toScale;
                   result.x = Math.max(Math.min(result.x, maxX), minX);
-                  var minY = (-(scaledHeight - dims.parent.height) -
+                  const minY = (-(scaledHeight - dims.parent.height) -
                       dims.parent.padding.top -
                       dims.parent.border.top -
                       dims.parent.border.bottom +
                       diffVertical) /
                       toScale;
-                  var maxY = (diffVertical - dims.parent.padding.top) / toScale;
+                  const maxY = (diffVertical - dims.parent.padding.top) / toScale;
                   result.y = Math.max(Math.min(result.y, maxY), minY);
               }
           }
@@ -549,22 +524,22 @@
           return result;
       }
       function constrainScale(toScale, zoomOptions) {
-          var opts = __assign(__assign({}, options), zoomOptions);
-          var result = { scale: scale, opts: opts };
-          if (!(zoomOptions === null || zoomOptions === void 0 ? void 0 : zoomOptions.force) && opts.disableZoom) {
+          const opts = { ...options, ...zoomOptions };
+          const result = { scale, opts };
+          if (!zoomOptions?.force && opts.disableZoom) {
               return result;
           }
-          var minScale = options.minScale;
-          var maxScale = options.maxScale;
+          let minScale = options.minScale;
+          let maxScale = options.maxScale;
           if (opts.contain) {
-              var dims = getDimensions(elem);
-              var elemWidth = dims.elem.width / scale;
-              var elemHeight = dims.elem.height / scale;
+              const dims = getDimensions(elem);
+              const elemWidth = dims.elem.width / scale;
+              const elemHeight = dims.elem.height / scale;
               if (elemWidth > 1 && elemHeight > 1) {
-                  var parentWidth = dims.parent.width - dims.parent.border.left - dims.parent.border.right;
-                  var parentHeight = dims.parent.height - dims.parent.border.top - dims.parent.border.bottom;
-                  var elemScaledWidth = parentWidth / elemWidth;
-                  var elemScaledHeight = parentHeight / elemHeight;
+                  const parentWidth = dims.parent.width - dims.parent.border.left - dims.parent.border.right;
+                  const parentHeight = dims.parent.height - dims.parent.border.top - dims.parent.border.bottom;
+                  const elemScaledWidth = parentWidth / elemWidth;
+                  const elemScaledHeight = parentHeight / elemHeight;
                   if (options.contain === 'inside') {
                       maxScale = Math.min(maxScale, elemScaledWidth, elemScaledHeight);
                   }
@@ -577,40 +552,40 @@
           return result;
       }
       function pan(toX, toY, panOptions, originalEvent) {
-          var result = constrainXY(toX, toY, scale, panOptions);
+          const result = constrainXY(toX, toY, scale, panOptions);
           // Only try to set if the result is somehow different
           if (x !== result.x || y !== result.y) {
               x = result.x;
               y = result.y;
               return setTransformWithEvent('panzoompan', result.opts, originalEvent);
           }
-          return { x: x, y: y, scale: scale, isSVG: isSVG, originalEvent: originalEvent };
+          return { x, y, scale, isSVG, originalEvent };
       }
       function zoom(toScale, zoomOptions, originalEvent) {
-          var result = constrainScale(toScale, zoomOptions);
-          var opts = result.opts;
-          if (!(zoomOptions === null || zoomOptions === void 0 ? void 0 : zoomOptions.force) && opts.disableZoom) {
+          const result = constrainScale(toScale, zoomOptions);
+          const opts = result.opts;
+          if (!zoomOptions?.force && opts.disableZoom) {
               return;
           }
           toScale = result.scale;
-          var toX = x;
-          var toY = y;
+          let toX = x;
+          let toY = y;
           if (opts.focal) {
               // The difference between the point after the scale and the point before the scale
               // plus the current translation after the scale
               // neutralized to no scale (as the transform scale will apply to the translation)
-              var focal = opts.focal;
+              const focal = opts.focal;
               toX = (focal.x / toScale - focal.x / scale + x * toScale) / toScale;
               toY = (focal.y / toScale - focal.y / scale + y * toScale) / toScale;
           }
-          var panResult = constrainXY(toX, toY, toScale, { relative: false, force: true });
+          const panResult = constrainXY(toX, toY, toScale, { relative: false, force: true });
           x = panResult.x;
           y = panResult.y;
           scale = toScale;
           return setTransformWithEvent('panzoomzoom', opts, originalEvent);
       }
       function zoomInOut(isIn, zoomOptions) {
-          var opts = __assign(__assign(__assign({}, options), { animate: true }), zoomOptions);
+          const opts = { ...options, animate: true, ...zoomOptions };
           return zoom(scale * Math.exp((isIn ? 1 : -1) * opts.step), opts);
       }
       function zoomIn(zoomOptions) {
@@ -620,12 +595,12 @@
           return zoomInOut(false, zoomOptions);
       }
       function zoomToPoint(toScale, point, zoomOptions, originalEvent) {
-          var dims = getDimensions(elem);
+          const dims = getDimensions(elem);
           // Instead of thinking of operating on the panzoom element,
           // think of operating on the area inside the panzoom
           // element's parent
           // Subtract padding and border
-          var effectiveArea = {
+          const effectiveArea = {
               width: dims.parent.width -
                   dims.parent.padding.left -
                   dims.parent.padding.right -
@@ -639,12 +614,12 @@
           };
           // Adjust the clientX/clientY to ignore the area
           // outside the effective area
-          var clientX = point.clientX -
+          let clientX = point.clientX -
               dims.parent.left -
               dims.parent.padding.left -
               dims.parent.border.left -
               dims.elem.margin.left;
-          var clientY = point.clientY -
+          let clientY = point.clientY -
               dims.parent.top -
               dims.parent.padding.top -
               dims.parent.border.top -
@@ -658,38 +633,38 @@
           // Convert the mouse point from it's position over the
           // effective area before the scale to the position
           // over the effective area after the scale.
-          var focal = {
+          const focal = {
               x: (clientX / effectiveArea.width) * (effectiveArea.width * toScale),
               y: (clientY / effectiveArea.height) * (effectiveArea.height * toScale)
           };
-          return zoom(toScale, __assign(__assign({}, zoomOptions), { animate: false, focal: focal }), originalEvent);
+          return zoom(toScale, { ...zoomOptions, animate: false, focal }, originalEvent);
       }
       function zoomWithWheel(event, zoomOptions) {
           // Need to prevent the default here
           // or it conflicts with regular page scroll
           event.preventDefault();
-          var opts = __assign(__assign(__assign({}, options), zoomOptions), { animate: false });
+          const opts = { ...options, ...zoomOptions, animate: false };
           // Normalize to deltaX in case shift modifier is used on Mac
-          var delta = event.deltaY === 0 && event.deltaX ? event.deltaX : event.deltaY;
-          var wheel = delta < 0 ? 1 : -1;
-          var toScale = constrainScale(scale * Math.exp((wheel * opts.step) / 3), opts).scale;
+          const delta = event.deltaY === 0 && event.deltaX ? event.deltaX : event.deltaY;
+          const wheel = delta < 0 ? 1 : -1;
+          const toScale = constrainScale(scale * Math.exp((wheel * opts.step) / 3), opts).scale;
           return zoomToPoint(toScale, event, opts, event);
       }
       function reset(resetOptions) {
-          var opts = __assign(__assign(__assign({}, options), { animate: true, force: true }), resetOptions);
+          const opts = { ...options, animate: true, force: true, ...resetOptions };
           scale = constrainScale(opts.startScale, opts).scale;
-          var panResult = constrainXY(opts.startX, opts.startY, scale, opts);
+          const panResult = constrainXY(opts.startX, opts.startY, scale, opts);
           x = panResult.x;
           y = panResult.y;
           return setTransformWithEvent('panzoomreset', opts);
       }
-      var origX;
-      var origY;
-      var startClientX;
-      var startClientY;
-      var startScale;
-      var startDistance;
-      var pointers = [];
+      let origX;
+      let origY;
+      let startClientX;
+      let startClientY;
+      let startScale;
+      let startDistance;
+      const pointers = [];
       function handleDown(event) {
           // Don't handle this event if the target is excluded
           if (isExcluded(event.target, options)) {
@@ -700,10 +675,10 @@
           options.handleStartEvent(event);
           origX = x;
           origY = y;
-          trigger('panzoomstart', { x: x, y: y, scale: scale, isSVG: isSVG, originalEvent: event }, options);
+          trigger('panzoomstart', { x, y, scale, isSVG, originalEvent: event }, options);
           // This works whether there are multiple
           // pointers or not
-          var point = getMiddle(pointers);
+          const point = getMiddle(pointers);
           startClientX = point.clientX;
           startClientY = point.clientY;
           startScale = scale;
@@ -718,9 +693,9 @@
               return;
           }
           addPointer(pointers, event);
-          var current = getMiddle(pointers);
-          var hasMultiple = pointers.length > 1;
-          var toScale = scale;
+          const current = getMiddle(pointers);
+          const hasMultiple = pointers.length > 1;
+          let toScale = scale;
           if (hasMultiple) {
               // A startDistance of 0 means
               // that there weren't 2 pointers
@@ -730,7 +705,7 @@
               }
               // Use the distance between the first 2 pointers
               // to determine the current scale
-              var diff = getDistance(pointers) - startDistance;
+              const diff = getDistance(pointers) - startDistance;
               toScale = constrainScale((diff * options.step) / 80 + startScale).scale;
               zoomToPoint(toScale, current, { animate: false }, event);
           }
@@ -749,7 +724,7 @@
           // Don't call panzoomend when panning with 2 touches
           // until both touches end
           if (pointers.length === 1) {
-              trigger('panzoomend', { x: x, y: y, scale: scale, isSVG: isSVG, originalEvent: event }, options);
+              trigger('panzoomend', { x, y, scale, isSVG, originalEvent: event }, options);
           }
           // Note: don't remove all pointers
           // Can restart without having to reinitiate all of them
@@ -761,7 +736,7 @@
           isPanning = false;
           origX = origY = startClientX = startClientY = undefined;
       }
-      var bound = false;
+      let bound = false;
       function bind() {
           if (bound) {
               return;
@@ -781,25 +756,25 @@
           bind();
       }
       return {
-          bind: bind,
-          destroy: destroy,
+          bind,
+          destroy,
           eventNames: events,
-          getPan: function () { return ({ x: x, y: y }); },
-          getScale: function () { return scale; },
-          getOptions: function () { return shallowClone(options); },
-          handleDown: handleDown,
-          handleMove: handleMove,
-          handleUp: handleUp,
-          pan: pan,
-          reset: reset,
-          resetStyle: resetStyle,
-          setOptions: setOptions,
-          setStyle: function (name, value) { return setStyle(elem, name, value); },
-          zoom: zoom,
-          zoomIn: zoomIn,
-          zoomOut: zoomOut,
-          zoomToPoint: zoomToPoint,
-          zoomWithWheel: zoomWithWheel
+          getPan: () => ({ x, y }),
+          getScale: () => scale,
+          getOptions: () => shallowClone(options),
+          handleDown,
+          handleMove,
+          handleUp,
+          pan,
+          reset,
+          resetStyle,
+          setOptions,
+          setStyle: (name, value) => setStyle(elem, name, value),
+          zoom,
+          zoomIn,
+          zoomOut,
+          zoomToPoint,
+          zoomWithWheel
       };
   }
   Panzoom.defaultOptions = defaultOptions;

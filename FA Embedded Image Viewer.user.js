@@ -11,10 +11,10 @@
 // @require     https://greasyfork.org/scripts/476762-furaffinity-custom-pages/code/476762-furaffinity-custom-pages.js
 // @require     https://greasyfork.org/scripts/475041-furaffinity-custom-settings/code/475041-furaffinity-custom-settings.js
 // @grant       GM_info
-// @version     2.5.10
+// @version     2.5.11
 // @author      Midori Dragon
 // @description Embeds the clicked Image on the Current Site, so you can view it without loading the submission Page
-// @icon        https://www.furaffinity.net/themes/beta/img/banners/fa_logo.png
+// @icon        https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/fa_logo.svg
 // @license     MIT
 // @homepageURL https://greasyfork.org/scripts/458971-fa-embedded-image-viewer
 // @supportURL  https://greasyfork.org/scripts/458971-fa-embedded-image-viewer/feedback
@@ -30,18 +30,18 @@
     <a id="eiv-submission-container"></a>
     <div id="eiv-button-container">
         <div id="eiv-button-wrapper">
-            <a id="eiv-fav-button" type="button" class="eiv-button button standard mobile-fix">⠀⠀</a>
-            <a id="eiv-download-button" type="button" class="eiv-button button standard mobile-fix">Download</a>
-            <a id="eiv-open-button" type="button" class="eiv-button button standard mobile-fix">Open</a>
-            <a id="eiv-open-gallery-button" type="button" class="eiv-button button standard mobile-fix" style="display: none;">Open Gallery</a>
-            <a id="eiv-fullsize-button" type="button" class="eiv-button button standard mobile-fix">  ⛶  </a>
-            <a id="eiv-remove-sub-button" type="button" class="eiv-button button standard mobile-fix" style="display: none;">Remove</a>
-            <a id="eiv-close-button" type="button" class="eiv-button button standard mobile-fix">Close</a>
+            <button id="eiv-fav-button" type="button" class="eiv-button button standard mobile-fix">⠀⠀</button>
+            <button id="eiv-download-button" type="button" class="eiv-button button standard mobile-fix">Download</button>
+            <a id="eiv-open-button" class="eiv-button button standard mobile-fix">Open</a>
+            <a id="eiv-open-gallery-button" class="eiv-button button standard mobile-fix" style="display: none;">Open Gallery</a>
+            <button id="eiv-fullsize-button" type="button" class="eiv-button button standard mobile-fix">  ⛶  </button>
+            <button id="eiv-remove-sub-button" type="button" class="eiv-button button standard mobile-fix" style="display: none;">Remove</button>
+            <button id="eiv-close-button" type="button" class="eiv-button button standard mobile-fix">Close</button>
         </div>
         <div id="eiv-preview-spinner-container"></div>
     </div>
     <div id="eiv-additional-info-container">
-        <a>by </a>
+        <span>by </span>
         <a id="eiv-additional-info">unknown</a>
         <a id="eiv-additional-info-watching"></a>
     </div>
@@ -608,8 +608,8 @@
                     // If the event is a mouse event and the target is an HTML element
                     if (event instanceof MouseEvent && event.target instanceof HTMLElement) {
                         // If the event is not a Ctrl+Click event and the target is not a favorite button
-                        // and the target is not a checkbox
-                        if (!event.ctrlKey && !event.target.id.includes('favbutton') && event.target.getAttribute('type') !== 'checkbox') {
+                        // and the target is not inside the figcaption
+                        if (!event.ctrlKey && !event.target.id.includes('favbutton') && event.target.closest('figcaption') == null) {
                             // If the target has a href attribute, return
                             if (!string.isNullOrWhitespace(event.target.getAttribute('href'))) {
                                 return;
