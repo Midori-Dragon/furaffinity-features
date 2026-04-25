@@ -14,7 +14,9 @@ Thank you for your interest in contributing to this project! This guide will hel
    - Each top-level directory represents an independent user script
    - Scripts should be self-contained with minimal dependencies on other modules
    - If your feature needs functionality from another module, reference it in your Rollup config banner
-   - Dependencies to Third-Party Modules are allowed, but should be kept minimal, in thought of the userscript size
+   - Third-party packages are welcome, but each package must work in both userscript environments (no Node.js built-ins) and browser extension contexts
+   - Prefer small, focused packages over large all-in-one libraries; if only a subset of functionality is needed, look for a smaller dedicated package instead
+   - Discuss new dependencies in the issue or PR before adding them
 
 3. **Technology Stack**:
    - TypeScript is used for all script development
@@ -65,9 +67,9 @@ Thank you for your interest in contributing to this project! This guide will hel
    - Use interfaces for better code documentation
 
 2. **Dependencies**
-   - Keep external dependencies to a minimum
-   - Prefer vanilla JavaScript / TypeScript solutions when possible
-   - If you need a third-party library, discuss it in the issue/pullrequest first
+   - Third-party packages are welcome, but each package must work in both userscript environments (no Node.js built-ins) and browser extension contexts
+   - Prefer small, focused packages over large all-in-one libraries; if only a subset of functionality is needed, look for a smaller dedicated package instead
+   - Discuss new dependencies in the issue or PR before adding them
 
 3. **Module Structure**
    - Each new feature should be in its own directory
