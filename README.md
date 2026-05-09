@@ -6,6 +6,13 @@
 [![Release](https://img.shields.io/github/v/release/Midori-Dragon/furaffinity-features?label=Release&color=2ea44f&logo=github)](https://github.com/Midori-Dragon/furaffinity-features/releases/latest)
 [![Issues](https://img.shields.io/github/issues/Midori-Dragon/furaffinity-features?label=Issues&color=e4a000&logo=github)](https://github.com/Midori-Dragon/furaffinity-features/issues)
 
+<br>
+
+> [!IMPORTANT]
+> There are currently issues regarding the latest FA changes see [[Bug] Some Requests not working](https://github.com/Midori-Dragon/furaffinity-features/issues/11) for more details
+
+<br>
+
 A collection of enhanced features for FurAffinity that can be installed either as individual userscripts or as one browser extension (Chrome/Firefox).
 
 Also find all mentioned Scripts on [GreasyFork](https://greasyfork.org/users/967324-midori-tsume) as individual userscripts.
