@@ -30,8 +30,8 @@ export class ForwardSearch implements IAutoLoaderSearchable {
             return {};
         }
 
-        const columnpage = document.getElementById('columnpage');
-        const submissionIdContainer = columnpage?.querySelector('div[class*="submission-id-container"]');
+        const columnpage = document.getElementById('submission_page');
+        const submissionIdContainer = columnpage?.querySelector('div[class*="submission-details"]');
         const submissionTitle = submissionIdContainer?.querySelector('div[class*="submission-title"]');
         const currTitle = submissionTitle?.querySelector('h2')?.querySelector('p')?.textContent;
         if (string.isNullOrWhitespace(currTitle)) {

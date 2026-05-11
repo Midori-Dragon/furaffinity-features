@@ -24,7 +24,7 @@ export class Lightbox {
         this._lightboxContainer = document.body.querySelector('div[class*="viewer-canvas"]')!;
         this._imgCount = Object.keys(imgs).length;
 
-        const columnpage = document.getElementById('columnpage')!;
+        const columnpage = document.getElementById('submission_page')!;
         const orgImg = columnpage.querySelector(`img[wal-sid="${orgSid}"]`)!;
         const orgImgClone = orgImg.readdToDom() as HTMLImageElement;
         imgs[orgSid] = orgImgClone;

@@ -19,8 +19,8 @@ export class ComicNav implements IComicNav {
     first?: IComicNavItem;
 
     static fromDocument(doc: Document): IComicNav | null {
-        const columnPage = doc.getElementById('columnpage');
-        const sDescription = columnPage?.querySelector('div[class*="submission-description"]');
+        const columnPage = doc.getElementById('submission_page');
+        const sDescription = columnPage?.querySelector('section.submission-description');
         const navElems = sDescription?.querySelectorAll('a[href*="/view/"]');
         if (navElems == null || navElems.length === 0) {
             return null;

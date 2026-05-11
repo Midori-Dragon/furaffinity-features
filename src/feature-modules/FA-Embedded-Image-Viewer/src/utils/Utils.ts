@@ -36,10 +36,10 @@ export function getUserFromFigcaption(figcaption: HTMLElement | undefined | null
 
 export function getFavKey(doc: Document): { favKey: string | null; isFav: boolean } | null {
     // Get the column page element
-    const columnPage = doc.getElementById('columnpage');
+    const columnPage = doc.getElementById('submission_page');
 
     // Find the navbar within the column page that contains favorite navigation
-    const navbar = columnPage?.querySelector('div[class*="favorite-nav"]');
+    const navbar = columnPage?.querySelector('div[id="submission-options"]');
 
     // Select all buttons with a href attribute within the navbar
     const buttons = navbar?.querySelectorAll('a[class*="button"][href]') ?? [];

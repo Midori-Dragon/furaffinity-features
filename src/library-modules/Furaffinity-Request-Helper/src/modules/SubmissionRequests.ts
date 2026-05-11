@@ -99,8 +99,8 @@ export class SubmissionRequests {
     }
 
     private _getFavKey(doc: Document): string | undefined {
-        const columnPage = doc.getElementById('columnpage');
-        const navbar = columnPage?.querySelector('div[class*="favorite-nav"');
+        const columnPage = doc.getElementById('submission_page');
+        const navbar = columnPage?.querySelector('div[id="submission-options"]');
         const buttons = navbar?.querySelectorAll('a[class*="button"][href]');
         if (!buttons || buttons.length === 0) {
             return;

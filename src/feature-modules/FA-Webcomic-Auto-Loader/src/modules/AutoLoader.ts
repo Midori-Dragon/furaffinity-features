@@ -116,7 +116,7 @@ export class AutoLoader {
     }
 
     addLoadedSubmissions(...imgsArr: Record<number, HTMLImageElement>[]): void {
-        const columnpage = document.getElementById('columnpage')!;
+        const columnpage = document.getElementById('submission_page')!;
 
         for (const imgs of imgsArr) {
             Logger.logInfo(`${scriptName}: adding '${Object.keys(imgs).length}' submissions...`);
@@ -154,8 +154,8 @@ export class AutoLoader {
             return;
         }
 
-        const columnpage = document.getElementById('columnpage');
-        const favoriteNav = columnpage?.querySelector('div[class*="favorite-nav"]');
+        const columnpage = document.getElementById('submission_page');
+        const favoriteNav = columnpage?.querySelector('div[id="submission-options"]');
 
         let prevButton = favoriteNav?.children[0];
         if (prevButton != null && this.currComicNav!.prev != null) {

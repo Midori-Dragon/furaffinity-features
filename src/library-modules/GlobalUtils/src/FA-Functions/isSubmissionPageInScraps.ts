@@ -1,6 +1,6 @@
 export default function (doc: Document): boolean {
-    const columnPage = doc.getElementById('columnpage');
-    const favNav = columnPage?.querySelector('div[class*="favorite-nav"]');
+    const columnPage = doc.getElementById('submission_page');
+    const favNav = columnPage?.querySelector('div[id="submission-options"]');
     
     let isScraps = isInScraps(favNav);
     if (!isScraps) {
