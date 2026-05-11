@@ -11,7 +11,7 @@
 // @require     https://greasyfork.org/scripts/476762-furaffinity-custom-pages/code/476762-furaffinity-custom-pages.js
 // @require     https://greasyfork.org/scripts/475041-furaffinity-custom-settings/code/475041-furaffinity-custom-settings.js
 // @grant       GM_info
-// @version     2.5.11
+// @version     2.5.12
 // @author      Midori Dragon
 // @description Embeds the clicked Image on the Current Site, so you can view it without loading the submission Page
 // @icon        https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/fa_logo.svg
@@ -85,9 +85,9 @@
     }
     function getFavKey(doc) {
         // Get the column page element
-        const columnPage = doc.getElementById('columnpage');
+        const columnPage = doc.getElementById('submission_page');
         // Find the navbar within the column page that contains favorite navigation
-        const navbar = columnPage?.querySelector('div[class*="favorite-nav"]');
+        const navbar = columnPage?.querySelector('div[id="submission-options"]');
         // Select all buttons with a href attribute within the navbar
         const buttons = navbar?.querySelectorAll('a[class*="button"][href]') ?? [];
         let favButton;

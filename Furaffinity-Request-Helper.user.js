@@ -3,7 +3,7 @@
 // @namespace   Violentmonkey Scripts
 // @require     https://greasyfork.org/scripts/525666-furaffinity-prototype-extensions/code/525666-furaffinity-prototype-extensions.js
 // @grant       none
-// @version     1.5.3
+// @version     1.5.4
 // @author      Midori Dragon
 // @description Library to simplify requests to Furaffinity
 // @icon        https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/fa_logo.svg
@@ -2976,8 +2976,8 @@
             return await FuraffinityRequests.getHTML(url, this._semaphore);
         }
         _getFavKey(doc) {
-            const columnPage = doc.getElementById('columnpage');
-            const navbar = columnPage?.querySelector('div[class*="favorite-nav"');
+            const columnPage = doc.getElementById('submission_page');
+            const navbar = columnPage?.querySelector('div[id="submission-options"]');
             const buttons = navbar?.querySelectorAll('a[class*="button"][href]');
             if (!buttons || buttons.length === 0) {
                 return;

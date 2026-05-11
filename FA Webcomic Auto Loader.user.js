@@ -9,7 +9,7 @@
 // @require     https://greasyfork.org/scripts/485153-furaffinity-loading-animations/code/485153-furaffinity-loading-animations.js
 // @require     https://greasyfork.org/scripts/475041-furaffinity-custom-settings/code/475041-furaffinity-custom-settings.js
 // @grant       GM_info
-// @version     2.2.13
+// @version     2.2.14
 // @author      Midori Dragon
 // @description Gives you the option to load all the subsequent comic pages on a FurAffinity comic page automatically. Even for pages without given Links
 // @icon        https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/fa_logo.svg
@@ -122,8 +122,8 @@
         current;
         first;
         static fromDocument(doc) {
-            const columnPage = doc.getElementById('columnpage');
-            const sDescription = columnPage?.querySelector('div[class*="submission-description"]');
+            const columnPage = doc.getElementById('submission_page');
+            const sDescription = columnPage?.querySelector('section.submission-description');
             const navElems = sDescription?.querySelectorAll('a[href*="/view/"]');
             if (navElems == null || navElems.length === 0) {
                 return null;
@@ -221,8 +221,8 @@
 
     function isSubmissionPageInGallery (doc) {
         let isGallery = false;
-        const columnPage = doc.getElementById('columnpage');
-        const favNav = columnPage?.querySelector('div[class*="favorite-nav"]');
+        const columnPage = doc.getElementById('submission_page');
+        const favNav = columnPage?.querySelector('div[id="submission-options"]');
         isGallery = isInGallery(favNav);
         if (!isGallery) {
             isGallery = isInMiniGallery(columnPage);
@@ -243,8 +243,8 @@
     }
 
     function isSubmissionPageInScraps (doc) {
-        const columnPage = doc.getElementById('columnpage');
-        const favNav = columnPage?.querySelector('div[class*="favorite-nav"]');
+        const columnPage = doc.getElementById('submission_page');
+        const favNav = columnPage?.querySelector('div[id="submission-options"]');
         let isScraps = isInScraps(favNav);
         if (!isScraps) {
             isScraps = isInMiniGalleryScraps(columnPage);
@@ -327,9 +327,9 @@
     }
 
     function getDocUsername (doc) {
-        const columnPage = doc.getElementById('columnpage');
-        const submissionIdContainer = columnPage?.querySelector('div[class*="submission-id-container"]');
-        const usernameContainer = submissionIdContainer?.querySelector('a[href*="user"]');
+        const columnPage = doc.getElementById('submission_page');
+        const submissionIdContainer = columnPage?.querySelector('div[class*="submission-details"]');
+        const usernameContainer = submissionIdContainer?.querySelector('a[href*="/user/"]');
         if (usernameContainer != null) {
             let username = usernameContainer.href;
             username = username.trimEnd('/');
@@ -357,8 +357,8 @@
             if (!isInGallery && !isInScraps) {
                 return {};
             }
-            const columnpage = document.getElementById('columnpage');
-            const submissionIdContainer = columnpage?.querySelector('div[class*="submission-id-container"]');
+            const columnpage = document.getElementById('submission_page');
+            const submissionIdContainer = columnpage?.querySelector('div[class*="submission-details"]');
             const submissionTitle = submissionIdContainer?.querySelector('div[class*="submission-title"]');
             const currTitle = submissionTitle?.querySelector('h2')?.querySelector('p')?.textContent;
             if (string.isNullOrWhitespace(currTitle)) {
@@ -429,8 +429,8 @@
             if (!isInGallery && !isInScraps) {
                 return {};
             }
-            const columnpage = document.getElementById('columnpage');
-            const submissionIdContainer = columnpage?.querySelector('div[class*="submission-id-container"]');
+            const columnpage = document.getElementById('submission_page');
+            const submissionIdContainer = columnpage?.querySelector('div[class*="submission-details"]');
             const submissionTitle = submissionIdContainer?.querySelector('div[class*="submission-title"]');
             const currTitle = submissionTitle?.querySelector('h2')?.querySelector('p')?.textContent;
             if (string.isNullOrWhitespace(currTitle)) {
@@ -535,7 +535,7 @@
             this.initializeViewerCanvas();
             this._lightboxContainer = document.body.querySelector('div[class*="viewer-canvas"]');
             this._imgCount = Object.keys(imgs).length;
-            const columnpage = document.getElementById('columnpage');
+            const columnpage = document.getElementById('submission_page');
             const orgImg = columnpage.querySelector(`img[wal-sid="${orgSid}"]`);
             const orgImgClone = orgImg.readdToDom();
             imgs[orgSid] = orgImgClone;
@@ -782,7 +782,7 @@
             }
         }
         addLoadedSubmissions(...imgsArr) {
-            const columnpage = document.getElementById('columnpage');
+            const columnpage = document.getElementById('submission_page');
             for (const imgs of imgsArr) {
                 Logger.logInfo(`${scriptName}: adding '${Object.keys(imgs).length}' submissions...`);
                 let prevSid = this.currSid;
@@ -815,8 +815,8 @@
             if (!this.comicNavExists) {
                 return;
             }
-            const columnpage = document.getElementById('columnpage');
-            const favoriteNav = columnpage?.querySelector('div[class*="favorite-nav"]');
+            const columnpage = document.getElementById('submission_page');
+            const favoriteNav = columnpage?.querySelector('div[id="submission-options"]');
             let prevButton = favoriteNav?.children[0];
             if (prevButton != null && this.currComicNav.prev != null) {
                 if (prevButton.textContent?.toLowerCase()?.includes('prev') ?? false) {
