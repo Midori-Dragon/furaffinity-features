@@ -9,7 +9,7 @@
 // @require     https://greasyfork.org/scripts/485153-furaffinity-loading-animations/code/485153-furaffinity-loading-animations.js
 // @require     https://greasyfork.org/scripts/475041-furaffinity-custom-settings/code/475041-furaffinity-custom-settings.js
 // @grant       GM_info
-// @version     2.2.14
+// @version     2.2.15
 // @author      Midori Dragon
 // @description Gives you the option to load all the subsequent comic pages on a FurAffinity comic page automatically. Even for pages without given Links
 // @icon        https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/fa_logo.svg
@@ -358,9 +358,9 @@
                 return {};
             }
             const columnpage = document.getElementById('submission_page');
-            const submissionIdContainer = columnpage?.querySelector('div[class*="submission-details"]');
-            const submissionTitle = submissionIdContainer?.querySelector('div[class*="submission-title"]');
-            const currTitle = submissionTitle?.querySelector('h2')?.querySelector('p')?.textContent;
+            const submissionIdContainer = columnpage?.querySelector('div.submission-details');
+            const submissionTitle = submissionIdContainer?.querySelector('div.submission-title');
+            const currTitle = submissionTitle?.querySelector('h2')?.textContent;
             if (string.isNullOrWhitespace(currTitle)) {
                 return {};
             }
@@ -430,9 +430,9 @@
                 return {};
             }
             const columnpage = document.getElementById('submission_page');
-            const submissionIdContainer = columnpage?.querySelector('div[class*="submission-details"]');
-            const submissionTitle = submissionIdContainer?.querySelector('div[class*="submission-title"]');
-            const currTitle = submissionTitle?.querySelector('h2')?.querySelector('p')?.textContent;
+            const submissionIdContainer = columnpage?.querySelector('div.submission-details');
+            const submissionTitle = submissionIdContainer?.querySelector('div.submission-title');
+            const currTitle = submissionTitle?.querySelector('h2')?.textContent;
             if (string.isNullOrWhitespace(currTitle)) {
                 return {};
             }
