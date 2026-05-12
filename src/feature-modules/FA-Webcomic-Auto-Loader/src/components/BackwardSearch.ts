@@ -33,9 +33,9 @@ export class BackwardSearch implements IAutoLoaderSearchable {
         }
 
         const columnpage = document.getElementById('submission_page');
-        const submissionIdContainer = columnpage?.querySelector('div[class*="submission-details"]');
-        const submissionTitle = submissionIdContainer?.querySelector('div[class*="submission-title"]');
-        const currTitle = submissionTitle?.querySelector('h2')?.querySelector('p')?.textContent;
+        const submissionIdContainer = columnpage?.querySelector('div.submission-details');
+        const submissionTitle = submissionIdContainer?.querySelector('div.submission-title');
+        const currTitle = submissionTitle?.querySelector('h2')?.textContent;
         if (string.isNullOrWhitespace(currTitle)) {
             return {};
         }
