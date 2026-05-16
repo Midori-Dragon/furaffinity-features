@@ -8,11 +8,6 @@
 
 <br>
 
-> [!IMPORTANT]
-> There are currently issues regarding the latest FA changes see [[Bug] Some Requests not working](https://github.com/Midori-Dragon/furaffinity-features/issues/11) for more details
-
-<br>
-
 A collection of enhanced features for FurAffinity that can be installed either as individual userscripts or as one browser extension (Chrome/Firefox).
 
 Also find all mentioned Scripts on [GreasyFork](https://greasyfork.org/users/967324-midori-tsume) as individual userscripts.
