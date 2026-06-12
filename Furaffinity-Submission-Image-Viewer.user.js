@@ -1,8 +1,9 @@
 // ==UserScript==
 // @name        Furaffinity-Submission-Image-Viewer
 // @namespace   Violentmonkey Scripts
+// @require     https://greasyfork.org/scripts/525666-furaffinity-prototype-extensions/code/525666-furaffinity-prototype-extensions.js
 // @grant       GM_info
-// @version     1.3.1
+// @version     1.3.2
 // @author      Midori Dragon
 // @description Library for creating custom image elements on Furaffinity
 // @icon        https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/fa_logo.svg

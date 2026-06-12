@@ -3,7 +3,7 @@
 // @namespace   Violentmonkey Scripts
 // @require     https://greasyfork.org/scripts/525666-furaffinity-prototype-extensions/code/525666-furaffinity-prototype-extensions.js
 // @grant       none
-// @version     1.5.4
+// @version     1.5.5
 // @author      Midori Dragon
 // @description Library to simplify requests to Furaffinity
 // @icon        https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/fa_logo.svg
@@ -14,43 +14,6 @@
 // jshint esversion: 11
 (function () {
     'use strict';
-
-    class Semaphore {
-        maxConcurrency;
-        currentConcurrency;
-        waitingQueue;
-        constructor(maxConcurrency) {
-            this.maxConcurrency = maxConcurrency;
-            this.currentConcurrency = 0;
-            this.waitingQueue = [];
-        }
-        acquire() {
-            return new Promise((resolve) => {
-                if (this.currentConcurrency < this.maxConcurrency) {
-                    // There is room, increment the current concurrency and resolve the promise
-                    this.currentConcurrency++;
-                    resolve();
-                }
-                else {
-                    // The semaphore is full, add the resolve function to the waiting queue
-                    this.waitingQueue.push(resolve);
-                }
-            });
-        }
-        release() {
-            if (this.waitingQueue.length > 0) {
-                // There are waiting tasks, let the next one run
-                const nextResolve = this.waitingQueue.shift();
-                if (nextResolve != null) {
-                    nextResolve();
-                }
-            }
-            else {
-                // No waiting tasks, decrement the current concurrency level
-                this.currentConcurrency--;
-            }
-        }
-    }
 
     class PercentHelper {
         static _percentAll = {};
@@ -152,6 +115,57 @@
             const result = fn(percentId);
             waitAndCallAction.stop();
             return result;
+        }
+    }
+
+    class Semaphore {
+        maxConcurrency;
+        currentConcurrency;
+        waitingQueue;
+        constructor(maxConcurrency) {
+            this.maxConcurrency = maxConcurrency;
+            this.currentConcurrency = 0;
+            this.waitingQueue = [];
+        }
+        acquire() {
+            return new Promise((resolve) => {
+                if (this.currentConcurrency < this.maxConcurrency) {
+                    // There is room, increment the current concurrency and resolve the promise
+                    this.currentConcurrency++;
+                    resolve();
+                }
+                else {
+                    // The semaphore is full, add the resolve function to the waiting queue
+                    this.waitingQueue.push(resolve);
+                }
+            });
+        }
+        release() {
+            if (this.waitingQueue.length > 0) {
+                // There are waiting tasks, let the next one run
+                const nextResolve = this.waitingQueue.shift();
+                if (nextResolve != null) {
+                    nextResolve();
+                }
+            }
+            else {
+                // No waiting tasks, decrement the current concurrency level
+                this.currentConcurrency--;
+            }
+        }
+    }
+
+    const DEFAULT_MAX_CONCURRENCY = 2;
+    const DEFAULT_MAX_RETRIES = 3;
+    const DEFAULT_RETRY_DELAY = 1000;
+    class RequestContext {
+        semaphore;
+        maxRetries;
+        retryDelay;
+        constructor(maxConcurrency = DEFAULT_MAX_CONCURRENCY, maxRetries = DEFAULT_MAX_RETRIES, retryDelay = DEFAULT_RETRY_DELAY) {
+            this.semaphore = new Semaphore(maxConcurrency);
+            this.maxRetries = maxRetries;
+            this.retryDelay = retryDelay;
         }
     }
 
@@ -669,14 +683,14 @@
     }
 
     class Gallery {
-        _semaphore;
-        constructor(semaphore) {
-            this._semaphore = semaphore;
+        _context;
+        constructor(context) {
+            this._context = context;
         }
         static get hardLink() {
             return FuraffinityRequests.fullUrl + '/gallery/';
         }
-        static async fetchPage(username, folder, pageNumber, semaphore, signal) {
+        static async fetchPage(username, folder, pageNumber, context, signal) {
             if (username == null) {
                 Logger.logError('Cannot fetch gallery page: no username given');
                 throw new Error('Cannot fetch gallery page: no username given');
@@ -695,7 +709,7 @@
                     url += `${folder.name}/`;
                 }
             }
-            const page = await FuraffinityRequests.getHTML(url + pageNumber, semaphore, signal);
+            const page = await FuraffinityRequests.getHTML(url + pageNumber, context, signal);
             checkTagsAll(page);
             return page;
         }
@@ -704,7 +718,7 @@
                 pageNumber = 1;
             }
             Logger.logInfo(`Getting gallery of "${username}" on page "${pageNumber}".`);
-            const galleryDoc = await Gallery.fetchPage(username, folder, pageNumber, this._semaphore, signal);
+            const galleryDoc = await Gallery.fetchPage(username, folder, pageNumber, this._context, signal);
             if (!galleryDoc || !(galleryDoc instanceof Document) || galleryDoc.getElementById('no-images')) {
                 Logger.logInfo(`No images found at gallery of "${username}" on page "${pageNumber}".`);
                 return [];
@@ -814,23 +828,23 @@
         }
         async getPage(username, pageNumber, signal, action, delay = DEFAULT_ACTION_DELAY) {
             pageNumber = convertToNumber(pageNumber);
-            return await WaitAndCallAction.callFunctionAsync(() => Gallery.fetchPage(username, undefined, pageNumber, this._semaphore, signal), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => Gallery.fetchPage(username, undefined, pageNumber, this._context, signal), action, delay);
         }
         async getPageInFolder(username, folder, pageNumber, signal, action, delay = DEFAULT_ACTION_DELAY) {
             pageNumber = convertToNumber(pageNumber);
-            return await WaitAndCallAction.callFunctionAsync(() => Gallery.fetchPage(username, folder, pageNumber, this._semaphore, signal), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => Gallery.fetchPage(username, folder, pageNumber, this._context, signal), action, delay);
         }
     }
 
     class Scraps {
-        _semaphore;
-        constructor(semaphore) {
-            this._semaphore = semaphore;
+        _context;
+        constructor(context) {
+            this._context = context;
         }
         static get hardLink() {
             return FuraffinityRequests.fullUrl + '/scraps/';
         }
-        static async fetchPage(username, pageNumber, semaphore, signal) {
+        static async fetchPage(username, pageNumber, context, signal) {
             if (username == null) {
                 Logger.logError('Cannot fetch scraps page: no username given');
                 throw new Error('Cannot fetch scraps page: no username given');
@@ -842,7 +856,7 @@
             if (!username.endsWith('/')) {
                 username += '/';
             }
-            const page = await FuraffinityRequests.getHTML(Scraps.hardLink + username + pageNumber, semaphore, signal);
+            const page = await FuraffinityRequests.getHTML(Scraps.hardLink + username + pageNumber, context, signal);
             checkTagsAll(page);
             return page;
         }
@@ -851,7 +865,7 @@
                 pageNumber = 1;
             }
             Logger.logInfo(`Getting scraps of "${username}" on page "${pageNumber}".`);
-            const galleryDoc = await Scraps.fetchPage(username, pageNumber, this._semaphore, signal);
+            const galleryDoc = await Scraps.fetchPage(username, pageNumber, this._context, signal);
             if (!galleryDoc || !(galleryDoc instanceof Document) || galleryDoc.getElementById('no-images')) {
                 Logger.logInfo(`No images found at scraps of "${username}" on page "${pageNumber}".`);
                 return [];
@@ -916,19 +930,19 @@
         }
         async getPage(username, pageNumber, signal, action, delay = DEFAULT_ACTION_DELAY) {
             pageNumber = convertToNumber(pageNumber);
-            return await WaitAndCallAction.callFunctionAsync(() => Scraps.fetchPage(username, pageNumber, this._semaphore, signal), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => Scraps.fetchPage(username, pageNumber, this._context, signal), action, delay);
         }
     }
 
     class Favorites {
-        semaphore;
-        constructor(semaphore) {
-            this.semaphore = semaphore;
+        _context;
+        constructor(context) {
+            this._context = context;
         }
         static get hardLink() {
             return FuraffinityRequests.fullUrl + '/favorites/';
         }
-        static async fetchPage(username, dataFavId, direction, semaphore, signal) {
+        static async fetchPage(username, dataFavId, direction, context, signal) {
             if (username == null) {
                 Logger.logError('Cannot fetch favorites page: no username given');
                 throw new Error('Cannot fetch favorites page: no username given');
@@ -954,7 +968,7 @@
             else {
                 url += 'prev/';
             }
-            const page = await FuraffinityRequests.getHTML(url, semaphore, signal);
+            const page = await FuraffinityRequests.getHTML(url, context, signal);
             checkTagsAll(page);
             return page;
         }
@@ -1021,7 +1035,7 @@
         async getPage(username, fromDataFavId, direction, signal, action, delay = DEFAULT_ACTION_DELAY) {
             fromDataFavId = convertToNumber(fromDataFavId);
             direction = convertToNumber(direction);
-            return await WaitAndCallAction.callFunctionAsync(() => Favorites.fetchPage(username, fromDataFavId, direction, this.semaphore, signal), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => Favorites.fetchPage(username, fromDataFavId, direction, this._context, signal), action, delay);
         }
         async _getSubmissionDataFavId(username, submissionId, fromDataFavId, toDataFavId, maxPageNo, signal) {
             if (submissionId == null || submissionId <= 0) {
@@ -1463,7 +1477,7 @@
         }
         async _getFigures(username, dataFavId, direction, signal) {
             Logger.logInfo(`Getting Favorites of "${username}" since id "${dataFavId}" and direction "${direction}".`);
-            const galleryDoc = await Favorites.fetchPage(username, dataFavId, direction, this.semaphore, signal);
+            const galleryDoc = await Favorites.fetchPage(username, dataFavId, direction, this._context, signal);
             if (!galleryDoc || !(galleryDoc instanceof Document) || galleryDoc.getElementById('no-images')) {
                 Logger.logInfo(`No images found at favorites of "${username}" on page "${dataFavId}".`);
                 return [];
@@ -1478,14 +1492,14 @@
     }
 
     class Journals {
-        _semaphore;
-        constructor(semaphore) {
-            this._semaphore = semaphore;
+        _context;
+        constructor(context) {
+            this._context = context;
         }
         static get hardLink() {
             return FuraffinityRequests.fullUrl + '/journals/';
         }
-        static async fetchPage(username, pageNumber, semaphore, signal) {
+        static async fetchPage(username, pageNumber, context, signal) {
             if (username == null) {
                 Logger.logError('Cannot fetch journals page: no username given');
                 throw new Error('Cannot fetch journals page: no username given');
@@ -1498,7 +1512,7 @@
                 username += '/';
             }
             const url = Journals.hardLink + username;
-            return await FuraffinityRequests.getHTML(url + pageNumber, semaphore, signal);
+            return await FuraffinityRequests.getHTML(url + pageNumber, context, signal);
         }
         async getJournalPageNo(username, journalId, fromPageNumber, toPageNumber, signal, action, delay = DEFAULT_ACTION_DELAY) {
             journalId = convertToNumber(journalId);
@@ -1553,7 +1567,7 @@
         }
         async getPage(username, pageNumber, signal, action, delay = DEFAULT_ACTION_DELAY) {
             pageNumber = convertToNumber(pageNumber);
-            return await WaitAndCallAction.callFunctionAsync(() => Journals.fetchPage(username, pageNumber, this._semaphore, signal), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => Journals.fetchPage(username, pageNumber, this._context, signal), action, delay);
         }
         async _getSections(username, pageNumber, signal) {
             if (pageNumber == null || pageNumber <= 0) {
@@ -1561,7 +1575,7 @@
                 pageNumber = 1;
             }
             Logger.logInfo(`Getting Journals of "${username}" on page "${pageNumber}".`);
-            const galleryDoc = await Journals.fetchPage(username, pageNumber, this._semaphore, signal);
+            const galleryDoc = await Journals.fetchPage(username, pageNumber, this._context, signal);
             if (!galleryDoc) {
                 Logger.logWarning(`No journals found at "${username}" on page "${pageNumber}".`);
                 return [];
@@ -1585,25 +1599,25 @@
         Scraps;
         Favorites;
         Journals;
-        _semaphore;
-        constructor(semaphore) {
-            this._semaphore = semaphore;
-            this.Gallery = new Gallery(this._semaphore);
-            this.Scraps = new Scraps(this._semaphore);
-            this.Favorites = new Favorites(this._semaphore);
-            this.Journals = new Journals(this._semaphore);
+        _context;
+        constructor(context) {
+            this._context = context;
+            this.Gallery = new Gallery(this._context);
+            this.Scraps = new Scraps(this._context);
+            this.Favorites = new Favorites(this._context);
+            this.Journals = new Journals(this._context);
         }
     }
 
     class Browse {
-        _semaphore;
-        constructor(semaphore) {
-            this._semaphore = semaphore;
+        _context;
+        constructor(context) {
+            this._context = context;
         }
         static get hardLink() {
             return FuraffinityRequests.fullUrl + '/browse/';
         }
-        static async fetchPage(pageNumber, browseOptions, semaphore, signal) {
+        static async fetchPage(pageNumber, browseOptions, context, signal) {
             if (pageNumber == null || pageNumber <= 0) {
                 Logger.logWarning('Page number must be greater than 0. Using default 1 instead.');
                 pageNumber = 1;
@@ -1627,7 +1641,7 @@
             }
             const payloadArray = Object.entries(payload).map(([key, value]) => [key, value?.toString() ?? '']);
             const url = Browse.hardLink;
-            const page = await FuraffinityRequests.postHTML(url, payloadArray, semaphore, signal);
+            const page = await FuraffinityRequests.postHTML(url, payloadArray, context, signal);
             checkTagsAll(page);
             return page;
         }
@@ -1647,13 +1661,13 @@
             fromId = convertToNumber(fromId);
             toId = convertToNumber(toId);
             if (fromId == null || fromId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getBrowseFiguresTillId(toId, undefined, browseOptions, this._semaphore, signal), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getBrowseFiguresTillId(toId, undefined, browseOptions, this._context, signal), action, delay);
             }
             else if (toId == null || toId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getBrowseFiguresSinceId(fromId, undefined, browseOptions, this._semaphore, signal), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getBrowseFiguresSinceId(fromId, undefined, browseOptions, this._context, signal), action, delay);
             }
             else {
-                return await WaitAndCallAction.callFunctionAsync((percentId) => SearchRequests.getBrowseFiguresBetweenIds(fromId, toId, undefined, undefined, browseOptions, this._semaphore, signal, percentId), action, delay);
+                return await WaitAndCallAction.callFunctionAsync((percentId) => SearchRequests.getBrowseFiguresBetweenIds(fromId, toId, undefined, undefined, browseOptions, this._context, signal, percentId), action, delay);
             }
         }
         async getFiguresBetweenIdsBetweenPages(fromId, toId, fromPageNumber, toPageNumber, browseOptions, signal, action, delay = DEFAULT_ACTION_DELAY) {
@@ -1662,35 +1676,35 @@
             fromPageNumber = convertToNumber(fromPageNumber);
             toPageNumber = convertToNumber(toPageNumber);
             if (fromId == null || fromId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getBrowseFiguresTillId(toId, fromPageNumber, browseOptions, this._semaphore, signal), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getBrowseFiguresTillId(toId, fromPageNumber, browseOptions, this._context, signal), action, delay);
             }
             else if (toId == null || toId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getBrowseFiguresSinceId(fromId, toPageNumber, browseOptions, this._semaphore, signal), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getBrowseFiguresSinceId(fromId, toPageNumber, browseOptions, this._context, signal), action, delay);
             }
             else {
-                return await WaitAndCallAction.callFunctionAsync((percentId) => SearchRequests.getBrowseFiguresBetweenIds(fromId, toId, fromPageNumber, toPageNumber, browseOptions, this._semaphore, signal, percentId), action, delay);
+                return await WaitAndCallAction.callFunctionAsync((percentId) => SearchRequests.getBrowseFiguresBetweenIds(fromId, toId, fromPageNumber, toPageNumber, browseOptions, this._context, signal, percentId), action, delay);
             }
         }
         async getFiguresBetweenPages(fromPageNumber, toPageNumber, browseOptions, signal, action, delay = DEFAULT_ACTION_DELAY) {
             fromPageNumber = convertToNumber(fromPageNumber);
             toPageNumber = convertToNumber(toPageNumber);
             if (fromPageNumber == null || fromPageNumber <= 0) {
-                return await WaitAndCallAction.callFunctionAsync((percentId) => SearchRequests.getBrowseFiguresTillPage(toPageNumber, browseOptions, this._semaphore, signal, percentId), action, delay);
+                return await WaitAndCallAction.callFunctionAsync((percentId) => SearchRequests.getBrowseFiguresTillPage(toPageNumber, browseOptions, this._context, signal, percentId), action, delay);
             }
             else if (toPageNumber == null || toPageNumber <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getBrowseFiguresSincePage(fromPageNumber, browseOptions, this._semaphore, signal), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getBrowseFiguresSincePage(fromPageNumber, browseOptions, this._context, signal), action, delay);
             }
             else {
-                return await WaitAndCallAction.callFunctionAsync((percentId) => SearchRequests.getBrowseFiguresBetweenPages(fromPageNumber, toPageNumber, browseOptions, this._semaphore, signal, percentId), action, delay);
+                return await WaitAndCallAction.callFunctionAsync((percentId) => SearchRequests.getBrowseFiguresBetweenPages(fromPageNumber, toPageNumber, browseOptions, this._context, signal, percentId), action, delay);
             }
         }
         async getFigures(pageNumber, browseOptions, signal, action, delay = DEFAULT_ACTION_DELAY) {
             pageNumber = convertToNumber(pageNumber);
-            return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getBrowseFigures(pageNumber, browseOptions, this._semaphore, signal), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getBrowseFigures(pageNumber, browseOptions, this._context, signal), action, delay);
         }
         async getPage(pageNumber, browseOptions, signal, action, delay = DEFAULT_ACTION_DELAY) {
             pageNumber = convertToNumber(pageNumber);
-            return await WaitAndCallAction.callFunctionAsync(() => Browse.fetchPage(pageNumber, browseOptions, this._semaphore, signal), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => Browse.fetchPage(pageNumber, browseOptions, this._context, signal), action, delay);
         }
     }
     class BrowseOptions {
@@ -2227,14 +2241,14 @@
     }
 
     class Search {
-        _semaphore;
-        constructor(semaphore) {
-            this._semaphore = semaphore;
+        _context;
+        constructor(context) {
+            this._context = context;
         }
         static get hardLink() {
             return FuraffinityRequests.fullUrl + '/search/';
         }
-        static async fetchPage(pageNumber, searchOptions, semaphore, signal) {
+        static async fetchPage(pageNumber, searchOptions, context, signal) {
             if (pageNumber == null || pageNumber <= 0) {
                 Logger.logWarning('Page number must be greater than 0. Using default 1 instead.');
                 pageNumber = 1;
@@ -2290,7 +2304,7 @@
             }
             const payloadArray = Object.entries(payload).map(([key, value]) => [key, value?.toString() ?? '']);
             const url = Search.hardLink;
-            const page = await FuraffinityRequests.postHTML(url, payloadArray, semaphore, signal);
+            const page = await FuraffinityRequests.postHTML(url, payloadArray, context, signal);
             checkTagsAll(page);
             return page;
         }
@@ -2310,13 +2324,13 @@
             fromId = convertToNumber(fromId);
             toId = convertToNumber(toId);
             if (fromId == null || fromId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getSearchFiguresTillId(toId, undefined, searchOptions, this._semaphore, signal), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getSearchFiguresTillId(toId, undefined, searchOptions, this._context, signal), action, delay);
             }
             else if (toId == null || toId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getSearchFiguresSinceId(fromId, undefined, searchOptions, this._semaphore, signal), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getSearchFiguresSinceId(fromId, undefined, searchOptions, this._context, signal), action, delay);
             }
             else {
-                return await WaitAndCallAction.callFunctionAsync((percentId) => SearchRequests.getSearchFiguresBetweenIds(fromId, toId, undefined, undefined, searchOptions, this._semaphore, signal, percentId), action, delay);
+                return await WaitAndCallAction.callFunctionAsync((percentId) => SearchRequests.getSearchFiguresBetweenIds(fromId, toId, undefined, undefined, searchOptions, this._context, signal, percentId), action, delay);
             }
         }
         async getFiguresBetweenIdsBetweenPages(fromId, toId, fromPageNumber, toPageNumber, searchOptions, signal, action, delay = DEFAULT_ACTION_DELAY) {
@@ -2325,35 +2339,35 @@
             fromPageNumber = convertToNumber(fromPageNumber);
             toPageNumber = convertToNumber(toPageNumber);
             if (fromId == null || fromId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getSearchFiguresTillId(toId, fromPageNumber, searchOptions, this._semaphore, signal), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getSearchFiguresTillId(toId, fromPageNumber, searchOptions, this._context, signal), action, delay);
             }
             else if (toId == null || toId <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getSearchFiguresSinceId(fromId, toPageNumber, searchOptions, this._semaphore, signal), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getSearchFiguresSinceId(fromId, toPageNumber, searchOptions, this._context, signal), action, delay);
             }
             else {
-                return await WaitAndCallAction.callFunctionAsync((percentId) => SearchRequests.getSearchFiguresBetweenIds(fromId, toId, fromPageNumber, toPageNumber, searchOptions, this._semaphore, signal, percentId), action, delay);
+                return await WaitAndCallAction.callFunctionAsync((percentId) => SearchRequests.getSearchFiguresBetweenIds(fromId, toId, fromPageNumber, toPageNumber, searchOptions, this._context, signal, percentId), action, delay);
             }
         }
         async getFiguresBetweenPages(fromPageNumber, toPageNumber, searchOptions, signal, action, delay = DEFAULT_ACTION_DELAY) {
             fromPageNumber = convertToNumber(fromPageNumber);
             toPageNumber = convertToNumber(toPageNumber);
             if (fromPageNumber == null || fromPageNumber <= 0) {
-                return await WaitAndCallAction.callFunctionAsync((percentId) => SearchRequests.getSearchFiguresTillPage(toPageNumber, searchOptions, this._semaphore, signal, percentId), action, delay);
+                return await WaitAndCallAction.callFunctionAsync((percentId) => SearchRequests.getSearchFiguresTillPage(toPageNumber, searchOptions, this._context, signal, percentId), action, delay);
             }
             else if (toPageNumber == null || toPageNumber <= 0) {
-                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getSearchFiguresSincePage(fromPageNumber, searchOptions, this._semaphore, signal), action, delay);
+                return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getSearchFiguresSincePage(fromPageNumber, searchOptions, this._context, signal), action, delay);
             }
             else {
-                return await WaitAndCallAction.callFunctionAsync((percentId) => SearchRequests.getSearchFiguresBetweenPages(fromPageNumber, toPageNumber, searchOptions, this._semaphore, signal, percentId), action, delay);
+                return await WaitAndCallAction.callFunctionAsync((percentId) => SearchRequests.getSearchFiguresBetweenPages(fromPageNumber, toPageNumber, searchOptions, this._context, signal, percentId), action, delay);
             }
         }
         async getFigures(pageNumber, searchOptions, signal, action, delay = DEFAULT_ACTION_DELAY) {
             pageNumber = convertToNumber(pageNumber);
-            return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getSearchFigures(pageNumber, searchOptions, this._semaphore, signal), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => SearchRequests.getSearchFigures(pageNumber, searchOptions, this._context, signal), action, delay);
         }
         async getPage(pageNumber, searchOptions, signal, action, delay = DEFAULT_ACTION_DELAY) {
             pageNumber = convertToNumber(pageNumber);
-            return await WaitAndCallAction.callFunctionAsync(() => Search.fetchPage(pageNumber, searchOptions, this._semaphore, signal), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => Search.fetchPage(pageNumber, searchOptions, this._context, signal), action, delay);
         }
     }
     class SearchOptions {
@@ -2421,37 +2435,37 @@
     class SearchRequests {
         Browse;
         Search;
-        _semaphore;
-        constructor(semaphore) {
-            this._semaphore = semaphore;
-            this.Browse = new Browse(this._semaphore);
-            this.Search = new Search(this._semaphore);
+        _context;
+        constructor(context) {
+            this._context = context;
+            this.Browse = new Browse(this._context);
+            this.Search = new Search(this._context);
         }
         //#region Browse
-        static async getBrowseFiguresTillId(toId, fromPage, browseOptions, semaphore, signal) {
-            return await elementsTillId((page) => SearchRequests.getBrowseFigures(page, browseOptions, semaphore, signal), toId, fromPage);
+        static async getBrowseFiguresTillId(toId, fromPage, browseOptions, context, signal) {
+            return await elementsTillId((page) => SearchRequests.getBrowseFigures(page, browseOptions, context, signal), toId, fromPage);
         }
-        static async getBrowseFiguresSinceId(fromId, toPage, browseOptions, semaphore, signal) {
-            return await elementsSinceId((page) => SearchRequests.getBrowseFigures(page, browseOptions, semaphore, signal), fromId, toPage);
+        static async getBrowseFiguresSinceId(fromId, toPage, browseOptions, context, signal) {
+            return await elementsSinceId((page) => SearchRequests.getBrowseFigures(page, browseOptions, context, signal), fromId, toPage);
         }
-        static async getBrowseFiguresBetweenIds(fromId, toId, fromPage, toPage, browseOptions, semaphore, signal, percentId) {
-            return await elementsBetweenIds((page) => SearchRequests.getBrowseFigures(page, browseOptions, semaphore, signal), fromId, toId, fromPage, toPage, percentId);
+        static async getBrowseFiguresBetweenIds(fromId, toId, fromPage, toPage, browseOptions, context, signal, percentId) {
+            return await elementsBetweenIds((page) => SearchRequests.getBrowseFigures(page, browseOptions, context, signal), fromId, toId, fromPage, toPage, percentId);
         }
-        static async getBrowseFiguresTillPage(toPageNumber, browseOptions, semaphore, signal, percentId) {
-            return await elementsTillPage((page) => SearchRequests.getBrowseFigures(page, browseOptions, semaphore, signal), toPageNumber, percentId);
+        static async getBrowseFiguresTillPage(toPageNumber, browseOptions, context, signal, percentId) {
+            return await elementsTillPage((page) => SearchRequests.getBrowseFigures(page, browseOptions, context, signal), toPageNumber, percentId);
         }
-        static async getBrowseFiguresSincePage(fromPageNumber, browseOptions, semaphore, signal) {
-            return await elementsSincePage((page) => SearchRequests.getBrowseFigures(page, browseOptions, semaphore, signal), fromPageNumber);
+        static async getBrowseFiguresSincePage(fromPageNumber, browseOptions, context, signal) {
+            return await elementsSincePage((page) => SearchRequests.getBrowseFigures(page, browseOptions, context, signal), fromPageNumber);
         }
-        static async getBrowseFiguresBetweenPages(fromPageNumber, toPageNumber, browseOptions, semaphore, signal, percentId) {
-            return await elementsBetweenPages((page) => SearchRequests.getBrowseFigures(page, browseOptions, semaphore, signal), fromPageNumber, toPageNumber, percentId);
+        static async getBrowseFiguresBetweenPages(fromPageNumber, toPageNumber, browseOptions, context, signal, percentId) {
+            return await elementsBetweenPages((page) => SearchRequests.getBrowseFigures(page, browseOptions, context, signal), fromPageNumber, toPageNumber, percentId);
         }
-        static async getBrowseFigures(pageNumber, browseOptions, semaphore, signal) {
+        static async getBrowseFigures(pageNumber, browseOptions, context, signal) {
             if (pageNumber == null || pageNumber <= 0) {
                 Logger.logWarning('No pageNumber given. Using default value of 1.');
                 pageNumber = 1;
             }
-            const galleryDoc = await Browse.fetchPage(pageNumber, browseOptions, semaphore, signal);
+            const galleryDoc = await Browse.fetchPage(pageNumber, browseOptions, context, signal);
             if (galleryDoc == null || !(galleryDoc instanceof Document) || galleryDoc.getElementById('no-images')) {
                 Logger.logInfo(`No images found at browse on page "${pageNumber}".`);
                 return [];
@@ -2465,30 +2479,30 @@
         }
         //#endregion
         //#region Search
-        static async getSearchFiguresTillId(toId, fromPage, searchOptions, semaphore, signal) {
-            return await elementsTillId((page) => SearchRequests.getSearchFigures(page, searchOptions, semaphore, signal), toId, fromPage);
+        static async getSearchFiguresTillId(toId, fromPage, searchOptions, context, signal) {
+            return await elementsTillId((page) => SearchRequests.getSearchFigures(page, searchOptions, context, signal), toId, fromPage);
         }
-        static async getSearchFiguresSinceId(fromId, toPage, searchOptions, semaphore, signal) {
-            return await elementsSinceId((page) => SearchRequests.getSearchFigures(page, searchOptions, semaphore, signal), fromId, toPage);
+        static async getSearchFiguresSinceId(fromId, toPage, searchOptions, context, signal) {
+            return await elementsSinceId((page) => SearchRequests.getSearchFigures(page, searchOptions, context, signal), fromId, toPage);
         }
-        static async getSearchFiguresBetweenIds(fromId, toId, fromPage, toPage, searchOptions, semaphore, signal, percentId) {
-            return await elementsBetweenIds((page) => SearchRequests.getSearchFigures(page, searchOptions, semaphore, signal), fromId, toId, fromPage, toPage, percentId);
+        static async getSearchFiguresBetweenIds(fromId, toId, fromPage, toPage, searchOptions, context, signal, percentId) {
+            return await elementsBetweenIds((page) => SearchRequests.getSearchFigures(page, searchOptions, context, signal), fromId, toId, fromPage, toPage, percentId);
         }
-        static async getSearchFiguresTillPage(toPageNumber, searchOptions, semaphore, signal, percentId) {
-            return await elementsTillPage((page) => SearchRequests.getSearchFigures(page, searchOptions, semaphore, signal), toPageNumber, percentId);
+        static async getSearchFiguresTillPage(toPageNumber, searchOptions, context, signal, percentId) {
+            return await elementsTillPage((page) => SearchRequests.getSearchFigures(page, searchOptions, context, signal), toPageNumber, percentId);
         }
-        static async getSearchFiguresSincePage(fromPageNumber, searchOptions, semaphore, signal) {
-            return await elementsSincePage((page) => SearchRequests.getSearchFigures(page, searchOptions, semaphore, signal), fromPageNumber);
+        static async getSearchFiguresSincePage(fromPageNumber, searchOptions, context, signal) {
+            return await elementsSincePage((page) => SearchRequests.getSearchFigures(page, searchOptions, context, signal), fromPageNumber);
         }
-        static async getSearchFiguresBetweenPages(fromPageNumber, toPageNumber, searchOptions, semaphore, signal, percentId) {
-            return await elementsBetweenPages((page) => SearchRequests.getSearchFigures(page, searchOptions, semaphore, signal), fromPageNumber, toPageNumber, percentId);
+        static async getSearchFiguresBetweenPages(fromPageNumber, toPageNumber, searchOptions, context, signal, percentId) {
+            return await elementsBetweenPages((page) => SearchRequests.getSearchFigures(page, searchOptions, context, signal), fromPageNumber, toPageNumber, percentId);
         }
-        static async getSearchFigures(pageNumber, searchOptions, semaphore, signal) {
+        static async getSearchFigures(pageNumber, searchOptions, context, signal) {
             if (pageNumber == null || pageNumber <= 0) {
                 Logger.logWarning('No pageNumber given. Using default value of 1.');
                 pageNumber = 1;
             }
-            const galleryDoc = await Search.fetchPage(pageNumber, searchOptions, semaphore, signal);
+            const galleryDoc = await Search.fetchPage(pageNumber, searchOptions, context, signal);
             if (galleryDoc == null || !(galleryDoc instanceof Document) || galleryDoc.getElementById('no-images')) {
                 Logger.logInfo(`No images found at search on page "${pageNumber}".`);
                 return [];
@@ -2505,11 +2519,11 @@
     class UserRequests {
         GalleryRequests;
         SearchRequests;
-        _semaphore;
-        constructor(semaphore) {
-            this._semaphore = semaphore;
-            this.GalleryRequests = new GalleryRequests(this._semaphore);
-            this.SearchRequests = new SearchRequests(this._semaphore);
+        _context;
+        constructor(context) {
+            this._context = context;
+            this.GalleryRequests = new GalleryRequests(this._context);
+            this.SearchRequests = new SearchRequests(this._context);
         }
         static get hardLinks() {
             return {
@@ -2541,7 +2555,7 @@
                 return;
             }
             const url = UserRequests.hardLinks['user'] + username;
-            return await FuraffinityRequests.getHTML(url, this._semaphore, signal);
+            return await FuraffinityRequests.getHTML(url, this._context, signal);
         }
         async _watchUser(username, watchKey, signal) {
             if (username == null || username === '') {
@@ -2553,7 +2567,7 @@
                 throw new Error('No watch key given');
             }
             const url = UserRequests.hardLinks['watch'] + username + '?key=' + watchKey;
-            return await FuraffinityRequests.getHTML(url, this._semaphore, signal) == null;
+            return await FuraffinityRequests.getHTML(url, this._context, signal) == null;
         }
         async _unwatchUser(username, unwatchKey, signal) {
             if (username == null || username === '') {
@@ -2565,7 +2579,7 @@
                 throw new Error('No unwatch key given');
             }
             const url = UserRequests.hardLinks['unwatch'] + username + '?key=' + unwatchKey;
-            return await FuraffinityRequests.getHTML(url, this._semaphore, signal) == null;
+            return await FuraffinityRequests.getHTML(url, this._context, signal) == null;
         }
         async _blockUser(username, blockKey, signal) {
             if (username == null || username === '') {
@@ -2577,7 +2591,7 @@
                 throw new Error('No block key given');
             }
             const url = UserRequests.hardLinks['block'] + username + '?key=' + blockKey;
-            return await FuraffinityRequests.getHTML(url, this._semaphore, signal) == null;
+            return await FuraffinityRequests.getHTML(url, this._context, signal) == null;
         }
         async _unblockUser(username, unblockKey, signal) {
             if (username == null || username === '') {
@@ -2589,14 +2603,14 @@
                 throw new Error('No unblock key given');
             }
             const url = UserRequests.hardLinks['unblock'] + username + '?key=' + unblockKey;
-            return await FuraffinityRequests.getHTML(url, this._semaphore, signal) == null;
+            return await FuraffinityRequests.getHTML(url, this._context, signal) == null;
         }
     }
 
     class NewSubmissions {
-        _semaphore;
-        constructor(semaphore) {
-            this._semaphore = semaphore;
+        _context;
+        constructor(context) {
+            this._context = context;
         }
         static get hardLink() {
             return FuraffinityRequests.fullUrl + '/msg/submissions/';
@@ -2613,10 +2627,10 @@
         }
         async _getSubmissionsPage(firstSubmissionId, signal) {
             if (firstSubmissionId == null || firstSubmissionId <= 0) {
-                return await FuraffinityRequests.getHTML(`${NewSubmissions.hardLink}new@72/`, this._semaphore, signal);
+                return await FuraffinityRequests.getHTML(`${NewSubmissions.hardLink}new@72/`, this._context, signal);
             }
             else {
-                return await FuraffinityRequests.getHTML(`${NewSubmissions.hardLink}new~${firstSubmissionId}@72/`, this._semaphore, signal);
+                return await FuraffinityRequests.getHTML(`${NewSubmissions.hardLink}new~${firstSubmissionId}@72/`, this._context, signal);
             }
         }
         async _removeSubmissions(submissionIds, signal) {
@@ -2630,26 +2644,26 @@
             for (const submissionId of submissionIds) {
                 payload.push(['submissions[]', submissionId.toString()]);
             }
-            return await FuraffinityRequests.postHTML(`${NewSubmissions.hardLink}new@72/`, payload, this._semaphore, signal);
+            return await FuraffinityRequests.postHTML(`${NewSubmissions.hardLink}new@72/`, payload, this._context, signal);
         }
         async _nukeSubmissions(signal) {
             const payload = [
                 ['messagecenter-action', Message.hardActions['nuke']],
             ];
-            return await FuraffinityRequests.postHTML(`${NewSubmissions.hardLink}new@72/`, payload, this._semaphore, signal);
+            return await FuraffinityRequests.postHTML(`${NewSubmissions.hardLink}new@72/`, payload, this._context, signal);
         }
     }
 
     class MessageTypeRequests {
-        _semaphore;
+        _context;
         _removeAction;
         _nukeAction;
         _fieldName;
         get _hardLink() {
             return FuraffinityRequests.fullUrl + '/msg/others/';
         }
-        constructor(semaphore, removeAction, nukeAction, fieldName) {
-            this._semaphore = semaphore;
+        constructor(context, removeAction, nukeAction, fieldName) {
+            this._context = context;
             this._removeAction = removeAction;
             this._nukeAction = nukeAction;
             this._fieldName = fieldName;
@@ -2669,11 +2683,11 @@
             for (const id of ids) {
                 payload.push([this._fieldName, id.toString()]);
             }
-            return await FuraffinityRequests.postHTML(this._hardLink, payload, this._semaphore, signal);
+            return await FuraffinityRequests.postHTML(this._hardLink, payload, this._context, signal);
         }
         async _nukeMessages(signal) {
             const payload = [this._nukeAction];
-            return await FuraffinityRequests.postHTML(this._hardLink, payload, this._semaphore, signal);
+            return await FuraffinityRequests.postHTML(this._hardLink, payload, this._context, signal);
         }
     }
 
@@ -2683,14 +2697,14 @@
         Shouts;
         Favorites;
         Journals;
-        _semaphore;
-        constructor(semaphore) {
-            this._semaphore = semaphore;
-            this.Watches = new MessageTypeRequests(semaphore, ['remove-watches', 'Remove Selected Watches'], ['nuke-watches', 'Nuke Watches'], 'watches[]');
-            this.JournalComments = new MessageTypeRequests(semaphore, ['remove-journal-comments', 'Remove Selected Comments'], ['nuke-journal-comments', 'Nuke Journal Comments'], 'comments-journals[]');
-            this.Shouts = new MessageTypeRequests(semaphore, ['remove-shouts', 'Remove Selected Shouts'], ['nuke-shouts', 'Nuke Shouts'], 'shouts[]');
-            this.Favorites = new MessageTypeRequests(semaphore, ['remove-favorites', 'Remove Selected Favorites'], ['nuke-favorites', 'Nuke Favorites'], 'favorites[]');
-            this.Journals = new MessageTypeRequests(semaphore, ['remove-journals', 'Remove Selected Journals'], ['nuke-journals', 'Nuke Journals'], 'journals[]');
+        _context;
+        constructor(context) {
+            this._context = context;
+            this.Watches = new MessageTypeRequests(context, ['remove-watches', 'Remove Selected Watches'], ['nuke-watches', 'Nuke Watches'], 'watches[]');
+            this.JournalComments = new MessageTypeRequests(context, ['remove-journal-comments', 'Remove Selected Comments'], ['nuke-journal-comments', 'Nuke Journal Comments'], 'comments-journals[]');
+            this.Shouts = new MessageTypeRequests(context, ['remove-shouts', 'Remove Selected Shouts'], ['nuke-shouts', 'Nuke Shouts'], 'shouts[]');
+            this.Favorites = new MessageTypeRequests(context, ['remove-favorites', 'Remove Selected Favorites'], ['nuke-favorites', 'Nuke Favorites'], 'favorites[]');
+            this.Journals = new MessageTypeRequests(context, ['remove-journals', 'Remove Selected Journals'], ['nuke-journals', 'Nuke Journals'], 'journals[]');
         }
         static get hardLink() {
             return FuraffinityRequests.fullUrl + '/msg/others/';
@@ -2700,7 +2714,7 @@
             nuke: ['nuke-all', 'Nuke Selected'],
         };
         async getMessagesPage(signal, action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(NewMessages.hardLink, this._semaphore, signal), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(NewMessages.hardLink, this._context, signal), action, delay);
         }
         async removeMessages(userIds, journalCommentIds, shoutIds, favoriteIds, journalIds, signal, action, delay = DEFAULT_ACTION_DELAY) {
             userIds ??= [];
@@ -2728,18 +2742,18 @@
                 Logger.logError('No messages to remove');
                 throw new Error('No messages to remove');
             }
-            return await FuraffinityRequests.postHTML(NewMessages.hardLink, payload, this._semaphore, signal);
+            return await FuraffinityRequests.postHTML(NewMessages.hardLink, payload, this._context, signal);
         }
     }
 
     class Message {
         NewSubmissions;
         NewMessages;
-        _semaphore;
-        constructor(semaphore) {
-            this._semaphore = semaphore;
-            this.NewSubmissions = new NewSubmissions(this._semaphore);
-            this.NewMessages = new NewMessages(this._semaphore);
+        _context;
+        constructor(context) {
+            this._context = context;
+            this.NewSubmissions = new NewSubmissions(this._context);
+            this.NewMessages = new NewMessages(this._context);
         }
         static get hardActions() {
             return {
@@ -2751,9 +2765,9 @@
     }
 
     class AccountInformation {
-        _semaphore;
-        constructor(semaphore) {
-            this._semaphore = semaphore;
+        _context;
+        constructor(context) {
+            this._context = context;
         }
         static get hardLinks() {
             return {
@@ -2763,20 +2777,20 @@
             };
         }
         async getSettingsPage(signal, action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(AccountInformation.hardLinks['settings'], this._semaphore, signal), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(AccountInformation.hardLinks['settings'], this._context, signal), action, delay);
         }
         async getSiteSettingsPage(signal, action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(AccountInformation.hardLinks['siteSettings'], this._semaphore, signal), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(AccountInformation.hardLinks['siteSettings'], this._context, signal), action, delay);
         }
         async getUserSettingsPage(signal, action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(AccountInformation.hardLinks['userSettings'], this._semaphore, signal), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(AccountInformation.hardLinks['userSettings'], this._context, signal), action, delay);
         }
     }
 
     class UserProfile {
-        _semaphore;
-        constructor(semaphore) {
-            this._semaphore = semaphore;
+        _context;
+        constructor(context) {
+            this._context = context;
         }
         static get hardLinks() {
             return {
@@ -2787,23 +2801,23 @@
             };
         }
         async getProfilePage(signal, action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(UserProfile.hardLinks['profile'], this._semaphore, signal), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(UserProfile.hardLinks['profile'], this._context, signal), action, delay);
         }
         async getProfilebannerPage(signal, action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(UserProfile.hardLinks['profilebanner'], this._semaphore, signal), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(UserProfile.hardLinks['profilebanner'], this._context, signal), action, delay);
         }
         async getContactsPage(signal, action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(UserProfile.hardLinks['contacts'], this._semaphore, signal), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(UserProfile.hardLinks['contacts'], this._context, signal), action, delay);
         }
         async getAvatarPage(signal, action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(UserProfile.hardLinks['avatar'], this._semaphore, signal), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(UserProfile.hardLinks['avatar'], this._context, signal), action, delay);
         }
     }
 
     class ManageContent {
-        _semaphore;
-        constructor(semaphore) {
-            this._semaphore = semaphore;
+        _context;
+        constructor(context) {
+            this._context = context;
         }
         static get hardLinks() {
             return {
@@ -2817,7 +2831,7 @@
             };
         }
         async getFoldersPages(signal, action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(ManageContent.hardLinks['folders'], this._semaphore, signal), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(ManageContent.hardLinks['folders'], this._context, signal), action, delay);
         }
         async getAllWatchesPages(signal, action, delay = DEFAULT_ACTION_DELAY) {
             return await WaitAndCallAction.callFunctionAsync(() => this._getAllWatchesPages(signal), action, delay);
@@ -2827,7 +2841,7 @@
             return await WaitAndCallAction.callFunctionAsync(() => this._getWatchesPage(pageNumber, signal), action, delay);
         }
         async _getAllWatchesPages(signal) {
-            let usersDoc = await FuraffinityRequests.getHTML(ManageContent.hardLinks['buddylist'] + 'x', this._semaphore, signal);
+            let usersDoc = await FuraffinityRequests.getHTML(ManageContent.hardLinks['buddylist'] + 'x', this._context, signal);
             const columnPage = usersDoc?.getElementById('columnpage');
             const sectionBody = columnPage?.querySelector('div[class="section-body"');
             const paginationLinks = sectionBody?.querySelector('div[class*="pagination-links"]');
@@ -2847,14 +2861,14 @@
                 Logger.logWarning('No page number given. Using default 1 instead.');
                 pageNumber = 1;
             }
-            return await FuraffinityRequests.getHTML(ManageContent.hardLinks['buddylist'] + pageNumber, this._semaphore, signal);
+            return await FuraffinityRequests.getHTML(ManageContent.hardLinks['buddylist'] + pageNumber, this._context, signal);
         }
     }
 
     class Security {
-        _semaphore;
-        constructor(semaphore) {
-            this._semaphore = semaphore;
+        _context;
+        constructor(context) {
+            this._context = context;
         }
         static get hardLinks() {
             return {
@@ -2864,13 +2878,13 @@
             };
         }
         async getSessionsPage(signal, action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(Security.hardLinks['sessions'], this._semaphore, signal), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(Security.hardLinks['sessions'], this._context, signal), action, delay);
         }
         async getLogsPage(signal, action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(Security.hardLinks['logs'], this._semaphore, signal), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(Security.hardLinks['logs'], this._context, signal), action, delay);
         }
         async getLabelsPage(signal, action, delay = DEFAULT_ACTION_DELAY) {
-            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(Security.hardLinks['labels'], this._semaphore, signal), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(Security.hardLinks['labels'], this._context, signal), action, delay);
         }
     }
 
@@ -2880,21 +2894,21 @@
         UserProfile;
         ManageContent;
         Security;
-        _semaphore;
-        constructor(semaphore) {
-            this._semaphore = semaphore;
-            this.MessageRequests = new Message(this._semaphore);
-            this.AccountInformation = new AccountInformation(this._semaphore);
-            this.UserProfile = new UserProfile(this._semaphore);
-            this.ManageContent = new ManageContent(this._semaphore);
-            this.Security = new Security(this._semaphore);
+        _context;
+        constructor(context) {
+            this._context = context;
+            this.MessageRequests = new Message(this._context);
+            this.AccountInformation = new AccountInformation(this._context);
+            this.UserProfile = new UserProfile(this._context);
+            this.ManageContent = new ManageContent(this._context);
+            this.Security = new Security(this._context);
         }
     }
 
     class SubmissionRequests {
-        _semaphore;
-        constructor(semaphore) {
-            this._semaphore = semaphore;
+        _context;
+        constructor(context) {
+            this._context = context;
         }
         static get hardLinks() {
             return {
@@ -2922,7 +2936,7 @@
                 throw new Error('No submissionId given');
             }
             const url = SubmissionRequests.hardLinks['view'] + submissionId;
-            return await FuraffinityRequests.getHTML(url, this._semaphore, signal);
+            return await FuraffinityRequests.getHTML(url, this._context, signal);
         }
         async _favSubmission(submissionId, favKey, signal) {
             if (submissionId == null || submissionId === '' || submissionId === -1) {
@@ -2934,7 +2948,7 @@
                 throw new Error('No favKey given');
             }
             const url = SubmissionRequests.hardLinks['fav'] + submissionId + '?key=' + favKey;
-            const resultDoc = await FuraffinityRequests.getHTML(url, this._semaphore, signal);
+            const resultDoc = await FuraffinityRequests.getHTML(url, this._context, signal);
             if (resultDoc == null) {
                 Logger.logError('Failed to fetch fav page');
                 throw new Error('Failed to fetch fav page');
@@ -2960,7 +2974,7 @@
                 throw new Error('No unfavKey given');
             }
             const url = SubmissionRequests.hardLinks['unfav'] + submissionId + '?key=' + unfavKey;
-            const resultDoc = await FuraffinityRequests.getHTML(url, this._semaphore, signal);
+            const resultDoc = await FuraffinityRequests.getHTML(url, this._context, signal);
             if (resultDoc == null) {
                 Logger.logError('Failed to fetch unfav page');
                 throw new Error('Failed to fetch unfav page');
@@ -2973,7 +2987,7 @@
                 throw new Error('No journalId given');
             }
             const url = SubmissionRequests.hardLinks['journal'] + journalId;
-            return await FuraffinityRequests.getHTML(url, this._semaphore);
+            return await FuraffinityRequests.getHTML(url, this._context);
         }
         _getFavKey(doc) {
             const columnPage = doc.getElementById('submission_page');
@@ -3003,24 +3017,36 @@
             BrowseOptions: BrowseOptions,
             SearchOptions: SearchOptions
         };
-        _semaphore;
+        _context;
         static _useHttps = window.location.protocol.includes('https');
         static _httpsString = window.location.protocol.trimEnd(':') + '://';
         static _domain = window.location.hostname;
-        constructor(maxAmountRequests = 2) {
-            this._semaphore = new Semaphore(maxAmountRequests);
-            this.UserRequests = new UserRequests(this._semaphore);
-            this.PersonalUserRequests = new PersonalUserRequests(this._semaphore);
-            this.SubmissionRequests = new SubmissionRequests(this._semaphore);
+        constructor(maxAmountRequests = DEFAULT_MAX_CONCURRENCY, maxRetries = DEFAULT_MAX_RETRIES, retryDelay = DEFAULT_RETRY_DELAY) {
+            this._context = new RequestContext(maxAmountRequests, maxRetries, retryDelay);
+            this.UserRequests = new UserRequests(this._context);
+            this.PersonalUserRequests = new PersonalUserRequests(this._context);
+            this.SubmissionRequests = new SubmissionRequests(this._context);
         }
         set maxAmountRequests(value) {
-            if (this._semaphore.maxConcurrency === value) {
+            if (this._context.semaphore.maxConcurrency === value) {
                 return;
             }
-            this._semaphore.maxConcurrency = value;
+            this._context.semaphore.maxConcurrency = value;
         }
         get maxAmountRequests() {
-            return this._semaphore.maxConcurrency;
+            return this._context.semaphore.maxConcurrency;
+        }
+        set maxRetries(value) {
+            this._context.maxRetries = value;
+        }
+        get maxRetries() {
+            return this._context.maxRetries;
+        }
+        set retryDelay(value) {
+            this._context.retryDelay = value;
+        }
+        get retryDelay() {
+            return this._context.retryDelay;
         }
         static set useHttps(value) {
             if (FuraffinityRequests._useHttps === value) {
@@ -3040,96 +3066,125 @@
         static get fullUrl() {
             return FuraffinityRequests._httpsString + FuraffinityRequests._domain;
         }
-        static async getHTML(url, semaphore, signal, action, delay = DEFAULT_ACTION_DELAY) {
+        static async getHTML(url, context, signal, action, delay = DEFAULT_ACTION_DELAY) {
             if (url == null || url === '') {
                 Logger.logError('No url given for GET request');
                 throw new Error('No url given for GET request');
             }
-            return await WaitAndCallAction.callFunctionAsync(() => getHTMLLocal(url, semaphore, signal), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => getHTMLLocal(url, context, signal), action, delay);
         }
-        static async postHTML(url, payload, semaphore, signal, action, delay = DEFAULT_ACTION_DELAY) {
+        static async postHTML(url, payload, context, signal, action, delay = DEFAULT_ACTION_DELAY) {
             if (url == null || url === '') {
                 Logger.logError('No url given for POST request');
                 throw new Error('No url given for POST request');
             }
-            return await WaitAndCallAction.callFunctionAsync(() => postHTMLLocal(url, payload, semaphore, signal), action, delay);
+            return await WaitAndCallAction.callFunctionAsync(() => postHTMLLocal(url, payload, context, signal), action, delay);
         }
     }
-    async function getHTMLLocal(url, semaphore, signal) {
+    async function getHTMLLocal(url, context, signal) {
         Logger.logInfo(`Requesting '${url}'`);
+        const { semaphore } = context;
         const semaphoreActive = semaphore != null && semaphore.maxConcurrency > 0;
-        if (semaphoreActive) {
-            // Acquire a slot in the semaphore to ensure that the maximum concurrency is not exceeded.
-            await semaphore.acquire();
-        }
-        try {
-            // Send the GET request and retrieve the HTML document.
-            const response = await fetch(url, { signal });
-            if (!response.ok) {
-                throw new Error(`HTTP error ${response.status} for: ${url}`);
+        let attempt = 0;
+        let holdSlot = false;
+        while (true) {
+            if (semaphoreActive && !holdSlot) {
+                await semaphore.acquire();
             }
-            const html = await response.text();
-            // Parse the HTML document using a DOMParser.
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(html, 'text/html');
-            return doc;
-        }
-        catch (error) {
-            // Enrich network-level errors (e.g. "Failed to fetch") with the URL for better diagnostics.
-            const message = error instanceof Error ? error.message : String(error);
-            const enriched = new Error(`${message} (URL: ${url})`);
-            if (!(signal?.aborted ?? false)) {
-                Logger.logError(enriched);
+            holdSlot = false;
+            let sleepMs = null;
+            let httpStatus = 0;
+            let shouldHold = false;
+            try {
+                const response = await fetch(url, { signal });
+                httpStatus = response.status;
+                if (!response.ok) {
+                    throw new Error(`HTTP error ${httpStatus} for: ${url}`);
+                }
+                const html = await response.text();
+                const parser = new DOMParser();
+                return parser.parseFromString(html, 'text/html');
             }
-            throw enriched;
-        }
-        finally {
-            // Release the slot in the semaphore.
-            if (semaphoreActive) {
-                semaphore.release();
+            catch (error) {
+                const message = error instanceof Error ? error.message : String(error);
+                const enriched = new Error(`${message} (URL: ${url})`);
+                if (signal?.aborted) {
+                    throw enriched;
+                }
+                const is429 = httpStatus === 429;
+                const effectiveMax = is429 ? context.maxRetries * 2 : context.maxRetries;
+                if (attempt >= effectiveMax) {
+                    Logger.logError(enriched);
+                    throw enriched;
+                }
+                sleepMs = is429 ? context.retryDelay * (attempt + 1) : context.retryDelay;
+                Logger.logWarning(`Retrying GET '${url}' (attempt ${attempt + 1}/${effectiveMax}) in ${sleepMs}ms`);
+                attempt++;
+                shouldHold = is429;
             }
+            finally {
+                if (semaphoreActive && !shouldHold) {
+                    semaphore.release();
+                }
+            }
+            holdSlot = shouldHold;
+            await new Promise(resolve => setTimeout(resolve, sleepMs));
         }
     }
-    async function postHTMLLocal(url, payload, semaphore, signal) {
-        // Check if the semaphore is active and acquire it if necessary
+    async function postHTMLLocal(url, payload, context, signal) {
+        const { semaphore } = context;
         const semaphoreActive = semaphore != null && semaphore.maxConcurrency > 0;
-        if (semaphoreActive) {
-            await semaphore.acquire();
-        }
-        try {
-            // Send a POST request with the given payload
-            const response = await fetch(url, {
-                method: 'POST',
-                body: new URLSearchParams(payload).toString(),
-                headers: {
-                    'Content-Type': 'application/x-www-form-urlencoded',
-                },
-                signal,
-            });
-            // Check if the response is not ok and throw an error
-            if (!response.ok) {
-                throw new Error(`HTTP error ${response.status} for: ${url}`);
+        let attempt = 0;
+        let holdSlot = false;
+        while (true) {
+            if (semaphoreActive && !holdSlot) {
+                await semaphore.acquire();
             }
-            const responseData = await response.text();
-            // Parse the response data as an HTML document
-            const parser = new DOMParser();
-            const doc = parser.parseFromString(responseData, 'text/html');
-            return doc;
-        }
-        catch (error) {
-            // Enrich network-level errors (e.g. "Failed to fetch") with the URL for better diagnostics.
-            const message = error instanceof Error ? error.message : String(error);
-            const enriched = new Error(`${message} (URL: ${url})`);
-            if (!(signal?.aborted ?? false)) {
-                Logger.logError(enriched);
+            holdSlot = false;
+            let sleepMs = null;
+            let httpStatus = 0;
+            let shouldHold = false;
+            try {
+                const response = await fetch(url, {
+                    method: 'POST',
+                    body: new URLSearchParams(payload).toString(),
+                    headers: {
+                        'Content-Type': 'application/x-www-form-urlencoded',
+                    },
+                    signal,
+                });
+                httpStatus = response.status;
+                if (!response.ok) {
+                    throw new Error(`HTTP error ${httpStatus} for: ${url}`);
+                }
+                const responseData = await response.text();
+                const parser = new DOMParser();
+                return parser.parseFromString(responseData, 'text/html');
             }
-            throw enriched;
-        }
-        finally {
-            // Release the semaphore if it was acquired
-            if (semaphoreActive) {
-                semaphore.release();
+            catch (error) {
+                const message = error instanceof Error ? error.message : String(error);
+                const enriched = new Error(`${message} (URL: ${url})`);
+                if (signal?.aborted) {
+                    throw enriched;
+                }
+                const is429 = httpStatus === 429;
+                const effectiveMax = is429 ? context.maxRetries * 2 : context.maxRetries;
+                if (attempt >= effectiveMax) {
+                    Logger.logError(enriched);
+                    throw enriched;
+                }
+                sleepMs = is429 ? context.retryDelay * (attempt + 1) : context.retryDelay;
+                Logger.logWarning(`Retrying POST '${url}' (attempt ${attempt + 1}/${effectiveMax}) in ${sleepMs}ms`);
+                attempt++;
+                shouldHold = is429;
             }
+            finally {
+                if (semaphoreActive && !shouldHold) {
+                    semaphore.release();
+                }
+            }
+            holdSlot = shouldHold;
+            await new Promise(resolve => setTimeout(resolve, sleepMs));
         }
     }
 
