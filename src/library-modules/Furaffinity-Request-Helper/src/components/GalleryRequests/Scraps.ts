@@ -1,5 +1,5 @@
 import { WaitAndCallAction, DEFAULT_ACTION_DELAY } from '../../utils/WaitAndCallAction';
-import { Semaphore } from '../../../../GlobalUtils/src/Semaphore';
+import { RequestContext } from '../../utils/RequestContext';
 import { FuraffinityRequests } from '../../modules/FuraffinityRequests';
 import { convertToNumber } from '../../utils/GeneralUtils';
 import { elementsTillId, elementsSinceId, elementsBetweenIds, elementsTillPage, elementsSincePage, elementsBetweenPages, findElementPageNo } from '../../utils/FigurePagingUtils';
@@ -7,17 +7,17 @@ import checkTagsAll from '../../../../GlobalUtils/src/FA-Functions/checkTagsAll'
 import { Logger } from '../../../../GlobalUtils/src/Logger';
 
 export class Scraps {
-    private readonly _semaphore: Semaphore;
+    private readonly _context: RequestContext;
 
-    constructor(semaphore: Semaphore) {
-        this._semaphore = semaphore;
+    constructor(context: RequestContext) {
+        this._context = context;
     }
 
     static get hardLink(): string {
         return FuraffinityRequests.fullUrl + '/scraps/';
     }
 
-    static async fetchPage(username: string | undefined, pageNumber: number | undefined, semaphore: Semaphore, signal?: AbortSignal): Promise<Document | undefined> {
+    static async fetchPage(username: string | undefined, pageNumber: number | undefined, context: RequestContext, signal?: AbortSignal): Promise<Document | undefined> {
         if (username == null) {
             Logger.logError('Cannot fetch scraps page: no username given');
             throw new Error('Cannot fetch scraps page: no username given');
@@ -29,7 +29,7 @@ export class Scraps {
         if (!username.endsWith('/')) {
             username += '/';
         }
-        const page = await FuraffinityRequests.getHTML(Scraps.hardLink + username + pageNumber, semaphore, signal);
+        const page = await FuraffinityRequests.getHTML(Scraps.hardLink + username + pageNumber, context, signal);
         checkTagsAll(page);
         return page;
     }
@@ -39,7 +39,7 @@ export class Scraps {
             pageNumber = 1;
         }
         Logger.logInfo(`Getting scraps of "${username}" on page "${pageNumber}".`);
-        const galleryDoc = await Scraps.fetchPage(username, pageNumber, this._semaphore, signal);
+        const galleryDoc = await Scraps.fetchPage(username, pageNumber, this._context, signal);
         if (!galleryDoc || !(galleryDoc instanceof Document) || galleryDoc.getElementById('no-images')) {
             Logger.logInfo(`No images found at scraps of "${username}" on page "${pageNumber}".`);
             return [];
@@ -144,7 +144,7 @@ export class Scraps {
         pageNumber = convertToNumber(pageNumber);
 
         return await WaitAndCallAction.callFunctionAsync(
-            () => Scraps.fetchPage(username, pageNumber as number | undefined, this._semaphore, signal),
+            () => Scraps.fetchPage(username, pageNumber as number | undefined, this._context, signal),
             action, delay
         );
     }

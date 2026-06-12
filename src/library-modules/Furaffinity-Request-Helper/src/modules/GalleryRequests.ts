@@ -1,4 +1,4 @@
-import { Semaphore } from '../../../GlobalUtils/src/Semaphore';
+import { RequestContext } from '../utils/RequestContext';
 import { Gallery } from '../components/GalleryRequests/Gallery';
 import { Scraps } from '../components/GalleryRequests/Scraps';
 import { Favorites } from '../components/GalleryRequests/Favorites';
@@ -10,13 +10,13 @@ export class GalleryRequests {
     readonly Favorites: Favorites;
     readonly Journals: Journals;
 
-    private readonly _semaphore: Semaphore;
+    private readonly _context: RequestContext;
 
-    constructor(semaphore: Semaphore) {
-        this._semaphore = semaphore;
-        this.Gallery = new Gallery(this._semaphore);
-        this.Scraps = new Scraps(this._semaphore);
-        this.Favorites = new Favorites(this._semaphore);
-        this.Journals = new Journals(this._semaphore);
+    constructor(context: RequestContext) {
+        this._context = context;
+        this.Gallery = new Gallery(this._context);
+        this.Scraps = new Scraps(this._context);
+        this.Favorites = new Favorites(this._context);
+        this.Journals = new Journals(this._context);
     }
 }

@@ -1,12 +1,12 @@
-import { Semaphore } from '../../../../GlobalUtils/src/Semaphore';
+import { RequestContext } from '../../utils/RequestContext';
 import { WaitAndCallAction, DEFAULT_ACTION_DELAY } from '../../utils/WaitAndCallAction';
 import { FuraffinityRequests } from '../../modules/FuraffinityRequests';
 
 export class AccountInformation {
-    private readonly _semaphore: Semaphore;
+    private readonly _context: RequestContext;
 
-    constructor(semaphore: Semaphore) {
-        this._semaphore = semaphore;
+    constructor(context: RequestContext) {
+        this._context = context;
     }
 
     static get hardLinks(): Record<string, string> {
@@ -18,14 +18,14 @@ export class AccountInformation {
     }
 
     async getSettingsPage(signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
-        return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(AccountInformation.hardLinks['settings'], this._semaphore, signal), action, delay);
+        return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(AccountInformation.hardLinks['settings'], this._context, signal), action, delay);
     }
 
     async getSiteSettingsPage(signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
-        return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(AccountInformation.hardLinks['siteSettings'], this._semaphore, signal), action, delay);
+        return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(AccountInformation.hardLinks['siteSettings'], this._context, signal), action, delay);
     }
 
     async getUserSettingsPage(signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
-        return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(AccountInformation.hardLinks['userSettings'], this._semaphore, signal), action, delay);
+        return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(AccountInformation.hardLinks['userSettings'], this._context, signal), action, delay);
     }
 }

@@ -1,5 +1,5 @@
 import { WaitAndCallAction, DEFAULT_ACTION_DELAY } from '../utils/WaitAndCallAction';
-import { Semaphore } from '../../../GlobalUtils/src/Semaphore';
+import { RequestContext } from '../utils/RequestContext';
 import { FuraffinityRequests } from './FuraffinityRequests';
 import { GalleryRequests } from './GalleryRequests';
 import { SearchRequests } from './SearchRequests';
@@ -9,12 +9,12 @@ export class UserRequests {
     readonly GalleryRequests: GalleryRequests;
     readonly SearchRequests: SearchRequests;
 
-    private readonly _semaphore: Semaphore;
+    private readonly _context: RequestContext;
 
-    constructor(semaphore: Semaphore) {
-        this._semaphore = semaphore;
-        this.GalleryRequests = new GalleryRequests(this._semaphore);
-        this.SearchRequests = new SearchRequests(this._semaphore);
+    constructor(context: RequestContext) {
+        this._context = context;
+        this.GalleryRequests = new GalleryRequests(this._context);
+        this.SearchRequests = new SearchRequests(this._context);
     }
 
     static get hardLinks(): Record<string, string> {
@@ -53,7 +53,7 @@ export class UserRequests {
             return;
         }
         const url = UserRequests.hardLinks['user'] + username;
-        return await FuraffinityRequests.getHTML(url, this._semaphore, signal);
+        return await FuraffinityRequests.getHTML(url, this._context, signal);
     }
 
     private async _watchUser(username: string | undefined, watchKey: string | number | undefined, signal?: AbortSignal): Promise<boolean> {
@@ -66,7 +66,7 @@ export class UserRequests {
             throw new Error('No watch key given');
         }
         const url = UserRequests.hardLinks['watch'] + username + '?key=' + watchKey;
-        return await FuraffinityRequests.getHTML(url, this._semaphore, signal) == null;
+        return await FuraffinityRequests.getHTML(url, this._context, signal) == null;
     }
 
     private async _unwatchUser(username: string | undefined, unwatchKey: string | number | undefined, signal?: AbortSignal): Promise<boolean> {
@@ -79,7 +79,7 @@ export class UserRequests {
             throw new Error('No unwatch key given');
         }
         const url = UserRequests.hardLinks['unwatch'] + username + '?key=' + unwatchKey;
-        return await FuraffinityRequests.getHTML(url, this._semaphore, signal) == null;
+        return await FuraffinityRequests.getHTML(url, this._context, signal) == null;
     }
 
     private async _blockUser(username: string | undefined, blockKey: string | number | undefined, signal?: AbortSignal): Promise<boolean> {
@@ -92,7 +92,7 @@ export class UserRequests {
             throw new Error('No block key given');
         }
         const url = UserRequests.hardLinks['block'] + username + '?key=' + blockKey;
-        return await FuraffinityRequests.getHTML(url, this._semaphore, signal) == null;
+        return await FuraffinityRequests.getHTML(url, this._context, signal) == null;
     }
 
     private async _unblockUser(username: string | undefined, unblockKey: string | number | undefined, signal?: AbortSignal): Promise<boolean> {
@@ -105,6 +105,6 @@ export class UserRequests {
             throw new Error('No unblock key given');
         }
         const url = UserRequests.hardLinks['unblock'] + username + '?key=' + unblockKey;
-        return await FuraffinityRequests.getHTML(url, this._semaphore, signal) == null;
+        return await FuraffinityRequests.getHTML(url, this._context, signal) == null;
     }
 }

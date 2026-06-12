@@ -1,22 +1,22 @@
 import { WaitAndCallAction, DEFAULT_ACTION_DELAY } from '../../utils/WaitAndCallAction';
-import { Semaphore } from '../../../../GlobalUtils/src/Semaphore';
+import { RequestContext } from '../../utils/RequestContext';
 import { FuraffinityRequests } from '../../modules/FuraffinityRequests';
 import { convertToNumber } from '../../utils/GeneralUtils';
 import { Logger } from '../../../../GlobalUtils/src/Logger';
 import { elementsTillId, elementsSinceId, elementsBetweenIds, elementsTillPage, elementsSincePage, elementsBetweenPages, findElementPageNo } from '../../utils/FigurePagingUtils';
 
 export class Journals {
-    private readonly _semaphore: Semaphore;
+    private readonly _context: RequestContext;
 
-    constructor(semaphore: Semaphore) {
-        this._semaphore = semaphore;
+    constructor(context: RequestContext) {
+        this._context = context;
     }
 
     static get hardLink(): string {
         return FuraffinityRequests.fullUrl + '/journals/';
     }
 
-    static async fetchPage(username: string | undefined, pageNumber: number | undefined, semaphore: Semaphore, signal?: AbortSignal): Promise<Document | undefined> {
+    static async fetchPage(username: string | undefined, pageNumber: number | undefined, context: RequestContext, signal?: AbortSignal): Promise<Document | undefined> {
         if (username == null) {
             Logger.logError('Cannot fetch journals page: no username given');
             throw new Error('Cannot fetch journals page: no username given');
@@ -29,7 +29,7 @@ export class Journals {
             username += '/';
         }
         const url = Journals.hardLink + username;
-        return await FuraffinityRequests.getHTML(url + pageNumber, semaphore, signal);
+        return await FuraffinityRequests.getHTML(url + pageNumber, context, signal);
     }
 
     async getJournalPageNo(username: string, journalId?: string | number, fromPageNumber?: string | number, toPageNumber?: string | number, signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<number> {
@@ -124,7 +124,7 @@ export class Journals {
         pageNumber = convertToNumber(pageNumber);
 
         return await WaitAndCallAction.callFunctionAsync(
-            () => Journals.fetchPage(username, pageNumber as number | undefined, this._semaphore, signal),
+            () => Journals.fetchPage(username, pageNumber as number | undefined, this._context, signal),
             action, delay
         );
     }
@@ -137,7 +137,7 @@ export class Journals {
 
         Logger.logInfo(`Getting Journals of "${username}" on page "${pageNumber}".`);
 
-        const galleryDoc = await Journals.fetchPage(username, pageNumber, this._semaphore, signal);
+        const galleryDoc = await Journals.fetchPage(username, pageNumber, this._context, signal);
         if (!galleryDoc) {
             Logger.logWarning(`No journals found at "${username}" on page "${pageNumber}".`);
             return [];

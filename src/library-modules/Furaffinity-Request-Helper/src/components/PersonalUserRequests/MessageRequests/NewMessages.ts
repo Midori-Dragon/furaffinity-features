@@ -1,5 +1,5 @@
 import { Logger } from '../../../../../GlobalUtils/src/Logger';
-import { Semaphore } from '../../../../../GlobalUtils/src/Semaphore';
+import { RequestContext } from '../../../utils/RequestContext';
 import { WaitAndCallAction, DEFAULT_ACTION_DELAY } from '../../../utils/WaitAndCallAction';
 import { FuraffinityRequests } from '../../../modules/FuraffinityRequests';
 import { MessageTypeRequests } from './MessageTypeRequests';
@@ -12,31 +12,31 @@ export class NewMessages {
     readonly Favorites: MessageTypeRequests;
     readonly Journals: MessageTypeRequests;
 
-    private readonly _semaphore: Semaphore;
+    private readonly _context: RequestContext;
 
-    constructor(semaphore: Semaphore) {
-        this._semaphore = semaphore;
-        this.Watches = new MessageTypeRequests(semaphore,
+    constructor(context: RequestContext) {
+        this._context = context;
+        this.Watches = new MessageTypeRequests(context,
             ['remove-watches', 'Remove Selected Watches'],
             ['nuke-watches', 'Nuke Watches'],
             'watches[]'
         );
-        this.JournalComments = new MessageTypeRequests(semaphore,
+        this.JournalComments = new MessageTypeRequests(context,
             ['remove-journal-comments', 'Remove Selected Comments'],
             ['nuke-journal-comments', 'Nuke Journal Comments'],
             'comments-journals[]'
         );
-        this.Shouts = new MessageTypeRequests(semaphore,
+        this.Shouts = new MessageTypeRequests(context,
             ['remove-shouts', 'Remove Selected Shouts'],
             ['nuke-shouts', 'Nuke Shouts'],
             'shouts[]'
         );
-        this.Favorites = new MessageTypeRequests(semaphore,
+        this.Favorites = new MessageTypeRequests(context,
             ['remove-favorites', 'Remove Selected Favorites'],
             ['nuke-favorites', 'Nuke Favorites'],
             'favorites[]'
         );
-        this.Journals = new MessageTypeRequests(semaphore,
+        this.Journals = new MessageTypeRequests(context,
             ['remove-journals', 'Remove Selected Journals'],
             ['nuke-journals', 'Nuke Journals'],
             'journals[]'
@@ -53,7 +53,7 @@ export class NewMessages {
     };
 
     async getMessagesPage(signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
-        return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(NewMessages.hardLink, this._semaphore, signal), action, delay);
+        return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(NewMessages.hardLink, this._context, signal), action, delay);
     }
 
     async removeMessages(userIds?: string[] | number[], journalCommentIds?: string[] | number[], shoutIds?: string[] | number[], favoriteIds?: string[] | number[], journalIds?: string[] | number[], signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
@@ -82,6 +82,6 @@ export class NewMessages {
             throw new Error('No messages to remove');
         }
 
-        return await FuraffinityRequests.postHTML(NewMessages.hardLink, payload, this._semaphore, signal);
+        return await FuraffinityRequests.postHTML(NewMessages.hardLink, payload, this._context, signal);
     }
 }

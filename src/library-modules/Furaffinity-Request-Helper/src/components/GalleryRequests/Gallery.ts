@@ -1,5 +1,5 @@
 import { WaitAndCallAction, DEFAULT_ACTION_DELAY } from '../../utils/WaitAndCallAction';
-import { Semaphore } from '../../../../GlobalUtils/src/Semaphore';
+import { RequestContext } from '../../utils/RequestContext';
 import { FuraffinityRequests } from '../../modules/FuraffinityRequests';
 import { IGalleryFolder } from '../../types/GalleryFolder';
 import { convertToNumber } from '../../utils/GeneralUtils';
@@ -8,17 +8,17 @@ import checkTagsAll from '../../../../GlobalUtils/src/FA-Functions/checkTagsAll'
 import { Logger } from '../../../../GlobalUtils/src/Logger';
 
 export class Gallery {
-    private readonly _semaphore: Semaphore;
+    private readonly _context: RequestContext;
 
-    constructor(semaphore: Semaphore) {
-        this._semaphore = semaphore;
+    constructor(context: RequestContext) {
+        this._context = context;
     }
 
     static get hardLink(): string {
         return FuraffinityRequests.fullUrl + '/gallery/';
     }
 
-    static async fetchPage(username: string | undefined, folder: IGalleryFolder | undefined, pageNumber: number | undefined, semaphore: Semaphore, signal?: AbortSignal): Promise<Document | undefined> {
+    static async fetchPage(username: string | undefined, folder: IGalleryFolder | undefined, pageNumber: number | undefined, context: RequestContext, signal?: AbortSignal): Promise<Document | undefined> {
         if (username == null) {
             Logger.logError('Cannot fetch gallery page: no username given');
             throw new Error('Cannot fetch gallery page: no username given');
@@ -37,7 +37,7 @@ export class Gallery {
                 url += `${folder.name}/`;
             }
         }
-        const page = await FuraffinityRequests.getHTML(url + pageNumber, semaphore, signal);
+        const page = await FuraffinityRequests.getHTML(url + pageNumber, context, signal);
         checkTagsAll(page);
         return page;
     }
@@ -47,7 +47,7 @@ export class Gallery {
             pageNumber = 1;
         }
         Logger.logInfo(`Getting gallery of "${username}" on page "${pageNumber}".`);
-        const galleryDoc = await Gallery.fetchPage(username, folder, pageNumber, this._semaphore, signal);
+        const galleryDoc = await Gallery.fetchPage(username, folder, pageNumber, this._context, signal);
         if (!galleryDoc || !(galleryDoc instanceof Document) || galleryDoc.getElementById('no-images')) {
             Logger.logInfo(`No images found at gallery of "${username}" on page "${pageNumber}".`);
             return [];
@@ -229,7 +229,7 @@ export class Gallery {
         pageNumber = convertToNumber(pageNumber);
 
         return await WaitAndCallAction.callFunctionAsync(
-            () => Gallery.fetchPage(username, undefined, pageNumber as number | undefined, this._semaphore, signal),
+            () => Gallery.fetchPage(username, undefined, pageNumber as number | undefined, this._context, signal),
             action, delay
         );
     }
@@ -238,7 +238,7 @@ export class Gallery {
         pageNumber = convertToNumber(pageNumber);
 
         return await WaitAndCallAction.callFunctionAsync(
-            () => Gallery.fetchPage(username, folder, pageNumber as number | undefined, this._semaphore, signal),
+            () => Gallery.fetchPage(username, folder, pageNumber as number | undefined, this._context, signal),
             action, delay
         );
     }

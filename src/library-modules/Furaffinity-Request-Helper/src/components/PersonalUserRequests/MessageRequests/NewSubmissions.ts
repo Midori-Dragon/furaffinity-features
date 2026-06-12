@@ -1,15 +1,15 @@
 import { Logger } from '../../../../../GlobalUtils/src/Logger';
-import { Semaphore } from '../../../../../GlobalUtils/src/Semaphore';
+import { RequestContext } from '../../../utils/RequestContext';
 import { WaitAndCallAction, DEFAULT_ACTION_DELAY } from '../../../utils/WaitAndCallAction';
 import { FuraffinityRequests } from '../../../modules/FuraffinityRequests';
 import { Message } from '../Message';
 import { convertToNumber } from '../../../utils/GeneralUtils';
 
 export class NewSubmissions {
-    private readonly _semaphore: Semaphore;
+    private readonly _context: RequestContext;
 
-    constructor(semaphore: Semaphore) {
-        this._semaphore = semaphore;
+    constructor(context: RequestContext) {
+        this._context = context;
     }
 
     static get hardLink(): string {
@@ -31,9 +31,9 @@ export class NewSubmissions {
 
     private async _getSubmissionsPage(firstSubmissionId: number | undefined, signal?: AbortSignal): Promise<Document | undefined> {
         if (firstSubmissionId == null || firstSubmissionId <= 0) {
-            return await FuraffinityRequests.getHTML(`${NewSubmissions.hardLink}new@72/`, this._semaphore, signal);
+            return await FuraffinityRequests.getHTML(`${NewSubmissions.hardLink}new@72/`, this._context, signal);
         } else {
-            return await FuraffinityRequests.getHTML(`${NewSubmissions.hardLink}new~${firstSubmissionId}@72/`, this._semaphore, signal);
+            return await FuraffinityRequests.getHTML(`${NewSubmissions.hardLink}new~${firstSubmissionId}@72/`, this._context, signal);
         }
     }
 
@@ -48,13 +48,13 @@ export class NewSubmissions {
         for (const submissionId of submissionIds) {
             payload.push(['submissions[]', submissionId.toString()]);
         }
-        return await FuraffinityRequests.postHTML(`${NewSubmissions.hardLink}new@72/`, payload, this._semaphore, signal);
+        return await FuraffinityRequests.postHTML(`${NewSubmissions.hardLink}new@72/`, payload, this._context, signal);
     }
 
     private async _nukeSubmissions(signal?: AbortSignal): Promise<Document | undefined> {
         const payload: [string, string][] = [
             ['messagecenter-action', Message.hardActions['nuke']],
         ];
-        return await FuraffinityRequests.postHTML(`${NewSubmissions.hardLink}new@72/`, payload, this._semaphore, signal);
+        return await FuraffinityRequests.postHTML(`${NewSubmissions.hardLink}new@72/`, payload, this._context, signal);
     }
 }

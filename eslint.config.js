@@ -51,7 +51,7 @@ export default [
             '@typescript-eslint/no-explicit-any': 'off',
             '@typescript-eslint/no-empty-function': ['warn'],
             '@typescript-eslint/consistent-type-definitions': ['warn', 'interface'],
-            '@typescript-eslint/strict-boolean-expressions': ['warn'],
+            '@typescript-eslint/strict-boolean-expressions': ['warn', { allowNullableBoolean: true }],
             '@typescript-eslint/naming-convention': [
                 'warn',
                 {

@@ -1,23 +1,23 @@
 import { WaitAndCallAction, DEFAULT_ACTION_DELAY } from '../../utils/WaitAndCallAction';
 import { IdArray } from '../../utils/ArrayHelper';
 import { FuraffinityRequests } from '../../modules/FuraffinityRequests';
-import { Semaphore } from '../../../../GlobalUtils/src/Semaphore';
+import { RequestContext } from '../../utils/RequestContext';
 import { convertToNumber } from '../../utils/GeneralUtils';
 import { Logger } from '../../../../GlobalUtils/src/Logger';
 import checkTagsAll from '../../../../GlobalUtils/src/FA-Functions/checkTagsAll';
 
 export class Favorites {
-    private readonly semaphore: Semaphore;
+    private readonly _context: RequestContext;
 
-    constructor(semaphore: Semaphore) {
-        this.semaphore = semaphore;
+    constructor(context: RequestContext) {
+        this._context = context;
     }
 
     static get hardLink(): string {
         return FuraffinityRequests.fullUrl + '/favorites/';
     }
 
-    static async fetchPage(username: string | undefined, dataFavId: number | undefined, direction: number | undefined, semaphore: Semaphore, signal?: AbortSignal): Promise<Document | undefined> {
+    static async fetchPage(username: string | undefined, dataFavId: number | undefined, direction: number | undefined, context: RequestContext, signal?: AbortSignal): Promise<Document | undefined> {
         if (username == null) {
             Logger.logError('Cannot fetch favorites page: no username given');
             throw new Error('Cannot fetch favorites page: no username given');
@@ -41,7 +41,7 @@ export class Favorites {
         } else {
             url += 'prev/';
         }
-        const page = await FuraffinityRequests.getHTML(url, semaphore, signal);
+        const page = await FuraffinityRequests.getHTML(url, context, signal);
         checkTagsAll(page);
         return page;
     }
@@ -149,7 +149,7 @@ export class Favorites {
         direction = convertToNumber(direction);
 
         return await WaitAndCallAction.callFunctionAsync(
-            () => Favorites.fetchPage(username, fromDataFavId as number | undefined, direction as number | undefined, this.semaphore, signal),
+            () => Favorites.fetchPage(username, fromDataFavId as number | undefined, direction as number | undefined, this._context, signal),
             action, delay
         );
     }
@@ -597,7 +597,7 @@ export class Favorites {
 
     private async _getFigures(username: string, dataFavId: number | undefined, direction: number | undefined, signal?: AbortSignal): Promise<HTMLElement[]> {
         Logger.logInfo(`Getting Favorites of "${username}" since id "${dataFavId}" and direction "${direction}".`);
-        const galleryDoc = await Favorites.fetchPage(username, dataFavId, direction, this.semaphore, signal);
+        const galleryDoc = await Favorites.fetchPage(username, dataFavId, direction, this._context, signal);
         if (!galleryDoc || !(galleryDoc instanceof Document) || galleryDoc.getElementById('no-images')) {
             Logger.logInfo(`No images found at favorites of "${username}" on page "${dataFavId}".`);
             return [];

@@ -1,4 +1,4 @@
-import { Semaphore } from '../../../GlobalUtils/src/Semaphore';
+import { RequestContext } from '../utils/RequestContext';
 import { Message } from '../components/PersonalUserRequests/Message';
 import { AccountInformation } from '../components/PersonalUserRequests/AccountInformation';
 import { UserProfile } from '../components/PersonalUserRequests/UserProfile';
@@ -12,14 +12,14 @@ export class PersonalUserRequests {
     readonly ManageContent: ManageContent;
     readonly Security: Security;
 
-    private readonly _semaphore: Semaphore;
+    private readonly _context: RequestContext;
 
-    constructor(semaphore: Semaphore) {
-        this._semaphore = semaphore;
-        this.MessageRequests = new Message(this._semaphore);
-        this.AccountInformation = new AccountInformation(this._semaphore);
-        this.UserProfile = new UserProfile(this._semaphore);
-        this.ManageContent = new ManageContent(this._semaphore);
-        this.Security = new Security(this._semaphore);
+    constructor(context: RequestContext) {
+        this._context = context;
+        this.MessageRequests = new Message(this._context);
+        this.AccountInformation = new AccountInformation(this._context);
+        this.UserProfile = new UserProfile(this._context);
+        this.ManageContent = new ManageContent(this._context);
+        this.Security = new Security(this._context);
     }
 }

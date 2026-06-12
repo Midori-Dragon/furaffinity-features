@@ -1,14 +1,14 @@
-import { Semaphore } from '../../../../GlobalUtils/src/Semaphore';
+import { RequestContext } from '../../utils/RequestContext';
 import { WaitAndCallAction, DEFAULT_ACTION_DELAY } from '../../utils/WaitAndCallAction';
 import { FuraffinityRequests } from '../../modules/FuraffinityRequests';
 import { convertToNumber } from '../../utils/GeneralUtils';
 import { Logger } from '../../../../GlobalUtils/src/Logger';
 
 export class ManageContent {
-    private readonly _semaphore: Semaphore;
+    private readonly _context: RequestContext;
 
-    constructor(semaphore: Semaphore) {
-        this._semaphore = semaphore;
+    constructor(context: RequestContext) {
+        this._context = context;
     }
 
     static get hardLinks(): Record<string, string> {
@@ -24,7 +24,7 @@ export class ManageContent {
     }
 
     async getFoldersPages(signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
-        return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(ManageContent.hardLinks['folders'], this._semaphore, signal), action, delay);
+        return await WaitAndCallAction.callFunctionAsync(() => FuraffinityRequests.getHTML(ManageContent.hardLinks['folders'], this._context, signal), action, delay);
     }
 
     async getAllWatchesPages(signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document[]> {
@@ -37,7 +37,7 @@ export class ManageContent {
     }
 
     private async _getAllWatchesPages(signal?: AbortSignal): Promise<Document[]> {
-        let usersDoc = await FuraffinityRequests.getHTML(ManageContent.hardLinks['buddylist'] + 'x', this._semaphore, signal);
+        let usersDoc = await FuraffinityRequests.getHTML(ManageContent.hardLinks['buddylist'] + 'x', this._context, signal);
         const columnPage = usersDoc?.getElementById('columnpage');
         const sectionBody = columnPage?.querySelector('div[class="section-body"');
         const paginationLinks = sectionBody?.querySelector('div[class*="pagination-links"]');
@@ -57,6 +57,6 @@ export class ManageContent {
             Logger.logWarning('No page number given. Using default 1 instead.');
             pageNumber = 1;
         }
-        return await FuraffinityRequests.getHTML(ManageContent.hardLinks['buddylist'] + pageNumber, this._semaphore, signal);
+        return await FuraffinityRequests.getHTML(ManageContent.hardLinks['buddylist'] + pageNumber, this._context, signal);
     }
 }

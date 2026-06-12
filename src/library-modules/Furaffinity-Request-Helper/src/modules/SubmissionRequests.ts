@@ -1,13 +1,13 @@
 import { Logger } from '../../../GlobalUtils/src/Logger';
-import { Semaphore } from '../../../GlobalUtils/src/Semaphore';
+import { RequestContext } from '../utils/RequestContext';
 import { WaitAndCallAction, DEFAULT_ACTION_DELAY } from '../utils/WaitAndCallAction';
 import { FuraffinityRequests } from './FuraffinityRequests';
 
 export class SubmissionRequests {
-    private readonly _semaphore: Semaphore;
+    private readonly _context: RequestContext;
 
-    constructor(semaphore: Semaphore) {
-        this._semaphore = semaphore;
+    constructor(context: RequestContext) {
+        this._context = context;
     }
 
     static get hardLinks(): Record<string, string> {
@@ -41,7 +41,7 @@ export class SubmissionRequests {
             throw new Error('No submissionId given');
         }
         const url = SubmissionRequests.hardLinks['view'] + submissionId;
-        return await FuraffinityRequests.getHTML(url, this._semaphore, signal);
+        return await FuraffinityRequests.getHTML(url, this._context, signal);
     }
 
     private async _favSubmission(submissionId: string | number | undefined, favKey: string | number | undefined, signal?: AbortSignal): Promise<string | undefined> {
@@ -54,7 +54,7 @@ export class SubmissionRequests {
             throw new Error('No favKey given');
         }
         const url = SubmissionRequests.hardLinks['fav'] + submissionId + '?key=' + favKey;
-        const resultDoc = await FuraffinityRequests.getHTML(url, this._semaphore, signal);
+        const resultDoc = await FuraffinityRequests.getHTML(url, this._context, signal);
         if (resultDoc == null) {
             Logger.logError('Failed to fetch fav page');
             throw new Error('Failed to fetch fav page');
@@ -81,7 +81,7 @@ export class SubmissionRequests {
             throw new Error('No unfavKey given');
         }
         const url = SubmissionRequests.hardLinks['unfav'] + submissionId + '?key=' + unfavKey;
-        const resultDoc = await FuraffinityRequests.getHTML(url, this._semaphore, signal);
+        const resultDoc = await FuraffinityRequests.getHTML(url, this._context, signal);
         if (resultDoc == null) {
             Logger.logError('Failed to fetch unfav page');
             throw new Error('Failed to fetch unfav page');
@@ -95,7 +95,7 @@ export class SubmissionRequests {
             throw new Error('No journalId given');
         }
         const url = SubmissionRequests.hardLinks['journal'] + journalId;
-        return await FuraffinityRequests.getHTML(url, this._semaphore);
+        return await FuraffinityRequests.getHTML(url, this._context);
     }
 
     private _getFavKey(doc: Document): string | undefined {

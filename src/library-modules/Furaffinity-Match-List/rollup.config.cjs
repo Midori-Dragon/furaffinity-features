@@ -10,8 +10,9 @@ module.exports = {
             `// ==UserScript==
 // @name        Furaffinity-Match-List
 // @namespace   Violentmonkey Scripts
+// @require     https://greasyfork.org/scripts/525666-furaffinity-prototype-extensions/code/525666-furaffinity-prototype-extensions.js
 // @grant       GM_info
-// @version     1.1.5
+// @version     1.1.6
 // @author      Midori Dragon
 // @description Library to create a matchlist for your Furaffinity Script
 // @icon        https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/fa_logo.svg

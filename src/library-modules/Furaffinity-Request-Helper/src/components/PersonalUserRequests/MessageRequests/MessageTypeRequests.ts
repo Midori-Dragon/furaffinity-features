@@ -1,10 +1,10 @@
 import { Logger } from '../../../../../GlobalUtils/src/Logger';
-import { Semaphore } from '../../../../../GlobalUtils/src/Semaphore';
+import { RequestContext } from '../../../utils/RequestContext';
 import { WaitAndCallAction, DEFAULT_ACTION_DELAY } from '../../../utils/WaitAndCallAction';
 import { FuraffinityRequests } from '../../../modules/FuraffinityRequests';
 
 export class MessageTypeRequests {
-    private readonly _semaphore: Semaphore;
+    private readonly _context: RequestContext;
     private readonly _removeAction: [string, string];
     private readonly _nukeAction: [string, string];
     private readonly _fieldName: string;
@@ -13,8 +13,8 @@ export class MessageTypeRequests {
         return FuraffinityRequests.fullUrl + '/msg/others/';
     }
 
-    constructor(semaphore: Semaphore, removeAction: [string, string], nukeAction: [string, string], fieldName: string) {
-        this._semaphore = semaphore;
+    constructor(context: RequestContext, removeAction: [string, string], nukeAction: [string, string], fieldName: string) {
+        this._context = context;
         this._removeAction = removeAction;
         this._nukeAction = nukeAction;
         this._fieldName = fieldName;
@@ -37,11 +37,11 @@ export class MessageTypeRequests {
         for (const id of ids) {
             payload.push([this._fieldName, id.toString()]);
         }
-        return await FuraffinityRequests.postHTML(this._hardLink, payload, this._semaphore, signal);
+        return await FuraffinityRequests.postHTML(this._hardLink, payload, this._context, signal);
     }
 
     private async _nukeMessages(signal?: AbortSignal): Promise<Document | undefined> {
         const payload: [string, string][] = [this._nukeAction];
-        return await FuraffinityRequests.postHTML(this._hardLink, payload, this._semaphore, signal);
+        return await FuraffinityRequests.postHTML(this._hardLink, payload, this._context, signal);
     }
 }

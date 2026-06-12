@@ -1,5 +1,5 @@
-import { Semaphore } from '../../../GlobalUtils/src/Semaphore';
 import { WaitAndCallAction, DEFAULT_ACTION_DELAY } from '../utils/WaitAndCallAction';
+import { RequestContext, DEFAULT_MAX_CONCURRENCY, DEFAULT_MAX_RETRIES, DEFAULT_RETRY_DELAY } from '../utils/RequestContext';
 import { UserRequests } from './UserRequests';
 import { PersonalUserRequests } from './PersonalUserRequests';
 import { SubmissionRequests } from './SubmissionRequests';
@@ -17,26 +17,40 @@ export class FuraffinityRequests {
         SearchOptions: SearchOptions
     };
 
-    private _semaphore: Semaphore;
+    private _context: RequestContext;
     private static _useHttps = window.location.protocol.includes('https');
     private static _httpsString = window.location.protocol.trimEnd(':') + '://';
     private static _domain = window.location.hostname;
 
-    constructor(maxAmountRequests = 2) {
-        this._semaphore = new Semaphore(maxAmountRequests);
-        this.UserRequests = new UserRequests(this._semaphore);
-        this.PersonalUserRequests = new PersonalUserRequests(this._semaphore);
-        this.SubmissionRequests = new SubmissionRequests(this._semaphore);
+    constructor(maxAmountRequests = DEFAULT_MAX_CONCURRENCY, maxRetries = DEFAULT_MAX_RETRIES, retryDelay = DEFAULT_RETRY_DELAY) {
+        this._context = new RequestContext(maxAmountRequests, maxRetries, retryDelay);
+        this.UserRequests = new UserRequests(this._context);
+        this.PersonalUserRequests = new PersonalUserRequests(this._context);
+        this.SubmissionRequests = new SubmissionRequests(this._context);
     }
 
     set maxAmountRequests(value: number) {
-        if (this._semaphore.maxConcurrency === value) {
+        if (this._context.semaphore.maxConcurrency === value) {
             return;
         }
-        this._semaphore.maxConcurrency = value;
+        this._context.semaphore.maxConcurrency = value;
     }
     get maxAmountRequests(): number {
-        return this._semaphore.maxConcurrency;
+        return this._context.semaphore.maxConcurrency;
+    }
+
+    set maxRetries(value: number) {
+        this._context.maxRetries = value;
+    }
+    get maxRetries(): number {
+        return this._context.maxRetries;
+    }
+
+    set retryDelay(value: number) {
+        this._context.retryDelay = value;
+    }
+    get retryDelay(): number {
+        return this._context.retryDelay;
     }
 
     static set useHttps(value: boolean) {
@@ -58,96 +72,125 @@ export class FuraffinityRequests {
         return FuraffinityRequests._httpsString + FuraffinityRequests._domain;
     }
 
-    static async getHTML(url: string, semaphore: Semaphore, signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
+    static async getHTML(url: string, context: RequestContext, signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         if (url == null || url === '') {
             Logger.logError('No url given for GET request');
             throw new Error('No url given for GET request');
         }
-        return await WaitAndCallAction.callFunctionAsync(() => getHTMLLocal(url, semaphore, signal), action, delay);
+        return await WaitAndCallAction.callFunctionAsync(() => getHTMLLocal(url, context, signal), action, delay);
     }
 
-    static async postHTML(url: string, payload: string[][] | Record<string, string> | string | URLSearchParams, semaphore: Semaphore, signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
+    static async postHTML(url: string, payload: string[][] | Record<string, string> | string | URLSearchParams, context: RequestContext, signal?: AbortSignal, action?: (percentId?: string | number) => void, delay = DEFAULT_ACTION_DELAY): Promise<Document | undefined> {
         if (url == null || url === '') {
             Logger.logError('No url given for POST request');
             throw new Error('No url given for POST request');
         }
-        return await WaitAndCallAction.callFunctionAsync(() => postHTMLLocal(url, payload, semaphore, signal), action, delay);
+        return await WaitAndCallAction.callFunctionAsync(() => postHTMLLocal(url, payload, context, signal), action, delay);
     }
 }
 
-async function getHTMLLocal(url: string, semaphore: Semaphore, signal?: AbortSignal): Promise<Document | undefined> {
+async function getHTMLLocal(url: string, context: RequestContext, signal?: AbortSignal): Promise<Document | undefined> {
     Logger.logInfo(`Requesting '${url}'`);
+    const { semaphore } = context;
     const semaphoreActive = semaphore != null && semaphore.maxConcurrency > 0;
-    if (semaphoreActive) {
-        // Acquire a slot in the semaphore to ensure that the maximum concurrency is not exceeded.
-        await semaphore.acquire();
-    }
-    try {
-        // Send the GET request and retrieve the HTML document.
-        const response = await fetch(url, { signal });
-        if (!response.ok) {
-            throw new Error(`HTTP error ${response.status} for: ${url}`);
+    let attempt = 0;
+    let holdSlot = false;
+
+    while (true) {
+        if (semaphoreActive && !holdSlot) {
+            await semaphore.acquire();
         }
-        const html = await response.text();
-        // Parse the HTML document using a DOMParser.
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(html, 'text/html');
-        return doc;
-    } catch (error: any) {
-        // Enrich network-level errors (e.g. "Failed to fetch") with the URL for better diagnostics.
-        const message = error instanceof Error ? error.message : String(error);
-        const enriched = new Error(`${message} (URL: ${url})`);
-        if (!(signal?.aborted ?? false)) {
-            Logger.logError(enriched);
+        holdSlot = false;
+        let sleepMs: number | null = null;
+        let httpStatus = 0;
+        let shouldHold = false;
+        try {
+            const response = await fetch(url, { signal });
+            httpStatus = response.status;
+            if (!response.ok) {
+                throw new Error(`HTTP error ${httpStatus} for: ${url}`);
+            }
+            const html = await response.text();
+            const parser = new DOMParser();
+            return parser.parseFromString(html, 'text/html');
+        } catch (error: any) {
+            const message = error instanceof Error ? error.message : String(error);
+            const enriched = new Error(`${message} (URL: ${url})`);
+            if (signal?.aborted) {
+                throw enriched;
+            }
+            const is429 = httpStatus === 429;
+            const effectiveMax = is429 ? context.maxRetries * 2 : context.maxRetries;
+            if (attempt >= effectiveMax) {
+                Logger.logError(enriched);
+                throw enriched;
+            }
+            sleepMs = is429 ? context.retryDelay * (attempt + 1) : context.retryDelay;
+            Logger.logWarning(`Retrying GET '${url}' (attempt ${attempt + 1}/${effectiveMax}) in ${sleepMs}ms`);
+            attempt++;
+            shouldHold = is429;
+        } finally {
+            if (semaphoreActive && !shouldHold) {
+                semaphore.release();
+            }
         }
-        throw enriched;
-    } finally {
-        // Release the slot in the semaphore.
-        if (semaphoreActive) {
-            semaphore.release();
-        }
+        holdSlot = shouldHold;
+        await new Promise<void>(resolve => setTimeout(resolve, sleepMs!));
     }
 }
 
-async function postHTMLLocal(url: string, payload: string[][] | Record<string, string> | string | URLSearchParams, semaphore: Semaphore, signal?: AbortSignal): Promise<Document | undefined> {
-    // Check if the semaphore is active and acquire it if necessary
+async function postHTMLLocal(url: string, payload: string[][] | Record<string, string> | string | URLSearchParams, context: RequestContext, signal?: AbortSignal): Promise<Document | undefined> {
+    const { semaphore } = context;
     const semaphoreActive = semaphore != null && semaphore.maxConcurrency > 0;
-    if (semaphoreActive) {
-        await semaphore.acquire();
-    }
-    try {
-        // Send a POST request with the given payload
-        const response = await fetch(url, {
-            method: 'POST',
-            body: new URLSearchParams(payload).toString(),
-            headers: {
-                'Content-Type': 'application/x-www-form-urlencoded',
-            },
-            signal,
-        });
+    let attempt = 0;
+    let holdSlot = false;
 
-        // Check if the response is not ok and throw an error
-        if (!response.ok) {
-            throw new Error(`HTTP error ${response.status} for: ${url}`);
+    while (true) {
+        if (semaphoreActive && !holdSlot) {
+            await semaphore.acquire();
         }
-
-        const responseData = await response.text();
-        // Parse the response data as an HTML document
-        const parser = new DOMParser();
-        const doc = parser.parseFromString(responseData, 'text/html');
-        return doc;
-    } catch (error: any) {
-        // Enrich network-level errors (e.g. "Failed to fetch") with the URL for better diagnostics.
-        const message = error instanceof Error ? error.message : String(error);
-        const enriched = new Error(`${message} (URL: ${url})`);
-        if (!(signal?.aborted ?? false)) {
-            Logger.logError(enriched);
+        holdSlot = false;
+        let sleepMs: number | null = null;
+        let httpStatus = 0;
+        let shouldHold = false;
+        try {
+            const response = await fetch(url, {
+                method: 'POST',
+                body: new URLSearchParams(payload).toString(),
+                headers: {
+                    'Content-Type': 'application/x-www-form-urlencoded',
+                },
+                signal,
+            });
+            httpStatus = response.status;
+            if (!response.ok) {
+                throw new Error(`HTTP error ${httpStatus} for: ${url}`);
+            }
+            const responseData = await response.text();
+            const parser = new DOMParser();
+            return parser.parseFromString(responseData, 'text/html');
+        } catch (error: any) {
+            const message = error instanceof Error ? error.message : String(error);
+            const enriched = new Error(`${message} (URL: ${url})`);
+            if (signal?.aborted) {
+                throw enriched;
+            }
+            const is429 = httpStatus === 429;
+            const effectiveMax = is429 ? context.maxRetries * 2 : context.maxRetries;
+            if (attempt >= effectiveMax) {
+                Logger.logError(enriched);
+                throw enriched;
+            }
+            sleepMs = is429 ? context.retryDelay * (attempt + 1) : context.retryDelay;
+            Logger.logWarning(`Retrying POST '${url}' (attempt ${attempt + 1}/${effectiveMax}) in ${sleepMs}ms`);
+            attempt++;
+            shouldHold = is429;
+        } finally {
+            if (semaphoreActive && !shouldHold) {
+                semaphore.release();
+            }
         }
-        throw enriched;
-    } finally {
-        // Release the semaphore if it was acquired
-        if (semaphoreActive) {
-            semaphore.release();
-        }
+        holdSlot = shouldHold;
+        await new Promise<void>(resolve => setTimeout(resolve, sleepMs!));
     }
 }
