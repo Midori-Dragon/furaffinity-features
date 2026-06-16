@@ -3,7 +3,7 @@
 // @namespace   Violentmonkey Scripts
 // @require     https://greasyfork.org/scripts/525666-furaffinity-prototype-extensions/code/525666-furaffinity-prototype-extensions.js
 // @grant       none
-// @version     1.5.5
+// @version     1.5.6
 // @author      Midori Dragon
 // @description Library to simplify requests to Furaffinity
 // @icon        https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/fa_logo.svg
@@ -168,6 +168,29 @@
             this.retryDelay = retryDelay;
         }
     }
+
+    class RateLimiter {
+        intervalMs;
+        nextAvailableTime;
+        constructor(intervalMs) {
+            this.intervalMs = intervalMs;
+            this.nextAvailableTime = 0;
+        }
+        acquire() {
+            const now = Date.now();
+            const scheduledTime = Math.max(now, this.nextAvailableTime);
+            this.nextAvailableTime = scheduledTime + this.intervalMs;
+            const delay = scheduledTime - now;
+            if (delay <= 0) {
+                return Promise.resolve();
+            }
+            return new Promise((resolve) => setTimeout(resolve, delay));
+        }
+    }
+
+    const DEFAULT_REQUEST_INTERVAL = 500;
+    // Shared by every FuraffinityRequests instance in this script context
+    const globalRateLimiter = new RateLimiter(DEFAULT_REQUEST_INTERVAL);
 
     function convertToNumber(value) {
         if (value == null) {
@@ -3048,6 +3071,12 @@
         get retryDelay() {
             return this._context.retryDelay;
         }
+        static set requestInterval(value) {
+            globalRateLimiter.intervalMs = value;
+        }
+        static get requestInterval() {
+            return globalRateLimiter.intervalMs;
+        }
         static set useHttps(value) {
             if (FuraffinityRequests._useHttps === value) {
                 return;
@@ -3096,6 +3125,7 @@
             let httpStatus = 0;
             let shouldHold = false;
             try {
+                await globalRateLimiter.acquire();
                 const response = await fetch(url, { signal });
                 httpStatus = response.status;
                 if (!response.ok) {
@@ -3145,6 +3175,7 @@
             let httpStatus = 0;
             let shouldHold = false;
             try {
+                await globalRateLimiter.acquire();
                 const response = await fetch(url, {
                     method: 'POST',
                     body: new URLSearchParams(payload).toString(),
@@ -3188,8 +3219,31 @@
         }
     }
 
+    function registerGlobalSetting(registerSetting) {
+        if (window.FAGlobalSettings != null) {
+            registerSetting(window.FAGlobalSettings);
+            window.FAGlobalSettings.loadSettings();
+        }
+        else {
+            window.__faPendingGlobalSettings ??= [];
+            window.__faPendingGlobalSettings.push(registerSetting);
+        }
+    }
+
     Object.defineProperties(window, {
         FARequestHelper: { get: () => FuraffinityRequests }
+    });
+    registerGlobalSetting((settings) => {
+        const rateLimitSetting = settings.newSetting(window.FASettingType.Number, 'Request Rate Limit');
+        rateLimitSetting.description = 'Minimum time in milliseconds between requests made by Furaffinity Features. Keep at 1000ms or higher to follow Furaffinity\'s third-party traffic guidelines.';
+        rateLimitSetting.defaultValue = DEFAULT_REQUEST_INTERVAL;
+        rateLimitSetting.min = 100;
+        rateLimitSetting.max = 60000;
+        rateLimitSetting.step = 100;
+        rateLimitSetting.addEventListener('input', () => {
+            FuraffinityRequests.requestInterval = rateLimitSetting.value;
+        });
+        FuraffinityRequests.requestInterval = rateLimitSetting.value;
     });
 
 })();

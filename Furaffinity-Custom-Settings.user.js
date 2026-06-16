@@ -3,7 +3,7 @@
 // @namespace   Violentmonkey Scripts
 // @require     https://greasyfork.org/scripts/525666-furaffinity-prototype-extensions/code/525666-furaffinity-prototype-extensions.js
 // @grant       none
-// @version     4.3.7
+// @version     4.3.8
 // @author      Midori Dragon
 // @description Library to create Custom settings on Furaffinitiy
 // @icon        https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/fa_logo.svg
@@ -999,10 +999,8 @@
             if (settings.length === 0) {
                 return;
             }
-            const settingsContainerPresent = document.getElementById(headerName + '_settingscontainer') != null;
-            if (settingsContainerPresent) {
-                return;
-            }
+            const existingContainer = document.getElementById(headerName + '_settingscontainer');
+            existingContainer?.parentNode?.removeChild(existingContainer);
             const columnPage = document.getElementById('columnpage');
             const content = columnPage?.querySelector('div[class="content"]');
             if (content == null) {
@@ -1179,6 +1177,9 @@
     });
     const customSettings = new Settings('Custom Furaffinity Settings', 'Global Custom Furaffinity Settings');
     customSettings.showFeatureEnabledSetting = false;
+    Object.defineProperties(window, {
+        FAGlobalSettings: { get: () => customSettings },
+    });
     const loggingSetting = customSettings.newSetting(window.FASettingType.Option, 'Logging');
     loggingSetting.description = 'Sets the logging level.';
     loggingSetting.defaultValue = LogLevel.Error;
@@ -1212,6 +1213,10 @@
     const exportSettingsSetting = customSettings.newSetting(SettingType.Action, 'Export Settings');
     exportSettingsSetting.description = 'Exports the current Settings to a JSON file.';
     exportSettingsSetting.addEventListener('input', () => void customSettings.exportSettings());
+    for (const register of window.__faPendingGlobalSettings ?? []) {
+        register(customSettings);
+    }
+    window.__faPendingGlobalSettings = [];
     customSettings.loadSettings();
     let color = 'color: blue';
     if (window.matchMedia?.('(prefers-color-scheme: dark)').matches) {
