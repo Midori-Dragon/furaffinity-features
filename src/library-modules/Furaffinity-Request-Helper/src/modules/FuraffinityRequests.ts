@@ -1,5 +1,6 @@
 import { WaitAndCallAction, DEFAULT_ACTION_DELAY } from '../utils/WaitAndCallAction';
 import { RequestContext, DEFAULT_MAX_CONCURRENCY, DEFAULT_MAX_RETRIES, DEFAULT_RETRY_DELAY } from '../utils/RequestContext';
+import { globalRateLimiter } from '../utils/GlobalRateLimiter';
 import { UserRequests } from './UserRequests';
 import { PersonalUserRequests } from './PersonalUserRequests';
 import { SubmissionRequests } from './SubmissionRequests';
@@ -51,6 +52,13 @@ export class FuraffinityRequests {
     }
     get retryDelay(): number {
         return this._context.retryDelay;
+    }
+
+    static set requestInterval(value: number) {
+        globalRateLimiter.intervalMs = value;
+    }
+    static get requestInterval(): number {
+        return globalRateLimiter.intervalMs;
     }
 
     static set useHttps(value: boolean) {
@@ -105,6 +113,7 @@ async function getHTMLLocal(url: string, context: RequestContext, signal?: Abort
         let httpStatus = 0;
         let shouldHold = false;
         try {
+            await globalRateLimiter.acquire();
             const response = await fetch(url, { signal });
             httpStatus = response.status;
             if (!response.ok) {
@@ -154,6 +163,7 @@ async function postHTMLLocal(url: string, payload: string[][] | Record<string, s
         let httpStatus = 0;
         let shouldHold = false;
         try {
+            await globalRateLimiter.acquire();
             const response = await fetch(url, {
                 method: 'POST',
                 body: new URLSearchParams(payload).toString(),

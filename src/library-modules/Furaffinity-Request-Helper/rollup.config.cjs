@@ -12,7 +12,7 @@ module.exports = {
 // @namespace   Violentmonkey Scripts
 // @require     https://greasyfork.org/scripts/525666-furaffinity-prototype-extensions/code/525666-furaffinity-prototype-extensions.js
 // @grant       none
-// @version     1.5.5
+// @version     1.5.6
 // @author      Midori Dragon
 // @description Library to simplify requests to Furaffinity
 // @icon        https://raw.githubusercontent.com/Midori-Dragon/furaffinity-features/refs/heads/main/assets/icons/fa_logo.svg

@@ -156,10 +156,9 @@ export class Settings {
         if (settings.length === 0) {
             return;
         }
-        const settingsContainerPresent = document.getElementById(headerName + '_settingscontainer') != null;
-        if (settingsContainerPresent) {
-            return;
-        }
+
+        const existingContainer = document.getElementById(headerName + '_settingscontainer');
+        existingContainer?.parentNode?.removeChild(existingContainer);
 
         const columnPage = document.getElementById('columnpage');
         const content = columnPage?.querySelector('div[class="content"]');

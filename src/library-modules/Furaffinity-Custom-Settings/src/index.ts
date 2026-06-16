@@ -1,4 +1,5 @@
 import { Logger, LogLevel } from '../../GlobalUtils/src/Logger';
+import '../../GlobalUtils/src/GlobalSettingsRegistry';
 import { Settings } from './modules/Settings';
 import { SettingType } from './utils/SettingType';
 
@@ -9,6 +10,10 @@ Object.defineProperties(window, {
 
 const customSettings = new Settings('Custom Furaffinity Settings', 'Global Custom Furaffinity Settings');
 customSettings.showFeatureEnabledSetting = false;
+
+Object.defineProperties(window, {
+    FAGlobalSettings: { get: () => customSettings },
+});
 
 export const loggingSetting = customSettings.newSetting(window.FASettingType.Option, 'Logging');
 loggingSetting.description = 'Sets the logging level.';
@@ -46,6 +51,11 @@ importSettingsSetting.addEventListener('input', (): void => {
 export const exportSettingsSetting = customSettings.newSetting(SettingType.Action, 'Export Settings');
 exportSettingsSetting.description = 'Exports the current Settings to a JSON file.';
 exportSettingsSetting.addEventListener('input', (): void => void customSettings.exportSettings());
+
+for (const register of window.__faPendingGlobalSettings ?? []) {
+    register(customSettings);
+}
+window.__faPendingGlobalSettings = [];
 
 customSettings.loadSettings();
 
